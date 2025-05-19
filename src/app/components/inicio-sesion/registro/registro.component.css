@@ -1,18 +1,8 @@
-.fondo{
-    background-image: url('/Imagenes/b28877eeb2256c4a9be79f20ac04409b.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    width: 100vw; 
-  
-}
-
- .btn-custom-blue {
+.btn-custom-blue {
     background-color: #1825AA;
     color: white;
     border: none;
   }
-   .btn-custom-blue:hover {
+.btn-custom-blue:hover {
     background-color: #12208c; /* un poco más oscuro al pasar el mouse */
   }
