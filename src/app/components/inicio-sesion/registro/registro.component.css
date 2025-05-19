@@ -1,18 +1,26 @@
-.fondo{
-    background-image: url('/Imagenes/b28877eeb2256c4a9be79f20ac04409b.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    width: 100vw; 
-  
-}
-
- .btn-custom-blue {
+.btn-custom-blue {
     background-color: #1825AA;
     color: white;
     border: none;
-  }
-   .btn-custom-blue:hover {
-    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
-  }
+}
+
+.btn-custom-blue:hover {
+    background-color: #12208c;
+    /* un poco más oscuro al pasar el mouse */
+}
+
+label {
+    font-size: 1rem;
+}
+
+input::placeholder {
+    font-size: 1rem;
+}
+
+
+form {
+    border: none;
+    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+}
