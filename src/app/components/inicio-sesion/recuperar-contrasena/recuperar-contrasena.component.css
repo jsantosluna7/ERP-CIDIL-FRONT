@@ -41,3 +41,22 @@ h1{
 p{
     font-size: 1rem;
 }
+
+input{
+    padding-left: 1.9rem;
+}
+
+ .envelope{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+ .envelope fa-icon{
+    position: absolute;
+    left: .5rem;
+    /* color: #1825AA;
+    font-size: 1.2rem;
+    margin-right: 1rem; */
+}
