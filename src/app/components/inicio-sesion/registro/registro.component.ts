@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEnvelope, faLocationDot, faLock, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faEnvelope, faLocationDot, faLock, faPhone, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-registro',
@@ -9,17 +9,23 @@ import { faEnvelope, faLocationDot, faLock, faPhone, faUser } from '@fortawesome
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
-export class RegistroComponent {
+export class RegistroComponent  implements OnInit{
 
   faEnvelope = faEnvelope;
   faPhone = faPhone;
   faLock = faLock;
   faLocationDot = faLocationDot;
   faUser = faUser;
+  faCheck = faCheck;
+    faXmark = faXmark;
 
 
 
   registroForm: FormGroup;
+
+   meterPopup: any = {};
+  passwordValid: any = {};
+
 
   constructor() {
     this.registroForm = new FormGroup({
@@ -56,6 +62,54 @@ export class RegistroComponent {
 
   }
 
+
+  ngOnInit() {
+    this.registroForm.get('contrasena')?.valueChanges.subscribe(value => {
+      this.passwordValidation(value);
+    });
+
+    this.closePopup();
+  }
+
+  login(){
+    console.log(this.registroForm.value);
+  }
+
+  openPopup($event: Event) {
+    const contrasenaElem = document.querySelector('#contrasena');
+    if (contrasenaElem) {
+      const rect = contrasenaElem.getBoundingClientRect();
+      this.meterPopup = {
+        'display': 'block',
+        'position': 'absolute',
+        'left.px': window.scrollY + rect.left,
+        'top.px': window.scrollY + rect.top + 39,
+      };
+    } else {
+      this.meterPopup = {
+        'display': 'none'
+      };
+      console.warn('Elemento con id "contrasena" no encontrado.');
+    }
+  }
+  closePopup() {
+    this.meterPopup = {'display': 'none'};
+  }
+  passwordValidation(PasswordText: any) {
+    const hasUpperCase = /[A-Z]/.test(PasswordText);
+    const hasLowerCase = /[a-z]/.test(PasswordText);
+    const hasNumeric = /[0-9]/.test(PasswordText);
+    const hasSpecialCharacterCheck = /\W|_/g;
+    const hasSpecialCharacter = hasSpecialCharacterCheck.test(PasswordText);
+    const hasNoSpaces = !/\s/.test(PasswordText);
+
+    this.passwordValid.hasMinLength = PasswordText.length >= 6 ? true : false;
+    this.passwordValid.hasUpperCase = hasUpperCase;
+    this.passwordValid.hasLowerCase = hasLowerCase;
+    this.passwordValid.hasNumber = hasNumeric;
+    this.passwordValid.hasSpecialChar = hasSpecialCharacter;
+    this.passwordValid.hasNoSpaces = hasNoSpaces;
+  }
 
 
 
