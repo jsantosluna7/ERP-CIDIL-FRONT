@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCoffee, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 import { RouterLink } from '@angular/router';
 
 @Component({

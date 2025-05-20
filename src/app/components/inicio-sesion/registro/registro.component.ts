@@ -1,13 +1,24 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEnvelope, faLocationDot, faLock, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-registro',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
 export class RegistroComponent {
+
+faEnvelope = faEnvelope;
+faPhone = faPhone;
+faLock = faLock;
+faLocationDot = faLocationDot;
+faUser = faUser;
+
+
+
 registroForm: FormGroup;
 
 constructor(){
