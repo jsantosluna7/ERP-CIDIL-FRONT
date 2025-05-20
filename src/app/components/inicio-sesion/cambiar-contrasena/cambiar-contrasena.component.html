@@ -1,1 +1,133 @@
-<p>cambiar-contrasena works!</p>
+<div class="fondo d-flex justify-content-center align-items-center">
+    <form [formGroup]="recuperarContrasenaForm" class="row container w-25 border border rounded-5 bg-white p-4 form">
+        <div class="text-center mt-1">
+            <h1>Restablecer <strong>contraseña!</strong></h1>
+            <p>Establece una nueva contraseña.</p>
+        </div>
+
+        <div class="col-12 d-flex flex-column">
+            <label for="contrasena" class="form-label">Contraseña</label>
+            <div class="lock">
+                <fa-icon [icon]="faLock"></fa-icon>
+                <input type="password" formControlName="contrasena" class="form-control" id="contrasena"
+                    placeholder="******" 
+                    (mouseenter)="openPopup($event)" 
+                    (keypress)="openPopup($event)"
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
+                    (mouseleave)="closePopup()" />
+            </div>
+
+            <label for="confirmarContrasena" class="form-label confirmar-label">Confirmar Contraseña</label>
+            <div class="lock">
+                <fa-icon [icon]="faLock"></fa-icon>
+                <input type="password" formControlName="confirmarContrasena" class="form-control"
+                    id="confirmarContrasena" placeholder="******" />
+            </div>
+
+            <button [disabled]="recuperarContrasenaForm.invalid" (click)="recuperar()"
+                class="btn btn-custom-blue mb-5 mt-3">
+                Recuperar contraseña
+            </button>
+        </div>
+    </form>
+
+    <!-- POPUP para la confirmacion de contraseña -->
+    <div id="contexmenu" class="contextmenu" (clickOutside)="closePopup()" (mouseleave)="closePopup()"
+        [style]="meterPopup">
+        <div class="dropdown-content">
+            <label class="col fw-bold">Tu Contraseña necesita:</label>
+            <label class="col"
+                [class]="recuperarContrasenaForm.get('contrasena')?.hasError('required') ? 'text-danger' : 'text-success'">
+                @if (recuperarContrasenaForm.get('contrasena')?.hasError('required')) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>Introduzca una contraseña</strong>
+                </span>
+                }@else if (recuperarContrasenaForm.get('contrasena')?.hasError('required') != undefined) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>Introduzca una contraseña</strong>
+                </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasUpperCase ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasUpperCase == false) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>Una letra mayúscula</strong>
+                </span>
+                }@else if (passwordValid.hasUpperCase == true) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>Una letra mayúscula</strong>
+                </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasLowerCase ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasLowerCase == false) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>Una letra minúscula</strong>
+                </span>
+                }@else if (passwordValid.hasLowerCase == true) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>Una letra minúscula</strong>
+                </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasNumber ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasNumber == false) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>Un número</strong>
+                </span>
+                }@else if (passwordValid.hasNumber == true) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>Un número</strong>
+                </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasSpecialChar ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasSpecialChar == false) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>Un caracter especial</strong>
+                </span>
+                }@else if (passwordValid.hasSpecialChar == true) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>Un caracter especial</strong>
+                </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasNoSpaces ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasNoSpaces == false) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>Sin espacios</strong>
+                </span>
+                }@else if (passwordValid.hasNoSpaces == true) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>Sin espacios</strong>
+                </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasMinLength ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasMinLength == false) {
+                <span>
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                    <strong>6 caracteres</strong>
+                </span>
+                }@else if (passwordValid.hasMinLength == true) {
+                <span>
+                    <fa-icon [icon]="faCheck"></fa-icon>
+                    <strong>6 caracteres</strong>
+                </span>
+                }
+            </label>
+        </div>
+    </div>
+</div>

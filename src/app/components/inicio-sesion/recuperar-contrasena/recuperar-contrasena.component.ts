@@ -11,7 +11,7 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 })
 export class RecuperarContrasenaComponent {
 
-   faEnvelope = faEnvelope;
+  faEnvelope = faEnvelope;
   recuperarContrasenaForm: FormGroup;
 
   constructor(){

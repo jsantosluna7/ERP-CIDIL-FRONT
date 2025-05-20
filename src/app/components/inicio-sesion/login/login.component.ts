@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
       this.passwordValidation(value);
     });
 
-    // this.closePopup();
+    this.closePopup();
   }
 
   login(){

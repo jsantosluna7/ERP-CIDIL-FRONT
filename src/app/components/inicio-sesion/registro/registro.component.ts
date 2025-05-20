@@ -11,50 +11,50 @@ import { faEnvelope, faLocationDot, faLock, faPhone, faUser } from '@fortawesome
 })
 export class RegistroComponent {
 
-faEnvelope = faEnvelope;
-faPhone = faPhone;
-faLock = faLock;
-faLocationDot = faLocationDot;
-faUser = faUser;
+  faEnvelope = faEnvelope;
+  faPhone = faPhone;
+  faLock = faLock;
+  faLocationDot = faLocationDot;
+  faUser = faUser;
 
 
 
-registroForm: FormGroup;
+  registroForm: FormGroup;
 
-constructor(){
-  this.registroForm = new FormGroup({
-    email: new FormControl('', [Validators.required,Validators.email]),
-    contrasena: new FormControl('',[Validators.required, Validators.minLength(6)]),
-    confirmarcontrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    nombre: new FormControl('',[Validators.required]),
-    apellido: new FormControl('',[Validators.required]),
-    matricula: new FormControl('',[Validators.required]),
-    telefono: new FormControl('',[Validators.required]),
-    direccion: new FormControl('',[Validators.required])
-    
-  },{
-    validators:this.matchContrasena 
-  });
-}
+  constructor() {
+    this.registroForm = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email]),
+      contrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      confirmarcontrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      nombre: new FormControl('', [Validators.required]),
+      apellido: new FormControl('', [Validators.required]),
+      matricula: new FormControl('', [Validators.required]),
+      telefono: new FormControl('', [Validators.required]),
+      direccion: new FormControl('', [Validators.required])
 
- register(){
-  console.log(this.registroForm.value);
- }
+    }, {
+      validators: this.matchContrasena
+    });
+  }
 
-//Validar contrasena
-matchContrasena : ValidatorFn = (control: AbstractControl):ValidationErrors|null =>{
+  register() {
+    console.log(this.registroForm.value);
+  }
 
-let contrasena = control.get('contrasena');
-let confirmarcontrasena = control.get('confirmarcontrasena');
-if(contrasena && confirmarcontrasena && contrasena?.value != confirmarcontrasena?.value){
-return{
-  contrasenaError : true
-}
+  //Validar contrasena
+  matchContrasena: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 
-}
-return null;
+    let contrasena = control.get('contrasena');
+    let confirmarcontrasena = control.get('confirmarcontrasena');
+    if (contrasena && confirmarcontrasena && contrasena?.value != confirmarcontrasena?.value) {
+      return {
+        contrasenaError: true
+      }
 
-}
+    }
+    return null;
+
+  }
 
 
 

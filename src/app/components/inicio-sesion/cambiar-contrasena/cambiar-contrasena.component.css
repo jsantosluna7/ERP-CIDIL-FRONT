@@ -1,0 +1,107 @@
+.btn-custom-blue {
+    background-color: #1825AA;
+    color: white;
+    border: none;
+  }
+.btn-custom-blue:hover {
+    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
+  }
+
+.btn-custom-blue:hover {
+    background-color: #12208c;
+    /* un poco más oscuro al pasar el mouse */
+}
+
+label {
+    font-size: .9rem;
+}
+
+input::placeholder {
+    font-size: .8rem;
+}
+
+input{
+    font-size: 1rem;
+}
+
+
+.form {
+    border: none;
+    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    margin-top: 8rem;
+    height: 24rem;
+    width: 35% !important;
+}
+
+h1{
+    font-size: 1.5rem;
+}
+
+p{
+    font-size: 1rem;
+}
+
+input{
+    padding-left: 1.9rem;
+}
+
+ .lock{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+ .lock fa-icon{
+    position: absolute;
+    left: .5rem;
+    /* color: #1825AA;
+    font-size: 1.2rem;
+    margin-right: 1rem; */
+}
+
+.confirmar-label{
+    margin-top: 1.5rem;
+}
+
+.contextmenu{
+    position: absolute;
+    right: 50rem;
+    top: 19rem;
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+}
+
+.dropdown-content{
+    position: absolute;
+    background-color: #ffff;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 9px;
+    padding: 8px;
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+}
+
+label{
+    font-size: 14px;
+}
+
+.text-danger{
+    color: #CC3333;
+}
+
+.text-success{
+    color: green;
+}
+
+.dropdown-content{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.col span fa-icon{
+    margin-right: 7px;
+}
