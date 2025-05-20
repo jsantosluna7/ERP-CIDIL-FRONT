@@ -1,0 +1,43 @@
+.btn-custom-blue {
+    background-color: #1825AA;
+    color: white;
+    border: none;
+  }
+.btn-custom-blue:hover {
+    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
+  }
+
+.btn-custom-blue:hover {
+    background-color: #12208c;
+    /* un poco más oscuro al pasar el mouse */
+}
+
+label {
+    font-size: .9rem;
+}
+
+input::placeholder {
+    font-size: .8rem;
+}
+
+input{
+    font-size: 1rem;
+}
+
+
+.form {
+    border: none;
+    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    margin-top: 10rem;
+    height: 20rem;
+}
+
+h1{
+    font-size: 1.5rem;
+}
+
+p{
+    font-size: 1rem;
+}
