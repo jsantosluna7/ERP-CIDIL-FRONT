@@ -15,16 +15,20 @@
                                 aria-describedby="emailHelp" placeholder="ejemplo@ipl.edu.do" />
                         </div>
                     </div>
+                    <!-- Input para la contraseña -->
                     <div class="mb-3">
                         <label for="contrasena" class="form-label">Contraseña</label>
                         <div class="lock">
                             <fa-icon [icon]="faLock"></fa-icon>
                             <input type="password" formControlName="contrasena" class="form-control" id="contrasena"
+                                (mouseenter)="openPopup($event)"
+                                (keypress)="openPopup($event)"
+                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
+                                (mouseleave)="closePopup()"
                                 placeholder="******" />
                         </div>
                     </div>
-
-                    <button class="btn" (click)="login()">Iniciar Sesión</button>
+                    <button class="btn" (click)="login()" [disabled]="loginForm.invalid">Iniciar Sesión</button>
                 </form>
             </div>
             <div class="login-forgot">
@@ -35,5 +39,103 @@
     <div class="second-box">
         <img src="/assets/logo-ieesl.png" alt="">
         <button class="button" routerLink="/home/registrar">Registrate</button>
+    </div>
+
+    <!-- POPUP para la confirmacion de contraseña -->
+    <div id="contexmenu" class="contextmenu" (clickOutside)="closePopup()" (mouseleave)="closePopup()" [style]="meterPopup">
+        <div class="dropdown-content">
+            <label class="col fw-bold">Tu Contraseña necesita:</label>
+            <label class="col" [class]="loginForm.get('contrasena')?.hasError('required') ? 'text-danger' : 'text-success'">
+                @if (loginForm.get('contrasena')?.hasError('required')) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>Introduzca una contraseña</strong>
+                    </span>
+                }@else if (loginForm.get('contrasena')?.hasError('required') != undefined) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>Introduzca una contraseña</strong>
+                    </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasUpperCase ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasUpperCase == false) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>Una letra mayúscula</strong>
+                    </span>
+                }@else if (passwordValid.hasUpperCase == true) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>Una letra mayúscula</strong>
+                    </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasLowerCase ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasLowerCase == false) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>Una letra minúscula</strong>
+                    </span>
+                }@else if (passwordValid.hasLowerCase == true) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>Una letra minúscula</strong>
+                    </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasNumber ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasNumber == false) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>Un número</strong>
+                    </span>
+                }@else if (passwordValid.hasNumber == true) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>Un número</strong>
+                    </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasSpecialChar ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasSpecialChar == false) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>Un caracter especial</strong>
+                    </span>
+                }@else if (passwordValid.hasSpecialChar == true) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>Un caracter especial</strong>
+                    </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasNoSpaces ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasNoSpaces == false) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>Sin espacios</strong>
+                    </span>
+                }@else if (passwordValid.hasNoSpaces == true) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>Sin espacios</strong>
+                    </span>
+                }
+            </label>
+            <label class="col" [class]="!passwordValid.hasMinLength ? 'text-danger' : 'text-success'">
+                @if (passwordValid.hasMinLength == false) {
+                    <span>
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                        <strong>6 caracteres</strong>
+                    </span>
+                }@else if (passwordValid.hasMinLength == true) {
+                    <span>
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                        <strong>6 caracteres</strong>
+                    </span>
+                }
+            </label>
+        </div>
     </div>
 </div>
