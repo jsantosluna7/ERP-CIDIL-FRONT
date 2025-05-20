@@ -57,11 +57,11 @@
             <label for="inputPassword4" class="form-label">Confirme su Contraseña</label>
            <div class="lock">
             <fa-icon [icon]="faLock"></fa-icon>
-             <input type="password" class="form-control" id="inputPassword4" placeholder="******" />
+             <input type="password" formControlName="confirmarcontrasena" class="form-control" id="inputPassword4" placeholder="******" />
            </div>
         </div>
         <div class="p-0 m-0 d-flex justify-content-center align-items-center">
-            <button (click)="register()" class="btn btn-custom-blue mb-3 mt-4">
+            <button [disabled]="registroForm.invalid" (click)="register()" class="btn btn-custom-blue mb-3 mt-4">
                 Registrate
             </button>
         </div>
