@@ -61,3 +61,40 @@ input{
     margin-right: 1rem; */
 }
 
+.contextmenu{
+    position: absolute;
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+}
+
+.dropdown-content{
+    position: absolute;
+    background-color: #ffff;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 9px;
+    padding: 8px;
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+}
+
+label{
+    font-size: 14px;
+}
+
+.text-danger{
+    color: #CC3333;
+}
+
+.text-success{
+    color: green;
+}
+
+.dropdown-content{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.col span fa-icon{
+    margin-right: 7px;
+}
