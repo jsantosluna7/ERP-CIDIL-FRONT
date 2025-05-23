@@ -16,7 +16,7 @@ export const routes: Routes = [
         path: 'home',
         loadComponent: () => import('./components/home/layout/layout.component').then(m => m.LayoutComponent),
         children: [
-            {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+            // {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
             {path: 'dashboard', loadComponent: () => import('./components/home/dashboard/dashboard.component').then(m => m.DashboardComponent)},
             {path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent)}
         ]
