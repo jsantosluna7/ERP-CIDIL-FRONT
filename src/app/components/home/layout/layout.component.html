@@ -1,2 +1,7 @@
-<app-navbar></app-navbar>
-<router-outlet></router-outlet>
+<div class="body" [class.sidebar-closed]="isSidebarClosed">
+    <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
+    <section class="home">
+        <router-outlet></router-outlet>
+        <!-- <div class="text">Dashboar</div> -->
+    </section>
+</div>

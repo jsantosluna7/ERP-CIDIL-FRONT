@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowRight, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,11 +26,19 @@ export class NavbarComponent {
   //  toggle = this.body?.querySelector(".toggle");
   //  searchBtn = this.body?.querySelector(".search-box");
 
-  toogle(event: any){
-    const elemento:any = document.querySelector(".sidebar");
-    // console.log(elemento)
-    elemento.classList.toggle("close");
+  // toogle(event: any){
+  //   const elemento:any = document.querySelector(".sidebar");
+  //   // console.log(elemento)
+  //   elemento.classList.toggle("close");
 
+  // }
+
+  @Output() toggleSidebar = new EventEmitter<void>();
+
+  onToggleClick(){
+    this.toggleSidebar.emit();
+    const elemento:any = document.querySelector(".sidebar");
+    elemento.classList.toggle("close");
   }
 
 

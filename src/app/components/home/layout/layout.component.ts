@@ -10,5 +10,9 @@ import { NavbarComponent } from "../../elements/navbar/navbar.component";
   styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
+  isSidebarClosed = true;
 
+  toggleSidebar() {
+    this.isSidebarClosed = !this.isSidebarClosed;
+  }
 }

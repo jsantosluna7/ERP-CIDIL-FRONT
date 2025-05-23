@@ -1,0 +1,12 @@
+.body{
+    height: 100vh;
+    background: rgba(205, 218, 221, 0.375);
+}
+
+.home{
+   position: relative;
+   left: 290px;
+   height: 100vh;
+   width: calc(100% - 290px); 
+   transition: all 0.4s ease;
+}

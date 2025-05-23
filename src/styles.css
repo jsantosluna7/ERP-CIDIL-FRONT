@@ -2,3 +2,14 @@
 *{
     font-family: 'helvetica neue', sans-serif;
 }
+
+/* .sidebar.close ~ .home{
+    left: 110px !important;
+    width: calc(100% - 110px) !important;
+} */
+
+.body.sidebar-closed .home {
+  left: 110px !important;
+  width: calc(100% - 110px) !important;
+  transition: all 0.3s ease;
+}
