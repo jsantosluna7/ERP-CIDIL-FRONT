@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRight, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faHeart, faHouse, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navbar',
@@ -10,15 +10,16 @@ import { faArrowRight, faArrowRightFromBracket, faBell, faCartShopping, faChartS
 })
 export class NavbarComponent {
 
-   arrowright = faArrowRight;
+   arrowright = faGreaterThan;
    house = faHouse;
    solid =faMagnifyingGlass;
-   heart =faHeart;
+   heart =faDesktop;
    regular =faChartSimple;
    bell = faBell;
-   credi = faCreditCard;
-   car = faCartShopping;
+   credi = faUser;
+   car = faShop;
    left = faArrowRightFromBracket;
+   iot =faMicrochip;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");
