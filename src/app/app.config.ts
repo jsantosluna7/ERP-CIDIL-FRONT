@@ -6,7 +6,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { provideToastr } from 'ngx-toastr';
 import { MqttModule } from 'ngx-mqtt';
-import { MQTT_SERVICE_OPTIONS } from './opciones/mqtt-options';
+import { MQTT_SERVICE_OPTIONS } from './tools/mqtt-options';
 
 export const appConfig: ApplicationConfig = {
   providers: [

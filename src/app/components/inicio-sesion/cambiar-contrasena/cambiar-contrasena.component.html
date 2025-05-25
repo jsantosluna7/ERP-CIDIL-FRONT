@@ -1,8 +1,14 @@
 <div class="fondo d-flex justify-content-center align-items-center">
     <form [formGroup]="recuperarContrasenaForm" class="row container w-25 border border rounded-5 bg-white p-4 form">
-        <div class="text-center mt-1">
-            <h1>Restablecer <strong>contraseña!</strong></h1>
-            <p>Establece una nueva contraseña.</p>
+        <div class="top-form">
+
+            <div class="back-btn">
+                <app-back-button [link]="'/login'"></app-back-button>
+            </div>
+            <div class="text-center mt-1">
+                <h1>Restablecer <strong>contraseña!</strong></h1>
+                <p>Establece una nueva contraseña.</p>
+            </div>
         </div>
 
         <div class="col-12 d-flex flex-column">
@@ -10,9 +16,7 @@
             <div class="lock">
                 <fa-icon [icon]="faLock"></fa-icon>
                 <input type="password" formControlName="contrasena" class="form-control" id="contrasena"
-                    placeholder="******" 
-                    (mouseenter)="openPopup($event)" 
-                    (keypress)="openPopup($event)"
+                    placeholder="******" (mouseenter)="openPopup($event)" (keypress)="openPopup($event)"
                     pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
                     (mouseleave)="closePopup()" />
             </div>

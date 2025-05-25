@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faEnvelope, faLocationDot, faLock, faPhone, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCheck, faEnvelope, faLocationDot, faLock, faPhone, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { BackButtonComponent } from "../../elements/back-button/back-button.component";
 
 @Component({
   selector: 'app-registro',
-  imports: [ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule, BackButtonComponent],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
@@ -17,8 +18,7 @@ export class RegistroComponent  implements OnInit{
   faLocationDot = faLocationDot;
   faUser = faUser;
   faCheck = faCheck;
-    faXmark = faXmark;
-
+  faXmark = faXmark;
 
 
   registroForm: FormGroup;

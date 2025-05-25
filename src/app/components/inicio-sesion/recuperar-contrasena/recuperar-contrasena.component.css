@@ -30,8 +30,8 @@ input{
     box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
     -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    margin-top: 10rem;
-    height: 20rem;
+    margin-top: 7.5rem;
+    height: 25rem;
 }
 
 h1{
@@ -59,4 +59,8 @@ input{
     /* color: #1825AA;
     font-size: 1.2rem;
     margin-right: 1rem; */
+}
+
+.back-btn{
+    margin-bottom: 3rem;
 }

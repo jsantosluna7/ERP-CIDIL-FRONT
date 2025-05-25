@@ -3,10 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { BackButtonComponent } from "../../elements/back-button/back-button.component";
 
 @Component({
   selector: 'app-cambiar-contrasena',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, BackButtonComponent],
   templateUrl: './cambiar-contrasena.component.html',
   styleUrl: './cambiar-contrasena.component.css'
 })

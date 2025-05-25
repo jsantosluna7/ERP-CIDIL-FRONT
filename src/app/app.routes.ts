@@ -21,4 +21,8 @@ export const routes: Routes = [
             {path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent)}
         ]
     },
+    {
+        path: '**',
+        redirectTo: 'login'
+    }
 ];

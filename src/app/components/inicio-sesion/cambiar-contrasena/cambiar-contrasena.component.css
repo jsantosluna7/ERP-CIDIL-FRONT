@@ -30,8 +30,8 @@ input{
     box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
     -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    margin-top: 8rem;
-    height: 24rem;
+    margin-top: 6rem;
+    height: 27rem;
     width: 35% !important;
 }
 
@@ -104,4 +104,8 @@ label{
 
 .col span fa-icon{
     margin-right: 7px;
+}
+
+.back-btn{
+    margin-bottom: 3rem;
 }

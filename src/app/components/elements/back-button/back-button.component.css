@@ -1,0 +1,13 @@
+.btn-custom-blue {
+    background-color: #1825AA;
+    color: white;
+    border: none;
+  }
+.btn-custom-blue:hover {
+    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
+  }
+
+.btn-custom-blue:hover {
+    background-color: #12208c;
+    /* un poco más oscuro al pasar el mouse */
+}
