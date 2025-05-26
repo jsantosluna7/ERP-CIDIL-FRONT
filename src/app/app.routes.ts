@@ -10,21 +10,25 @@ export const routes: Routes = [
             {path: 'registrar', loadComponent: () => import('./components/inicio-sesion/registro/registro.component').then(m => m.RegistroComponent)},
             {path: 'recuperar-contrasena', loadComponent: () => import('./components/inicio-sesion/recuperar-contrasena/recuperar-contrasena.component').then(m => m.RecuperarContrasenaComponent)},
             {path: 'cambiar-contrasena/:token', loadComponent: () => import('./components/inicio-sesion/cambiar-contrasena/cambiar-contrasena.component').then(m => m.CambiarContrasenaComponent)},
+             
         ] 
     },
     {
         path: 'home',
         loadComponent: () => import('./components/home/layout/layout.component').then(m => m.LayoutComponent),
         children: [
-            {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+            {path: '', redirectTo: 'dashboard', pathMatch: 'full'},           
             {path: 'dashboard', loadComponent: () => import('./components/home/dashboard/dashboard.component').then(m => m.DashboardComponent)},
+            {path: 'reserva-laboratorio', loadComponent:() => import('./components/home/reserva-laboratorio/reserva-laboratorio.component').then(m => m.ReservaLaboratorioComponent)},
+            {path: 'reserva-equipo', loadComponent:() => import('./components/home/reserva-equipo/reserva-equipo.component').then(m => m.ReservaEquipoComponent)},
             {
                 path: 'usuarios', 
                 loadComponent: () => import('./components/home/usuario/layout-usuarios/layout-usuarios.component').then(m => m.LayoutUsuariosComponent),
                 children: [
                     {path: '', redirectTo: 'listado-usuarios', pathMatch: 'full'},
                     {path: 'listado-usuarios',loadComponent: () => import('./components/home/usuario/usuarios/usuarios.component').then(m => m.UsuariosComponent)},
-                    {path: 'modificar-usuario', loadComponent: () => import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(m => m.ModificarUsuarioComponent)}
+                    {path: 'modificar-usuario', loadComponent: () => import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(m => m.ModificarUsuarioComponent)},
+                   
                 ]
             },
             {path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent)}

@@ -1,0 +1,37 @@
+.location,.phone,.user,.envelope{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+ .location fa-icon,.phone fa-icon,.user fa-icon,.envelope fa-icon{
+    position: absolute;
+    left: 1.2rem;
+  
+}
+
+.form {
+    
+    border: none;
+    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.207);
+    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    margin-top: 1rem;
+    height: 35rem;
+}
+
+label {
+    font-size: .9rem;
+}
+
+input::placeholder {
+    font-size: .8rem;
+}
+
+input{
+    font-size: 1rem;
+}
+
+input{
+    padding-left: 1.9rem;
+}

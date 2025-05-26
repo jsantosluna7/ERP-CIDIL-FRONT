@@ -1,0 +1,57 @@
+<div class="fondo d-flex justify-content-center align-items-center ">
+    <form action="" class="row container w-75 h-auto border border rounded-5  p-3 form mt-5 ite">
+        <h2>Reserva de Equipos</h2>
+
+        <hr>
+        
+       
+        <div class="col-md-6 mt-1 row">
+            <label for="inputEmail4" class="form-label">Equipos</label>
+            <div class="location">
+                <fa-icon [icon]="fahouse"></fa-icon>
+                <input type="text" formControlName="direccion" class="form-control" id="inputEmail4" placeholder="Equipos" />
+            </div>
+        </div>
+         <div class="col-md-6 mt-1 row">
+            <label for="inputEmail4" class="form-label">Hora de Inicio</label>
+            <div class="location">
+                <fa-icon [icon]="faclock"></fa-icon>
+                <input type="datetime-local" formControlName="direccion" class="form-control" id="inputEmail4" placeholder="Laboratorio" />
+            </div>
+        </div>
+         <div class="col-md-6 mt-1 row">
+            <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
+            <div class="location">
+                <fa-icon [icon]="faclock"></fa-icon>
+                <input type="datetime-local" formControlName="direccion" class="form-control" id="inputEmail4" placeholder="Laboratorio" />
+            </div>
+        </div>
+        <div class="col-md-6 mt-1 row">
+        <label for="">Estado</label>
+         <select class="form-select " aria-label="Default select example">
+            <option selected>Estado</option>
+            <option value="1">Espera</option>
+            <option value="2">Aprobado</option>
+            <option value="3">Desaprobado</option>
+        </select>
+       </div>
+        
+
+        <!--Comentarios -->
+        <div class="col-md-6 mt-1 row">
+           <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="col-md-6 mt-1 row">
+           <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Comentario de aprobacion</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+
