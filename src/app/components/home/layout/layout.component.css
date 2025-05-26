@@ -9,4 +9,5 @@
    height: 100vh;
    width: calc(100% - 290px); 
    transition: all 0.4s ease;
+   padding: 2rem;
 }
