@@ -18,6 +18,15 @@ export const routes: Routes = [
         children: [
             {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
             {path: 'dashboard', loadComponent: () => import('./components/home/dashboard/dashboard.component').then(m => m.DashboardComponent)},
+            {
+                path: 'usuarios', 
+                loadComponent: () => import('./components/home/usuario/layout-usuarios/layout-usuarios.component').then(m => m.LayoutUsuariosComponent),
+                children: [
+                    {path: '', redirectTo: 'listado-usuarios', pathMatch: 'full'},
+                    {path: 'listado-usuarios',loadComponent: () => import('./components/home/usuario/usuarios/usuarios.component').then(m => m.UsuariosComponent)},
+                    {path: 'modificar-usuario', loadComponent: () => import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(m => m.ModificarUsuarioComponent)}
+                ]
+            },
             {path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent)}
         ]
     },
