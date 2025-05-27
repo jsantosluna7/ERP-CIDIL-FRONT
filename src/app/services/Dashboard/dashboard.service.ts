@@ -12,8 +12,8 @@ export class DashboardService {
       id: 1,
       label: 'Mqtt Widget',
       content: MqttComponent,
-      rows: 2,
-      columns: 2
+      rows: 1,
+      columns: 1
     },
     {
       id: 2,
@@ -33,12 +33,12 @@ export class DashboardService {
 
   widgetsAnadidos = signal<Widget[]>([]);
 
-  widgetsAAnadir= computed(() => {
+  widgetsAAnadir = computed(() => {
     const anadidosIds = this.widgetsAnadidos().map(widget => widget.id);
     return this.widgets().filter(widget => !anadidosIds.includes(widget.id));
   })
 
-  anadirWidget(w: Widget){
+  anadirWidget(w: Widget) {
     this.widgetsAnadidos.set([...this.widgetsAnadidos(), { ...w }]);
   }
 
@@ -48,7 +48,33 @@ export class DashboardService {
       const nuevosWidgets = [...this.widgetsAnadidos()];
       nuevosWidgets[index] = { ...nuevosWidgets[index], ...widget };
       this.widgetsAnadidos.set(nuevosWidgets);
-    } 
+    }
+  }
+
+  moverWidgetALaDerecha(id: number) {
+    const index = this.widgetsAnadidos().findIndex(w => w.id === id);
+    if (index === this.widgetsAnadidos().length - 1) {
+      return;
+    }
+
+    const nuevosWidgets = [...this.widgetsAnadidos()];
+    [nuevosWidgets[index], nuevosWidgets[index + 1]] = [{ ...nuevosWidgets[index + 1] }, { ...nuevosWidgets[index] }];
+    this.widgetsAnadidos.set(nuevosWidgets);
+  }
+
+  moverWidgetALaIzquierda(id: number) {
+    const index = this.widgetsAnadidos().findIndex(w => w.id === id);
+    if (index === 0) {
+      return;
+    }
+
+    const nuevosWidgets = [...this.widgetsAnadidos()];
+    [nuevosWidgets[index], nuevosWidgets[index - 1]] = [{ ...nuevosWidgets[index - 1] }, { ...nuevosWidgets[index] }];
+    this.widgetsAnadidos.set(nuevosWidgets);
+  }
+
+  eliminarWidget(id: number) {
+    this.widgetsAnadidos.set(this.widgetsAnadidos().filter(widget => widget.id !== id));
   }
 
   constructor() { }
