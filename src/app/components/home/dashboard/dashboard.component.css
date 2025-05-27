@@ -30,3 +30,8 @@
     background-color: #12208c;
     /* un poco más oscuro al pasar el mouse */
 }
+
+/* ::view-transition-old(widget),
+::view-transition-new(widget) {
+  height: 100%;
+} */

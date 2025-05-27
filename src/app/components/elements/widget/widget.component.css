@@ -12,6 +12,8 @@
     box-sizing: border-box;
     border-radius: inherit;
     overflow: hidden;
+    background-color: white;
+    cursor: move;
 }
 
 .custom-elevation {

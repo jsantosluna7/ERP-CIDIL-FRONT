@@ -1,4 +1,4 @@
-<button
+<button [style.view-transition-name]="'widget-close-' + data().id"
   mat-icon-button
   class="close-button"
   (click)="mostrarOpciones.set(false)"
@@ -6,7 +6,7 @@
   <mat-icon>close</mat-icon>
 </button>
 
-<div>
+<div [style.view-transition-name]="'widget-width-' + data().id">
   Anchor:
   <mat-button-toggle-group
     hideSingleSelectionIndicator="true"
@@ -19,7 +19,8 @@
     <mat-button-toggle [value]="4">4</mat-button-toggle>
   </mat-button-toggle-group>
 </div>
-<div>
+
+<div [style.view-transition-name]="'widget-height-' + data().id">
   Altura:
   <mat-button-toggle-group
     hideSingleSelectionIndicator="true"
@@ -49,7 +50,7 @@
   <mat-icon>chevron_left</mat-icon>
 </button>
 
-<button
+<button [style.view-transition-name]="'widget-delete-' + data().id"
   mat-icon-button
   class="remove-widget-button"
   (click)="aplicacion.eliminarWidget(data().id)"

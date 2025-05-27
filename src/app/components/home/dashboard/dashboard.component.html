@@ -1,24 +1,37 @@
-<div class="header">
+<div cdkDropListGroup>
+  <div class="header">
     <h2>Dashboard</h2>
-    <button class="btn btn-custom-blue" [mat-menu-trigger-for]="widgetMenu">
-        <mat-icon>add_circle</mat-icon>
-        Añadir Widget
+    <button
+      class="btn btn-custom-blue"
+      (click)="abrirWidget.set(!abrirWidget())"
+    >
+      @if (abrirWidget()) {
+      <mat-icon>close</mat-icon>
+      }@else {
+      <mat-icon>add_circle</mat-icon>
+      } Widgets
     </button>
-    <mat-menu #widgetMenu="matMenu">
-        @for (widget of aplicacion.widgetsAAnadir(); track widget.id) {
-            <button mat-menu-item (click)="aplicacion.anadirWidget(widget)">
-                {{widget.label}}
-            </button>
-        }@empty {
-            <button mat-menu-item disabled>
-                No hay widgets disponibles
-            </button>
-        }
-    </mat-menu>
-</div>
+    @if (abrirWidget()) {
+    <app-widget-panel
+      cdkDropList
+      (cdkDropListDropped)="ponerDeVueltaWidget($event)"
+      cdkDrag
+    ></app-widget-panel>
 
-<div class="dashboard-widgets">
-    @for (w of aplicacion.widgetsAnadidos(); track w.id) {
-    <app-widget [data]="w"></app-widget>
     }
+  </div>
+
+  <div class="dashboard-widgets" #dashboard>
+    @for (w of aplicacion.widgetsAnadidos(); track w.id) {
+    <app-widget
+      cdkDropList
+      [data]="w"
+      (cdkDropListDropped)="drop($event)"
+      [cdkDropListData]="w.id"
+      [style.view-transition-name]="'widget-' + w.id"
+      class="[view-transition-name:widget]"
+    ></app-widget>
+    }
+    <div cdkDropList (cdkDropListDropped)="drop($event)"></div>
+  </div>
 </div>
