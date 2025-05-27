@@ -20,7 +20,11 @@ export const routes: Routes = [
             {path: '', redirectTo: 'dashboard', pathMatch: 'full'},           
             {path: 'dashboard', loadComponent: () => import('./components/home/dashboard/dashboard.component').then(m => m.DashboardComponent)},
             {path: 'reserva-laboratorio', loadComponent:() => import('./components/home/reserva-laboratorio/reserva-laboratorio.component').then(m => m.ReservaLaboratorioComponent)},
+            {path:'inventario', loadComponent:() => import('./components/home/inventario/inventario.component').then(m => m.InventarioComponent)},
+            {path: 'carrito', loadComponent:() => import('./components/home/carrito/carrito.component').then(m => m.CarritoComponent),children:[{path: '', redirectTo: 'carrito', pathMatch: 'full'}]},
             {path: 'reserva-equipo', loadComponent:() => import('./components/home/reserva-equipo/reserva-equipo.component').then(m => m.ReservaEquipoComponent)},
+            
+
             {
                 path: 'usuarios', 
                 loadComponent: () => import('./components/home/usuario/layout-usuarios/layout-usuarios.component').then(m => m.LayoutUsuariosComponent),

@@ -1,0 +1,22 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let carta of cartas">
+      <div class="card h-100 shadow-sm">
+        <img [src]="carta.imagenUrl" class="card-img-top" alt="{{ carta.nombre }}" style="height: 200px; object-fit: cover;">
+        <div class="card-body">
+          <h5 class="card-title">{{ carta.nombre }}</h5>
+          <p class="card-text">{{ carta.descripcion }}</p>
+          <p><strong>Cantidad:</strong> {{ carta.cantidad }}</p>
+          <span class="badge" [ngClass]="carta.estado ? 'bg-success' : 'bg-danger'">
+            {{ carta.estado ? 'Disponible' : 'No disponible' }}
+          </span>
+          <div class="mb-2 mt-2">
+            <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)" >
+              Añadir al carrito
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

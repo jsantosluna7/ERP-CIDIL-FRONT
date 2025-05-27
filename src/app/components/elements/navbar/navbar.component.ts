@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRight, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight,faClock, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navbar',
@@ -22,6 +22,7 @@ export class NavbarComponent {
    car = faShop;
    left = faArrowRightFromBracket;
    iot =faMicrochip;
+   faclok = faClock;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");
