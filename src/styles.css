@@ -16,3 +16,17 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.cdk-drop-list-dragging{
+  opacity: 0.5;
+  border-left: 5px solid black;
+  padding-left: 8px;
+}
+
+::view-transition-old(.widget) {
+  height: 100%;
+}
+
+::view-transition-new(.widget) {
+  height: 100%;
+}

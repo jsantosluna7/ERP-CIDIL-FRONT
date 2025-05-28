@@ -1,0 +1,37 @@
+<div cdkDropListGroup>
+  <div class="header">
+    <h2>Dashboard</h2>
+    <button
+      class="btn btn-custom-blue"
+      (click)="abrirWidget.set(!abrirWidget())"
+    >
+      @if (abrirWidget()) {
+      <mat-icon>close</mat-icon>
+      }@else {
+      <mat-icon>add_circle</mat-icon>
+      } Widgets
+    </button>
+    @if (abrirWidget()) {
+    <app-widget-panel
+      cdkDropList
+      (cdkDropListDropped)="ponerDeVueltaWidget($event)"
+      cdkDrag
+    ></app-widget-panel>
+
+    }
+  </div>
+
+  <div class="dashboard-widgets" #dashboard>
+    @for (w of aplicacion.widgetsAnadidos(); track w.id) {
+    <app-widget
+      cdkDropList
+      [data]="w"
+      (cdkDropListDropped)="drop($event)"
+      [cdkDropListData]="w.id"
+      [style.view-transition-name]="'widget-' + w.id"
+      class="[view-transition-name:widget]"
+    ></app-widget>
+    }
+    <div cdkDropList (cdkDropListDropped)="drop($event)"></div>
+  </div>
+</div>

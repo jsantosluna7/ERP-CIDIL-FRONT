@@ -15,7 +15,7 @@ export class MqttComponent implements OnInit{
   constructor(private _mqttService: ServicioMqttService){}
 
   ngOnInit(): void {
-    this._mqttService.observarTopico('CIDIL/1B').subscribe((message: IMqttMessage) =>{
+    this._mqttService.observarTopico('Laboratorios/1B').subscribe((message: IMqttMessage) =>{
       console.log(message.payload.toString());
       this.datos = message.payload.toString();
     })
