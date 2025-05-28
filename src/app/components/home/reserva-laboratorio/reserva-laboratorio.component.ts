@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEnvelope, faLocationDot, faPhone, faUser,faHome,faClock } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLocationDot, faPhone, faUser,faHome,faClock, faHourglass } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-reserva-laboratorio',
@@ -16,5 +16,6 @@ faUser = faUser;
  faEnvelope = faEnvelope;
  fahouse= faHome;
  faclock = faClock;
+ estado =faHourglass;
 
 }

@@ -23,6 +23,7 @@ export class NavbarComponent {
    left = faArrowRightFromBracket;
    iot =faMicrochip;
    faclok = faClock;
+   carro =faCartShopping;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");

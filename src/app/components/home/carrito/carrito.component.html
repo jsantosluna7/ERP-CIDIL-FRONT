@@ -1,35 +1,43 @@
-<div class="container mt-4">
-  <h3>Carrito de Compras</h3>
-
-  <div *ngIf="carrito.length > 0; else vacio">
-    <div *ngFor="let carta of carrito" class="card mb-3" style="max-width: 540px">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <img [src]="carta.imagenUrl" class="img-fluid rounded-start" alt="{{ carta.nombre }}" />
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">{{ carta.nombre }}</h5>
-            <p class="card-text">{{ carta.descripcion }}</p>
-            <button class="btn btn-danger btn-sm" (click)="eliminar(carta.id)">
-              Eliminar
-            </button>
+<div class="fondo d-flex justify-content-center  p-4  ">
+  <div class="row container w-75  h-auto border border rounded-5  p-3 form mt-5  ">
+    <h3>Carrito de Compras</h3>
+    <hr>
+    <div>
+      <div class="row ">
+        @if (carrito.length > 0) {
+        @for (carta of carrito; track carta.id) {
+        <div class="card mb-3 me-3  col-5" style="max-width: 540px">
+          <div class="row  g-0">
+            <div class="col-md-4 mb-4 ">
+              <img [src]="carta.imagenUrl" class="img-fluid  rounded-start" alt="{{ carta.nombre }}" />
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">{{ carta.nombre }}</h5>
+                <p class="card-text">{{ carta.descripcion }}</p>
+                <button class="btn btn-danger btn-sm" (click)="eliminar(carta.id)">
+                  Eliminar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+        }
+        <div class="text-center ">
+          <button class="btn btn-success mt-3 me-4 " (click)="ruta()">
+            Hacer Solicitud de Préstamo
+          </button>
+
+          <button class="btn btn-warning mt-3 " (click)="vaciar()">
+            Vaciar Carrito
+          </button>
+        </div>
+
+        } @else {
+        <p>No hay productos en el carrito.</p>
+        }
       </div>
+
     </div>
-    @if (carrito.length) {
-
-    <button class="btn btn-success mt-3" (click)="ruta()">
-      Hacer Solicitud de Préstamo
-    </button>
-    }
-    <button class="btn btn-warning mt-3" (click)="vaciar()">
-      Vaciar Carrito
-    </button>
   </div>
-
-  <ng-template #vacio>
-    <p>No hay productos en el carrito.</p>
-  </ng-template>
 </div>
