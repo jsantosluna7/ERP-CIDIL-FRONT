@@ -1,0 +1,32 @@
+
+.location,.phone,.user,.envelope{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+ .location fa-icon,.phone fa-icon,.user fa-icon,.envelope fa-icon{
+    position: absolute;
+    left: 1.2rem;
+  
+}
+
+
+label {
+    font-size: .9rem;
+}
+
+input::placeholder {
+    font-size: .8rem;
+}
+
+input{
+    font-size: 1rem;
+}
+
+input{
+    padding-left: 1.9rem;
+}
+
+
+

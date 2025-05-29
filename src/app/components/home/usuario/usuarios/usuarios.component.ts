@@ -10,6 +10,7 @@ import { faEnvelope, faLocationDot, faPhone, faUser } from '@fortawesome/free-so
 })
 export class UsuariosComponent {
 
+
  faUser = faUser;
  faLocationDot = faLocationDot;
  faPhone = faPhone;

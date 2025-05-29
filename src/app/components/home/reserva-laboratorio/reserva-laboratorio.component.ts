@@ -10,6 +10,7 @@ import { faEnvelope, faLocationDot, faPhone, faUser,faHome,faClock, faHourglass 
 })
 export class ReservaLaboratorioComponent {
 
+
 faUser = faUser;
  faLocationDot = faLocationDot;
  faPhone = faPhone;
