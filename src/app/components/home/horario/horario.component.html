@@ -1,3 +1,89 @@
-<button mat-raised-button color="primary" (click)="openDialog()">
-  Abrir Diálogo
-</button>
+<div class="body">
+  <div class="nav">
+    <h1>Horarios</h1>
+  <button mat-raised-button color="primary" (click)="openDialog()">
+    Abrir Diálogo
+  </button>
+  </div>
+  <div class="tables">
+    <div class="table-container">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Filtrar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" />
+        <mat-hint class="hint"></mat-hint>
+      </mat-form-field>
+
+      <!-- <div class="form-floating">
+        <input
+          type="password"
+          class="form-control"
+          id="floatingPassword"
+          placeholder="Password"
+        />
+        <label for="floatingPassword">Password</label>
+      </div> -->
+
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        class="mat-elevation-z8"
+      >
+        <!-- Nombre Column -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let element">{{ element.nombre }}</td>
+        </ng-container>
+
+        <!-- Apellido Column -->
+        <ng-container matColumnDef="apellido">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
+          <td mat-cell *matCellDef="let element">{{ element.apellido }}</td>
+        </ng-container>
+
+        <!-- Horario Column -->
+        <ng-container matColumnDef="horario">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Horario</th>
+          <td mat-cell *matCellDef="let element">{{ element.horario }}</td>
+        </ng-container>
+
+        <!-- Acciones Column -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="primary" (click)="editar(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminar(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        class="paginator"
+        [length]="dataSource.data.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[]"
+        [hidePageSize]="true"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+
+      <!-- Campo de entrada personalizado para el tamaño de página -->
+      <div class="entrada-pagina">
+        <p>Elementos por página:</p>
+        <input
+          matInput
+          type="text"
+          [value]="pageSize"
+          (change)="updatePageSize($event)"
+        />
+      </div>
+    </div>
+  </div>
+</div>
