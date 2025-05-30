@@ -1,4 +1,11 @@
-<div class="container mt-4">
+<div class="container mt-4" >
+  
+  <mat-form-field appearance="outline" class="field">
+        <mat-label>Filtrar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" />
+        <mat-hint class="hint"></mat-hint>
+  </mat-form-field>
+  
   <div class="row">
     <div class="col-md-4 mb-3" *ngFor="let carta of cartas">
       <div class="card h-100 shadow-sm">
@@ -19,4 +26,28 @@
       </div>
     </div>
   </div>
+
+   <!--Paginacion-->
+    <mat-paginator
+        class="paginator"
+        [length]="dataSource.data.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[]"
+        [hidePageSize]="true"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+
+      <!-- Campo de entrada personalizado para el tamaño de página -->
+      <div class="entrada-pagina">
+        <p>Elementos por página:</p>
+        <input
+          matInput
+          type="text"
+          [value]="pageSize"
+          (change)="updatePageSize($event)"
+        />
+      </div>
+   
+   
 </div>

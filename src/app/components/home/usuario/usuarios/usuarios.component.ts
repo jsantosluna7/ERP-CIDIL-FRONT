@@ -1,28 +1,39 @@
 import { Component, OnInit } from '@angular/core';
 import { Usuarios } from '../../../../interfaces/usuarios.interface';
 import { UsuarioService } from './usuarios.service';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-usuarios',
-  imports: [],
+  imports: [MatTableModule,MatSortModule,MatIconModule],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })
 export class UsuariosComponent implements OnInit {
 
-  usuarios: Usuarios[] = [];
+
 
   constructor(private usuarioService: UsuarioService){}
 
-  ngOnInit(){
+  ngOnInit(): void{
     this.usuarioService.obtenerUsuarios().subscribe(data => {
-      this.usuarios = data;
+      this.dataSource.data = data;
     });
   }
 
-    eliminar(id: number) {
-    this.usuarioService.eliminarUsuario(id);
-  }
+
+  
+eliminar(id: number) {
+  this.usuarioService.eliminarUsuario(id).subscribe(resultado => {
+    if (resultado) {
+      this.dataSource.data = this.dataSource.data.filter(u => u.id !== id);
+    } else {
+      alert('No se pudo eliminar el usuario.');
+    }
+  });
+}
 
 
 
@@ -34,5 +45,14 @@ export class UsuariosComponent implements OnInit {
       alert('Rol inválido');
     }
   }
+  
+   displayedColumns: string[] = [  'id','nombre', 'apellido', 'matricula', 'telefono', 'email' , 'direccion','rol', 'acciones'];
+   dataSource = new MatTableDataSource<Usuarios>([]);
+
+
+
+
+
+  
 
 }
