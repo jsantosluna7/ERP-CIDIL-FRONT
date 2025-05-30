@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDialogComponent } from './dialog/file-dialog/file-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { DatosService } from '../../../services/Datos/datos.service';
 
 const ELEMENT_DATA: any[] = [
   { nombre: 'Juan', apellido: 'Pérez', horario: '08:00 - 16:00' },
@@ -34,10 +35,11 @@ const ELEMENT_DATA: any[] = [
   templateUrl: './horario.component.html',
   styleUrl: './horario.component.css',
 })
-export class HorarioComponent {
+export class HorarioComponent implements OnInit {
   pageSize = 20;
+  datosRecibidos: any[] = [];
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private _datos: DatosService) {}
 
   openDialog(): void {
     const dialogRef = this.dialog.open(FileDialogComponent);
@@ -54,6 +56,13 @@ export class HorarioComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
+    this._datos.jsonData$.subscribe((datos) => {
+      if(datos){
+        this.datosRecibidos = datos
+        console.log(this.datosRecibidos)
+      }
+    })
+
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }

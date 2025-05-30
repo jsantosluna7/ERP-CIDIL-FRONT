@@ -1,20 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Papa } from 'ngx-papaparse';
 import * as XLSX from 'xlsx';
+import { DatosService } from '../Datos/datos.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FilesService {
 
-  constructor(private papa: Papa) { }
+  constructor(private papa: Papa, private _valores: DatosService) { }
 
   public procesarCSV(file: File): void {
     this.papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      complete(results) {
+      complete: (results) => {
         const data = results.data as any[];
-        console.log(data);
+        this._valores.obtenerData(data)
+        // console.log(data);
       },
       error: (error) => {
         console.error('Error al leer el archivo CSV', error);
@@ -30,7 +34,8 @@ export class FilesService {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {defval: ''});
-      console.log(jsonData)
+      this._valores.obtenerData(jsonData);
+      // console.log(jsonData)
     }
 
     lector.onerror = (error) => {
