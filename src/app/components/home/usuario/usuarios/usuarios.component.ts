@@ -1,21 +1,14 @@
-import { Component } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEnvelope, faLocationDot, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
+import { Component, OnInit } from '@angular/core';
 import { Usuarios } from '../../../../interfaces/usuarios.interface';
 import { UsuarioService } from './usuarios.service';
 
 @Component({
   selector: 'app-usuarios',
-  imports: [FontAwesomeModule],
+  imports: [],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })
-export class UsuariosComponent {
-
- faUser = faUser;
- faLocationDot = faLocationDot;
- faPhone = faPhone;
- faEnvelope = faEnvelope;
+export class UsuariosComponent implements OnInit {
 
   usuarios: Usuarios[] = [];
 
@@ -29,13 +22,6 @@ export class UsuariosComponent {
 
     eliminar(id: number) {
     this.usuarioService.eliminarUsuario(id);
-  }
-
-  editar(usuario: Usuarios) {
-    const nombre = prompt('Nuevo nombre:', usuario.nombre);
-    if (nombre) {
-      this.usuarioService.actualizarUsuario({ ...usuario, nombre });
-    }
   }
 
 

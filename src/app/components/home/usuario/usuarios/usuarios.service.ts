@@ -10,6 +10,8 @@ export class UsuarioService{
     private usuarios: Usuarios[] =[
         {id:1, nombre:'Jean Carlos',apellido:'Mendez' , matricula:10081908, email:'jean@mail.com',telefono:'856566556',direccion:'esa misma',rol:'Administrador'},
         {id:2, nombre:'Jean Carlos',apellido:'Mendez' , matricula:10081908, email:'jean@mail.com',telefono:'856566556',direccion:'esa misma',rol:'Administrador'},
+        {id:3, nombre:'Jean Carlos',apellido:'Mendez' , matricula:10081908, email:'jean@mail.com',telefono:'856566556',direccion:'esa misma',rol:'Administrador'},
+        {id:4, nombre:'Jean Carlos',apellido:'Mendez' , matricula:10081908, email:'jean@mail.com',telefono:'856566556',direccion:'esa misma',rol:'Administrador'},
     ];
 
     private usuarios$ = new BehaviorSubject<Usuarios[]>(this.usuarios);
