@@ -30,3 +30,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 ::view-transition-new(.widget) {
   height: 100%;
 }
+
+.mat-mdc-form-field-bottom-align::before{
+    content: "";
+    height: 0px !important;
+    display: none !important;
+}
