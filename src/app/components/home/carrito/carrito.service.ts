@@ -18,6 +18,7 @@ export class CarritoService {
 
     eliminarDelCarrito(id: number): void {
         this.carrito =this.carrito.filter(item => item.id !==id);
+        
     }
 
     vaciarCarrito(): void {

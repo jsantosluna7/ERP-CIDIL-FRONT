@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-inventario',
@@ -38,7 +39,7 @@ export class InventarioComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
 
-  constructor(private inventarioService: InventarioService, private carritoService: CarritoService){}
+  constructor(private inventarioService: InventarioService, private carritoService: CarritoService, private toastr: ToastrService){}
 
   dataSource = new MatTableDataSource<any>(this.cartas);
 
@@ -64,6 +65,7 @@ export class InventarioComponent implements OnInit {
   agregarAlCarrito(carta: Carta): void {
     this.carritoService.agregar(carta);
     console.log('Producto agregado', this.cartas);
+    this.toastr.success('Producto añadido al carrito!', '')
   }
 
   

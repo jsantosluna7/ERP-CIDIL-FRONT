@@ -14,6 +14,14 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions()), 
     provideAnimations(), 
     provideToastr(),
-    importProvidersFrom(MqttModule.forRoot(MQTT_SERVICE_OPTIONS))
+    importProvidersFrom(MqttModule.forRoot(MQTT_SERVICE_OPTIONS)),
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+      progressBar:true,
+      progressAnimation:'increasing',
+      
+    })
   ]
 };
