@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { ToastrService } from 'ngx-toastr';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
 
 @Component({
@@ -28,22 +29,47 @@ export class InventarioComponent implements OnInit {
   datos: any[] = [];
 
 
-  constructor(private _inventario: InventarioService) { }
+  constructor(private inventarioService: InventarioService, private carritoService: CarritoService, private toastr: ToastrService, private _inventario: InventarioService){}
 
 
   ngOnInit(): void {
-    // this.cartas = this.inventarioService.getCartas(); // ← devuelve el arreglo directamente
+    this.cartas = this.inventarioService.getCartas(); // ← devuelve el arreglo directamente
+  this.dataSource = new MatTableDataSource(this.cartas);
+  this.dataSource.paginator = this.paginator;
+  this.dataSource.sort = this.sort;
     
-    this._inventario.getInventario().subscribe(e => {
-      console.log(e);
-    })
+  }
+  
 
+   updatePageSize(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newSize = parseInt(input.value, 10);
+    if (newSize > 0) {
+      this.pageSize = newSize;
+      this.paginator.pageSize = newSize;
+      this.paginator.firstPage();
+    }
   }
 
-  getInventario(){
-    this._inventario.getInventario().subscribe(e => {
-      console.log(e)
-    })
+  agregarAlCarrito(carta: Carta): void {
+    this.carritoService.agregar(carta);
+    console.log('Producto agregado', this.cartas);
+    this.toastr.success('Producto añadido al carrito!', '')
   }
+
+  
+
+applyFilter(event: Event): void {
+  const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+  this.cartasFiltradas = this.cartas.filter(carta =>
+    (carta.nombre?.toLowerCase().includes(filterValue) || '') ||
+    (carta.descripcion?.toLowerCase().includes(filterValue) || '') ||
+    String(carta.cantidad).includes(filterValue) ||
+    (carta.estado ? 'activo' : 'inactivo').includes(filterValue)
+  );
+}
+
+
+
 
 }

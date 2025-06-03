@@ -20,15 +20,16 @@ export class UsuarioService{
 
 
     obtenerUsuarios(): Observable<Usuarios[]> {
-    return of(this.usuarios);
+    return this.usuarios$.asObservable();
   }
   
 
 
  eliminarUsuario(id: number): Observable<boolean> {
   const index = this.usuarios.findIndex(u => u.id === id);
-  if (index !== -1) {
+  if (index !== 1) {
     this.usuarios.splice(index, 1);
+    this.usuarios$.next(this.usuarios);
     return of(true);
   }
   return of(false);

@@ -1,5 +1,6 @@
 
-.location,.phone,.user,.envelope{
+
+/*.location,.phone,.user,.envelope{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -36,10 +37,9 @@ input{
 input{
     padding-left: 1.9rem;
 }
-
+*/
 
 /* --------------- prueba para la tabla ---------------*/
-
 
 .nav{
     display: flex;
@@ -83,4 +83,3 @@ input{
     inline-size: 3rem;
     text-align: center;
 }
-
