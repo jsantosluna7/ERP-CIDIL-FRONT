@@ -14,7 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes, withViewTransitions()), 
     provideAnimations(), 
-    provideToastr(),
     importProvidersFrom(MqttModule.forRoot(MQTT_SERVICE_OPTIONS)),
     provideHttpClient(),
     provideToastr({

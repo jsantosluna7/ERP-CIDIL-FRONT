@@ -10,12 +10,11 @@ import { Carta } from "../../interfaces/carta";
 
 export class InventarioService {
 
-  private apiUrl = 'http://10.122.120.86:5000/api/Estado';
+  private apiUrl = '';
 
   constructor(private http: HttpClient) { }
 
   getCartas(): Observable<Carta[]> {
-    console.log(this.getCartas)
     return this.http.get<Carta[]>(this.apiUrl);
 
   }
