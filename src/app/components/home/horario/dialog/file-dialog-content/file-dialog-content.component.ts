@@ -8,7 +8,6 @@ import { MatDialog } from '@angular/material/dialog';
   imports: [MatIconModule],
   templateUrl: './file-dialog-content.component.html',
   styleUrl: './file-dialog-content.component.css',
-  providers: [FilesService]
 })
 export class FileDialogContentComponent {
 
@@ -94,5 +93,6 @@ export class FileDialogContentComponent {
     } else {
       console.error('Formato de archivo no soportado');
     }
+    this.dialog.closeAll();
   }
 }
