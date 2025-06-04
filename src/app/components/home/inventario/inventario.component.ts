@@ -44,7 +44,7 @@ export class InventarioComponent implements OnInit {
   dataSource = new MatTableDataSource<any>(this.cartas);
 
   ngOnInit(): void {
-    this.cartas = this.inventarioService.getCartas(); // ← devuelve el arreglo directamente
+  this.inventarioService.getCartas().subscribe(data => {this.cartas = data}); // ← devuelve el arreglo directamente
   this.dataSource = new MatTableDataSource(this.cartas);
   this.dataSource.paginator = this.paginator;
   this.dataSource.sort = this.sort;

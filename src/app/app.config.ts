@@ -7,6 +7,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { MqttModule } from 'ngx-mqtt';
 import { MQTT_SERVICE_OPTIONS } from './tools/mqtt-options';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(), 
     provideToastr(),
     importProvidersFrom(MqttModule.forRoot(MQTT_SERVICE_OPTIONS)),
+    provideHttpClient(),
     provideToastr({
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
