@@ -9,7 +9,7 @@ export const routes: Routes = [
             { path: 'login', loadComponent: () => import('./components/inicio-sesion/login/login.component').then(m => m.LoginComponent) },
             { path: 'registrar', loadComponent: () => import('./components/inicio-sesion/registro/registro.component').then(m => m.RegistroComponent) },
             { path: 'recuperar-contrasena', loadComponent: () => import('./components/inicio-sesion/recuperar-contrasena/recuperar-contrasena.component').then(m => m.RecuperarContrasenaComponent) },
-            { path: 'cambiar-contrasena/:token', loadComponent: () => import('./components/inicio-sesion/cambiar-contrasena/cambiar-contrasena.component').then(m => m.CambiarContrasenaComponent) },
+            { path: 'cambiar-contrasena', loadComponent: () => import('./components/inicio-sesion/cambiar-contrasena/cambiar-contrasena.component').then(m => m.CambiarContrasenaComponent) },
 
         ]
     },

@@ -4,6 +4,9 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators, ValidatorFn, A
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { BackButtonComponent } from "../../elements/back-button/back-button.component";
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-cambiar-contrasena',
@@ -11,7 +14,7 @@ import { BackButtonComponent } from "../../elements/back-button/back-button.comp
   templateUrl: './cambiar-contrasena.component.html',
   styleUrl: './cambiar-contrasena.component.css'
 })
-export class CambiarContrasenaComponent implements OnInit{
+export class CambiarContrasenaComponent implements OnInit {
   faLock = faLock;
   faCheck = faCheck;
   faXmark = faXmark;
@@ -19,22 +22,39 @@ export class CambiarContrasenaComponent implements OnInit{
   recuperarContrasenaForm: FormGroup;
   meterPopup: any = {};
   passwordValid: any = {};
+  token: string = '';
 
-  constructor(){
+  //ENDPOINTS
+  restablecerContrasena = `${process.env['API_URL']}${process.env['ENDPOINT_RESTABLECER_CONTRASENA']}`
+
+  constructor(private _usuarios: UsuariosService, private _toastr: ToastrService, private _router: Router, private _token: ActivatedRoute) {
     this.recuperarContrasenaForm = new FormGroup({
-       contrasena: new FormControl('',[Validators.required, Validators.minLength(6)]),
-       confirmarContrasena: new FormControl('',[Validators.required, Validators.minLength(6)]),
+      contrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      confirmarContrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
     },
-  {
-    validators: this.matchContrasena
-  });
+      {
+        validators: this.matchContrasena
+      });
   }
 
-  recuperar(){
-  console.log(this.recuperarContrasenaForm.value);
- }
+  recuperar() {
 
- //Validar contrasena
+    const data = {
+      "token": this.token,
+      "nuevaContrasena": this.recuperarContrasenaForm.value.contrasena
+    }
+
+    this._usuarios.restablecerContrasena(this.restablecerContrasena, data).subscribe({
+      next: (e) => {
+        this._toastr.success('Se ha restablecido su contraseña', 'Éxito');
+        this._router.navigate(['login']);
+      },error: (e) => {
+        this._toastr.error(e.error, 'Hubo un error');
+      }
+    })
+  }
+
+  //Validar contrasena
   matchContrasena: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 
     let contrasena = control.get('contrasena');
@@ -47,15 +67,19 @@ export class CambiarContrasenaComponent implements OnInit{
     return null;
   }
 
-    ngOnInit() {
+  ngOnInit() {
     this.recuperarContrasenaForm.get('contrasena')?.valueChanges.subscribe(value => {
       this.passwordValidation(value);
     });
 
+    this._token.queryParams.subscribe(params => {
+      const token = params['token'];
+      this.token = token;
+    })
     this.closePopup();
   }
 
-    openPopup($event: Event) {
+  openPopup($event: Event) {
     const contrasenaElem = document.querySelector('#contrasena');
     if (contrasenaElem) {
       const rect = contrasenaElem.getBoundingClientRect();
@@ -73,7 +97,7 @@ export class CambiarContrasenaComponent implements OnInit{
     }
   }
   closePopup() {
-    this.meterPopup = {'display': 'none'};
+    this.meterPopup = { 'display': 'none' };
   }
   passwordValidation(PasswordText: any) {
     const hasUpperCase = /[A-Z]/.test(PasswordText);
