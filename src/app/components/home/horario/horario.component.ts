@@ -56,7 +56,6 @@ export class HorarioComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
-    console.log(process.env['EJEMPLO']); //Utilización de .env
 
     this._datos.jsonData$.subscribe((datos) => {
       if(datos){
