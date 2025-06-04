@@ -18,6 +18,8 @@ const ELEMENT_DATA: any[] = [
   { nombre: 'Juan', apellido: 'Pérez', horario: '08:00 - 16:00' },
   { nombre: 'María', apellido: 'Gómez', horario: '09:00 - 17:00' },
   { nombre: 'Alondra', apellido: 'Gómez', horario: '09:00 - 17:00' },
+  
+  
   // Agrega más datos según sea necesario
 ];
 

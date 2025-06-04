@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Carta } from "../../interfaces/carta";
+import { Carta, PaginacionResponse } from "../../interfaces/carta";
 
 
 @Injectable({
@@ -10,14 +10,19 @@ import { Carta } from "../../interfaces/carta";
 
 export class InventarioService {
 
-  private apiUrl = '';
+  private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO']}`;
 
   constructor(private http: HttpClient) { }
 
-  getCartas(): Observable<Carta[]> {
+ /*getCartas(paginaActual: number, pageSize: number): Observable<Carta[]> {
     return this.http.get<Carta[]>(this.apiUrl);
 
-  }
+  }*/
+
+  getCartas(pagina: number, tamanoPagina: number): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}?pagina=${pagina}&tamanoPagina=${tamanoPagina}`);
+}
+
 
   agregarCarta(carta: Carta): Observable<Carta> {
     return this.http.post<Carta>(this.apiUrl, carta);
@@ -31,5 +36,7 @@ export class InventarioService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
+
+  
 
 }

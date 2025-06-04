@@ -9,12 +9,12 @@
         <div class="card mb-3 me-3  col-5" style="max-width: 540px">
           <div class="row  g-0">
             <div class="col-md-4 mb-4 ">
-              <img [src]="carta.imagenUrl" class="img-fluid  rounded-start" alt="{{ carta.nombre }}" />
+              <img [src]="carta.imagenEquipo" class="img-fluid  rounded-start" alt="{{ carta.nombre }}" />
             </div>
             <div class="col-md-8">
               <div class="card-body">
                 <h5 class="card-title">{{ carta.nombre }}</h5>
-                <p class="card-text">{{ carta.descripcion }}</p>
+                <p class="card-text">{{ carta.descripcionLarga }}</p>
                 <button class="btn btn-danger btn-sm" (click)="eliminar(carta.id)">
                   Eliminar
                 </button>
