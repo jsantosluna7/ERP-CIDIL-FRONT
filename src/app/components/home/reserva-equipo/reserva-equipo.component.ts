@@ -1,21 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock, faEnvelope, faHome, faLocationDot, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Carta } from '../../../interfaces/carta';
 import { CarritoService } from '../carrito/carrito.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-reserva-equipo',
-  imports: [FontAwesomeModule,ReactiveFormsModule],
+  imports: [CommonModule, FontAwesomeModule,ReactiveFormsModule],
   templateUrl: './reserva-equipo.component.html',
-  styleUrl: './reserva-equipo.component.css'
+  styleUrl: './reserva-equipo.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReservaEquipoComponent implements OnInit {
 
-  solicitudesForm!: FormGroup;
+  solicitudesForm: FormGroup;
   equiposSeleccionados: Carta[] = [];
 
 
@@ -26,16 +28,16 @@ export class ReservaEquipoComponent implements OnInit {
   fahouse= faHome;
   faclock = faClock;
 
- constructor(private carritoService: CarritoService, private fb: FormBuilder,private toastr: ToastrService) {}
+ constructor(private carritoService: CarritoService, private toastr: ToastrService) {
+    this.solicitudesForm = new FormGroup({
+    fechaInicio: new FormControl('', [Validators.required]),
+    fechaDevolucion: new FormControl('',[Validators.required]),
+    motivo: new FormControl('', [Validators.min(1)]),
+  });
+ }
 
  ngOnInit(): void {
   this.equiposSeleccionados = this.carritoService.getCarrito();
-
-  this.solicitudesForm = this.fb.group({
-    fechaInicio: ['', Validators.required],
-    fechaDevolucion: ['',Validators.required],
-    motivo: [''],
-  });
  }
 
  enviarSolicitud(): void {
