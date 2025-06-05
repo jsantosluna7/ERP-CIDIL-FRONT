@@ -1,8 +1,8 @@
 import { IMqttServiceOptions } from 'ngx-mqtt';
 
 export const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
-    hostname: '10.122.120.86',
+    hostname: process.env['HOSTNAME'],
     port: 9001,
-    path: '/Lab/1B',
+    path: process.env['PATH'],
     protocol: 'ws'
 }

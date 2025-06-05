@@ -1,9 +1,9 @@
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Widget } from '../../interfaces/widget';
-import { MqttComponent } from '../../components/loT/mqtt/mqtt.component';
 import { IotWidgetComponent } from '../../components/home/dashboard/all-widget/iot-widget/iot-widget.component';
 import { UsersWidgetComponent } from '../../components/home/dashboard/all-widget/users-widget/users-widget.component';
 import { AnaliticaComponent } from '../../components/home/dashboard/all-widget/analitica/analitica.component';
+import { CalendarioComponent } from '../../components/home/dashboard/all-widget/calendario/calendario.component';
 
 @Injectable()
 export class DashboardService {
@@ -11,32 +11,32 @@ export class DashboardService {
   widgets = signal<Widget[]>([
     {
       id: 1,
-      label: 'Mqtt Widget',
-      content: MqttComponent,
-      rows: 1,
-      columns: 1
-    },
-    {
-      id: 2,
-      label: 'IoT Widget',
-      content: IotWidgetComponent, // Replace with actual component
-      rows: 1,
-      columns: 1
-    },
-    {
-      id: 3,
-      label: 'Users Widget',
-      content: UsersWidgetComponent, // Replace with actual component
-      rows: 1,
-      columns: 1
-    },
-    {
-      id: 4,
       label: 'IoT Analitica',
       content: AnaliticaComponent, // Replace with actual component
       rows: 2,
       columns: 2
-    }
+    },
+    {
+      id: 2,
+      label: 'Users Widget',
+      content: UsersWidgetComponent, // Replace with actual component
+      rows: 2,
+      columns: 2
+    },
+    {
+      id: 3,
+      label: 'IoT Buttons',
+      content: IotWidgetComponent, // Replace with actual component
+      rows: 2,
+      columns: 2
+    },
+    {
+      id: 4,
+      label: 'Calendario',
+      content: CalendarioComponent, // Replace with actual component
+      rows: 2,
+      columns: 2
+    },
   ]);
 
   widgetsAnadidos = signal<Widget[]>([]);

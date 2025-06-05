@@ -26,6 +26,7 @@
     "animate-css-grid": "^1.5.1",
     "bootstrap": "^5.3.6",
     "chart.js": "^4.4.9",
+    "ngx-gauge": "^11.0.0",
     "ngx-mqtt": "^17.0.0",
     "ngx-papaparse": "^8.0.0",
     "ngx-toastr": "^19.0.0",
