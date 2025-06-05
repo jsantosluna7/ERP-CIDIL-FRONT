@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-inventario',
@@ -22,7 +23,8 @@ import { InventarioService } from '../../../services/Inventario/inventario.servi
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule, ],
+    MatIconModule,
+    MatCardModule ],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.css'
 })
@@ -55,10 +57,11 @@ export class InventarioComponent implements OnInit {
 ngOnInit(): void {
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe((data: any) => {
     this.cartas = data.datos;
-    this.cartasFiltradas = this.cartas;
+    this.cartasFiltradas = [...this.cartas]
     this.dataSource = new MatTableDataSource(this.cartas);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    console.log(data)
 
      // Establecer el filtro personalizado
     this.dataSource.filterPredicate = (data: any, filter: string) => {
@@ -128,20 +131,18 @@ ngOnInit(): void {
 
   
 
- applyFilter(event: Event): void {
-  const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-  this.dataSource.filter = filterValue;
-}
-
-/*applyFilter(event: Event): void {
+applyFilter(event: Event): void {
   const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
-  this.cartasFiltradas = this.cartas.filter(carta =>
+
+  this.cartasFiltradas = this.cartas.filter(carta => {
+    return (     
     (carta.nombre?.toLowerCase().includes(filterValue) || '') ||
     (carta.descripcionLarga?.toLowerCase().includes(filterValue) || '') ||
     String(carta.cantidad).includes(filterValue) ||
     (carta.disponible ? 'activo' : 'inactivo').includes(filterValue)
-  );
-}*/
+    );
+});
+}
 
   
 
