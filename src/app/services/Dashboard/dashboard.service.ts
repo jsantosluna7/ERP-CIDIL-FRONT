@@ -1,9 +1,9 @@
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Widget } from '../../interfaces/widget';
-import { IotWidgetComponent } from '../../components/home/dashboard/all-widget/iot-widget/iot-widget.component';
 import { UsersWidgetComponent } from '../../components/home/dashboard/all-widget/users-widget/users-widget.component';
 import { AnaliticaComponent } from '../../components/home/dashboard/all-widget/analitica/analitica.component';
 import { CalendarioComponent } from '../../components/home/dashboard/all-widget/calendario/calendario.component';
+import { IotButtonsComponent } from '../../components/home/dashboard/all-widget/iot-buttons/iot-buttons.component';
 
 @Injectable()
 export class DashboardService {
@@ -25,8 +25,8 @@ export class DashboardService {
     },
     {
       id: 3,
-      label: 'IoT Buttons',
-      content: IotWidgetComponent, // Replace with actual component
+      label: 'IoT Botones',
+      content: IotButtonsComponent, // Replace with actual component
       rows: 2,
       columns: 2
     },

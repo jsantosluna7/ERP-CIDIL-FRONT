@@ -36,3 +36,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     height: 0px !important;
     display: none !important;
 }
+
+.fc .fc-daygrid-day-number, .fc .fc-col-header-cell-cushion {
+  text-decoration: none;
+  color: #1825AA;
+}
+
+.fc .fc-scrollgrid, .fc .fc-scrollgrid-section > td {
+  border-radius: 20px;
+}
