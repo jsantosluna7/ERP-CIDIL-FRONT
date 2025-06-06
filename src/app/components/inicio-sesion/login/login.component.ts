@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faEnvelope, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +26,10 @@ export class LoginComponent implements OnInit {
   meterPopup: any = {};
   passwordValid: any = {};
 
-  constructor() {
+  //ENDPOINTS
+  iniciarSesion = `${process.env['API_URL']}${process.env['ENDPOINT_INICIAR_SESION']}`
+
+  constructor(private _usuario: UsuariosService, private _toastr: ToastrService, private _router: Router) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       contrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
@@ -40,8 +45,20 @@ export class LoginComponent implements OnInit {
     this.closePopup();
   }
 
-  login(){
-    console.log(this.loginForm.value);
+  login() {
+    const data = {
+      "correoInstitucional": this.loginForm.value.email,
+      "contrasena": this.loginForm.value.contrasena
+    }
+    
+    this._usuario.iniciarSesion(this.iniciarSesion, data).subscribe({
+      next: (e) => {
+        this._toastr.success(`Bienvenido, ${e.nombreUsuario} ${e.apellidoUsuario}`, 'Inicio Éxitoso')
+        this._router.navigate(['home'])
+      },error: (err) => {
+        this._toastr.error(err.error, 'Hubo un error');
+      },
+    })
   }
 
   openPopup($event: Event) {
@@ -62,7 +79,7 @@ export class LoginComponent implements OnInit {
     }
   }
   closePopup() {
-    this.meterPopup = {'display': 'none'};
+    this.meterPopup = { 'display': 'none' };
   }
   passwordValidation(PasswordText: any) {
     const hasUpperCase = /[A-Z]/.test(PasswordText);

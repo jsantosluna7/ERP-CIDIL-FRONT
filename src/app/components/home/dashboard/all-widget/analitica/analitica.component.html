@@ -1,5 +1,39 @@
-<div class="chart-container">
-    <canvas #chart></canvas>
-</div>
+<!-- TEMPERATURA -->
+<ngx-gauge
+  [type]="gaugeType"
+  [value]="temp()"
+  label="Temperatura"
+  append="°C"
+  [cap]="gaugeCap"
+  [thick]="gaugeThick"
+></ngx-gauge>
 
-<button mat-raised-button>Ir a IoT</button>
+<!-- HUMEDAD -->
+<ngx-gauge
+  [type]="gaugeType"
+  [value]="hum()"
+  label="Humedad"
+  append="%"
+  [cap]="gaugeCap"
+  [thick]="gaugeThick"
+></ngx-gauge>
+
+<!-- LUZ -->
+<ngx-gauge
+  [type]="gaugeType"
+  [value]="luz()"
+  label="Luz"
+  append="Lm"
+  [cap]="gaugeCap"
+  [thick]="gaugeThick"
+></ngx-gauge>
+
+<!-- SONIDO -->
+<ngx-gauge
+  [type]="gaugeType"
+  [value]="sonido()"
+  label="Sonido"
+  append="dB"
+  [cap]="gaugeCap"
+  [thick]="gaugeThick"
+></ngx-gauge>

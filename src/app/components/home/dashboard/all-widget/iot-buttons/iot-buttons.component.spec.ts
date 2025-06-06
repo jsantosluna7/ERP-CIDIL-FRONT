@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IotWidgetComponent } from './iot-widget.component';
+import { IotButtonsComponent } from './iot-buttons.component';
 
-describe('IotWidgetComponent', () => {
-  let component: IotWidgetComponent;
-  let fixture: ComponentFixture<IotWidgetComponent>;
+describe('IotButtonsComponent', () => {
+  let component: IotButtonsComponent;
+  let fixture: ComponentFixture<IotButtonsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IotWidgetComponent]
+      imports: [IotButtonsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(IotWidgetComponent);
+    fixture = TestBed.createComponent(IotButtonsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

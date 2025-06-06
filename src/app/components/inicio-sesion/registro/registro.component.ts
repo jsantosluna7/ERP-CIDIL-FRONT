@@ -3,6 +3,9 @@ import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validatio
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowLeft, faCheck, faEnvelope, faLocationDot, faLock, faPhone, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { BackButtonComponent } from "../../elements/back-button/back-button.component";
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registro',
@@ -10,7 +13,7 @@ import { BackButtonComponent } from "../../elements/back-button/back-button.comp
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
-export class RegistroComponent  implements OnInit{
+export class RegistroComponent implements OnInit {
 
   faEnvelope = faEnvelope;
   faPhone = faPhone;
@@ -23,11 +26,14 @@ export class RegistroComponent  implements OnInit{
 
   registroForm: FormGroup;
 
-   meterPopup: any = {};
+  meterPopup: any = {};
   passwordValid: any = {};
 
+  //ENDPOINTS
+  registrar = `${process.env['API_URL']}${process.env['ENDPOINT_REGISTRAR']}`
 
-  constructor() {
+
+  constructor(private _usuarios: UsuariosService, private _toastr: ToastrService, private _router: Router) {
     this.registroForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       contrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
@@ -44,7 +50,24 @@ export class RegistroComponent  implements OnInit{
   }
 
   register() {
-    console.log(this.registroForm.value);
+    const data = {
+      "idMatricula": this.registroForm.value.matricula,
+      "nombreUsuario": this.registroForm.value.nombre,
+      "apellidoUsuario": this.registroForm.value.apellido,
+      "correoInstitucional": this.registroForm.value.email,
+      "contrasenaHash": this.registroForm.value.contrasena,
+      "telefono":this.registroForm.value.telefono,
+      "direccion": this.registroForm.value.direccion
+    }
+
+    this._usuarios.registro(this.registrar, data).subscribe({
+      next: (e) => {
+        this._toastr.success(`Bienvenido, ${e.nombreUsuario} ${e.apellidoUsuario}`, 'Registro Éxitoso');
+        this._router.navigate(['home']);
+      },error: (e) => {
+        this._toastr.error(e.error, 'Hubo un error');
+      }
+    })
   }
 
   //Validar contrasena
@@ -58,6 +81,7 @@ export class RegistroComponent  implements OnInit{
       }
 
     }
+    // this._toastr.error('La contraseña debe coincidir', 'Error')
     return null;
 
   }
@@ -71,7 +95,7 @@ export class RegistroComponent  implements OnInit{
     this.closePopup();
   }
 
-  login(){
+  login() {
     console.log(this.registroForm.value);
   }
 
@@ -93,7 +117,7 @@ export class RegistroComponent  implements OnInit{
     }
   }
   closePopup() {
-    this.meterPopup = {'display': 'none'};
+    this.meterPopup = { 'display': 'none' };
   }
   passwordValidation(PasswordText: any) {
     const hasUpperCase = /[A-Z]/.test(PasswordText);
