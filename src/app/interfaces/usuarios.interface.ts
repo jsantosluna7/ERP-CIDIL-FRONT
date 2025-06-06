@@ -1,10 +1,20 @@
 export interface Usuarios{
     id: number;
-    nombre:string;
-    apellido:string;
-    matricula:number;
-    email:string;
+    IdMatricula: number;
+    nombreUsuario:string;
+    apellidoUsuario:string;
+    correoInstitucional:string;
     telefono:string;
     direccion:string;
-    rol:'Estudiante' | 'Administrador' | 'Super Usuario';
+    idrol:'Estudiante' | 'Administrador' | 'Super Usuario';
+}
+
+export interface RespuestaUsuarios {
+  datos: Usuarios[];
+  paginacion: {
+    paginaActual: number;
+    tamanoPagina: number;
+    totalUsuarios: number;
+    totalPaginas: number;
+  };
 }
