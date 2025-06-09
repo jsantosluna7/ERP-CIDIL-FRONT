@@ -20,7 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export class UsuariosComponent implements OnInit {
 
-  displayedColumns: string[] = [  'id','nombre', 'apellido', 'matricula', 'telefono', 'email' , 'direccion','rol', 'acciones'];
+  displayedColumns: string[] = [  'id','nombre', 'apellido', 'matricula', 'telefono', 'email' , 'direccion','rol','acciones'];
   dataSource = new MatTableDataSource<Usuarios>([]);
 
   constructor(private usuarioService: UsuarioService, private toastr: ToastrService){}
@@ -84,17 +84,23 @@ eliminar(id: string) {
 }
 
 
-   /* cambiarRol(usuario: Usuarios) {
-    const nuevoRol = prompt('Nuevo rol (Administrador,Estudiante, Super Usuario):', usuario.rol);
-    if (nuevoRol === 'Administrador' || nuevoRol === 'Estudiante' || nuevoRol === 'Super Usuario') {
-      this.usuarioService.cambiarRol(usuario.id, nuevoRol);
-      this.toastr.success('Usuario Actualizado!', '')
-      
-    } else {
-      this.toastr.error('Rol incorrecto!', '')
-    }
-   
-  }*/
+  desactivarUsuario(usuario: Usuarios): void{
+    
+    const nuevoEstado = !usuario.activado;
+
+    this.usuarioService.desactivarUsuario(usuario.id, nuevoEstado).subscribe({
+      next: () => {
+        usuario.activado = nuevoEstado;
+        this.toastr.success(
+          `Usuario ${nuevoEstado ? 'activado' : 'dasactivado'} correctamente.`
+        );
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Error al cambiar el estado del usuario')
+      }
+    })
+  }
   
    
 

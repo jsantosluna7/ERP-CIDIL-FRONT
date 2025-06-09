@@ -10,6 +10,7 @@ export class UsuarioService{
 
    private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIO']}`;
    private apiUrlRol = `${process.env['API_URL']}${process.env['ENDPOINT_ROL']}`;
+    private apiUrlDesactivar = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIODES']}`;
 
      constructor(private http: HttpClient) {}
 
@@ -32,6 +33,9 @@ export class UsuarioService{
     return this.http.put(`${this.apiUrlRol}/${id}`,{nuevoRol});
    }
 
+   desactivarUsuario(id: number, activo: boolean): Observable<void>{
+    return this.http.patch<void>(`${this.apiUrlDesactivar}/${id}`,{ activo });
+   }
 
   eliminarUsuario(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);

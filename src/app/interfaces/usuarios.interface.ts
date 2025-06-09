@@ -6,6 +6,7 @@ export interface Usuarios{
     correoInstitucional:string;
     telefono:string;
     direccion:string;
+    activado: boolean;
     idrol:'Estudiante' | 'Administrador' | 'Super Usuario';
 }
 

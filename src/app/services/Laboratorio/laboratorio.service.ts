@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Laboratorio } from '../../interfaces/laboratorio.interface';
+import { Laboratorio, SolicitudReserva } from '../../interfaces/laboratorio.interface';
 
 
 @Injectable({
@@ -9,6 +9,7 @@ import { Laboratorio } from '../../interfaces/laboratorio.interface';
 })
 export class LaboratorioService {
   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO']}`;
+  private apiUrlSolicitud = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA']}`;
 
   constructor(private http: HttpClient) {}
 
@@ -26,6 +27,10 @@ export class LaboratorioService {
 
   actualizarLaboratorio(id: number, data: Laboratorio): Observable<Laboratorio> {
     return this.http.put<Laboratorio>(`${this.apiUrl}/${id}`, data);
+  }
+
+  enviarSolicitud(solicitud:SolicitudReserva): Observable<any> {
+    return this.http.post(`${this.apiUrlSolicitud}/laboratorio`, solicitud)
   }
 
   eliminarLaboratorio(id: number): Observable<void> {
