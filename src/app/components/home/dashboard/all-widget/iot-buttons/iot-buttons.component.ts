@@ -27,7 +27,6 @@ export class IotButtonsComponent implements OnInit {
       .subscribe((message: IMqttMessage) => {
         try {
           const payload = JSON.parse(message.payload.toString());
-          console.log(payload)
           this.actuador.set(payload.actuador);
         } catch (error) {
           console.error('Error al parsear el mensaje MQTT:', error);
