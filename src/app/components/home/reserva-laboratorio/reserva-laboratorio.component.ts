@@ -5,10 +5,12 @@ import { faEnvelope, faLocationDot, faPhone, faUser,faHome,faClock, faHourglass 
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { ToastrService } from 'ngx-toastr';
+import { MatButtonModule } from '@angular/material/button';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-reserva-laboratorio',
-  imports: [FontAwesomeModule, ReactiveFormsModule],
+  imports: [FontAwesomeModule, ReactiveFormsModule,MatButtonModule, RouterLink],
   templateUrl: './reserva-laboratorio.component.html',
   styleUrl: './reserva-laboratorio.component.css'
 })
@@ -27,7 +29,7 @@ export class ReservaLaboratorioComponent {
   estado =faHourglass;
 
 
- constructor(private laboratorioService: LaboratorioService, private toastr: ToastrService, private fb: FormBuilder){}
+ constructor(private laboratorioService: LaboratorioService, private toastr: ToastrService, private fb: FormBuilder, private router: Router){}
 
  /*ngOnInit(): void {
     this.laboratorioService.getLaboratorios().subscribe({
@@ -115,8 +117,7 @@ export class ReservaLaboratorioComponent {
     return;
   }
 
-  
-
+ 
   // Validar formulario completo
   if (this.solicitudesForm.invalid) {
     this.toastr.error('El formulario tiene errores. Revise los campos.', 'Error');
@@ -145,5 +146,15 @@ export class ReservaLaboratorioComponent {
 }
 
 
+ ruta(){
+    this.router.navigate(['/home/solicitud-laboratorio']);
+    console.log(this.router)
+  }
+
+
+
+
+
 
 }
+
