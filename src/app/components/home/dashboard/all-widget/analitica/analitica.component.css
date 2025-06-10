@@ -1,8 +1,4 @@
-.chart-container{
+.analitica-container{
     height: calc(100% - 100px);
     width: 100%;
-}
-
-button{
-    margin-top: 1rem;
 }

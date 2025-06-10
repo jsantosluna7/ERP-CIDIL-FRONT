@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   FullCalendarComponent,
   FullCalendarModule,
@@ -23,6 +23,7 @@ import { DateDialogComponent } from './date-dialog/date-dialog.component';
   providers: [DatePipe],
 })
 export class CalendarioComponent {
+  @ViewChild('calendarHost', { static: true }) host!: ElementRef<HTMLDivElement>;
   @ViewChild('fc') calendarComponent!: FullCalendarComponent;
   opcionesCalendario: CalendarOptions;
 
@@ -44,6 +45,7 @@ export class CalendarioComponent {
       locales: [esLocale],
       locale: 'es',
       plugins: [dayGridPlugin, interactionPlugin],
+      height: '100%', // ocupa toda la altura del contenedor
     };
   }
 
@@ -129,7 +131,7 @@ export class CalendarioComponent {
         data: {
           info: detalles,
         },
-        width: '30rem'
+        width: '30rem',
       });
       console.log(detalles);
     } else {
