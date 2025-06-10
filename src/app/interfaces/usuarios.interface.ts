@@ -1,6 +1,6 @@
 export interface Usuarios{
     id: number;
-    IdMatricula: number;
+    idMatricula: number;
     nombreUsuario:string;
     apellidoUsuario:string;
     correoInstitucional:string;

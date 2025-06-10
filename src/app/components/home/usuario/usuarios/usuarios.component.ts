@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Usuarios } from '../../../../interfaces/usuarios.interface';
 import { UsuarioService } from './usuarios.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,11 +10,13 @@ import { ToastrService } from 'ngx-toastr';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.component';
 
 
 @Component({
   selector: 'app-usuarios',
-  imports: [MatTableModule,MatSortModule,MatIconModule,MatButtonModule,MatFormFieldModule, MatSelectModule],
+  imports: [MatTableModule,MatSortModule,MatIconModule,MatButtonModule,MatFormFieldModule, MatSelectModule,MatButtonModule,MatDialogModule],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })
@@ -22,6 +24,7 @@ export class UsuariosComponent implements OnInit {
 
   displayedColumns: string[] = [  'id','nombre', 'apellido', 'matricula', 'telefono', 'email' , 'direccion','rol','acciones'];
   dataSource = new MatTableDataSource<Usuarios>([]);
+  
 
   constructor(private usuarioService: UsuarioService, private toastr: ToastrService){}
 
@@ -34,7 +37,6 @@ export class UsuariosComponent implements OnInit {
       console.log(data)
     });
   }
-
 
 /*eliminar(id: number) {
   this.usuarioService.eliminarUsuario(id).subscribe((resultado: void) => {
@@ -82,8 +84,6 @@ eliminar(id: string) {
     this.toastr.warning('Rol inválido.');
   }
 }
-
-
   desactivarUsuario(usuario: Usuarios): void{
     
     const nuevoEstado = !usuario.activado;
@@ -102,7 +102,27 @@ eliminar(id: string) {
     })
   }
   
-   
+ //otra vista 
+
+ readonly dialog = inject(MatDialog);
+
+ openDialog(usuario: Usuarios) {
+  const dialogRef = this.dialog.open(UsuarioDialogComponent, {
+    width: '400px',
+    data: usuario
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      // Aquí puedes actualizar la lista con el usuario editado o llamar servicio para guardar
+      console.log('Usuario editado:', result);
+    }
+  });
+
+
+
+}
+
 
 
 
