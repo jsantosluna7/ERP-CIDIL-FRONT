@@ -10,6 +10,7 @@ import {
 } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { DatosService } from '../../../services/Datos/datos.service';
@@ -18,6 +19,8 @@ import { HorarioService } from '../../../services/Api/Horario/horario.service';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, map } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { PreguntaDialogComponent } from '../../elements/pregunta-dialog/pregunta-dialog.component';
+import { EditarHorarioComponent } from './crud/editar-horario/editar-horario.component';
 
 @Component({
   selector: 'app-horario',
@@ -29,22 +32,25 @@ import { DatePipe } from '@angular/common';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './horario.component.html',
   styleUrl: './horario.component.css',
   providers: [DatePipe],
 })
-export class HorarioComponent implements OnInit, AfterViewInit {
+export class HorarioComponent implements OnInit {
   pageSize = 20;
   ELEMENT_DATA: any[] = [];
   dataSource: any;
+  loading: boolean = true;
 
   constructor(
     private dialog: MatDialog,
     private _datos: DatosService,
     private _horario: HorarioService,
     private _toastr: ToastrService,
-    public _datePipe: DatePipe
+    public _datePipe: DatePipe,
+    public _dialog: MatDialog
   ) {}
 
   displayedColumns: string[] = [
@@ -62,6 +68,7 @@ export class HorarioComponent implements OnInit, AfterViewInit {
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
+  endpointElimnarAuto: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_AUTO']}`;
 
   ngOnInit() {
     this._horario.getHorario(this.endpoint).subscribe({
@@ -76,6 +83,7 @@ export class HorarioComponent implements OnInit, AfterViewInit {
             ),
           }).pipe(
             map(({ lab }) => ({
+              id: data.id,
               asignatura: data.asignatura,
               profesor: data.profesor,
               codigoDeLab: lab.codigoDeLab,
@@ -86,18 +94,24 @@ export class HorarioComponent implements OnInit, AfterViewInit {
           );
         });
 
-        forkJoin(datos).subscribe((todo: any) => {
-          const ELEMENT_DATA = todo;
-          this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+        forkJoin(datos).subscribe({
+          next: (e) => {
+            const ELEMENT_DATA: any = e;
+            this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+            this.loading = false;
+          },
+          error: (err) => {
+            this._toastr.error(err.error, 'Error al cargar los laboratorios');
+            this.loading = false;
+          },
         });
       },
       error: (e) => {
         this._toastr.error(e.error, 'Hubo un Error');
+        this.loading = false;
       },
     });
-  }
 
-  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -135,7 +149,24 @@ export class HorarioComponent implements OnInit, AfterViewInit {
   }
 
   editar(element: any) {
-    // Lógica para editar el elemento
+    const dialogRef = this._dialog.open(EditarHorarioComponent, {
+      data: {
+        id: element.id,
+        asignatura: element.asignatura,
+        profesor: element.profesor,
+        laboratorio: element.codigoDeLab,
+        dia: element.dia,
+        horaInicio: this.desformatearFecha(element.horaInicio),
+        horaFinal: this.desformatearFecha(element.horaFinal),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((e) => {
+      if (!e) {
+        this._toastr.info('Se canceló la operación', 'Información');
+      }
+    })
+
     console.log('Editar', element);
   }
 
@@ -157,7 +188,55 @@ export class HorarioComponent implements OnInit, AfterViewInit {
     }
   }
 
+  borradoAuto() {
+    const dialogRef = this._dialog.open(PreguntaDialogComponent, {
+      data: {
+        titulo: '¿Seguro?',
+        mensaje:
+          '¿Quieres eliminar automaticamente todos los elementos del horario?',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(result);
+      if (result) {
+        this._horario
+          .deleteHorarioAuto(this.endpointElimnarAuto, 'true')
+          .subscribe({
+            error: (err) => {
+              this._toastr.error(err.error, 'Hubo un error');
+            },
+          });
+      } else {
+        this._toastr.info('No se eliminaron los elementos', 'Información');
+      }
+    });
+  }
+
   formatearFecha(fechaOriginal: string): string | null {
     return this._datePipe.transform(fechaOriginal, 'dd/MM/yyyy hh:mm a');
   }
+
+  desformatearFecha(fechaOriginal: string): string {
+  const [fecha, hora, ampm] = fechaOriginal.split(' ');
+  const [dia, mes, anio] = fecha.split('/');
+  let [horaStr, minutoStr] = hora.split(':');
+
+  let horaNum = parseInt(horaStr, 10);
+
+  // Ajustar hora según AM/PM
+  if (ampm.toUpperCase() === 'PM' && horaNum < 12) {
+    horaNum += 12;
+  } else if (ampm.toUpperCase() === 'AM' && horaNum === 12) {
+    horaNum = 0;
+  }
+
+  // Asegurar formato de dos dígitos
+  const horaFinal = horaNum.toString().padStart(2, '0');
+  const minutoFinal = minutoStr.padStart(2, '0');
+  const mesFinal = mes.padStart(2, '0');
+  const diaFinal = dia.padStart(2, '0');
+
+  return `${anio}-${mesFinal}-${diaFinal}T${horaFinal}:${minutoFinal}`;
+}
 }

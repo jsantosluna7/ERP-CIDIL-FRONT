@@ -1,0 +1,44 @@
+<!-- <h2 mat-dialog-title>{{data.titulo}}</h2> -->
+<mat-dialog-content class="contenido">
+    <form class="row g-3" [formGroup]="editarForm">
+        <div class="col-md-6">
+            <label for="asignatura" class="form-label">Asignatura</label>
+            <input type="text" formControlName="asignatura" class="form-control" id="asignatura" />
+        </div>
+        <div class="col-md-6">
+            <label for="profesor" class="form-label">Profesor</label>
+            <input type="text" formControlName="profesor" class="form-control" id="profesor" />
+        </div>
+        <div class="col-6">
+            <label for="lab" class="form-label">Laboratorio</label>
+            <select id="lab" class="form-select" formControlName="laboratorio">
+                @if (labLoading) {
+                    <mat-spinner mode="indeterminate"></mat-spinner>
+                }
+                @if (!labLoading) {
+                @for (lab of laboratorios; track $index) {
+                <option [value]="lab.id">{{lab.codigoDeLab}}</option>
+                }
+                }
+            </select>
+        </div>
+        <div class="col-6">
+            <label for="dia" class="form-label">Dia</label>
+            <input type="text" formControlName="dia" class="form-control" id="dia" placeholder="Lunes, Martes..." />
+        </div>
+        <div class="col-md-6">
+            <label for="horaInicio" class="form-label">Hora Inicio</label>
+            <input type="datetime-local" formControlName="horaInicio" class="form-control" id="horaInicio" />
+        </div>
+        <div class="col-md-6">
+            <label for="horaFinal" class="form-label">Hora Final</label>
+            <input type="datetime-local" formControlName="horaFinal" class="form-control" id="horaFinal" />
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onNo()">No</button>
+    <button mat-button [mat-dialog-close]="selection()" (click)="datos()" cdkFocusInitial>
+        Ok
+    </button>
+</mat-dialog-actions>
