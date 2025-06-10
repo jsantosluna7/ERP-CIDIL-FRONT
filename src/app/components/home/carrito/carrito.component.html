@@ -1,35 +1,52 @@
-<div class="container mt-4">
-  <h3>Carrito de Compras</h3>
+<div class="fondo d-flex justify-content-center  p-4  ">
+  <div class="row container w-75  h-auto border border rounded-5  p-3 form mt-5  ">
+    <h3>Carrito de Compras</h3>
+    <hr>
+    <div>
+      <div class="row ">
+        @if (carrito.length > 0) {
+        @for (carta of carrito; track carta.id) {
+        <div class="col-md-4 mb-3">
+      <div class="  card h-100 shadow-sm">
+        @if (carta.imagenEquipo && carta.imagenEquipo.trim() !== '' && carta.imagenEquipo !== 'null') {
+        <img src="/Imagenes/Imagen de WhatsApp 2025-06-03 a las 14.17.00_691d2cbd.jpg" class="card-img-top" alt="p"
+          style="height: 300px; object-fit: cover;">
+        } @else {
+        <img [src]="carta.imagenEquipo" class="card-img-top" alt="Imagen por defecto"
+          style="height: 300px; object-fit: cover;">
+        }
 
-  <div *ngIf="carrito.length > 0; else vacio">
-    <div *ngFor="let carta of carrito" class="card mb-3" style="max-width: 540px">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <img [src]="carta.imagenUrl" class="img-fluid rounded-start" alt="{{ carta.nombre }}" />
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">{{ carta.nombre }}</h5>
-            <p class="card-text">{{ carta.descripcion }}</p>
-            <button class="btn btn-danger btn-sm" (click)="eliminar(carta.id)">
-              Eliminar
+        <div class="card-body">
+          <h5 class="card-title">{{ carta.nombre }}</h5>
+          <p class="card-text">{{ carta.descripcionLarga }}</p>
+          <p><strong>Cantidad:</strong> {{ carta.cantidad }}</p>
+          <span class="badge" [ngClass]="carta.disponible ? 'bg-success' : 'bg-danger'">
+            {{ carta.disponible ? 'Disponible' : 'No disponible' }}
+          </span>
+          <div class="mb-2 mt-2">
+            <button class="btn btn-danger mt-2 w-100" (click)="eliminar(carta.id)">
+              eliminar
             </button>
           </div>
         </div>
       </div>
     </div>
-    @if (carrito.length) {
+        }
+        <div class="text-center ">
+          <button class="btn btn-success mt-3 me-4 " (click)="ruta()">
+            Hacer Solicitud de Préstamo
+          </button>
 
-    <button class="btn btn-success mt-3" (click)="ruta()">
-      Hacer Solicitud de Préstamo
-    </button>
-    }
-    <button class="btn btn-warning mt-3" (click)="vaciar()">
-      Vaciar Carrito
-    </button>
+          <button class="btn btn-warning mt-3 " (click)="vaciar()">
+            Vaciar Carrito
+          </button>
+        </div>
+
+        } @else {
+        <p>No hay productos en el carrito.</p>
+        }
+      </div>
+
+    </div>
   </div>
-
-  <ng-template #vacio>
-    <p>No hay productos en el carrito.</p>
-  </ng-template>
 </div>

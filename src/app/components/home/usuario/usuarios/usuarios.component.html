@@ -1,67 +1,96 @@
-<div class="fondo d-flex justify-content-center align-items-center ">
-    <form action="" class="row container w-75 h-auto border border rounded-5  p-3 form mt-5 ite">
-        <h2>Informacion General</h2>
+<div class="body">
+  <div class="tables">
+    <div class="table-container">
 
-        <hr>
-        <div class="col-md-6 mt-1 row">           
-            <label for="inputEmail4" class="form-label">Nombres</label>
-            <div class="user">
-                 <fa-icon [icon]="faUser"></fa-icon>
-                <input type="text" formControlName="nombre" class="form-control" id="inputEmail4"
-                    placeholder="Nombre" />
-            </div>
-        </div>
-        <div class="col-md-6 mt-1 row">
-            <label for="inputEmail4" class="form-label">Apellidos</label>
-            <div class="user">
-                 <fa-icon [icon]="faUser"></fa-icon>
-               <input type="text" formControlName="apellido" class="form-control" id="inputEmail4" placeholder="Apellidos" />
-            </div>
-        </div>
-        <div class="col-md-6 mt-1 row">           
-            <label for="inputEmail4" class="form-label">Matricula</label>
-            <div class="user">
-                <fa-icon [icon]="faUser"></fa-icon>
-                <input type="text" formControlName="matricula" class="form-control" id="inputEmail4" placeholder="Matricula" />
-            </div>
-        </div>
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
-        <div class="col-md-6 mt-1 row">           
-            <label for="inputEmail4" class="form-label">Email</label>
-            <div class="envelope">
-                <fa-icon [icon]="faEnvelope"></fa-icon>
-                <input type="email" formControlName="email" class="form-control" id="inputEmail4"
-          placeholder="ejemplo@ipl.edu.do" />
-            </div>
-        </div>
-        <div class="col-md-6 mt-1 row">
-            <label for="inputEmail4" class="form-label">Telefono</label>
-            <div class="phone">
-                 <fa-icon [icon]="faPhone"></fa-icon>
-                <input type="tel" formControlName="telefono" class="form-control" id="inputEmail4" placeholder="Telefono" />
-            </div>
-        </div>
+        <!-- Nombre -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.id }}</td>
+        </ng-container>
+        <!-- Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.nombreUsuario }}</td>
+        </ng-container>
 
-        <div class="col-md-6 mt-1 row">
-            <label for="inputEmail4" class="form-label">Direccion</label>
-            <div class="location">
-                <fa-icon [icon]="faLocationDot"></fa-icon>
-                <input type="text" formControlName="direccion" class="form-control" id="inputEmail4" placeholder="Direccion" />
+        <!-- Apellido -->
+        <ng-container matColumnDef="apellido">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.apellidoUsuario }}</td>
+        </ng-container>
+
+        <!-- Matrícula -->
+        <ng-container matColumnDef="matricula">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Matrícula</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.idMatricula }}</td>
+        </ng-container>
+
+        <!-- Teléfono -->
+        <ng-container matColumnDef="telefono">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.telefono }}</td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.correoInstitucional }}</td>
+        </ng-container>
+
+        <!-- Dirección -->
+        <ng-container matColumnDef="direccion">
+          <th mat-header-cell *matHeaderCellDef>Dirección</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.direccion }}</td>
+        </ng-container>
+
+        <!-- Activar Usuario -->
+         <!--
+        <ng-container matColumnDef="activo">
+          <th mat-header-cell *matHeaderCellDef>Activo</th>
+          <td mat-cell *matCellDef="let usuario">{{ usuario.activado }}</td>
+        </ng-container> 
+        -->
+
+        <!-- Rol -->
+        <ng-container matColumnDef="rol">
+          <th mat-header-cell *matHeaderCellDef>Rol</th>
+          <td mat-cell *matCellDef="let usuario">
+            <span class="badge bg-info text-dark text-capitalize">
+              {{ usuario.idRol }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let element">
+            
+            <div class="btn-group" role="group" aria-label="Acciones del usuario">
+              <!-- Eliminar -->
+              <button mat-icon-button color="warn" (click)="eliminar(element.id)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <!-- Actualizar -->
+              <button mat-icon-button color="accent" (click)="openDialog(element)" matTooltip="Actualizar">
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <!-- Activar / Desactivar -->
+              <button mat-icon-button color="primary" (click)="desactivarUsuario(element)" matTooltip="Activar">
+                <mat-icon>toggle_on</mat-icon>
+              </button>
             </div>
-        </div>
-       <div class="col-md-6 mt-1 row">
-        <label for="">Rol</label>
-         <select class="form-select " aria-label="Default select example">
-            <option selected>Rol</option>
-            <option value="1">Estudiante</option>
-            <option value="2">Administrador</option>
-            <option value="3">Super Usuario</option>
-        </select>
-       </div>
-        <div class="col-md-6 mt-1 row">
- 
-       </div>      
 
+        </ng-container>
 
-    </form>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+    </div>
+  </div>
 </div>

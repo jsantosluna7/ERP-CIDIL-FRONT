@@ -24,8 +24,6 @@ export const routes: Routes = [
             { path: 'horario', loadComponent: () => import('./components/home/horario/horario.component').then(m => m.HorarioComponent) },
             { path: 'carrito', loadComponent: () => import('./components/home/carrito/carrito.component').then(m => m.CarritoComponent), children: [{ path: '', redirectTo: 'carrito', pathMatch: 'full' }] },
             { path: 'reserva-equipo', loadComponent: () => import('./components/home/reserva-equipo/reserva-equipo.component').then(m => m.ReservaEquipoComponent) },
-
-
             {
                 path: 'usuarios',
                 loadComponent: () => import('./components/home/usuario/layout-usuarios/layout-usuarios.component').then(m => m.LayoutUsuariosComponent),
@@ -35,7 +33,7 @@ export const routes: Routes = [
                     { path: 'modificar-usuario', loadComponent: () => import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(m => m.ModificarUsuarioComponent) },
 
                 ]
-            },
+            },{ path: 'solicitud-laboratorio', loadComponent: () => import('./components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component').then(m => m.SolicitudReservaLaboratorioComponent) },
             { path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent) }
         ]
     },

@@ -1,7 +1,6 @@
 
 
-
-.location,.phone,.user,.envelope{
+/*.location,.phone,.user,.envelope{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -38,6 +37,49 @@ input{
 input{
     padding-left: 1.9rem;
 }
+*/
 
+/* --------------- prueba para la tabla ---------------*/
 
+.nav{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 
+.table-container{
+    position: relative;
+    margin-top: 1.5rem;
+}
+
+.field{
+    padding: 0px !important;
+    background-color: #FAF9FD !important;
+    margin: 0px 0px 2rem 0px;
+}
+
+.entrada-pagina{
+    position: absolute;
+    bottom: 1rem;
+    left: 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.entrada-pagina p{
+    font-size: 0.8rem;
+    padding: 0px;
+    margin: 0px;
+    background-color: transparent;
+}
+
+.entrada-pagina input{
+    margin-left: 0.5rem;
+    border: 1px solid black;
+    border-radius: 0.6rem;
+    background-color: transparent;
+    font-size: 0.9rem;
+    inline-size: 3rem;
+    text-align: center;
+}

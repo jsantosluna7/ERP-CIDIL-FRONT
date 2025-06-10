@@ -1,5 +1,5 @@
-<div class="fondo d-flex justify-content-center align-items-center ">
-    <form [formGroup]="solicitudesForm" (ngSubmit)="enviarSolicitud()" action=""
+<div class="fondo d-flex justify-content-center p-lg-0 align-items-center ">
+    <form [formGroup]="solicitudesForm" 
         class="row container w-75 h-auto border border rounded-5  p-3 form mt-5 ite">
         <h2>Reserva de Equipos</h2>
 
@@ -10,7 +10,7 @@
         <ul class="list-group mb-3">
             @for (equipo of equiposSeleccionados; track equipo.id) {
             <li class="list-group-item">
-                {{ equipo.nombre }} - {{ equipo.descripcion }}
+                {{ equipo.nombre }} - {{ equipo.descripcionLarga }}
             </li>
             }
         </ul>
@@ -52,21 +52,20 @@
             </select>
         </div>
 
-
         <!--Comentarios -->
         <div class="col-md-6 mt-1 row">
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control"  formControlName="Motivo" id="exampleFormControlTextarea1" rows="3"></textarea>
             </div>
         </div>
         <div class="col-md-6 mt-1 row">
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Comentario de aprobacion</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control"  id="exampleFormControlTextarea1" rows="3"></textarea>
             </div>
         </div>
 
-        <button class="btn btn-success" type="submit">Enviar Solicitud</button>
+        <button class="btn btn-success" (click)="enviarSolicitud()">Enviar Solicitud</button>
     </form>
 </div>
