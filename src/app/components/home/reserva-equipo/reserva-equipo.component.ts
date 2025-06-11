@@ -6,11 +6,13 @@ import { CarritoService } from '../carrito/carrito.service';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
   selector: 'app-reserva-equipo',
-  imports: [CommonModule, FontAwesomeModule,ReactiveFormsModule],
+  imports: [CommonModule, FontAwesomeModule,ReactiveFormsModule, RouterLink, MatButtonModule],
   templateUrl: './reserva-equipo.component.html',
   styleUrl: './reserva-equipo.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,7 +30,7 @@ export class ReservaEquipoComponent implements OnInit {
   fahouse= faHome;
   faclock = faClock;
 
- constructor(private carritoService: CarritoService, private toastr: ToastrService) {
+ constructor(private carritoService: CarritoService, private toastr: ToastrService, private router: Router) {
     this.solicitudesForm = new FormGroup({
     fechaInicio: new FormControl('', [Validators.required]),
     fechaDevolucion: new FormControl('',[Validators.required]),
@@ -69,5 +71,11 @@ export class ReservaEquipoComponent implements OnInit {
     this.toastr.success('Solicitud enviada!', '') 
   }
  }
+
+
+ ruta(){
+    this.router.navigate(['/home/solicitud-laboratorio']);
+    console.log(this.router)
+  }
 
 }

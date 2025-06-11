@@ -33,7 +33,9 @@ export const routes: Routes = [
                     { path: 'modificar-usuario', loadComponent: () => import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(m => m.ModificarUsuarioComponent) },
 
                 ]
-            },{ path: 'solicitud-laboratorio', loadComponent: () => import('./components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component').then(m => m.SolicitudReservaLaboratorioComponent) },
+            },
+            { path: 'solicitud-laboratorio', loadComponent: () => import('./components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component').then(m => m.SolicitudReservaLaboratorioComponent) },
+            { path: 'solicitud-equipo', loadComponent: () => import('./components/home/solicitud-reserva-equipo/solicitud-reserva-equipo.component').then(m => m.SolicitudReservaEquipoComponent)},
             { path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent) }
         ]
     },

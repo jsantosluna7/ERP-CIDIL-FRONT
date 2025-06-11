@@ -1,26 +1,26 @@
 <div class="container mt-4">
-  <h2 class="mb-3">Solicitudes de Reserva de Laboratorio</h2>
+  <h2 class="mb-3">Solicitudes de Reserva de Equipos</h2>
 
-  @if (solicitudes.length > 0) {
+  @if (solicitud.length > 0) {
     <table class="table table-bordered table-hover">
       <thead class="table-dark">
         <tr>
           <th>ID Usuario</th>
-          <th>ID Laboratorio</th>
-          <th>Hora de Inicio</th>
-          <th>Hora de Finalización</th>
+          <th>ID Inventario</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Final</th>
           <th>Motivo</th>
           <th>Fecha de Solicitud</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        @for (solicitud of solicitudes; track solicitud.id) {
+        @for (solicitud of solicitud; track solicitud.idUsuario) {
           <tr>
             <td>{{ solicitud.idUsuario }}</td>
-            <td>{{ solicitud.idLaboratorio }}</td>
-            <td>{{ solicitud.horaInicio }}</td>
-            <td>{{ solicitud.horaFinal }}</td>
+            <td>{{ solicitud.idInventario }}</td>
+            <td>{{ solicitud.fechaInicio }}</td>
+            <td>{{ solicitud.fechaFinal }}</td>
             <td>{{ solicitud.motivo }}</td>
             <td>{{ solicitud.fechaSolicitud }}</td>
             <td>
@@ -35,3 +35,4 @@
     <div class="alert alert-info">No hay solicitudes disponibles.</div>
   }
 </div>
+
