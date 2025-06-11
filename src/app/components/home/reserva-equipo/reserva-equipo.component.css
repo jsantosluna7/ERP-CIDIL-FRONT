@@ -35,3 +35,7 @@ input{
 input{
     padding-left: 1.9rem;
 }
+
+div a{
+    text-decoration: none;
+}

@@ -1,57 +1,59 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 import { Solicitud } from '../../../interfaces/solicitud-reserva-espacio.interface';
-import {  SolicitudReservaService } from '../../../services/reserva-laboratorio/reserva-laboratorio.service';
-import { ToastrService } from 'ngx-toastr';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSortModule } from '@angular/material/sort';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { SolicitudReservaService } from '../../../services/reserva-laboratorio/reserva-laboratorio.service';
+import { error } from 'console';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
-  imports: [BrowserAnimationsModule,
-    MatTableModule,
-    MatSortModule,
-    MatButtonModule,
-    MatIconModule],
+  imports: [CommonModule ],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
   styleUrl: './solicitud-reserva-laboratorio.component.css'
 })
 export class SolicitudReservaLaboratorioComponent {
 
-// solicitudes: Solicitud[] = [];
-// displayedColumns: string[] = ['idUsuario', 'idLaboratorio', 'horaInicio', 'horaFinal', 'motivo', 'fechaSolicitud', 'acciones'];
-// dataSource = new MatTableDataSource<Solicitud>([]);
+solicitudes: Solicitud[] = [];
 
-// constructor(private solicitudService: SolicitudReservaService,private toastr: ToastrService){}
+constructor(private reservaLaboratorioService: SolicitudReservaService ){}
 
-//  ngOnInit(): void {
-//     this.solicitudService.getResevas().subscribe((data) => {
-//       this.dataSource.data = data;
-//     });
-//   }
+ngOnInit(): void {
+  this.reservaLaboratorioService.getResevas().subscribe({
+    next: (data: any) => {
+      this.solicitudes = data.datos;
+      console.log(data.datos)
+    },
+    error: (error) =>{
+      console.error('Error al cargar las solicitudes', error)
+    }
+  });
+}
 
-// obtenerSolicitudes(): void {
-//     this.solicitudService.getResevas().subscribe({
-//       next: (data) => {
-//         this.solicitudes = data;
-//       },
-//       error: () => {
-//         this.toastr.error('Error al cargar las solicitudes.');
-//       }
-//     });
-//   }
+aprobar(solicitud: Solicitud){
+  this.reservaLaboratorioService.updateEstado(solicitud.idLaboratorio, 'aprobado').subscribe({
+    next: () => {
+      solicitud.idEstado = 'aprobado';
+      console.log(`Solicitud ${solicitud.idLaboratorio} aprobada.`);
+    },
+    error: (error) => {
+      console.error('Error al aprobar solicitud:', error);
+    }
+  });
+}
 
-// aprobarSolicitud(solicitud: Solicitud) {
-//     this.toastr.success(`Solicitud del usuario ${solicitud.idUsuario} aprobada`);
-//     // Aquí puedes hacer un PUT al backend si ya tienes esa ruta
-//   }
 
-//   desaprobarSolicitud(solicitud: Solicitud) {
-//     this.toastr.warning(`Solicitud del usuario ${solicitud.idUsuario} desaprobada`);
-//     // Igual aquí podrías llamar al backend
-//   }
+desaprobar(solicitud: Solicitud) {
+  this.reservaLaboratorioService.updateEstado(solicitud.idLaboratorio, 'desaprobado').subscribe({
+    next: () => {
+      solicitud.idEstado = 'desaprobado';
+      console.log(`Solicitud ${solicitud.idLaboratorio} desaprobada`);
+    },
+    error: (error) => {
+      console.error('Error al desaprobar solicitud:', error);
+    }
+  });
+}
+
 
 
 }
