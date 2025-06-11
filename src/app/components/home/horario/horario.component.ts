@@ -2,7 +2,11 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDialogComponent } from './dialog/file-dialog/file-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import {
+  MatTable,
+  MatTableDataSource,
+  MatTableModule,
+} from '@angular/material/table';
 import {
   MatPaginator,
   MatPaginatorModule,
@@ -65,52 +69,14 @@ export class HorarioComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatTable) table!: MatTable<any>;
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
   endpointElimnarAuto: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_AUTO']}`;
 
   ngOnInit() {
-    this._horario.getHorario(this.endpoint).subscribe({
-      next: (e) => {
-        // console.log(e);
-
-        const datos = e.map((data: any) => {
-          return forkJoin({
-            lab: this._horario.getLaboratorio(
-              this.endpointLab,
-              data.idLaboratorio
-            ),
-          }).pipe(
-            map(({ lab }) => ({
-              id: data.id,
-              asignatura: data.asignatura,
-              profesor: data.profesor,
-              codigoDeLab: lab.codigoDeLab,
-              horaInicio: this.formatearFecha(data.horaInicio),
-              horaFinal: this.formatearFecha(data.horaFinal),
-              dia: data.dia,
-            }))
-          );
-        });
-
-        forkJoin(datos).subscribe({
-          next: (e) => {
-            const ELEMENT_DATA: any = e;
-            this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
-            this.loading = false;
-          },
-          error: (err) => {
-            this._toastr.error(err.error, 'Error al cargar los laboratorios');
-            this.loading = false;
-          },
-        });
-      },
-      error: (e) => {
-        this._toastr.error(e.error, 'Hubo un Error');
-        this.loading = false;
-      },
-    });
+    this.cargarTabla();
 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -155,6 +121,7 @@ export class HorarioComponent implements OnInit {
         asignatura: element.asignatura,
         profesor: element.profesor,
         laboratorio: element.codigoDeLab,
+        idLabEdit: element.idLab,
         dia: element.dia,
         horaInicio: this.desformatearFecha(element.horaInicio),
         horaFinal: this.desformatearFecha(element.horaFinal),
@@ -162,20 +129,37 @@ export class HorarioComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((e) => {
-      if (!e) {
+      if (e) {
+        this.cargarTabla();
+      } else {
         this._toastr.info('Se canceló la operación', 'Información');
       }
-    })
-
-    console.log('Editar', element);
+    });
   }
 
   eliminar(element: any) {
-    const index = this.dataSource.data.indexOf(element);
-    if (index >= 0) {
-      this.dataSource.data.splice(index, 1);
-      this.dataSource._updateChangeSubscription(); // Actualiza la tabla
-    }
+    const dialogRef = this.dialog.open(PreguntaDialogComponent, {
+      data: {
+        titulo: '¿Seguro que quieres eliminar este horario?',
+        mensaje:
+          'Se eliminará definitivamente el horario que acabas de seleccionar',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((response) => {
+      if (!response) {
+        this._toastr.info('Se canceló la operación', 'Información');
+      } else {
+        this._horario.deleteHorario(this.endpoint, element.id).subscribe({
+          next: (h) => {
+            this.cargarTabla();
+          },
+          error: (err) => {
+            this._toastr.error(err.error, 'Hubo un error');
+          },
+        });
+      }
+    });
   }
 
   updatePageSize(event: Event) {
@@ -198,13 +182,13 @@ export class HorarioComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result);
       if (result) {
         this._horario
           .deleteHorarioAuto(this.endpointElimnarAuto, 'true')
           .subscribe({
             error: (err) => {
-              this._toastr.error(err.error, 'Hubo un error');
+              this.cargarTabla();
+              this._toastr.error(err.error.text, 'Hubo un error');
             },
           });
       } else {
@@ -218,25 +202,76 @@ export class HorarioComponent implements OnInit {
   }
 
   desformatearFecha(fechaOriginal: string): string {
-  const [fecha, hora, ampm] = fechaOriginal.split(' ');
-  const [dia, mes, anio] = fecha.split('/');
-  let [horaStr, minutoStr] = hora.split(':');
+    const [fecha, hora, ampm] = fechaOriginal.split(' ');
+    const [dia, mes, anio] = fecha.split('/');
+    let [horaStr, minutoStr] = hora.split(':');
 
-  let horaNum = parseInt(horaStr, 10);
+    let horaNum = parseInt(horaStr, 10);
 
-  // Ajustar hora según AM/PM
-  if (ampm.toUpperCase() === 'PM' && horaNum < 12) {
-    horaNum += 12;
-  } else if (ampm.toUpperCase() === 'AM' && horaNum === 12) {
-    horaNum = 0;
+    // Ajustar hora según AM/PM
+    if (ampm.toUpperCase() === 'PM' && horaNum < 12) {
+      horaNum += 12;
+    } else if (ampm.toUpperCase() === 'AM' && horaNum === 12) {
+      horaNum = 0;
+    }
+
+    // Asegurar formato de dos dígitos
+    const horaFinal = horaNum.toString().padStart(2, '0');
+    const minutoFinal = minutoStr.padStart(2, '0');
+    const mesFinal = mes.padStart(2, '0');
+    const diaFinal = dia.padStart(2, '0');
+
+    return `${anio}-${mesFinal}-${diaFinal}T${horaFinal}:${minutoFinal}`;
   }
 
-  // Asegurar formato de dos dígitos
-  const horaFinal = horaNum.toString().padStart(2, '0');
-  const minutoFinal = minutoStr.padStart(2, '0');
-  const mesFinal = mes.padStart(2, '0');
-  const diaFinal = dia.padStart(2, '0');
+  cargarTabla() {
+    this._horario.getHorario(this.endpoint).subscribe({
+      next: (e) => {
+        const datos = e.map((data: any) => {
+          return forkJoin({
+            lab: this._horario.getLaboratorio(
+              this.endpointLab,
+              data.idLaboratorio
+            ),
+          }).pipe(
+            map(({ lab }) => ({
+              id: data.id,
+              asignatura: data.asignatura,
+              profesor: data.profesor,
+              codigoDeLab: lab.codigoDeLab,
+              idLab: lab.id,
+              horaInicio: this.formatearFecha(data.horaInicio),
+              horaFinal: this.formatearFecha(data.horaFinal),
+              dia: data.dia,
+            }))
+          );
+        });
 
-  return `${anio}-${mesFinal}-${diaFinal}T${horaFinal}:${minutoFinal}`;
-}
+        forkJoin(datos).subscribe({
+          next: (e: any) => {
+            const ELEMENT_DATA: any = e;
+            this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+            this.loading = false;
+          },
+          error: (err) => {
+            const ELEMENT_DATA: any = {
+              asignatura: 'NO',
+              dia: 'NO',
+              horaFinal: '2025-06-11T17:30:00Z',
+              horaInicio: '2025-06-11T17:30:00Z',
+              idLaboratorio: 1,
+              profesor: 'NO',
+            };
+            this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+            this._toastr.error(err.error, 'Error al cargar los laboratorios');
+            this.loading = false;
+          },
+        });
+      },
+      error: (e) => {
+        this._toastr.error(e.error, 'Hubo un Error');
+        this.loading = false;
+      },
+    });
+  }
 }

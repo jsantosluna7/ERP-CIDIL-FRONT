@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, model, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -26,7 +32,7 @@ import { error } from 'console';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './editar-horario.component.html',
   styleUrl: './editar-horario.component.css',
@@ -36,10 +42,11 @@ export class EditarHorarioComponent implements OnInit {
   readonly selection = model(true);
   laboratorios: any[] = [];
   labLoading: boolean = false;
+  cambio: boolean = false;
   idLab: any;
 
-
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO']}`;
+  endpointHorario: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO']}`;
 
   constructor(
     public dialogRef: MatDialogRef<EditarHorarioComponent>,
@@ -49,6 +56,7 @@ export class EditarHorarioComponent implements OnInit {
       asignatura: string;
       profesor: string;
       laboratorio: string;
+      idLabEdit: string;
       dia: string;
       horaInicio: string;
       horaFinal: string;
@@ -62,30 +70,62 @@ export class EditarHorarioComponent implements OnInit {
       laboratorio: new FormControl(data.laboratorio, [Validators.required]),
       dia: new FormControl(data.dia, [Validators.required]),
       horaInicio: new FormControl(data.horaInicio, [Validators.required]),
-      horaFinal: new FormControl(data.horaFinal, [Validators.required])
-    })
+      horaFinal: new FormControl(data.horaFinal, [Validators.required]),
+    });
   }
 
   ngOnInit(): void {
     this._horario.getAllLaboratorio(this.endpoint).subscribe({
       next: (e) => {
-        this.laboratorios = e
-        this.labLoading = false
-      }, error: (err) => {
+        this.laboratorios = e;
+        this.labLoading = false;
+      },
+      error: (err) => {
         this._toastr.error(err.error, 'Hubo un error');
-        this.labLoading = false
-      } 
-    })
+        this.labLoading = false;
+      },
+    });
 
-    this.editarForm.get('laboratorio')!.valueChanges.subscribe(id => {
+    this.editarForm.get('laboratorio')!.valueChanges.subscribe((id) => {
       this.idLab = id;
-      // console.log(this.idLab)
-    })
+      this.cambio = true;
+    });
   }
 
-  datos(){
-    console.log(this.editarForm.value);
-    console.log(this.laboratorios);
+  datos() {
+    var todoData: any;
+    const form = this.editarForm.value;
+    var inicioISO = new Date(form.horaInicio).toISOString();
+    var finISO = new Date(form.horaFinal).toISOString();
+
+    //Si se cambio el valor del select
+    if (this.cambio) {
+      todoData = {
+        asignatura: form.asignatura,
+        profesor: form.profesor,
+        idLaboratorio: this.idLab,
+        horaInicio: inicioISO,
+        horaFinal: finISO,
+        dia: form.dia,
+      };
+    } else {
+      todoData = {
+        asignatura: form.asignatura,
+        profesor: form.profesor,
+        idLaboratorio: this.data.idLabEdit,
+        horaInicio: inicioISO,
+        horaFinal: finISO,
+        dia: form.dia,
+      };
+    }
+    
+    this._horario.putHorario(this.endpointHorario, this.data.id, todoData).subscribe({
+      next: (e) => {
+        console.log(e);
+      }, error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
   onNo() {
