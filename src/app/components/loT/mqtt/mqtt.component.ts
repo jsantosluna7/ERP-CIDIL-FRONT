@@ -2,7 +2,6 @@ import { CommonModule, JsonPipe } from '@angular/common';
 import { Component, ElementRef, OnInit, signal, viewChild} from '@angular/core';
 import { ServicioMqttService } from '../../../services/loT/servicio-mqtt.service';
 import { IMqttMessage, MqttService } from 'ngx-mqtt';
-import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-mqtt',
@@ -43,29 +42,29 @@ export class MqttComponent implements OnInit{
       }
     })
 
-    new Chart(this.chart().nativeElement, {
-      type: 'line',
-      data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-          {
-          label: 'My First Dataset',
-          data: [65, 59, 80, 81, 56, 55, 40],
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }
-        ],
-      },
-      options: {
-        maintainAspectRatio: false,
-        elements:{
-          line: {
-            tension: 0.4,
-          }
-        }
-      }
-    })
+    // new Chart(this.chart().nativeElement, {
+    //   type: 'line',
+    //   data: {
+    //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    //     datasets: [
+    //       {
+    //       label: 'My First Dataset',
+    //       data: [65, 59, 80, 81, 56, 55, 40],
+    //       fill: false,
+    //       borderColor: 'rgb(75, 192, 192)',
+    //       tension: 0.1
+    //     }
+    //     ],
+    //   },
+    //   options: {
+    //     maintainAspectRatio: false,
+    //     elements:{
+    //       line: {
+    //         tension: 0.4,
+    //       }
+    //     }
+    //   }
+    // })
   }
 
     public toggleActuador(): void{
