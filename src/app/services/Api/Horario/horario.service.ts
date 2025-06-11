@@ -25,8 +25,8 @@ export class HorarioService {
     return this.http.post(endpoint, body);
   }
 
-  putHorario(endpoint: string, body: any): Observable<any>{
-    return this.http.put(endpoint, body);
+  putHorario(endpoint: string, id:string, body: any): Observable<any>{
+    return this.http.put(`${endpoint}/${id}`, body);
   }
 
   deleteHorario(endpoint: string, id: string): Observable<any>{
