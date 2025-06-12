@@ -17,6 +17,10 @@ export class HorarioService {
     return this.http.get(`${endpoint}/${id}`);
   }
 
+  getIdLaboratorio(endpoint: string, codigo: string): Observable<any>{
+    return this.http.get(`${endpoint}?codigo=${codigo}`);
+  }
+
   getAllLaboratorio(endpoint: string): Observable<any>{
     return this.http.get(endpoint);
   }

@@ -1,90 +1,66 @@
-import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, ElementRef, OnInit, signal, viewChild} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
 import { ServicioMqttService } from '../../../services/loT/servicio-mqtt.service';
-import { IMqttMessage, MqttService } from 'ngx-mqtt';
+import { IMqttMessage } from 'ngx-mqtt';
+import { ToastrService } from 'ngx-toastr';
+import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
+import * as echarts from 'echarts/core';
+import { BarChart } from 'echarts/charts';
+import { GridComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+import { EChartsCoreOption } from 'echarts/core';
+echarts.use([BarChart, GridComponent, CanvasRenderer]);
 
 @Component({
   selector: 'app-mqtt',
-  imports: [CommonModule],
+  imports: [CommonModule, NgxEchartsDirective],
   templateUrl: './mqtt.component.html',
   styleUrl: './mqtt.component.css',
-  providers: [ServicioMqttService]
+  providers: [ServicioMqttService, provideEchartsCore({ echarts })],
 })
-export class MqttComponent implements OnInit{
-  // datos = signal('');
+export class MqttComponent implements OnInit {
   temp = signal('---');
   hum = signal('---');
   luz = signal('---');
   sonido = signal('---');
-  actuador = signal(false);
-  
-  estadoActuador = false;
-  estadoReiniciar = false;
-  
+
   observar = `${process.env['PATH_COMPONENT']}${process.env['OBSERVAR']}`;
   publicar = `${process.env['PATH_COMPONENT']}${process.env['PUBLICAR']}`;
 
-  chart = viewChild.required<ElementRef>('chart');
-
-  constructor(private _mqttService: ServicioMqttService){}
+  constructor(
+    private _mqttService: ServicioMqttService,
+    private _toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this._mqttService.observarTopico(this.observar).subscribe((message: IMqttMessage) =>{
-      try {
-        const payload = JSON.parse(message.payload.toString());
-      this.temp.set(payload.temp.toString());
-      this.hum.set(payload.hum.toString());
-      this.luz.set(payload.luz.toString());
-      this.sonido.set(payload.sonido.toString());
-      this.actuador.set(payload.actuador.toString());
-      } catch (error) {
-        console.error('Error al parsear el mensaje MQTT:', error);
-      }
-    })
-
-    // new Chart(this.chart().nativeElement, {
-    //   type: 'line',
-    //   data: {
-    //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    //     datasets: [
-    //       {
-    //       label: 'My First Dataset',
-    //       data: [65, 59, 80, 81, 56, 55, 40],
-    //       fill: false,
-    //       borderColor: 'rgb(75, 192, 192)',
-    //       tension: 0.1
-    //     }
-    //     ],
-    //   },
-    //   options: {
-    //     maintainAspectRatio: false,
-    //     elements:{
-    //       line: {
-    //         tension: 0.4,
-    //       }
-    //     }
-    //   }
-    // })
+    this._mqttService
+      .observarTopico(this.observar)
+      .subscribe((message: IMqttMessage) => {
+        try {
+          const payload = JSON.parse(message.payload.toString());
+          this.temp.set(payload.temp.toString());
+          this.hum.set(payload.hum.toString());
+          this.luz.set(payload.luz.toString());
+          this.sonido.set(payload.sonido.toString());
+        } catch (error: any) {
+          this._toastr.error(error, 'Error al parsear el mensaje MQTT:');
+        }
+      });
   }
 
-    public toggleActuador(): void{
-    this.estadoActuador = !this.estadoActuador
-
-    const mensajeActivadoActuador = JSON.stringify({ Actuador: true });
-    const mensajeDesactivarActuador = JSON.stringify({ Actuador: false });
-
-    const estado = this.estadoActuador ? mensajeActivadoActuador : mensajeDesactivarActuador;
-    this._mqttService.toggle(this.publicar, estado)
-  }
-
-    public toggleReiniciar(){
-    this.estadoReiniciar = !this.estadoReiniciar
-
-    const mensajeActivadoReiniar = JSON.stringify({ Reiniciar: true });
-    const mensajeDesactivarReiniar = JSON.stringify({ Reiniciar: false });
-
-    const estado = this.estadoReiniciar ? mensajeActivadoReiniar : mensajeDesactivarReiniar;
-    this._mqttService.toggle(this.publicar, estado)
-  }
-
+  chartOption: EChartsCoreOption = {
+    xAxis: {
+      type: 'category',
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        type: 'line',
+      },
+    ],
+  };
 }
