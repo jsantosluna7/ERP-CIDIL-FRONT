@@ -25,6 +25,8 @@
     [value]="luz()"
     label="Luz"
     append="%"
+    [min]="0"
+    [max]="4095"
     [cap]="gaugeCap"
     [thick]="gaugeThick"
   ></ngx-gauge>
@@ -35,6 +37,8 @@
     [value]="sonido()"
     label="Sonido"
     append="dB"
+    [min]="0"
+    [max]="4095"
     [cap]="gaugeCap"
     [thick]="gaugeThick"
   ></ngx-gauge>

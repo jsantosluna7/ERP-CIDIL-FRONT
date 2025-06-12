@@ -98,7 +98,7 @@ export class HorarioComponent implements OnInit {
               dia: 'Lunes',
             };
             console.log(data);
-            this._horario.postHorario(this.endpoint, todaData).subscribe();
+            // this._horario.postHorario(this.endpoint, todaData).subscribe();
           });
         }
       });
