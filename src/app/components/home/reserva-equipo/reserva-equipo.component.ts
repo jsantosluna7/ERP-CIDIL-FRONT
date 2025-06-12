@@ -34,7 +34,7 @@ export class ReservaEquipoComponent implements OnInit {
     this.solicitudesForm = new FormGroup({
     fechaInicio: new FormControl('', [Validators.required]),
     fechaDevolucion: new FormControl('',[Validators.required]),
-    motivo: new FormControl('', [Validators.min(1)]),
+    Motivo: new FormControl('', [Validators.min(1)]),
   });
  }
 

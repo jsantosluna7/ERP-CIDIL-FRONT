@@ -4,7 +4,7 @@ idUsuario: number;
 idLaboratorio:number;
 horaInicio:String;
 horaFinal:String;
-motivo:String
+motivo:String;
 fechaSolicitud:string;
-idEstado:String;
+idEstado:number;
 }
