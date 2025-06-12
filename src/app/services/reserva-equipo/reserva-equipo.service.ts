@@ -13,6 +13,7 @@ import { ReservaEquipos } from "../../interfaces/solicitud-reserva-equipos.inter
 
 export class SolicitudEquipoService{
 private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDRE']}`;
+private apiUrlE = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDEQUIPO']}`;
 
 constructor(private http: HttpClient){}
 
@@ -20,9 +21,8 @@ getReservaE(): Observable<ReservaEquipos[]> {
     return this.http.get<ReservaEquipos[]>(this.apiUrl)
 }
 
-updateEstado(id: number, estado: string) {
-  const url =`${this.apiUrl}/${id}`;
-  return this.http.put(url, {estado: estado});
+updateEstado(id: number, body: any) {
+  return this.http.put(`${this.apiUrlE}/${id}`, body);
 }
 
 

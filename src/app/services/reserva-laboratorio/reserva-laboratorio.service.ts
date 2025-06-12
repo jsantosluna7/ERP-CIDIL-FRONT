@@ -13,6 +13,7 @@ import { Solicitud } from "../../interfaces/solicitud-reserva-espacio.interface"
 export class SolicitudReservaService{
 
 private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDR']}`;
+private apiUrlP = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDLB']}`;
 
 constructor(private http: HttpClient){}
 
@@ -21,9 +22,10 @@ getResevas(): Observable<Solicitud[]> {
     return this.http.get<Solicitud[]>(this.apiUrl)
 }
 
-updateEstado(id: number, estado: string) {
-  const url =`${this.apiUrl}/${id}`;
-  return this.http.put(url, {estado: estado});
+updateEstado(id: number, body: any) {
+  return this.http.put(`${this.apiUrlP}/${id}`, body);
+  
 }
+
 
 }
