@@ -21,10 +21,12 @@ import { DatosService } from '../../../services/Datos/datos.service';
 import { ContentObserver } from '@angular/cdk/observers';
 import { HorarioService } from '../../../services/Api/Horario/horario.service';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { PreguntaDialogComponent } from '../../elements/pregunta-dialog/pregunta-dialog.component';
 import { EditarHorarioComponent } from './crud/editar-horario/editar-horario.component';
+import { ElegirFechaComponent } from './crud/elegir-fecha/elegir-fecha.component';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-horario',
@@ -47,6 +49,7 @@ export class HorarioComponent implements OnInit {
   ELEMENT_DATA: any[] = [];
   dataSource: any;
   loading: boolean = true;
+  noData = true;
 
   constructor(
     private dialog: MatDialog,
@@ -74,6 +77,7 @@ export class HorarioComponent implements OnInit {
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
   endpointElimnarAuto: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_AUTO']}`;
+  endpointCodigoLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_CODIGO']}`;
 
   ngOnInit() {
     this.cargarTabla();
@@ -86,20 +90,58 @@ export class HorarioComponent implements OnInit {
     const dialogRef = this.dialog.open(FileDialogComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
-      this._datos.jsonData$.subscribe((datos) => {
-        if (datos) {
-          datos.forEach((data) => {
-            const todaData = {
-              asignatura: 'Circuito',
-              profesor: 'Alayn',
-              idLaboratorio: 1,
-              horaInicio: '2025-06-10T00:24:46.675Z',
-              horaFinal: '2025-06-15T00:24:46.675Z',
-              dia: 'Lunes',
+      const horaDialogRef = this.dialog.open(ElegirFechaComponent, {
+        data: {
+          titulo: 'Diga la fecha de inicio y fin',
+        },
+      });
+
+      horaDialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this._datos.jsonData$.subscribe((datos) => {
+            var fecha: any;
+            this._datos.fechaData$.subscribe((info) => {
+              fecha = info;
+            });
+
+            if (datos) {
+              datos.forEach((data) => {
+                this.obtenerIdLab(data.AULA).subscribe({
+                  next: (id) => {
+                    const todaData = {
+                      asignatura: data.ASIGNATURA,
+                      profesor: data.PROFESOR,
+                      idLaboratorio: id,
+                      horaInicio: this.formatearAISOLocal(
+                        fecha.fechaInicio,
+                        this._datos.excelTiempoAString(data['HORA INICIO'])
+                      ),
+                      horaFinal: this.formatearAISOLocal(
+                        fecha.fechaFinal,
+                        this._datos.excelTiempoAString(data['HORA FINAL'])
+                      ),
+                      dia: data.DIA,
+                    };
+                    this._horario
+                      .postHorario(this.endpoint, todaData)
+                      .subscribe({
+                        next: (h) => {
+                          this.loading = true;
+                        },
+                        error: (err) => {
+                          this._toastr.error(err.error, 'Hubo un error');
+                        },complete: () => {
+                          this.cargarTabla();
+                          this.loading = false;
+                        }
+                      });
+                  },
+                });
+              });
             };
-            console.log(data);
-            // this._horario.postHorario(this.endpoint, todaData).subscribe();
           });
+        } else {
+          this._toastr.info('Se canceló la operación', 'Información');
         }
       });
     });
@@ -224,6 +266,13 @@ export class HorarioComponent implements OnInit {
     return `${anio}-${mesFinal}-${diaFinal}T${horaFinal}:${minutoFinal}`;
   }
 
+  formatearAISOLocal(fechaStr: string, horaStr: string): string {
+    const IsoLocal = `${fechaStr}T${horaStr}:00.000`;
+    const fecha = new Date(IsoLocal);
+
+    return fecha.toISOString();
+  }
+
   cargarTabla() {
     this._horario.getHorario(this.endpoint).subscribe({
       next: (e) => {
@@ -252,19 +301,12 @@ export class HorarioComponent implements OnInit {
             const ELEMENT_DATA: any = e;
             this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
             this.loading = false;
+            this.noData = false;
           },
           error: (err) => {
-            const ELEMENT_DATA: any = {
-              asignatura: 'NO',
-              dia: 'NO',
-              horaFinal: '2025-06-11T17:30:00Z',
-              horaInicio: '2025-06-11T17:30:00Z',
-              idLaboratorio: 1,
-              profesor: 'NO',
-            };
-            this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
             this._toastr.error(err.error, 'Error al cargar los laboratorios');
             this.loading = false;
+            this.noData = true;
           },
         });
       },
@@ -273,5 +315,11 @@ export class HorarioComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  obtenerIdLab(codigo: string): Observable<number> {
+    return this._horario.getIdLaboratorio(this.endpointCodigoLab, codigo).pipe(
+      map((e) => e.id) // extraemos sólo el id
+    );
   }
 }
