@@ -8,11 +8,15 @@ import { Observable } from 'rxjs';
 export class CalendarioService {
   constructor(private http: HttpClient) {}
 
-  getReservas(endpoint: string): Observable<any> {
-    return this.http.get(endpoint);
+  getReservas(endpoint: string, params?: any): Observable<any> {
+    return this.http.get(endpoint, params);
   }
 
   getLaboratorio(endpoint: string, id: string): Observable<any> {
+    return this.http.get(`${endpoint}/${id}`);
+  }
+  
+  getEstado(endpoint: string, id: string): Observable<any> {
     return this.http.get(`${endpoint}/${id}`);
   }
 }

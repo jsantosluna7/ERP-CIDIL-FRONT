@@ -1,7 +1,6 @@
-import { Component, Inject, ViewEncapsulation } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FileDialogContentComponent } from '../file-dialog-content/file-dialog-content.component';
-import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-file-dialog',
@@ -14,8 +13,4 @@ export class FileDialogComponent {
     public dialogRef: MatDialogRef<FileDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { nombre: string }
   ) { }
-
-  onClose(): void{
-    this.dialogRef.close();
-  }
 }
