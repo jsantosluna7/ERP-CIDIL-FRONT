@@ -2,14 +2,18 @@ import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DatosService } from '../../../../services/Datos/datos.service';
 import { ToastrService } from 'ngx-toastr';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import {
   MatTable,
   MatTableDataSource,
   MatTableModule,
 } from '@angular/material/table';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +23,8 @@ import { PreguntaDialogComponent } from '../../../elements/pregunta-dialog/pregu
 import { MqttIOTService } from '../../../../services/Api/Mqtt/mqtt-iot.service';
 import { LaboratorioService } from '../../../../services/Api/Laboratorio/laboratorio.service';
 import { DatePipe } from '@angular/common';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-mqtt-table',
@@ -34,10 +40,11 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './mqtt-table.component.html',
   styleUrl: './mqtt-table.component.css',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class MqttTableComponent {
   pageSize = 20;
+  pageIndex = 0;
   totalIoT = 0;
   ELEMENT_DATA: any[] = [];
   dataSource: any;
@@ -50,7 +57,7 @@ export class MqttTableComponent {
     private _lab: LaboratorioService,
     private _toastr: ToastrService,
     public _dialog: MatDialog,
-    public _datePipe: DatePipe,
+    public _datePipe: DatePipe
   ) {}
 
   displayedColumns: string[] = [
@@ -75,58 +82,124 @@ export class MqttTableComponent {
 
   ngOnInit() {
     this.cargarTabla();
+    // this.cargarPagina();
 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  exportar() {}
+  exportarCsv() {}
+
+  exportarExcel() {}
+
+  onPageChange(event: PageEvent) {
+    this.loading = true;
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+    this.cargarTabla();
+  }
+
+  // private cargarPagina() {
+  //   this._mqtt
+  //     .paginationIot(this.endpoint, this.pageIndex + 1, this.pageSize)
+  //     .subscribe({
+  //       next: (resp: any) => {
+  //         console.log(resp);
+  //         this.dataSource.data = resp.datos;
+  //         this.totalIoT = resp.paginacion.totalLoT
+  //       }, error: (err) => {
+  //         console.log(err);
+  //         this._toastr.error(err.error, 'Hubo un error');
+  //       }
+  //     });
+  // }
+
+  // cargarTabla() {
+  //   this._mqtt.getIot(this.endpoint, this.pageIndex + 1, this.pageSize).subscribe({
+  //     next: (e: any) => {
+  //       const all = e.datos;
+  //       this.totalIoT = e.paginacion.totalLoT;
+  //       const datos = all.map((data: any) => {
+  //         return forkJoin({
+  //           lab: this._lab.getLabById(this.endpointLab, data.idLaboratorio),
+  //         }).pipe(
+  //           map(({ lab }) => ({
+  //             id: data.id,
+  //             idPlaca: data.idPlaca,
+  //             codigoDeLab: lab.codigoDeLab,
+  //             sensor1: data.sensor1,
+  //             sensor2: data.sensor2,
+  //             sensor3: data.sensor3,
+  //             sensor4: data.sensor4,
+  //             sensor5: data.sensor5,
+  //             actuador: data.actuador,
+  //             horaEntrada: this.formatearFecha(data.horaEntrada),
+  //           }))
+  //         );
+  //       });
+
+  //       forkJoin(datos).subscribe({
+  //         next: (e: any) => {
+  //           const ELEMENT_DATA: any = e;
+  //           this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+  //           this.loading = false;
+  //           this.noData = false;
+  //         },
+  //         error: (err) => {
+  //           this._toastr.error(err.error, 'Error al cargar los laboratorios');
+  //           this.loading = false;
+  //           this.noData = true;
+  //         },
+  //       });
+  //     },
+  //     error: (e) => {
+  //       this._toastr.error(e.error, 'Hubo un Error');
+  //       this.loading = false;
+  //     },
+  //   });
+  // }
 
   cargarTabla() {
-    this._mqtt.getIot(this.endpoint).subscribe({
-      next: (e) => {
-        const all = e.datos;
-
-        this.totalIoT = e.paginacion.totalLoT
-        console.log(all)
-        const datos = all.map((data: any) => {
-          return forkJoin({
-            lab: this._lab.getLabById(this.endpointLab, data.idLaboratorio),
-          }).pipe(
-            map(({ lab }) => ({
-              id: data.id,
-              idPlaca: data.idPlaca,
-              codigoDeLab: lab.codigoDeLab,
-              sensor1: data.sensor1,
-              sensor2: data.sensor2,
-              sensor3: data.sensor3,
-              sensor4: data.sensor4,
-              sensor5: data.sensor5,
-              actuador: data.actuador,
-              horaEntrada: this.formatearFecha(data.horaEntrada),
-            }))
+    // this.loading = true;
+    this._mqtt
+      .getIot(this.endpoint, this.pageIndex + 1, this.pageSize)
+      .pipe(
+        switchMap((e: any) => {
+          this.totalIoT = e.paginacion.totalLoT;
+          const items$ = e.datos.map((data: any) =>
+            forkJoin({
+              lab: this._lab.getLabById(this.endpointLab, data.idLaboratorio),
+            }).pipe(
+              map(({ lab }) => ({
+                id: data.id,
+                idPlaca: data.idPlaca,
+                codigoDeLab: lab.codigoDeLab,
+                sensor1: data.sensor1,
+                sensor2: data.sensor2,
+                sensor3: data.sensor3,
+                sensor4: data.sensor4,
+                sensor5: data.sensor5,
+                actuador: data.actuador,
+                horaEntrada: this.formatearFecha(data.horaEntrada),
+              }))
+            )
           );
-        });
-
-        forkJoin(datos).subscribe({
-          next: (e: any) => {
-            const ELEMENT_DATA: any = e;
-            this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
-            this.loading = false;
-            this.noData = false;
-          },
-          error: (err) => {
-            this._toastr.error(err.error, 'Error al cargar los laboratorios');
-            this.loading = false;
-            this.noData = true;
-          },
-        });
-      },
-      error: (e) => {
-        this._toastr.error(e.error, 'Hubo un Error');
-        this.loading = false;
-      },
-    });
+          return forkJoin(items$);
+        })
+      )
+      .subscribe({
+        next: (items: any) => {
+          const ELEMENT_DATA: any = items;
+          this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
+          this.loading = false;
+          this.noData = items.length === 0;
+        },
+        error: (err) => {
+          this._toastr.error(err.error || err, 'Error cargando datos');
+          this.loading = false;
+          this.noData = true;
+        },
+      });
   }
 
   applyFilter(event: Event) {
@@ -156,7 +229,8 @@ export class MqttTableComponent {
             this.cargarTabla();
           },
           error: (err) => {
-            this._toastr.error(err.error, 'Hubo un error');
+            console.log(err);
+            this._toastr.info(err.error.text, 'Información');
           },
         });
       }

@@ -2,20 +2,16 @@
   <div class="nav">
     <h1>IoT</h1>
     <div class="botones">
-      <button mat-raised-button color="secondary" (click)="exportar()">
-        Abrir Diálogo
+      <button mat-raised-button color="secondary" (click)="exportarCsv()">
+        Exportar en CSV
+      </button>
+
+      <button mat-raised-button color="secondary" (click)="exportarExcel()">
+        Exportar en Excel
       </button>
     </div>
   </div>
 
-  @if (loading) {
-  <div class="spinner-container">
-    <mat-spinner mode="indeterminate"></mat-spinner>
-  </div>
-  } @if (!loading) { 
-    @if(noData){
-  <p>No hay datos!</p>
-  }@else {
   <div class="tables">
     <div class="table-container">
       <mat-form-field appearance="outline" class="field">
@@ -24,6 +20,13 @@
         <mat-hint class="hint"></mat-hint>
       </mat-form-field>
 
+      @if (loading) {
+      <div class="spinner-container">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+      } @if (!loading) { @if(noData){
+      <p>No hay datos!</p>
+      }@else {
       <table
         mat-table
         [dataSource]="dataSource"
@@ -68,7 +71,9 @@
         </ng-container>
 
         <ng-container matColumnDef="horaEntrada">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora de Entrada</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Hora de Entrada
+          </th>
           <td mat-cell *matCellDef="let element">{{ element.horaEntrada }}</td>
         </ng-container>
 
@@ -87,11 +92,13 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+      } }
 
       <mat-paginator
         class="paginator"
         [length]="totalIoT"
         [pageSize]="pageSize"
+        (page)="onPageChange($event)"
         [pageSizeOptions]="[]"
         [hidePageSize]="true"
         showFirstLastButtons
@@ -109,5 +116,4 @@
       </div>
     </div>
   </div>
-  } }
 </div>
