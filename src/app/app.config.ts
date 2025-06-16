@@ -13,6 +13,8 @@ import { MqttModule } from 'ngx-mqtt';
 import { MQTT_SERVICE_OPTIONS } from './tools/mqtt-options';
 import { provideHttpClient } from '@angular/common/http';
 import { UiSwitchModule } from 'ngx-ui-switch';
+import * as echarts from 'echarts/core';
+import { provideEchartsCore } from 'ngx-echarts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,5 +40,6 @@ export const appConfig: ApplicationConfig = {
         uncheckedLabel: 'Apagado',
       })
     ),
+    provideEchartsCore({ echarts })
   ],
 };

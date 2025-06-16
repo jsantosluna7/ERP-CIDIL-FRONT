@@ -1,0 +1,17 @@
+<mat-tab-group mat-align-tabs="center" preserveContent>
+  <mat-tab label="Gráficos">
+    @if (loadedChartsTab) {
+    <app-mqtt-charts></app-mqtt-charts>
+    }@else {
+    <ng-template matTabContent>
+        <app-mqtt-charts></app-mqtt-charts>
+    </ng-template>
+    }
+  </mat-tab>
+
+  <mat-tab label="Tabla">
+    <ng-template matTabContent>
+      <app-mqtt-table></app-mqtt-table>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

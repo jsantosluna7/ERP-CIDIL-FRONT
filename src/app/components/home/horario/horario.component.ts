@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {  Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDialogComponent } from './dialog/file-dialog/file-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +10,6 @@ import {
 import {
   MatPaginator,
   MatPaginatorModule,
-  PageEvent,
 } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { DatosService } from '../../../services/Datos/datos.service';
-import { ContentObserver } from '@angular/cdk/observers';
 import { HorarioService } from '../../../services/Api/Horario/horario.service';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, map, Observable } from 'rxjs';
@@ -26,7 +24,6 @@ import { DatePipe } from '@angular/common';
 import { PreguntaDialogComponent } from '../../elements/pregunta-dialog/pregunta-dialog.component';
 import { EditarHorarioComponent } from './crud/editar-horario/editar-horario.component';
 import { ElegirFechaComponent } from './crud/elegir-fecha/elegir-fecha.component';
-import { faL } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-horario',
@@ -75,7 +72,7 @@ export class HorarioComponent implements OnInit {
   @ViewChild(MatTable) table!: MatTable<any>;
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO']}`;
-  endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
+  endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO']}`;
   endpointElimnarAuto: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_AUTO']}`;
   endpointCodigoLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_CODIGO']}`;
 

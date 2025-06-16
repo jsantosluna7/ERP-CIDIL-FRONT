@@ -36,7 +36,7 @@ export const routes: Routes = [
 
                 ]
             },
-            { path: 'iot', loadComponent: () => import('./components/loT/mqtt/mqtt.component').then(m => m.MqttComponent) }
+            { path: 'iot', loadComponent: () => import('./components/home/IoT/iot.component').then(m => m.IotComponent) }
         ]
     },
     {

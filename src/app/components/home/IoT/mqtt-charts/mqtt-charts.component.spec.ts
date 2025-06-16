@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MqttComponent } from './mqtt.component';
+import { MqttChartsComponent } from './mqtt-charts.component';
 
-describe('MqttComponent', () => {
-  let component: MqttComponent;
-  let fixture: ComponentFixture<MqttComponent>;
+describe('MqttChartsComponent', () => {
+  let component: MqttChartsComponent;
+  let fixture: ComponentFixture<MqttChartsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MqttComponent]
+      imports: [MqttChartsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MqttComponent);
+    fixture = TestBed.createComponent(MqttChartsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
