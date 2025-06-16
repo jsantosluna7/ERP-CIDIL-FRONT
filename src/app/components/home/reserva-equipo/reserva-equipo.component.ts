@@ -40,6 +40,7 @@ export class ReservaEquipoComponent implements OnInit {
 
  ngOnInit(): void {
   this.equiposSeleccionados = this.carritoService.getCarrito();
+  console.log(this.equiposSeleccionados)
  }
 
  enviarSolicitud(): void {
@@ -70,6 +71,8 @@ export class ReservaEquipoComponent implements OnInit {
     };
     this.toastr.success('Solicitud enviada!', '') 
   }
+   this.carritoService.vaciarCarrito();
+ 
  }
 
 
@@ -77,5 +80,7 @@ export class ReservaEquipoComponent implements OnInit {
     this.router.navigate(['/home/solicitud-laboratorio']);
     console.log(this.router)
   }
+
+ 
 
 }

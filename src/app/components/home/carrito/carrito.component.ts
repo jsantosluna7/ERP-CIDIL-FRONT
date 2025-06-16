@@ -4,18 +4,20 @@ import { Carta } from '../../../interfaces/carta';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
+import { CartaCarrito } from './cartaCarrito.interface';
 
 
 @Component({
   selector: 'app-carrito',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
 export class CarritoComponent implements OnInit {
 
 
-  carrito: Carta[] = [];
+  carrito: any[] = [];
 
   constructor(private carritoService: CarritoService, private router: Router, private toastr: ToastrService){}
 

@@ -19,7 +19,7 @@
           formControlName="laboratorioId">
           <option value="" disabled selected>Seleccione un laboratorio</option>
           @for (lab of laboratorios; track lab.id) {
-          <option [value]="lab.id">{{ lab.codigoDeLab }}</option>
+          <option [value]="lab.id">{{ lab.codigoDeLab }} </option>
           }
         </select>
         } @else {
