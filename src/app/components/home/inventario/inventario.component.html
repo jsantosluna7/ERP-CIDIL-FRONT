@@ -1,3 +1,9 @@
+
+  @if (loading) {
+  <mat-spinner *ngIf="loading" diameter="40" strokeWidth="5" class="mx-auto d-block my-4"></mat-spinner>
+
+  }
+
 <div class="container mt-4">
 
   <mat-form-field appearance="outline" class="field">
@@ -6,7 +12,8 @@
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
 
-   <div class="row">
+   @if(!loading){
+    <div class="row">
   @for (carta of dataSource.filteredData; track carta.id) {
     <div class="col-md-4 mb-3">
       <div class="  card h-100 shadow-sm">
@@ -47,5 +54,8 @@
     <input matInput type="text" [value]="pageSize" (change)="updatePageSize($event)" />
   </div>
 
+   }
+
+  
 
 </div>

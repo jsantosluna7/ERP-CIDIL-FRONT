@@ -22,6 +22,7 @@ import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import {  forkJoin, map } from 'rxjs';
 import { ContentObserver } from '@angular/cdk/observers';
 import { subscribe } from 'diagnostics_channel';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-inventario',
@@ -35,11 +36,15 @@ import { subscribe } from 'diagnostics_channel';
     MatInputModule,
     MatIconModule,
     MatCardModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.css',
 })
 export class InventarioComponent implements OnInit, AfterViewInit {
+
+  loading: boolean = true;
+
   pageSize = 20;
   totalItems = 0;
   paginaActual = 1;
@@ -64,15 +69,68 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>([]);
 
   ngOnInit(): void {
-    
-    this.cargarCartas();
-    this.laboratorioService.getLaboratorios().subscribe((n: any) =>{
-       console.log(n)
+    this.loading = true;
+    this.laboratorioService.getLaboratorios().subscribe((labs: Laboratorio[]) => {
+      this.laboratorios =labs;
+       this.cargarCartas();
     })
+    
+   
+    /*this.laboratorioService.getLaboratorios().subscribe((n: any) =>{
+       console.log(n)
+    })*/
     
   }
 
   cargarCartas() {
+  this.loading = true;
+
+  this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
+    next: (d: any) => {
+      const all = d.datos;
+
+      const datos = all.map((data: any) => {
+        const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
+        return {
+          id: data.id,
+          nombre: lab ? lab.codigoDeLab : 'Sin laboratorio',
+          nombreData: data.nombre,
+          cantidad: data.cantidad,
+          disponible: data.disponible,
+          imagen: data.imagenEquipo
+        };
+      });
+
+      this.cartasConLaboratorio = datos;
+      this.totalItems = d.total;
+      this.loading = false;
+
+      this.dataSource = new MatTableDataSource(this.cartasConLaboratorio);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const dataStr = (
+          data.nombreData +
+          ' ' +
+          data.nombre +
+          ' ' +
+          data.cantidad +
+          ' ' +
+          (data.disponible ? 'disponible' : 'no disponible')
+        ).toLowerCase();
+        return dataStr.includes(filter);
+      };
+    },
+    error: () => {
+      this.loading = false;
+      this.toastr.error('Error al cargar los datos');
+    }
+  });
+}
+
+
+  /*cargarCartas() {
     this.inventarioService
       .getCartas(this.paginaActual, this.pageSize)
       .subscribe({
@@ -94,6 +152,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
           forkJoin(datos).subscribe({
             next: (i: any) => {
               this.cartasConLaboratorio = i;
+              this.loading = false;
               console.log(i);
 
 
@@ -112,23 +171,25 @@ export class InventarioComponent implements OnInit, AfterViewInit {
                (data.disponible ? 'disponible' : 'no disponible')
                ).toLowerCase();
                return dataStr.includes(filter);
+               this.loading = false;
              };
             },
           });
         },
       });
-  }
+  }*/
 
   updatePageSize(event: Event): void {
     const input = event.target as HTMLInputElement;
     const newSize = parseInt(input.value, 10);
     if (newSize > 0) {
+       this.loading = true;
       this.pageSize = newSize;
       this.paginaActual = 1; // Siempre vuelve a la primera página
       this.paginator.pageSize = newSize;
       this.paginator.firstPage();
-
       this.cargarCartas();
+      
     }
   }
 
