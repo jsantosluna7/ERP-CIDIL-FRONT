@@ -25,6 +25,7 @@ import { LaboratorioService } from '../../../../services/Api/Laboratorio/laborat
 import { DatePipe } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { FechaDialogComponent } from '../../../elements/fecha-dialog/fecha-dialog.component';
 
 @Component({
   selector: 'app-mqtt-table',
@@ -50,6 +51,12 @@ export class MqttTableComponent {
   dataSource: any;
   loading: boolean = true;
   noData = true;
+
+  ejemploData: any[] = [
+    { nombre: 'Juan', edad: 25 },
+    { nombre: 'Ana', edad: 30 },
+    { nombre: 'Luis', edad: 22 },
+  ];
 
   constructor(
     private dialog: MatDialog,
@@ -90,10 +97,32 @@ export class MqttTableComponent {
 
   exportarCsv() {}
 
-  exportarExcel() {}
+  exportarExcel() {
+
+    this._dialog.open(FechaDialogComponent, {
+      data: {
+        titulo: 'Elige'
+      },
+      height: '15rem'
+    })
+    // const dataFiltrada = this.ejemploData.slice(0, 3);
+
+    // const worksheet = XLSX.utils.json_to_sheet(dataFiltrada);
+    // const workbook = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+
+    // const excelBuffer = XLSX.write(workbook, {
+    //   bookType: 'xlsx',
+    //   type: 'array',
+    // });
+    // const blob = new Blob([excelBuffer], {
+    //   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // });
+    // saveAs(blob, 'reporte.xlsx');
+  }
 
   onPageChange(event: PageEvent) {
-    this.loading = true;
+    // this.loading = true;
     this.pageSize = event.pageSize;
     this.pageIndex = event.pageIndex;
     this.cargarTabla();
@@ -192,7 +221,7 @@ export class MqttTableComponent {
           const ELEMENT_DATA: any = items;
           this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
           this.loading = false;
-          this.noData = items.length === 0;
+          this.noData = false;
         },
         error: (err) => {
           this._toastr.error(err.error || err, 'Error cargando datos');

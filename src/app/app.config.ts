@@ -15,6 +15,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { UiSwitchModule } from 'ngx-ui-switch';
 import * as echarts from 'echarts/core';
 import { provideEchartsCore } from 'ngx-echarts';
+import {provideNativeDateAdapter} from '@angular/material/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -40,6 +41,7 @@ export const appConfig: ApplicationConfig = {
         uncheckedLabel: 'Apagado',
       })
     ),
-    provideEchartsCore({ echarts })
+    provideEchartsCore({ echarts }),
+    provideNativeDateAdapter()
   ],
 };

@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>{{data.titulo}}</h2>
+<mat-dialog-content class="contenido">
+  <mat-form-field>
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [formGroup]="fechaForm" [rangePicker]="picker">
+      <input matStartDate formControlName="start" placeholder="Start date" />
+      <input matEndDate formControlName="end" placeholder="End date" />
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+
+    @if (fechaForm.controls.start.hasError('matStartDateInvalid')) {
+    <mat-error>Invalid start date</mat-error>
+    } @if (fechaForm.controls.end.hasError('matEndDateInvalid')) {
+    <mat-error>Invalid end date</mat-error>
+    }
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNo()">No</button>
+  <button
+    mat-button
+    [mat-dialog-close]="selection()"
+    (click)="fechas()"
+    cdkFocusInitial
+  >
+    Ok
+  </button>
+</mat-dialog-actions>

@@ -12,14 +12,27 @@ export class MqttIOTService {
   //   return this.http.get(endpoint);
   // }
 
-  getIot(
-    endpoint: string,
-    pagina: number = 1,
-    tamanoPagina: number = 20
-  ) {
+  getIot(endpoint: string, pagina: number = 1, tamanoPagina: number = 20) {
     return this.http.get(
       `${endpoint}?pagina=${pagina}&tamanoPagina=${tamanoPagina}`
     );
+  }
+
+  filtradoIot(
+    endpoint: string,
+    pagina: string,
+    tamanoPagina: string,
+    inicio: any,
+    fin: any
+  ): Observable<any> {
+    return this.http.get(endpoint, {
+      params: {
+        pagina: pagina,
+        tamanoPagina: tamanoPagina,
+        inicio: inicio,
+        fin: fin,
+      },
+    });
   }
 
   deleteIot(endpoint: string, id: string): Observable<any> {

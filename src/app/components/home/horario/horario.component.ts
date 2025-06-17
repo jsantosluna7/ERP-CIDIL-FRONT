@@ -1,4 +1,4 @@
-import {  Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDialogComponent } from './dialog/file-dialog/file-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,10 +7,7 @@ import {
   MatTableDataSource,
   MatTableModule,
 } from '@angular/material/table';
-import {
-  MatPaginator,
-  MatPaginatorModule,
-} from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -24,6 +21,7 @@ import { DatePipe } from '@angular/common';
 import { PreguntaDialogComponent } from '../../elements/pregunta-dialog/pregunta-dialog.component';
 import { EditarHorarioComponent } from './crud/editar-horario/editar-horario.component';
 import { ElegirFechaComponent } from './crud/elegir-fecha/elegir-fecha.component';
+import { ErrorSolapamientoComponent } from './crud/error-solapamiento/error-solapamiento.component';
 
 @Component({
   selector: 'app-horario',
@@ -102,40 +100,63 @@ export class HorarioComponent implements OnInit {
             });
 
             if (datos) {
-              datos.forEach((data) => {
-                this.obtenerIdLab(data.AULA).subscribe({
-                  next: (id) => {
-                    const todaData = {
-                      asignatura: data.ASIGNATURA,
-                      profesor: data.PROFESOR,
-                      idLaboratorio: id,
-                      horaInicio: this.formatearAISOLocal(
-                        fecha.fechaInicio,
-                        this._datos.excelTiempoAString(data['HORA INICIO'])
-                      ),
-                      horaFinal: this.formatearAISOLocal(
-                        fecha.fechaFinal,
-                        this._datos.excelTiempoAString(data['HORA FINAL'])
-                      ),
-                      dia: data.DIA,
-                    };
-                    this._horario
-                      .postHorario(this.endpoint, todaData)
-                      .subscribe({
-                        next: (h) => {
-                          this.loading = true;
-                        },
-                        error: (err) => {
-                          this._toastr.error(err.error, 'Hubo un error');
-                        },complete: () => {
-                          this.cargarTabla();
-                          this.loading = false;
-                        }
-                      });
-                  },
-                });
+              var fecha: any;
+              this._datos.fechaData$.subscribe((info) => {
+                fecha = info;
               });
-            };
+
+              const observables = datos.map((data) =>
+                this.obtenerIdLab(data.AULA).pipe(
+                  map((id) => ({
+                    asignatura: data.ASIGNATURA,
+                    profesor: data.PROFESOR,
+                    idLaboratorio: id,
+                    horaInicio: this.formatearAISOLocal(
+                      fecha.fechaInicio,
+                      this._datos.excelTiempoAString(data['HORA INICIO'])
+                    ),
+                    horaFinal: this.formatearAISOLocal(
+                      fecha.fechaFinal,
+                      this._datos.excelTiempoAString(data['HORA FINAL'])
+                    ),
+                    dia: data.DIA,
+                  }))
+                )
+              );
+
+              forkJoin(observables).subscribe({
+                next: (todosLosHorarios) => {
+                  this._horario
+                    .postHorario(this.endpoint, todosLosHorarios)
+                    .subscribe({
+                      next: (h) => {
+                        console.log(h);
+                        this.loading = true;
+                      },
+                      error: (err) => {
+                        console.log(err);
+                        const tercerDialogRef = this._dialog.open(ErrorSolapamientoComponent, {
+                          data: {
+                            titulo: 'Solapamiento',
+                            listaErrores: err.error.detalles
+                          },
+                          maxHeight: "30rem"
+                        })
+
+                        this._toastr.error(err.error.mensaje, 'Hubo un error');
+                      },
+                      complete: () => {
+                        this.cargarTabla();
+                        this.loading = false;
+                      },
+                    });
+                },
+                error: (err) => {
+                  console.log(err);
+                  this._toastr.error('Error al obtener IDs de laboratorios');
+                },
+              });
+            }
           });
         } else {
           this._toastr.info('Se canceló la operación', 'Información');
@@ -273,7 +294,9 @@ export class HorarioComponent implements OnInit {
   cargarTabla() {
     this._horario.getHorario(this.endpoint).subscribe({
       next: (e) => {
-        const datos = e.map((data: any) => {
+        console.log(e);
+        const all = e.datos;
+        const datos = all.map((data: any) => {
           return forkJoin({
             lab: this._horario.getLaboratorio(
               this.endpointLab,
