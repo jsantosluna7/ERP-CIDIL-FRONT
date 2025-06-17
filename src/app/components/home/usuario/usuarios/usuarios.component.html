@@ -79,7 +79,7 @@
               </button>
 
               <!-- Activar / Desactivar -->
-              <button mat-icon-button color="primary" (click)="desactivarUsuario(element)" matTooltip="Activar">
+              <button mat-icon-button color="primary" (click)="desactivarUsuario(element)" matTooltip="{{element.activado? 'Desactivar' : 'Activar'}}">
                 <mat-icon>toggle_on</mat-icon>
               </button>
             </div>
