@@ -1,7 +1,5 @@
 <div class="fondo d-flex justify-content-center p-lg-0 align-items-center">
-  <form [formGroup]="usuarioForm" 
-        class="row container w-100 h-auto  p-3 form mt-5 ite" 
-        (ngSubmit)="guardarCambios()">
+  <form [formGroup]="usuarioForm" class="row container w-100 h-auto  p-3 form mt-5 ite" (ngSubmit)="guardarCambios()">
 
     <div class="col-md-6 mt-1 row">
       <label for="nombreUsuario" class="form-label">Nombre</label>
@@ -10,12 +8,13 @@
 
     <div class="col-md-6 mt-1 row">
       <label for="apellidoUsuario" class="form-label">Apellido</label>
-      <input type="text" formControlName="apellidoUsuario" class="form-control" id="apellidoUsuario" placeholder="Apellido" />
+      <input type="text" formControlName="apellidoUsuario" class="form-control" id="apellidoUsuario"
+        placeholder="Apellido" />
     </div>
 
     <div class="col-md-6 mt-1 row">
       <label for="idMatricula" class="form-label">Matrícula</label>
-     <input type="text" formControlName="idMatricula" class="form-control" id="idMatricula" placeholder="Matrícula" />
+      <input type="text" formControlName="idMatricula" class="form-control" id="idMatricula" placeholder="Matrícula" />
 
     </div>
 
@@ -26,7 +25,8 @@
 
     <div class="col-md-6 mt-1 row">
       <label for="correoInstitucional" class="form-label">Email</label>
-      <input type="email" formControlName="correoInstitucional" class="form-control" id="correoInstitucional" placeholder="Email" />
+      <input type="email" formControlName="correoInstitucional" class="form-control" id="correoInstitucional"
+        placeholder="Email" />
     </div>
 
     <div class="col-md-6 mt-1 row">
@@ -36,19 +36,18 @@
 
     <div class="col-md-6 mt-1 row">
       <label for="idRol" class="form-label">Rol</label>
-      <select formControlName="idRol" class="form-select" id="idRol" aria-label="Seleccionar rol">
-        <option value="" disabled>Seleccione un rol</option>
-        <option value="Estudiante">Estudiante</option>
-        <option value="Administrador">Administrador</option>
-        <option value="Super Usuario">Super Usuario</option>
-      </select>
+      <select formControlName="idRol" class="form-select" id="idRol">
+  <option value="" disabled>Seleccione un rol</option>
+  <option value="4">Estudiante</option>
+  <option value="2">Administrador</option>
+  <option value="1">Super Usuario</option>
+  <option value="3">Profesor</option>
+</select>
     </div>
 
     <div class="col-12 mt-3 d-flex justify-content-end">
-
-     <button type="submit" class="btn btn-primary me-2" (click)="cancelar()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="usuarioForm.invalid">Guardar Cambios</button>
-    
+      <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="usuarioForm.invalid">Guardar Cambios</button>
     </div>
   </form>
 </div>

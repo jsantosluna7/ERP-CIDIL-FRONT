@@ -159,12 +159,16 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
 
   dialogRef.afterClosed().subscribe(result => {
     if (result) {
-      // Aquí puedes actualizar la lista con el usuario editado o llamar servicio para guardar
-      console.log('Usuario editado:', result);
+      this.usuarioService.obtenerUsuarios().subscribe(data => {
+        this.dataSource.data = data.datos;
+        this.dataSource.paginator = this.paginator!;
+        this.dataSource.sort = this.sort!;
+        this.toastr.success('Tabla actualizada tras edición');
+      });
     }
   });
-
 }
+
 
 
 

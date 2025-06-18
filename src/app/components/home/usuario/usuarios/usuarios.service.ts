@@ -30,7 +30,7 @@ export class UsuarioService{
    }
 
    cambiarRol(id: number, nuevoRol: Usuarios['idrol']): Observable<any> {
-    return this.http.put(`${this.apiUrlRol}/${id}`,{nuevoRol});
+    return this.http.put(`${this.apiUrl}/${id}`,{nuevoRol});
    }
 
    desactivarUsuario(id: number, activo: boolean): Observable<void>{

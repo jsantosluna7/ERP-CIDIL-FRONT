@@ -17,7 +17,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-usuario-dialog',
-  imports: [MatTableModule,MatSortModule,MatIconModule,MatButtonModule,MatFormFieldModule, MatSelectModule,MatButtonModule,MatDialogModule,MatButtonToggleModule,MatSlideToggleModule, ReactiveFormsModule ],
+  imports: [MatIconModule,MatButtonModule,MatFormFieldModule, MatSelectModule,MatButtonModule,MatDialogModule, ReactiveFormsModule ],
   templateUrl: './usuario-dialog.component.html',
   styleUrl: './usuario-dialog.component.css'
 })
@@ -36,32 +36,50 @@ export class UsuarioDialogComponent implements OnInit {
 
 
   ngOnInit(): void {
-    // Inicializar el formulario con los datos del usuario
-    this.usuarioForm = this.fb.group({
-      id: [this.usuario.id],
-      nombreUsuario: [this.usuario.nombreUsuario, Validators.required],
-      apellidoUsuario: [this.usuario.apellidoUsuario, Validators.required],
-      idMatricula: [this.usuario.idMatricula, Validators.required],
-      telefono: [this.usuario.telefono, Validators.required],
-      correoInstitucional: [this.usuario.correoInstitucional, [Validators.required, Validators.email]],
-      direccion: [this.usuario.direccion],
-      idRol: [this.usuario.idrol, Validators.required],
-      activado: [this.usuario.activado]
-    });
-  }
-
-    guardarCambios() {
-  if (this.usuarioForm.valid) {
-    const datosActualizados = this.usuarioForm.value;
-
-    this.usuarioService.actualizarUsuario(datosActualizados.id, datosActualizados).subscribe({
-      next: () => this.toastr.success('Usuario actualizado correctamente'),
-      error: () => this.toastr.error('Error al actualizar el usuario')
-    });
-  } else {
-    this.toastr.warning('Formulario inválido');
-  }
+  this.usuarioForm = this.fb.group({
+    id: [this.usuario.id],
+    idMatricula: [this.usuario.idMatricula, Validators.required],
+    nombreUsuario: [this.usuario.nombreUsuario, Validators.required],
+    apellidoUsuario: [this.usuario.apellidoUsuario, Validators.required],
+    correoInstitucional: [this.usuario.correoInstitucional, [Validators.required, Validators.email]],
+    telefono: [this.usuario.telefono, Validators.required],
+    direccion: [this.usuario.direccion],
+    idRol: [this.usuario.idrol, Validators.required],
+    fechaCreacion: [this.usuario.fechaCreacion],
+    fechaUltimaModificacion: [new Date().toISOString()] // actualizamos la fecha de modificación
+  });
 }
+
+
+   guardarCambios() {
+    if (this.usuarioForm.valid) {
+      const datosActualizados = {
+        idMatricula: this.usuarioForm.value.idMatricula,
+        nombreUsuario: this.usuarioForm.value.nombreUsuario,
+        apellidoUsuario: this.usuarioForm.value.apellidoUsuario,
+        correoInstitucional: this.usuarioForm.value.correoInstitucional,
+        telefono: this.usuarioForm.value.telefono,
+        direccion: this.usuarioForm.value.direccion,
+        idRol: this.usuarioForm.value.idRol,
+        fechaCreacion: this.usuario.fechaCreacion, // se mantiene
+        fechaUltimaModificacion: new Date().toISOString() // se actualiza
+      };
+        console.log('Payload actualizado:', datosActualizados);
+      this.usuarioService.actualizarUsuario(this.usuario.id, datosActualizados).subscribe({
+        next: () => {
+          this.toastr.success('Usuario actualizado correctamente');
+          this.dialogRef.close(true); // puedes usar esto para recargar la tabla
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastr.error('Error al actualizar el usuario');
+        }
+      });
+    } else {
+      this.toastr.warning('Formulario inválido');
+    }
+  }
+
 
   cancelar() {
     this.dialogRef.close();
@@ -69,25 +87,6 @@ export class UsuarioDialogComponent implements OnInit {
 
 
 
- /* cambiarRol(usuario: Usuarios) {
-  const nuevoRol = prompt('Ingrese el nuevo rol (Estudiante, Administrador, Super Usuario):', usuario.idrol);
-  const rolesValidos: Usuarios['idrol'][] = ['Estudiante', 'Administrador', 'Super Usuario'];
-
-  if (nuevoRol && rolesValidos.includes(nuevoRol as Usuarios['idrol'])) {
-    this.usuarioService.cambiarRol(usuario.id, nuevoRol as Usuarios['idrol']).subscribe({
-      next: () => {
-        this.toastr.success('Rol actualizado correctamente.');
-        this.ngOnInit();
-      },
-      error: () => {
-        this.toastr.error('Error al actualizar el rol.');
-      }
-    });
-  } else if (nuevoRol) {
-    this.toastr.warning('Rol inválido.');
-  }
-}*/
-  
 
 
   
