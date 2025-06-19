@@ -1,19 +1,32 @@
-<h2 mat-dialog-title>{{data.titulo}}</h2>
+<h2 mat-dialog-title>{{ data.titulo }}</h2>
 <mat-dialog-content class="contenido">
+  <mat-form-field [class]="data.ifLab ? 'form-field' : 'mostrar' ">
+    <mat-label>Laboratorios</mat-label>
+    <mat-select [formControl]="labIdControl" required>
+      <mat-option>Ninguno</mat-option>
+      @for (lab of labs; track lab) {
+      <mat-option [value]="lab">{{ lab.codigoDeLab }}</mat-option>
+      }
+    </mat-select>
+    @if (labIdControl.hasError('required')) {
+    <mat-error>Por favor, elige un laboratorio</mat-error>
+    }
+  </mat-form-field>
+
   <mat-form-field>
-    <mat-label>Enter a date range</mat-label>
+    <mat-label>Introduce el rango de la fecha</mat-label>
     <mat-date-range-input [formGroup]="fechaForm" [rangePicker]="picker">
-      <input matStartDate formControlName="start" placeholder="Start date" />
-      <input matEndDate formControlName="end" placeholder="End date" />
+      <input matStartDate formControlName="start" placeholder="Fecha Inicio" />
+      <input matEndDate formControlName="end" placeholder="Fecha Final" />
     </mat-date-range-input>
     <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-date-range-picker #picker></mat-date-range-picker>
 
     @if (fechaForm.controls.start.hasError('matStartDateInvalid')) {
-    <mat-error>Invalid start date</mat-error>
+    <mat-error>Fecha Inicio Invalida</mat-error>
     } @if (fechaForm.controls.end.hasError('matEndDateInvalid')) {
-    <mat-error>Invalid end date</mat-error>
+    <mat-error>Fecha Final Invalida</mat-error>
     }
   </mat-form-field>
 </mat-dialog-content>

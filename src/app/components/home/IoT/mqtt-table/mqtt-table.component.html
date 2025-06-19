@@ -2,11 +2,11 @@
   <div class="nav">
     <h1>IoT</h1>
     <div class="botones">
-      <button mat-raised-button color="secondary" (click)="exportarCsv()">
+      <button mat-raised-button color="secondary" (click)="exportar('csv')">
         Exportar en CSV
       </button>
 
-      <button mat-raised-button color="secondary" (click)="exportarExcel()">
+      <button mat-raised-button color="secondary" (click)="exportar('xlsx')">
         Exportar en Excel
       </button>
     </div>
@@ -26,7 +26,13 @@
       </div>
       } @if (!loading) { @if(noData){
       <p>No hay datos!</p>
-      }@else {
+      }@else { 
+        
+      @if (secondLoading) {
+      <div class="spinner-container">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+      }
       <table
         mat-table
         [dataSource]="dataSource"

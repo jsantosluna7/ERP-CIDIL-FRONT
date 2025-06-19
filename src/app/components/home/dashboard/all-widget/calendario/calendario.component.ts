@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   FullCalendarComponent,
@@ -14,13 +14,13 @@ import { forkJoin, map } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DateDialogComponent } from './date-dialog/date-dialog.component';
+import { UtilitiesService } from '../../../../../services/Utilities/utilities.service';
 
 @Component({
   selector: 'app-calendario',
   imports: [CommonModule, FullCalendarModule],
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css',
-  providers: [DatePipe],
 })
 export class CalendarioComponent {
   @ViewChild('calendarHost', { static: true }) host!: ElementRef<HTMLDivElement>;
@@ -35,7 +35,7 @@ export class CalendarioComponent {
     private _toastr: ToastrService,
     private _calendario: CalendarioService,
     public dialog: MatDialog,
-    public _datePipe: DatePipe
+    private _utilities: UtilitiesService
   ) {
     this.opcionesCalendario = {
       initialView: 'dayGridMonth',
@@ -105,8 +105,8 @@ export class CalendarioComponent {
         lab: evento.title,
         estado: evento.extendedProps.estado,
         motivo: evento.extendedProps.motivo,
-        inicio: this.formatearFecha(evento.startStr),
-        fin: this.formatearFecha(evento.endStr),
+        inicio: this._utilities.formatearFecha(evento.startStr),
+        fin: this._utilities.formatearFecha(evento.endStr),
       },
     });
   }
@@ -123,8 +123,8 @@ export class CalendarioComponent {
         lab: evt.title,
         estado: evt.extendedProps.estado,
         motivo: evt.extendedProps.motivo,
-        inicio: this.formatearFecha(evt.startStr),
-        fin: this.formatearFecha(evt.endStr),
+        inicio: this._utilities.formatearFecha(evt.startStr),
+        fin: this._utilities.formatearFecha(evt.endStr),
       }));
 
       this.dialog.open(DateDialogComponent, {
@@ -137,9 +137,5 @@ export class CalendarioComponent {
     } else {
       this._toastr.info('No hay eventos en esta fecha.', 'Información');
     }
-  }
-
-  formatearFecha(fechaOriginal: string): string | null {
-    return this._datePipe.transform(fechaOriginal, 'dd/MM/yyyy hh:mm a');
   }
 }

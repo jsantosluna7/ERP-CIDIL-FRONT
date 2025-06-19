@@ -26,6 +26,7 @@ import { DatePipe } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { FechaDialogComponent } from '../../../elements/fecha-dialog/fecha-dialog.component';
+import { UtilitiesService } from '../../../../services/Utilities/utilities.service';
 
 @Component({
   selector: 'app-mqtt-table',
@@ -50,13 +51,8 @@ export class MqttTableComponent {
   ELEMENT_DATA: any[] = [];
   dataSource: any;
   loading: boolean = true;
+  secondLoading: boolean = false;
   noData = true;
-
-  ejemploData: any[] = [
-    { nombre: 'Juan', edad: 25 },
-    { nombre: 'Ana', edad: 30 },
-    { nombre: 'Luis', edad: 22 },
-  ];
 
   constructor(
     private dialog: MatDialog,
@@ -64,7 +60,9 @@ export class MqttTableComponent {
     private _lab: LaboratorioService,
     private _toastr: ToastrService,
     public _dialog: MatDialog,
-    public _datePipe: DatePipe
+    public _datePipe: DatePipe,
+    private _datos: DatosService,
+    private _utilities: UtilitiesService
   ) {}
 
   displayedColumns: string[] = [
@@ -85,6 +83,7 @@ export class MqttTableComponent {
   @ViewChild(MatTable) table!: MatTable<any>;
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_IOT']}`;
+  endpointFiltrado: string = `${process.env['API_URL']}${process.env['ENDPOINT_IOT_FILTRO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO']}`;
 
   ngOnInit() {
@@ -95,34 +94,172 @@ export class MqttTableComponent {
     this.dataSource.sort = this.sort;
   }
 
-  exportarCsv() {}
+  exportar(tipo: 'xlsx' | 'xls' | 'csv') {
+    const dialogRef = this._dialog.open(FechaDialogComponent, {
+      data: {
+        titulo: 'Introduce la fecha',
+        ifLab: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (n) => {
+        if (n) {
+          this._datos.fechaData$.subscribe({
+            next: (f: any) => {
+              this._mqtt
+                .filtradoIot(
+                  this.endpointFiltrado,
+                  f.fechaInicio,
+                  f.fechaFinal,
+                  f.labId
+                )
+                .subscribe({
+                  next: (ex) => {
+                    const totalInfo = ex.map((e: any) => {
+                      return {
+                        id: e.id,
+                        idPlaca: e.idPlaca,
+                        idLaboratorio: e.idLaboratorio,
+                        sensor1: e.sensor1,
+                        sensor2: e.sensor2,
+                        sensor3: e.sensor3,
+                        sensor4: e.sensor4,
+                        sensor5: e.sensor5,
+                        actuador: e.actuador,
+                        horaEntrada: this._utilities.formatearFecha(
+                          e.horaEntrada
+                        ),
+                      };
+                    });
+
+                    const worksheet = XLSX.utils.json_to_sheet(totalInfo);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(
+                      workbook,
+                      worksheet,
+                      'Mediciones'
+                    );
+                    const excelBuffer = XLSX.write(workbook, {
+                      bookType: 'csv',
+                      type: 'array',
+                    });
+                    const blob = new Blob([excelBuffer], {
+                      type:
+                        tipo === 'csv'
+                          ? 'text/csv;charset=utf-8'
+                          : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    });
+                    saveAs(
+                      blob,
+                      `Mediciones-${f.lab}-${this._utilities.formatearFecha(
+                        f.fechaInicio
+                      )}-${this._utilities.formatearFecha(
+                        f.fechaFinal
+                      )}.${tipo}`
+                    );
+                  },
+                  error: (err) => {
+                    this._toastr.error(err.error, 'Hubo un error al filtrar');
+                  },
+                });
+            },
+            error: (err) => {
+              this._toastr.error(err.error, 'Hubo un error');
+            },
+          });
+        } else {
+          this._toastr.info('Se canceló la operación');
+        }
+      },
+      error: (err) => {
+        this._toastr.error(err.error, 'Hubo un error con el dialogo');
+      },
+    });
+  }
 
   exportarExcel() {
-
-    this._dialog.open(FechaDialogComponent, {
+    const dialogRef = this._dialog.open(FechaDialogComponent, {
       data: {
-        titulo: 'Elige'
+        titulo: 'Introduce la fecha',
+        ifLab: true,
       },
-      height: '15rem'
-    })
-    // const dataFiltrada = this.ejemploData.slice(0, 3);
+    });
 
-    // const worksheet = XLSX.utils.json_to_sheet(dataFiltrada);
-    // const workbook = XLSX.utils.book_new();
-    // XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+    dialogRef.afterClosed().subscribe({
+      next: (n) => {
+        if (n) {
+          this._datos.fechaData$.subscribe({
+            next: (f: any) => {
+              console.log(f);
+              this._mqtt
+                .filtradoIot(
+                  this.endpointFiltrado,
+                  f.fechaInicio,
+                  f.fechaFinal,
+                  f.labId
+                )
+                .subscribe({
+                  next: (ex) => {
+                    const totalInfo = ex.map((e: any) => {
+                      return {
+                        id: e.id,
+                        idPlaca: e.idPlaca,
+                        idLaboratorio: e.idLaboratorio,
+                        sensor1: e.sensor1,
+                        sensor2: e.sensor2,
+                        sensor3: e.sensor3,
+                        sensor4: e.sensor4,
+                        sensor5: e.sensor5,
+                        actuador: e.actuador,
+                        horaEntrada: this._utilities.formatearFecha(
+                          e.horaEntrada
+                        ),
+                      };
+                    });
 
-    // const excelBuffer = XLSX.write(workbook, {
-    //   bookType: 'xlsx',
-    //   type: 'array',
-    // });
-    // const blob = new Blob([excelBuffer], {
-    //   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    // });
-    // saveAs(blob, 'reporte.xlsx');
+                    const worksheet = XLSX.utils.json_to_sheet(totalInfo);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(
+                      workbook,
+                      worksheet,
+                      'Mediciones'
+                    );
+                    const excelBuffer = XLSX.write(workbook, {
+                      bookType: 'xlsx',
+                      type: 'array',
+                    });
+                    const blob = new Blob([excelBuffer], {
+                      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    });
+                    saveAs(
+                      blob,
+                      `Mediciones-${f.lab}-${this._utilities.formatearFecha(
+                        f.fechaInicio
+                      )}-${this._utilities.formatearFecha(f.fechaFinal)}.xlsx`
+                    );
+                  },
+                  error: (err) => {
+                    this._toastr.error(err.error, 'Hubo un error al filtrar');
+                  },
+                });
+            },
+            error: (err) => {
+              this._toastr.error(err.error, 'Hubo un error');
+            },
+          });
+        } else {
+          this._toastr.info('Se canceló la operación');
+        }
+      },
+      error: (err) => {
+        this._toastr.error(err.error, 'Hubo un error con el dialogo');
+      },
+    });
   }
 
   onPageChange(event: PageEvent) {
-    // this.loading = true;
+    this.secondLoading = true;
     this.pageSize = event.pageSize;
     this.pageIndex = event.pageIndex;
     this.cargarTabla();
@@ -221,11 +358,13 @@ export class MqttTableComponent {
           const ELEMENT_DATA: any = items;
           this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
           this.loading = false;
+          this.secondLoading = false;
           this.noData = false;
         },
         error: (err) => {
           this._toastr.error(err.error || err, 'Error cargando datos');
           this.loading = false;
+          this.secondLoading = false;
           this.noData = true;
         },
       });

@@ -17,11 +17,11 @@ import { DatosService } from '../../../services/Datos/datos.service';
 import { HorarioService } from '../../../services/Api/Horario/horario.service';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, map, Observable } from 'rxjs';
-import { DatePipe } from '@angular/common';
 import { PreguntaDialogComponent } from '../../elements/pregunta-dialog/pregunta-dialog.component';
 import { EditarHorarioComponent } from './crud/editar-horario/editar-horario.component';
 import { ElegirFechaComponent } from './crud/elegir-fecha/elegir-fecha.component';
 import { ErrorSolapamientoComponent } from './crud/error-solapamiento/error-solapamiento.component';
+import { UtilitiesService } from '../../../services/Utilities/utilities.service';
 
 @Component({
   selector: 'app-horario',
@@ -37,7 +37,6 @@ import { ErrorSolapamientoComponent } from './crud/error-solapamiento/error-sola
   ],
   templateUrl: './horario.component.html',
   styleUrl: './horario.component.css',
-  providers: [DatePipe],
 })
 export class HorarioComponent implements OnInit {
   pageSize = 20;
@@ -51,8 +50,8 @@ export class HorarioComponent implements OnInit {
     private _datos: DatosService,
     private _horario: HorarioService,
     private _toastr: ToastrService,
-    public _datePipe: DatePipe,
-    public _dialog: MatDialog
+    public _dialog: MatDialog,
+    private _utilities: UtilitiesService
   ) {}
 
   displayedColumns: string[] = [
@@ -100,22 +99,17 @@ export class HorarioComponent implements OnInit {
             });
 
             if (datos) {
-              var fecha: any;
-              this._datos.fechaData$.subscribe((info) => {
-                fecha = info;
-              });
-
               const observables = datos.map((data) =>
                 this.obtenerIdLab(data.AULA).pipe(
                   map((id) => ({
                     asignatura: data.ASIGNATURA,
                     profesor: data.PROFESOR,
                     idLaboratorio: id,
-                    horaInicio: this.formatearAISOLocal(
+                    horaInicio: this._utilities.formatearAISOLocal(
                       fecha.fechaInicio,
                       this._datos.excelTiempoAString(data['HORA INICIO'])
                     ),
-                    horaFinal: this.formatearAISOLocal(
+                    horaFinal: this._utilities.formatearAISOLocal(
                       fecha.fechaFinal,
                       this._datos.excelTiempoAString(data['HORA FINAL'])
                     ),
@@ -183,8 +177,8 @@ export class HorarioComponent implements OnInit {
         laboratorio: element.codigoDeLab,
         idLabEdit: element.idLab,
         dia: element.dia,
-        horaInicio: this.desformatearFecha(element.horaInicio),
-        horaFinal: this.desformatearFecha(element.horaFinal),
+        horaInicio: this._utilities.desformatearFecha(element.horaInicio),
+        horaFinal: this._utilities.desformatearFecha(element.horaFinal),
       },
     });
 
@@ -257,40 +251,6 @@ export class HorarioComponent implements OnInit {
     });
   }
 
-  formatearFecha(fechaOriginal: string): string | null {
-    return this._datePipe.transform(fechaOriginal, 'dd/MM/yyyy hh:mm a');
-  }
-
-  desformatearFecha(fechaOriginal: string): string {
-    const [fecha, hora, ampm] = fechaOriginal.split(' ');
-    const [dia, mes, anio] = fecha.split('/');
-    let [horaStr, minutoStr] = hora.split(':');
-
-    let horaNum = parseInt(horaStr, 10);
-
-    // Ajustar hora según AM/PM
-    if (ampm.toUpperCase() === 'PM' && horaNum < 12) {
-      horaNum += 12;
-    } else if (ampm.toUpperCase() === 'AM' && horaNum === 12) {
-      horaNum = 0;
-    }
-
-    // Asegurar formato de dos dígitos
-    const horaFinal = horaNum.toString().padStart(2, '0');
-    const minutoFinal = minutoStr.padStart(2, '0');
-    const mesFinal = mes.padStart(2, '0');
-    const diaFinal = dia.padStart(2, '0');
-
-    return `${anio}-${mesFinal}-${diaFinal}T${horaFinal}:${minutoFinal}`;
-  }
-
-  formatearAISOLocal(fechaStr: string, horaStr: string): string {
-    const IsoLocal = `${fechaStr}T${horaStr}:00.000`;
-    const fecha = new Date(IsoLocal);
-
-    return fecha.toISOString();
-  }
-
   cargarTabla() {
     this._horario.getHorario(this.endpoint).subscribe({
       next: (e) => {
@@ -309,8 +269,8 @@ export class HorarioComponent implements OnInit {
               profesor: data.profesor,
               codigoDeLab: lab.codigoDeLab,
               idLab: lab.id,
-              horaInicio: this.formatearFecha(data.horaInicio),
-              horaFinal: this.formatearFecha(data.horaFinal),
+              horaInicio: this._utilities.formatearFecha(data.horaInicio),
+              horaFinal: this._utilities.formatearFecha(data.horaFinal),
               dia: data.dia,
             }))
           );

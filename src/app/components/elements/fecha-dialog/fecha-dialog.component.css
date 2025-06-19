@@ -1,3 +1,12 @@
 .contenido{
     margin-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.form-field{
+    margin-right: 1rem !important;
+}
+
+.mostrar{
+    display: none;
 }

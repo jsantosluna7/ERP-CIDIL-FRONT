@@ -2,6 +2,10 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ServicioMqttService } from '../../../../../services/loT/servicio-mqtt.service';
 import { UiSwitchModule } from 'ngx-ui-switch';
 import { IMqttMessage } from 'ngx-mqtt';
+import { DatosService } from '../../../../../services/Datos/datos.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TimerDialogComponent } from './timer-dialog/timer-dialog.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-iot-buttons',
@@ -19,7 +23,12 @@ export class IotButtonsComponent implements OnInit {
   observar = `${process.env['PATH_COMPONENT']}${process.env['OBSERVAR']}`;
   publicar = `${process.env['PATH_COMPONENT']}${process.env['PUBLICAR']}`;
 
-  constructor(private _mqttService: ServicioMqttService) {}
+  constructor(
+    private _mqttService: ServicioMqttService,
+    private _data: DatosService,
+    private _dialog: MatDialog,
+    private _toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this._mqttService
@@ -40,10 +49,36 @@ export class IotButtonsComponent implements OnInit {
     const mensajeActivadoActuador = JSON.stringify({ Actuador: true });
     const mensajeDesactivarActuador = JSON.stringify({ Actuador: false });
 
-    const estado = this.estadoActuador
-      ? mensajeActivadoActuador
-      : mensajeDesactivarActuador;
-    this._mqttService.toggle(this.publicar, estado);
+    // const estado = this.estadoActuador
+    //   ? mensajeActivadoActuador
+    //   : mensajeDesactivarActuador;
+    // this._mqttService.toggle(this.publicar, estado);
+
+    if (!this.estadoActuador) {
+      const dialogRef = this._dialog.open(TimerDialogComponent, {
+        data: {
+          titulo: 'Introduce los minutos',
+        },
+      });
+
+      dialogRef.afterClosed().subscribe({
+        next: (n) => {
+          if (n) {
+            this._data.timerData$.subscribe({
+              next: (timer: any) => {
+                setTimeout(() => {
+                  console.log('Se acciono el timer')
+                  // this._mqttService.toggle(this.publicar, mensajeDesactivarActuador);
+                }, timer.segundos);
+              },
+            });
+          }
+        },
+        error: (err) => {
+          this._toastr.error(err.error, 'Hubo un error');
+        },
+      });
+    }
   }
 
   public toggleReiniciar() {

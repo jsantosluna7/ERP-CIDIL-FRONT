@@ -16,6 +16,7 @@ import { UiSwitchModule } from 'ngx-ui-switch';
 import * as echarts from 'echarts/core';
 import { provideEchartsCore } from 'ngx-echarts';
 import {provideNativeDateAdapter} from '@angular/material/core';
+import { DatePipe } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,6 +43,7 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideEchartsCore({ echarts }),
-    provideNativeDateAdapter()
+    provideNativeDateAdapter(),
+    DatePipe,
   ],
 };

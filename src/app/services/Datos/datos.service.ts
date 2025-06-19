@@ -12,12 +12,19 @@ export class DatosService {
   private fechaDataSubject = new BehaviorSubject<any[]>([]);
   fechaData$ = this.fechaDataSubject.asObservable();
 
+  private timerDataSubject = new BehaviorSubject<any[]>([]);
+  timerData$ = this.timerDataSubject.asObservable();
+
   obtenerData(data: any[]){
     this.jsonDataSubject.next(data);
   }
 
   obtenerFecha(fecha: any){
     this.fechaDataSubject.next(fecha);
+  }
+
+  timerFecha(timer: any){
+    this.timerDataSubject.next(timer);
   }
 
   excelTiempoAString(excelSerial: number): string{
