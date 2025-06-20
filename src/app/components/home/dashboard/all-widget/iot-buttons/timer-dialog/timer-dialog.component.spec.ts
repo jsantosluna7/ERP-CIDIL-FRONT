@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MqttComponent } from './mqtt.component';
+import { TimerDialogComponent } from './timer-dialog.component';
 
-describe('MqttComponent', () => {
-  let component: MqttComponent;
-  let fixture: ComponentFixture<MqttComponent>;
+describe('TimerDialogComponent', () => {
+  let component: TimerDialogComponent;
+  let fixture: ComponentFixture<TimerDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MqttComponent]
+      imports: [TimerDialogComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MqttComponent);
+    fixture = TestBed.createComponent(TimerDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

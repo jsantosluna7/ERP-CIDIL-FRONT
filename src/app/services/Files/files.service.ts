@@ -5,11 +5,10 @@ import * as XLSX from 'xlsx';
 import { DatosService } from '../Datos/datos.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FilesService {
-
-  constructor(private papa: Papa, private _valores: DatosService) { }
+  constructor(private papa: Papa, private _valores: DatosService) {}
 
   public procesarCSV(file: File): void {
     this.papa.parse(file, {
@@ -17,13 +16,13 @@ export class FilesService {
       skipEmptyLines: true,
       complete: (results) => {
         const data = results.data as any[];
-        this._valores.obtenerData(data)
+        this._valores.obtenerData(data);
         // console.log(data);
       },
       error: (error) => {
         console.error('Error al leer el archivo CSV', error);
-      }
-    })
+      },
+    });
   }
 
   public procesarExcel(file: File): void {
@@ -31,16 +30,21 @@ export class FilesService {
     lector.onload = (e: any) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {defval: ''});
-      this._valores.obtenerData(jsonData);
-      // console.log(jsonData)
-    }
+
+      const listaPlana: any[] = [];
+
+      workbook.SheetNames.forEach(sheetName => {
+        const ws = workbook.Sheets[sheetName];
+        const jsonData: any[] = XLSX.utils.sheet_to_json(ws, {defval: ''});
+        listaPlana.push(...jsonData);
+      });
+
+        this._valores.obtenerData(listaPlana);
+    };
 
     lector.onerror = (error) => {
       console.error('Error al leer el archivo Excel:', error);
-    }
+    };
 
     lector.readAsArrayBuffer(file);
   }

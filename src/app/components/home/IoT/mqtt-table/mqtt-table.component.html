@@ -1,0 +1,125 @@
+<div class="body">
+  <div class="nav">
+    <h1>IoT</h1>
+    <div class="botones">
+      <button mat-raised-button color="secondary" (click)="exportar('csv')">
+        Exportar en CSV
+      </button>
+
+      <button mat-raised-button color="secondary" (click)="exportar('xlsx')">
+        Exportar en Excel
+      </button>
+    </div>
+  </div>
+
+  <div class="tables">
+    <div class="table-container">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Filtrar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" />
+        <mat-hint class="hint"></mat-hint>
+      </mat-form-field>
+
+      @if (loading) {
+      <div class="spinner-container">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+      } @if (!loading) { @if(noData){
+      <p>No hay datos!</p>
+      }@else { 
+        
+      @if (secondLoading) {
+      <div class="spinner-container">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+      }
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        class="mat-elevation-z8"
+      >
+        <ng-container matColumnDef="idPlaca">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID Placa</th>
+          <td mat-cell *matCellDef="let element">{{ element.idPlaca }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="codigoDeLab">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Laboratorio</th>
+          <td mat-cell *matCellDef="let element">{{ element.codigoDeLab }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="sensor1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sensor 1</th>
+          <td mat-cell *matCellDef="let element">{{ element.sensor1 }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="sensor2">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sensor 2</th>
+          <td mat-cell *matCellDef="let element">{{ element.sensor2 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="sensor3">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sensor 3</th>
+          <td mat-cell *matCellDef="let element">{{ element.sensor3 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="sensor4">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sensor 4</th>
+          <td mat-cell *matCellDef="let element">{{ element.sensor4 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="sensor5">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sensor 5</th>
+          <td mat-cell *matCellDef="let element">{{ element.sensor5 }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actuador">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Actuador</th>
+          <td mat-cell *matCellDef="let element">{{ element.actuador }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="horaEntrada">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Hora de Entrada
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.horaEntrada }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let element">
+            <!-- <button mat-icon-button color="primary" (click)="editar(element)">
+              <mat-icon>edit</mat-icon>
+            </button> -->
+            <button mat-icon-button color="warn" (click)="eliminar(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      } }
+
+      <mat-paginator
+        class="paginator"
+        [length]="totalIoT"
+        [pageSize]="pageSize"
+        (page)="onPageChange($event)"
+        [pageSizeOptions]="[]"
+        [hidePageSize]="true"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+
+      <div class="entrada-pagina">
+        <p>Elementos por página:</p>
+        <input
+          matInput
+          type="text"
+          [value]="pageSize"
+          (change)="updatePageSize($event)"
+        />
+      </div>
+    </div>
+  </div>
+</div>
