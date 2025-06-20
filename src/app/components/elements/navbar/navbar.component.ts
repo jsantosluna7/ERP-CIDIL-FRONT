@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowRight,faClock, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,6 +12,8 @@ import { faArrowRight,faClock, faArrowRightFromBracket, faBell, faCartShopping, 
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+
+  constructor(private _usuarios: UsuariosService, private _router: Router){}
 
    arrowright = faGreaterThan;
    house = faHouse;
@@ -44,6 +47,10 @@ export class NavbarComponent {
     elemento.classList.toggle("close");
   }
 
+  salir(){
+    this._usuarios.cerrarSesion()
+    this._router.navigate(['/login']);
+  }
 
 
 }

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './guards/AuthGuard/auth-guard.service';
 
 export const routes: Routes = [
     {
@@ -37,7 +38,8 @@ export const routes: Routes = [
                 ]
             },
             { path: 'iot', loadComponent: () => import('./components/home/IoT/iot.component').then(m => m.IotComponent) }
-        ]
+        ],
+        canActivate: [AuthGuard]
     },
     {
         path: '**',

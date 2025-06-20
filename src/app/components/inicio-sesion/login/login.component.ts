@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit {
     
     this._usuario.iniciarSesion(this.iniciarSesion, data).subscribe({
       next: (e) => {
+        console.log(e);
         this._toastr.success(`Bienvenido, ${e.nombreUsuario} ${e.apellidoUsuario}`, 'Inicio Éxitoso')
         this._router.navigate(['home'])
       },error: (err) => {

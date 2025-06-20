@@ -152,3 +152,7 @@ header .image-text .header-text{
     flex-direction: column;
     justify-content: space-between;
 }
+
+.nav-link{
+    cursor: pointer;
+}

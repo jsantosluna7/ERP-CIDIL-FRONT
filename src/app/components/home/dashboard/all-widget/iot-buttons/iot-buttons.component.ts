@@ -49,10 +49,9 @@ export class IotButtonsComponent implements OnInit {
     const mensajeActivadoActuador = JSON.stringify({ Actuador: true });
     const mensajeDesactivarActuador = JSON.stringify({ Actuador: false });
 
-    // const estado = this.estadoActuador
-    //   ? mensajeActivadoActuador
-    //   : mensajeDesactivarActuador;
-    // this._mqttService.toggle(this.publicar, estado);
+    if (this.estadoActuador) {
+      this._mqttService.toggle(this.publicar, mensajeActivadoActuador);
+    }
 
     if (!this.estadoActuador) {
       const dialogRef = this._dialog.open(TimerDialogComponent, {
@@ -67,8 +66,11 @@ export class IotButtonsComponent implements OnInit {
             this._data.timerData$.subscribe({
               next: (timer: any) => {
                 setTimeout(() => {
-                  console.log('Se acciono el timer')
-                  // this._mqttService.toggle(this.publicar, mensajeDesactivarActuador);
+                  console.log('Se acciono el timer');
+                  this._mqttService.toggle(
+                    this.publicar,
+                    mensajeDesactivarActuador
+                  );
                 }, timer.segundos);
               },
             });

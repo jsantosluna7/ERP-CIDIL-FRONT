@@ -42,4 +42,14 @@ export class UtilitiesService {
 
     return fecha.toISOString();
   }
+
+  formatearHoraError(msg: string): string {
+  return msg.replace(/(\d{2}\/\d{2}\/\d{4}) (\d{2}:\d{2}:\d{2})/g,
+    (_m, date, time) => {
+      const [m, d, y] = date.split("/");
+      const iso = `${y}-${m}-${d}T${time}Z`;
+      const dt = new Date(iso);
+      return this._datePipe.transform(dt, 'hh:mm a')!;
+    });
+}
 }
