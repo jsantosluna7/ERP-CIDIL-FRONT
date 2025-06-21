@@ -31,7 +31,7 @@ export class LaboratorioService {
   }
 
   enviarSolicitud(solicitud:SolicitudReserva): Observable<any> {
-    return this.http.post(`${this.apiUrlSolicitud}/laboratorio`, solicitud)
+    return this.http.post(`${this.apiUrlSolicitud}`, solicitud)
   }
 
   eliminarLaboratorio(id: number): Observable<void> {

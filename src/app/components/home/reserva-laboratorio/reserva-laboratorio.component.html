@@ -16,7 +16,7 @@
 
         @if (laboratorios.length > 0) {
         <select id="laboratorioSelect" class="form-select" aria-label="Seleccionar laboratorio"
-          formControlName="laboratorioId">
+          formControlName="idLaboratorio">
           <option value="" disabled selected>Seleccione un laboratorio</option>
           @for (lab of laboratorios; track lab.id) {
           <option [value]="lab.id">{{ lab.codigoDeLab }} </option>
@@ -33,7 +33,7 @@
       <label for="inputEmail4" class="form-label">Hora de Inicio</label>
       <div class="location">
         <fa-icon [icon]="faclock"></fa-icon>
-        <input type="datetime-local" formControlName="fechaInicio" class="form-control" id="inputEmail4"
+        <input type="datetime-local" formControlName="horaInicio" class="form-control" id="inputEmail4"
           placeholder="Laboratorio" />
       </div>
     </div>
@@ -41,7 +41,7 @@
       <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
       <div class="location">
         <fa-icon [icon]="faclock"></fa-icon>
-        <input type="datetime-local" formControlName="fechaDevolucion" class="form-control" id="inputEmail4"
+        <input type="datetime-local" formControlName="horaFinal" class="form-control" id="inputEmail4"
           placeholder="Laboratorio" />
       </div>
     </div>
@@ -69,7 +69,7 @@
     <div class="col-md-6 mt-1 row">
       <div class="mb-3">
         <label for="exampleFormControlTextarea1" class="form-label">Comentario de aprobacion</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" readonly></textarea>
       </div>
     </div>
 

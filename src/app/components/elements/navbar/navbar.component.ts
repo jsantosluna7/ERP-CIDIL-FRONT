@@ -1,8 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRight,faClock, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { ConfiguracionComponent } from './configuracion/configuracion.component';
+import { UsuarioService } from '../../home/usuario/usuarios/usuarios.service';
+import { Usuarios } from '../../../interfaces/usuarios.interface';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,44 +17,36 @@ import { faArrowRight,faClock, faArrowRightFromBracket, faBell, faCartShopping, 
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavbarComponent {
+  left =faArrowRightFromBracket;
+   readonly dialog = inject(MatDialog);
+   readonly usuarioService = inject(UsuariosService);
 
-   arrowright = faGreaterThan;
-   house = faHouse;
-   solid =faMagnifyingGlass;
-   heart =faDesktop;
-   regular =faChartSimple;
-   bell = faBell;
-   credi = faUser;
-   car = faShop;
-   left = faArrowRightFromBracket;
-   iot =faMicrochip;
-   faclok = faClock;
+   usuarioLogueado!: Usuarios;
 
-  // body = document.querySelector(".body");k
-  //  sidebar=this.body?.querySelector(".sidebar");
-  //  toggle = this.body?.querySelector(".toggle");
-  //  searchBtn = this.body?.querySelector(".search-box");
-
-  // toogle(event: any){
-  //   const elemento:any = document.querySelector(".sidebar");
-  //   // console.log(elemento)
-  //   elemento.classList.toggle("close");
-
-  // }
-
-  @Output() toggleSidebar = new EventEmitter<void>();
-
-  onToggleClick(){
-    this.toggleSidebar.emit();
-    const elemento:any = document.querySelector(".sidebar");
-    elemento.classList.toggle("close");
+ ngOnInit(): void {
+    // Obtenemos el usuario al cargar el navbar
+    this.usuarioService.user$.subscribe(usuario => {
+      if (usuario) {
+        this.usuarioLogueado = usuario;
+      }
+    });
+    console.log(this.usuarioLogueado);
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ConfiguracionComponent, {
+      data: this.usuarioLogueado,
+      width: '600px'
+    });
 
-  salir(){
-    this._usuarios.cerrarSesion()
-    this._router.navigate(['/login']);
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
+
 
 
 }
+
+
+

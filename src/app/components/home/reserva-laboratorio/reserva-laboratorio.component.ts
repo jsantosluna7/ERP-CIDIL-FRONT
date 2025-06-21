@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEnvelope, faLocationDot, faPhone, faUser,faHome,faClock, faHourglass } from '@fortawesome/free-solid-svg-icons';
-import { Laboratorio } from '../../../interfaces/laboratorio.interface';
+import { Laboratorio, SolicitudReserva } from '../../../interfaces/laboratorio.interface';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 
 @Component({
   selector: 'app-reserva-laboratorio',
@@ -29,36 +30,27 @@ export class ReservaLaboratorioComponent {
   estado =faHourglass;
 
 
- constructor(private laboratorioService: LaboratorioService, private toastr: ToastrService, private fb: FormBuilder, private router: Router){}
+ constructor(private laboratorioService: LaboratorioService, private toastr: ToastrService,private fb: FormBuilder,private router: Router,private _usuarios: UsuariosService ){}
 
- /*ngOnInit(): void {
-    this.laboratorioService.getLaboratorios().subscribe({
-      next: (data) => {
-        this.laboratorios = data;
-        console.log(data)
-      },
-      error: (err) => {
-        console.error('Error al obtener laboratorios', err);
-      }
-    });
-  }*/
+ 
+   usuarioLogueado: any;
 
-    ngOnInit(): void {
-  // Inicializa el formulario
+ ngOnInit(): void {
   this.solicitudesForm = this.fb.group({
-    laboratorioId: ['', Validators.required],
-    fechaInicio: ['', Validators.required],
-    fechaDevolucion: ['', Validators.required],
+    idLaboratorio: ['', Validators.required],
+    horaInicio: ['', Validators.required],
+    horaFinal: ['', Validators.required],
     motivo: ['', Validators.required],
-    comentarioAprobacion: [''],
-    aprobacion: [null, Validators.required]
+    //aprobacion: [null, Validators.required]
   });
 
-  // Carga los laboratorios
+  this._usuarios.user$.subscribe(user => {
+    this.usuarioLogueado = user;
+  });
+
   this.laboratorioService.getLaboratorios().subscribe({
     next: (data) => {
       this.laboratorios = data;
-      
     },
     error: (err) => {
       console.error('Error al obtener laboratorios', err);
@@ -67,48 +59,36 @@ export class ReservaLaboratorioComponent {
 }
 
 
-/*enviarSolicitud(){
- if (this.solicitudesForm.invalid) {
-      this.toastr.error('Debe completar todos los campos obligatorios');
-      return;
-    }
-
-    const solicitud = this.solicitudesForm.value;
-
-    this.laboratorioService.enviarSolicitud(solicitud).subscribe({
-      next: () => {
-        this.toastr.success('Solicitud enviada correctamente');
-        this.solicitudesForm.reset();
-      },
-      error: (err) => {
-        console.error('Error al enviar la solicitud', err);
-        this.toastr.error('Error al enviar la solicitud');
-      }
-    });
-  }*/
 
     enviarSolicitud(): void {
-  const fechaInicio = this.solicitudesForm.get('fechaInicio')?.value;
-  const fechaFin = this.solicitudesForm.get('fechaDevolucion')?.value;
-  const laboratorioId = this.solicitudesForm.get('laboratorioId')?.value;
+  const idLaboratorio = Number(this.solicitudesForm.get('idLaboratorio')?.value);
+  //const horaInicio = this.solicitudesForm.get('horaInicio')?.value;
+  //const horaFinal = this.solicitudesForm.get('horaFinal')?.value;
   const motivo = this.solicitudesForm.get('motivo')?.value;
-  const aprobacion = Number (this.solicitudesForm.get('aprobacion')?.value);
-  console.log(aprobacion);
+  //const aprobacion = Number(this.solicitudesForm.get('aprobacion')?.value);
 
+  const form = this.solicitudesForm.value;
+  // Convertimos los campos datetime-local
+  const dtInicio = new Date(form.horaInicio);
+  const dtFinal = new Date(form.horaFinal);
+  const horaInicio = dtInicio.toTimeString().split(' ')[0]; // HH:mm:ss
+  const horaFinal = dtFinal.toTimeString().split(' ')[0];
+  const fechaInicio = dtInicio.toISOString().split('T')[0] + 'T00:00:00';
+  const fechaFinal = dtFinal.toISOString().split('T')[0] + 'T00:00:00';
 
   // Validaciones paso a paso con toastr
-  if (!laboratorioId) {
+  if (!idLaboratorio) {
     this.toastr.warning('Debe seleccionar un laboratorio.', 'Atención');
     return;
   }
 
-  if (!fechaInicio) {
-    this.toastr.warning('Debe seleccionar la fecha de inicio.', 'Atención');
+  if (!horaInicio) {
+    this.toastr.warning('Debe seleccionar la hora de inicio.', 'Atención');
     return;
   }
 
-  if (!fechaFin) {
-    this.toastr.warning('Debe seleccionar la fecha de finalización.', 'Atención');
+  if (!horaFinal) {
+    this.toastr.warning('Debe seleccionar la hora de finalización.', 'Atención');
     return;
   }
 
@@ -117,25 +97,35 @@ export class ReservaLaboratorioComponent {
     return;
   }
 
- 
   // Validar formulario completo
   if (this.solicitudesForm.invalid) {
     this.toastr.error('El formulario tiene errores. Revise los campos.', 'Error');
     return;
   }
 
+
   // Si todo está correcto, preparar la solicitud
+  
   const solicitud = {
-    ...this.solicitudesForm.value
+    idUsuario: this.usuarioLogueado.id,
+    idLaboratorio: Number(idLaboratorio),
+    horaInicio: horaInicio,
+    horaFinal: horaFinal,
+    fechaInicio: fechaInicio,    // Mismo valor que horaInicio
+    fechaFinal: fechaFinal,      // Mismo valor que horaFinal
+    motivo: motivo,
+    fechaSolicitud: new Date().toISOString()
   };
 
+  console.log('Valor idLaboratorio seleccionado:', idLaboratorio);
+ 
   console.log('Solicitud enviada:', solicitud);
 
-  // Aquí harías el envío real al servicio (si ya lo tienes implementado)
+  // Envío real al servicio
   this.laboratorioService.enviarSolicitud(solicitud).subscribe({
     next: () => {
       this.toastr.success('¡Solicitud enviada correctamente!', 'Éxito');
-      this.solicitudesForm.reset(); // Limpiar el formulario si deseas
+      this.solicitudesForm.reset(); // Limpiar el formulario
       this.laboratoriosSelect = []; // Limpiar equipos
     },
     error: (err) => {
@@ -144,6 +134,7 @@ export class ReservaLaboratorioComponent {
     }
   });
 }
+
 
 
  ruta(){
