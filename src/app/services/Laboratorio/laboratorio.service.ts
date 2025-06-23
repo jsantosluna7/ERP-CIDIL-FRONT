@@ -13,8 +13,8 @@ export class LaboratorioService {
 
   constructor(private http: HttpClient) {}
 
-  getLaboratorios(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  getLaboratorios(): Observable<Laboratorio[]> {
+    return this.http.get<Laboratorio[]>(this.apiUrl);
   }
   
 

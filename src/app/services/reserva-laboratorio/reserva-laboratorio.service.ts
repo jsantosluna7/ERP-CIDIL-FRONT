@@ -18,14 +18,16 @@ private apiUrlP = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDLB'
 constructor(private http: HttpClient){}
 
 
-getResevas(): Observable<Solicitud[]> {
-    return this.http.get<Solicitud[]>(this.apiUrl)
+getResevas(): Observable<{datos: Solicitud[]}> {
+    return this.http.get<{datos: Solicitud[]}>(this.apiUrl)
 }
 
-updateEstado(id: number, body: any) {
-  return this.http.put(`${this.apiUrlP}/${id}`, body);
+updateEstado( body: any) {
+    console.log('Llamando updateEstado con id:', ' y body:', body);
+  return this.http.post(`${this.apiUrlP}`, body);
   
 }
+
 
 
 }
