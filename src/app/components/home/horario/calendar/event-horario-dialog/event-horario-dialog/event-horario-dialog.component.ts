@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-event-dialog',
+  selector: 'app-event-horario-dialog',
   imports: [
     MatDialogModule,
     MatButtonModule,
@@ -20,29 +20,24 @@ import { MatInputModule } from '@angular/material/input';
     MatInputModule,
     MatIconModule,
   ],
-  templateUrl: './event-dialog.component.html',
-  styleUrl: './event-dialog.component.css',
+  templateUrl: './event-horario-dialog.component.html',
+  styleUrl: './event-horario-dialog.component.css',
 })
-export class EventDialogComponent {
+export class EventHorarioDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<EventDialogComponent>,
+    public dialogRef: MatDialogRef<EventHorarioDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      lab: string;
-      estado: string;
-      motivo: string;
-      inicio: string;
-      fin: string;
+      asignatura: string;
+      profesor: string;
+      labNombre: string;
+      dia: string;
       horaInicio: string;
-      horaFin: string;
+      horaFinal: string;
+      fechaInicio: string;
+      fechaFinal: string;
     }
-  ) {
-    if (data.fin == null) {
-      console.log('nulo');
-    } else {
-      console.log(data.fin);
-    }
-  }
+  ) {}
   onOk() {
     this.dialogRef.close();
   }

@@ -1,39 +1,53 @@
 <!-- <h2 mat-dialog-title>Información sobre la hora</h2> -->
 <mat-dialog-content class="data">
-@for (data of data.info; track $index) {
-        <div class="top-content">
-        <div class="lab">
-            <p class="p-lab">{{ data.lab }}</p>
-            <p class="p-header">Laboratorio</p>
-        </div>
-        @if(data.estado.toLowerCase() == 'aprobado'){
-        <p class="aprobado">{{ data.estado }}</p>
-        } @else if(data.estado.toLowerCase() == 'pendiente'){
-        <p class="pendiente">{{ data.estado }}</p>
-        } @else{
-        <p class="rechazado">{{ data.estado }}</p>
-        }
+  @for (data of data.info; track $index) {
+  <div class="top-content">
+    <div class="lab">
+      <p class="p-lab">{{ data.lab }}</p>
+      <p class="p-header">Laboratorio</p>
     </div>
-    <div class="hora-content">
-        <div class="h-inicio">
-            <mat-icon title="Fecha de Inicio">event_available</mat-icon>
-            <p>{{ data.inicio }}</p>
-        </div>
-        @if(data.fin != null){
-        <div class="h-fin">
-            <mat-icon title="Fecha de Fin">event_busy</mat-icon>
-            <p>{{ data.fin }}</p>
-        </div>
-        }
+    @if(data.estado.toLowerCase() == 'aprobado'){
+    <p class="aprobado">{{ data.estado }}</p>
+    } @else if(data.estado.toLowerCase() == 'pendiente'){
+    <p class="pendiente">{{ data.estado }}</p>
+    } @else{
+    <p class="rechazado">{{ data.estado }}</p>
+    }
+  </div>
+  <div class="hora-content">
+    <div class="h">
+      <div class="h-inicio">
+        <mat-icon title="Hora de Inicio">alarm_on</mat-icon>
+        <p>{{ data.horaInicio }}</p>
+      </div>
+      @if(data.horaFin != null){
+      <div class="h-fin">
+        <mat-icon title="Hora de Fin">alarm_off</mat-icon>
+        <p>{{ data.horaFin }}</p>
+      </div>
+      }
     </div>
-    <p class="comentario">Comentarios:</p>
-    <div class="motivo-content">
-        <p>{{ data.motivo }}</p>
+    <div class="f">
+      <div class="f-inicio">
+        <mat-icon title="Fecha de Inicio">event_available</mat-icon>
+        <p>{{ data.inicio }}</p>
+      </div>
+      @if(data.fin != null){
+      <div class="f-fin">
+        <mat-icon title="Fecha de Fin">event_busy</mat-icon>
+        <p>{{ data.fin }}</p>
+      </div>
+      }
     </div>
+  </div>
+  <p class="comentario">Comentarios:</p>
+  <div class="motivo-content">
+    <p>{{ data.motivo }}</p>
+  </div>
 
-    <hr>
-}
+  <hr />
+  }
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button (click)="onOk()" cdkFocusInitial>Ok</button>
+  <button mat-button (click)="onOk()" cdkFocusInitial>Ok</button>
 </mat-dialog-actions>

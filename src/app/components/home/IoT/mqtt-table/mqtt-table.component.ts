@@ -88,10 +88,6 @@ export class MqttTableComponent {
 
   ngOnInit() {
     this.cargarTabla();
-    // this.cargarPagina();
-
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   exportar(tipo: 'xlsx' | 'xls' | 'csv') {
@@ -326,7 +322,6 @@ export class MqttTableComponent {
   // }
 
   cargarTabla() {
-    // this.loading = true;
     this._mqtt
       .getIot(this.endpoint, this.pageIndex + 1, this.pageSize)
       .pipe(
@@ -393,12 +388,14 @@ export class MqttTableComponent {
         this._toastr.info('Se canceló la operación', 'Información');
       } else {
         this._mqtt.deleteIot(this.endpoint, element.id).subscribe({
-          next: (h) => {
+          next: (resp) => {
+            this._toastr.success(resp, 'Eliminado correctamente');
+            this.secondLoading = true;
             this.cargarTabla();
           },
           error: (err) => {
-            console.log(err);
-            this._toastr.info(err.error.text, 'Información');
+            this.secondLoading = true;
+            this.cargarTabla();
           },
         });
       }

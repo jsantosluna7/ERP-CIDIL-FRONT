@@ -26,6 +26,7 @@ import { FileDialogComponent } from '../../dialog/file-dialog/file-dialog.compon
 import { ElegirFechaComponent } from '../../crud/elegir-fecha/elegir-fecha.component';
 import { EditarHorarioComponent } from '../../crud/editar-horario/editar-horario.component';
 import { PreguntaDialogComponent } from '../../../../elements/pregunta-dialog/pregunta-dialog.component';
+import { FechaDialogComponent } from '../../../../elements/fecha-dialog/fecha-dialog.component';
 
 @Component({
   selector: 'app-horario-table',
@@ -69,6 +70,8 @@ export class HorarioTableComponent {
     'dia',
     'horaInicio',
     'horaFinal',
+    'fechaInicio',
+    'fechaFinal',
     'acciones',
   ];
 
@@ -96,19 +99,23 @@ export class HorarioTableComponent {
     const dialogRef = this.dialog.open(FileDialogComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
-      const horaDialogRef = this.dialog.open(ElegirFechaComponent, {
+      const horaDialogRef = this.dialog.open(FechaDialogComponent, {
         data: {
           titulo: 'Diga la fecha de inicio y fin',
+          ifLab: false
         },
       });
 
       horaDialogRef.afterClosed().subscribe((result) => {
         if (result) {
           this._datos.jsonData$.subscribe((datos) => {
+            
             var fecha: any;
             this._datos.fechaData$.subscribe((info) => {
               fecha = info;
             });
+
+            console.log(fecha);
 
             if (datos) {
               const observables = datos.map((data) =>
@@ -117,14 +124,14 @@ export class HorarioTableComponent {
                     asignatura: data.ASIGNATURA,
                     profesor: data.PROFESOR,
                     idLaboratorio: id,
-                    horaInicio: this._utilities.formatearAISOLocal(
-                      fecha.fechaInicio,
-                      this._datos.excelTiempoAString(data['HORA INICIO'])
+                    horaInicio: this._datos.excelTiempoAString(
+                      data['HORA INICIO']
                     ),
-                    horaFinal: this._utilities.formatearAISOLocal(
-                      fecha.fechaFinal,
-                      this._datos.excelTiempoAString(data['HORA FINAL'])
+                    horaFinal: this._datos.excelTiempoAString(
+                      data['HORA FINAL']
                     ),
+                    fechaInicio: fecha.fechaInicio,
+                    fechaFinal: fecha.fechaFinal,
                     dia: data.DIA,
                   }))
                 )
@@ -183,8 +190,10 @@ export class HorarioTableComponent {
         laboratorio: element.codigoDeLab,
         idLabEdit: element.idLab,
         dia: element.dia,
-        horaInicio: this._utilities.desformatearFecha(element.horaInicio),
-        horaFinal: this._utilities.desformatearFecha(element.horaFinal),
+        horaInicio: element.horaInicio,
+        horaFinal: element.horaFinal,
+        fechaInicio: this._utilities.desformatearHorarioFecha(element.fechaInicio),
+        fechaFinal: this._utilities.desformatearHorarioFecha(element.fechaFinal),
       },
     });
 
@@ -273,8 +282,10 @@ export class HorarioTableComponent {
                 profesor: data.profesor,
                 codigoDeLab: lab.codigoDeLab,
                 idLab: lab.id,
-                horaInicio: this._utilities.formatearFecha(data.horaInicio),
-                horaFinal: this._utilities.formatearFecha(data.horaFinal),
+                horaInicio: this._utilities.formatearHora(data.horaInicio),
+                horaFinal: this._utilities.formatearHora(data.horaFinal),
+                fechaInicio: this._utilities.formatearHorarioFecha(data.fechaInicio),
+                fechaFinal: this._utilities.formatearHorarioFecha(data.fechaFinal),
                 dia: data.dia,
               }))
             )

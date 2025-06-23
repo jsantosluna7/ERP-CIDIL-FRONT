@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
-*{
-    font-family: 'helvetica neue', sans-serif;
+* {
+  font-family: 'helvetica neue', sans-serif;
 }
 
 /* .sidebar.close ~ .home{
@@ -15,10 +15,18 @@
   transition: all 0.3s ease;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
 
-.cdk-drop-list-dragging{
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.cdk-drop-list-dragging {
   opacity: 0.5;
   border-left: 5px solid black;
   padding-left: 8px;
@@ -32,31 +40,55 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   height: 100%;
 }
 
-.mat-mdc-form-field-bottom-align::before{
-    content: "";
-    height: 0px !important;
-    display: none !important;
+.mat-mdc-form-field-bottom-align::before {
+  content: "";
+  height: 0px !important;
+  display: none !important;
 }
 
-.fc .fc-daygrid-day-number, .fc .fc-col-header-cell-cushion {
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell-cushion {
   text-decoration: none;
   color: #1825AA;
 }
 
-.fc .fc-scrollgrid, .fc .fc-scrollgrid-section > td {
+.fc .fc-scrollgrid,
+.fc .fc-scrollgrid-section>td {
   border-radius: 20px;
 }
 
 /* SPINNER GLOBAL */
 .spinner-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.6);
-    z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.6);
+  z-index: 9999;
+}
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mat-tab-body-wrapper,
+.mat-mdc-tab-body-wrapper {
+  flex-grow: 1;
+}
+
+mat-tab-group {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.calendar-container {
+  flex: 1;
+  min-height: 0; /* importante para evitar overflow */
+  margin-top: 2rem;
 }

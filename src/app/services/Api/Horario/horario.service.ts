@@ -30,6 +30,10 @@ export class HorarioService {
     );
   }
 
+  getHorarioCalendario(endpoint: string, params?: any): Observable<any> {
+    return this.http.get(endpoint, params);
+  }
+
   getIdLaboratorio(endpoint: string, codigo: string): Observable<any> {
     return this.http.get(`${endpoint}?codigo=${codigo}`);
   }

@@ -63,9 +63,20 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora Inicio</th>
           <td mat-cell *matCellDef="let element">{{ element.horaInicio }}</td>
         </ng-container>
+
         <ng-container matColumnDef="horaFinal">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora Final</th>
           <td mat-cell *matCellDef="let element">{{ element.horaFinal }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fechaInicio">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Inicio</th>
+          <td mat-cell *matCellDef="let element">{{ element.fechaInicio }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fechaFinal">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Final</th>
+          <td mat-cell *matCellDef="let element">{{ element.fechaFinal }}</td>
         </ng-container>
 
         <ng-container matColumnDef="acciones">
