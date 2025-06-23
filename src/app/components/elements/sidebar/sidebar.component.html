@@ -1,0 +1,84 @@
+<nav class="sidebar close">
+    <header>
+        <div class="image-text">
+            <span class="image">
+                <!--Imagen de logo-->
+                <img src="/Imagenes/loyola.jpeg" alt="logo">
+            </span>
+
+            <div class="text header-text">
+                <span class="name">Sistema ERP</span>
+                <span class="profession">CIDIL</span>
+            </div>
+        </div>
+
+        <fa-icon class="toggle" [icon]=" arrowright" (click)="onToggleClick()"></fa-icon>
+    </header>
+
+    <div class="menu-bar">
+        <div class="menu">
+            <li class="search-box">
+                <fa-icon class="icon" [icon]=" solid"></fa-icon>
+                <input type="search" placeholder="Search...">
+            </li>
+            <!-- <ul class="menu-links"> -->
+            <li class="nav-link">
+                <a routerLink="/home/dashboard">
+                    <fa-icon class="icon" [icon]=" house"></fa-icon>
+                    <span class="text nav-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-link">
+                <a routerLink="/home/inventario">
+                    <fa-icon class="icon" [icon]=" regular"></fa-icon>
+                    <span class="text nav-text">Inventario</span>
+                </a>
+            </li>
+            <li class="nav-link">
+                <a routerLink="/home/horario">
+                    <fa-icon class="icon" [icon]=" faclok"></fa-icon>
+                    <span class="text nav-text">Horarios</span>
+                </a>
+            </li>
+            <li class="nav-link">
+                <a routerLink="/home/reserva-laboratorio">
+                    <fa-icon class="icon" [icon]=" car"></fa-icon>
+                    <span class="text nav-text">Reserva de Laboratorios</span>
+                </a>
+            </li>
+            <li class="nav-link">
+                <a routerLink="/home/reserva-equipo">
+                    <fa-icon class="icon" [icon]=" heart"></fa-icon>
+                    <span class="text nav-text">Reserva de Equipos</span>
+                </a>
+            </li>
+             <li class="nav-link">
+                <a routerLink="/home/carrito">
+                    <fa-icon class="icon" [icon]=" carro"></fa-icon>
+                    <span class="text nav-text">Carrito</span>
+                </a>
+            </li>
+            <li class="nav-link">
+                <a href="#">
+                    <fa-icon class="icon" [icon]="iot"></fa-icon>
+                    <span class="text nav-text">IoT</span>
+                </a>
+            </li>
+            <li class="nav-link">
+                <a routerLink="/home/usuarios">
+                    <fa-icon class="icon" [icon]="credi"></fa-icon>
+                    <span class="text nav-text">Usuarios</span>
+                </a>
+            </li>
+            <!-- </ul> -->
+        </div>
+        <div class="buttom-content">
+            <li class="">
+                <a (click)="salir()">
+                    <fa-icon class="icon" [icon]="left"></fa-icon>
+                    <span class="text nav-text">Logout</span>
+                </a>
+            </li>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,76 @@
+<div class="fondo d-flex justify-content-center align-items-center">
+  <form [formGroup]="usuarioForm" class="row container w-100 h-auto p-3 form mt-5 ite">
+    <h4>Información General</h4>
+    <hr>
+
+    <!-- Nombres -->
+    <div class="col-md-6 mt-1 row">
+      <label class="form-label">Nombres</label>
+      <div class="user">
+        <fa-icon [icon]="faUser"></fa-icon>
+        <input type="text" formControlName="nombreUsuario" class="form-control" placeholder="Nombre" />
+      </div>
+    </div>
+
+    <!-- Apellidos -->
+    <div class="col-md-6 mt-1 row">
+      <label class="form-label">Apellidos</label>
+      <div class="user">
+        <fa-icon [icon]="faUser"></fa-icon>
+        <input type="text" formControlName="apellidoUsuario" class="form-control" placeholder="Apellidos" />
+      </div>
+    </div>
+
+    <!-- Matrícula -->
+    <div class="col-md-6 mt-1 row">
+      <label class="form-label">Matrícula</label>
+      <div class="user">
+        <fa-icon [icon]="faUser"></fa-icon>
+        <input type="text" formControlName="idMatricula" class="form-control" placeholder="Matrícula" />
+      </div>
+    </div>
+
+    <!-- Rol (solo lectura) -->
+    <div class="col-md-6 mt-1 row">
+      <label class="form-label">Rol</label>
+      <div class="user">
+        <fa-icon [icon]="faUser"></fa-icon>
+        <input type="text" formControlName="nombreRol" class="form-control" placeholder="Rol" readonly />
+      </div>
+    </div>
+
+    <!-- Teléfono -->
+    <div class="col-md-12 mt-1 row">
+      <label class="form-label">Teléfono</label>
+      <div class="phone">
+        <fa-icon [icon]="faPhone"></fa-icon>
+        <input type="tel" formControlName="telefono" class="form-control" placeholder="Teléfono" />
+      </div>
+    </div>
+
+    <!-- Dirección -->
+    <div class="col-md-12 mt-1 row">
+      <label class="form-label">Dirección</label>
+      <div class="location">
+        <fa-icon [icon]="faLocationDot"></fa-icon>
+        <input type="text" formControlName="direccion" class="form-control" placeholder="Dirección" />
+      </div>
+    </div>
+
+    <!-- Correo Institucional -->
+    <div class="col-md-12 mt-1 row">
+      <label class="form-label">Correo Institucional</label>
+      <div class="envelope">
+        <fa-icon [icon]="faEnvelope"></fa-icon>
+        <input type="email" formControlName="correoInstitucional" class="form-control"
+          placeholder="ejemplo@ipl.edu.do" />
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Botones del diálogo -->
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-button (click)="guardarCambios()" cdkFocusInitial>Actualizar Información</button>
+</mat-dialog-actions>

@@ -1,0 +1,24 @@
+export interface Usuarios{
+    id: number;
+    idMatricula: number;
+    nombreUsuario:string;
+    apellidoUsuario:string;
+    correoInstitucional:string;
+    telefono:string;
+    direccion:string;
+    activado?: boolean;
+    idrol:'Estudiante' | 'Administrador' | 'Super Usuario' | 'Profesor';
+    fechaCreacion:string;
+    fechaUltimaModificacion: string;
+
+}
+
+export interface RespuestaUsuarios {
+  datos: Usuarios[];
+  paginacion: {
+    paginaActual: number;
+    tamanoPagina: number;
+    totalUsuarios: number;
+    totalPaginas: number;
+  };
+}

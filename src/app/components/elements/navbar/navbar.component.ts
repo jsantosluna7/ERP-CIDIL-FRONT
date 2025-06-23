@@ -1,58 +1,53 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faClock, faArrowRightFromBracket, faBell, faChartSimple, faDesktop, faGreaterThan, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser, faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { ConfiguracionComponent } from './configuracion/configuracion.component';
+import { UsuarioService } from '../../home/usuario/usuarios/usuarios.service';
+import { Usuarios } from '../../../interfaces/usuarios.interface';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FontAwesomeModule, CommonModule, RouterLink, AppCualRolDirective],
+  imports: [FontAwesomeModule, RouterLink, MatButtonModule,MatDialogModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrl: './navbar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavbarComponent {
+  left =faArrowRightFromBracket;
+   readonly dialog = inject(MatDialog);
+   readonly usuarioService = inject(UsuariosService);
 
-  constructor(private _usuarios: UsuariosService, private _router: Router){}
+   usuarioLogueado!: Usuarios;
 
-   arrowright = faGreaterThan;
-   house = faHouse;
-   solid =faMagnifyingGlass;
-   heart =faDesktop;
-   regular =faChartSimple;
-   bell = faBell;
-   credi = faUser;
-   car = faShop;
-   left = faArrowRightFromBracket;
-   iot =faMicrochip;
-   faclok = faClock;
-   calendar = faCalendar;
-
-  // body = document.querySelector(".body");k
-  //  sidebar=this.body?.querySelector(".sidebar");
-  //  toggle = this.body?.querySelector(".toggle");
-  //  searchBtn = this.body?.querySelector(".search-box");
-
-  // toogle(event: any){
-  //   const elemento:any = document.querySelector(".sidebar");
-  //   // console.log(elemento)
-  //   elemento.classList.toggle("close");
-
-  // }
-
-  @Output() toggleSidebar = new EventEmitter<void>();
-
-  onToggleClick(){
-    this.toggleSidebar.emit();
-    const elemento:any = document.querySelector(".sidebar");
-    elemento.classList.toggle("close");
+ ngOnInit(): void {
+    // Obtenemos el usuario al cargar el navbar
+    this.usuarioService.user$.subscribe(usuario => {
+      if (usuario) {
+        this.usuarioLogueado = usuario;
+      }
+    });
+    console.log(this.usuarioLogueado);
   }
 
-  salir(){
-    this._usuarios.cerrarSesion()
-    this._router.navigate(['/login']);
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ConfiguracionComponent, {
+      data: this.usuarioLogueado,
+      width: '600px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
+
 
 
 }
+
+
+

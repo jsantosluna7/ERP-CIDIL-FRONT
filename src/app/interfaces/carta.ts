@@ -1,8 +1,22 @@
 export interface Carta {
     id: number;
     nombre:string;
-    descripcion:string;
+    descripcionLarga:string;
     cantidad:number;
-    estado:boolean;
-    imagenUrl:string;
+    disponible: boolean;
+    imagenEquipo:string;
+    idLaboratorio:number;
+    nombreData: string;
+    cantidadSeleccionada:number;
+
+
+}
+
+
+
+export interface PaginacionResponse {
+  paginaActual: number;
+  tamanoPagina: number;
+  totalInventario: number;
+  totalPaginas: number;
 }

@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <h2 class="mb-3">Solicitudes de Reserva de Laboratorio</h2>
+
+  @if (solicitudes.length > 0) {
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+  <tr>
+    <th>Usuario</th>
+    <th>Laboratorio</th>
+    <th>Hora de Inicio</th>
+    <th>Hora de Finalización</th>
+    <th>Motivo</th>
+    <th>Fecha de Solicitud</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+  </tr>
+</thead>
+<tbody>
+  @for (solicitud of solicitudes; track solicitud.id) {
+    <tr>
+      <td>{{ solicitud.nombreUsuario }}</td>
+      <td>{{ solicitud.nombreLaboratorio }}</td>
+      <td>{{ solicitud.horaInicio }}</td>
+      <td>{{ solicitud.horaFinal }}</td>
+      <td>{{ solicitud.motivo }}</td>
+      <td>{{ solicitud.fechaSolicitud }}</td>
+      <td>
+        {{
+          solicitud.idEstado === 1
+            ? 'Aprobado'
+            : solicitud.idEstado === 3
+            ? 'Rechazado'
+            : 'Pendiente'
+        }}
+      </td>
+      <td>
+        <button class="btn btn-success btn-sm me-2" (click)="aprobar(solicitud)">Aprobar</button>
+        <button class="btn btn-danger btn-sm" (click)="desaprobar(solicitud)">Desaprobar</button>
+      </td>
+    </tr>
+  }
+</tbody>
+
+    </table>
+  } @else {
+    <div class="alert alert-info">No hay solicitudes disponibles.</div>
+  }
+</div>

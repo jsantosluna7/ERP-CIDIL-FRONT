@@ -1,0 +1,40 @@
+<div class="container mt-4">
+  <h2 class="mb-3">Solicitudes de Reserva de Equipos</h2>
+
+  @if (solicitud.length > 0) {
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID Usuario</th>
+          <th>ID Inventario</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Final</th>
+          <th>Motivo</th>
+          <th>Fecha de Solicitud</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (solicitud of solicitud; track solicitud.idUsuario) {
+          <tr>
+            <td>{{ solicitud.idUsuario }}</td>
+            <td>{{ solicitud.idInventario }}</td>
+            <td>{{ solicitud.fechaInicio }}</td>
+            <td>{{ solicitud.fechaFinal }}</td>
+            <td>{{ solicitud.motivo }}</td>
+            <td>{{ solicitud.fechaSolicitud }}</td>
+             <td>{{ solicitud.idEstado }}</td>
+            <td>
+              <button class="btn btn-success btn-sm me-2" (click)="aprobar(solicitud)">Aprobar</button>
+              <button class="btn btn-danger btn-sm" (click)="desaprobar(solicitud)">Desaprobar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="alert alert-info">No hay solicitudes disponibles.</div>
+  }
+</div>
+

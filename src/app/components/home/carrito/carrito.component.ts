@@ -3,20 +3,23 @@ import { CarritoService } from './carrito.service';
 import { Carta } from '../../../interfaces/carta';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
+import { CartaCarrito } from './cartaCarrito.interface';
 
 
 @Component({
   selector: 'app-carrito',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
 export class CarritoComponent implements OnInit {
 
 
-  carrito: Carta[] = [];
+  carrito: any[] = [];
 
-  constructor(private carritoService: CarritoService, private router: Router){}
+  constructor(private carritoService: CarritoService, private router: Router, private toastr: ToastrService){}
 
   ngOnInit(): void {
   this.carrito = this.carritoService.getCarrito();
@@ -27,11 +30,13 @@ export class CarritoComponent implements OnInit {
   eliminar(id: number){
     this.carritoService.eliminarDelCarrito(id);
     this.carrito = this.carritoService.getCarrito();
+    this.toastr.success('Producto eliminado del carrito!', '')
   }
 
   vaciar(){
     this.carritoService.vaciarCarrito();
     this.carrito = [];
+    this.toastr.success('El carro ya esta limpio!', '')
   }
 
   ruta(){

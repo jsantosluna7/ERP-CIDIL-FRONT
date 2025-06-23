@@ -1,90 +1,19 @@
-<nav class="sidebar close">
-  <header>
-    <div class="image-text">
-      <span class="image">
-        <!--Imagen de logo-->
-        <img src="/Imagenes/loyola.jpeg" alt="logo" />
-      </span>
-
-      <div class="text header-text">
-        <span class="name">Sistema ERP</span>
-        <span class="profession">CIDIL</span>
-      </div>
-    </div>
-
-    <fa-icon
-      class="toggle"
-      [icon]="arrowright"
-      (click)="onToggleClick()"
-    ></fa-icon>
-  </header>
-
-  <div class="menu-bar">
-    <div class="menu">
-      <!-- <ul class="menu-links"> -->
-      <li class="nav-link" *appCualRol="[1, 2]">
-        <a routerLink="/home/dashboard">
-          <fa-icon class="icon" [icon]="house"></fa-icon>
-          <span class="text nav-text">Dashboard</span>
+<nav class="navbar navbar-expand-lg  navbar-light bg-light">
+  <div class="container-fluid">
+  
+    <!-- Menú desplegable de usuario -->
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+           data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="/Imagenes/loyola.jpeg" alt="Usuario" width="40" height="40" class="rounded-circle me-2">
+          
         </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><button matButton (click)="openDialog()">Configuracion</button></li>
+          <li><a class="dropdown-item" routerLink="/login">Salir</a></li>
+        </ul>
       </li>
-      <li class="nav-link" *appCualRol="[1, 3, 4]">
-        <a routerLink="/home/calendario">
-          <fa-icon class="icon" [icon]="calendar"></fa-icon>
-          <span class="text nav-text">Calendario</span>
-        </a>
-      </li>
-      <li class="nav-link">
-        <a routerLink="/home/inventario">
-          <fa-icon class="icon" [icon]="regular"></fa-icon>
-          <span class="text nav-text">Inventario</span>
-        </a>
-      </li>
-      <li class="nav-link" *appCualRol="[1, 2]">
-        <a routerLink="/home/horario">
-          <fa-icon class="icon" [icon]="faclok"></fa-icon>
-          <span class="text nav-text">Horarios</span>
-        </a>
-      </li>
-      <li class="nav-link">
-        <a routerLink="/home/reserva-laboratorio">
-          <fa-icon class="icon" [icon]="car"></fa-icon>
-          <span class="text nav-text">Reserva de Laboratorios</span>
-        </a>
-      </li>
-      <li class="nav-link">
-        <a routerLink="/home/reserva-equipo">
-          <fa-icon class="icon" [icon]="heart"></fa-icon>
-          <span class="text nav-text">Reserva de Equipos</span>
-        </a>
-      </li>
-      <li class="nav-link">
-        <a routerLink="/home/carrito">
-          <fa-icon class="icon" [icon]="heart"></fa-icon>
-          <span class="text nav-text">Carrito</span>
-        </a>
-      </li>
-      <li class="nav-link" *appCualRol="[1, 2]">
-        <a routerLink="/home/iot">
-          <fa-icon class="icon" [icon]="iot"></fa-icon>
-          <span class="text nav-text">IoT</span>
-        </a>
-      </li>
-      <li class="nav-link" *appCualRol="[1, 2]">
-        <a routerLink="/home/usuarios">
-          <fa-icon class="icon" [icon]="credi"></fa-icon>
-          <span class="text nav-text">Usuarios</span>
-        </a>
-      </li>
-      <!-- </ul> -->
-    </div>
-    <div class="buttom-content">
-      <li class="nav-link">
-        <a (click)="salir()">
-          <fa-icon class="icon" [icon]="left"></fa-icon>
-          <span class="text nav-text">Logout</span>
-        </a>
-      </li>
-    </div>
+    </ul>
   </div>
 </nav>
