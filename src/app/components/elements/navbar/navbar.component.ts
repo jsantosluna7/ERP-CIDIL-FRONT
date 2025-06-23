@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRight,faClock, faArrowRightFromBracket, faBell, faCartShopping, faChartSimple, faCreditCard, faDesktop, faGreaterThan, faHeart, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faArrowRightFromBracket, faBell, faChartSimple, faDesktop, faGreaterThan, faHouse, faMagnifyingGlass, faMicrochip, faShop, faUser, faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FontAwesomeModule, CommonModule, RouterLink],
+  imports: [FontAwesomeModule, CommonModule, RouterLink, AppCualRolDirective],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
@@ -26,6 +27,7 @@ export class NavbarComponent {
    left = faArrowRightFromBracket;
    iot =faMicrochip;
    faclok = faClock;
+   calendar = faCalendar;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");
