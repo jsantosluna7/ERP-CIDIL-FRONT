@@ -20,10 +20,10 @@ export class RedireccionComponent {
         this.router.navigate(['/home/dashboard']);
         break;
       case 3: // Profesor
-        this.router.navigate(['/home/inventario']);
+        this.router.navigate(['/home/calendario']);
         break;
       case 4: // Estudiante
-        this.router.navigate(['/home/inventario']);
+        this.router.navigate(['/home/calendario']);
         break;
       default:
         this.router.navigate(['/no-autorizado']);
