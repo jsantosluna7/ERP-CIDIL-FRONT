@@ -9,6 +9,7 @@ import { UsuarioService } from '../../home/usuario/usuarios/usuarios.service';
 import { Usuarios } from '../../../interfaces/usuarios.interface';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -40,7 +41,7 @@ export class NavbarComponent {
       width: '600px'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
       console.log(`Dialog result: ${result}`);
     });
   }

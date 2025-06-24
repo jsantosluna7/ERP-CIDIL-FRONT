@@ -16,12 +16,14 @@ import {
   faMicrochip,
   faShop,
   faUser,
+  faCalendar,
 } from '@fortawesome/free-solid-svg-icons';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [FontAwesomeModule, CommonModule, RouterLink],
+  imports: [FontAwesomeModule, CommonModule, RouterLink, AppCualRolDirective],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })
@@ -38,6 +40,7 @@ export class SidebarComponent implements OnInit{
   iot = faMicrochip;
   faclok = faClock;
   carro = faCartShopping;
+  calendar = faCalendar;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");

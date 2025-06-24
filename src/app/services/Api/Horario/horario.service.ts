@@ -73,13 +73,19 @@ export class HorarioService {
 
     if (!conBD) {
       html = `
-        <html><body>
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="UTF-8"></head>
+      <body>
           <h2><strong>Conflictos de horario en el archivo exportado</strong></h2>
           ${makeList(sinBD)}
         </body></html>`;
     } else if (!sinBD) {
       html = `
-        <html><body>
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body>
           <h2><strong>Conflictos de horario en la base de datos</strong></h2>
           ${makeList(conBD)}
         </body></html>`;

@@ -17,7 +17,7 @@ import {
   MatTableModule,
 } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, switchMap, take } from 'rxjs';
 import { DatosService } from '../../../../../services/Datos/datos.service';
 import { HorarioService } from '../../../../../services/Api/Horario/horario.service';
 import { LaboratorioService } from '../../../../../services/Api/Laboratorio/laboratorio.service';
@@ -98,7 +98,7 @@ export class HorarioTableComponent {
   openDialog(): void {
     const dialogRef = this.dialog.open(FileDialogComponent);
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
       const horaDialogRef = this.dialog.open(FechaDialogComponent, {
         data: {
           titulo: 'Diga la fecha de inicio y fin',
@@ -106,16 +106,14 @@ export class HorarioTableComponent {
         },
       });
 
-      horaDialogRef.afterClosed().subscribe((result) => {
+      horaDialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
         if (result) {
-          this._datos.jsonData$.subscribe((datos) => {
+          this._datos.jsonData$.pipe(take(1)).subscribe((datos) => {
             
             var fecha: any;
-            this._datos.fechaData$.subscribe((info) => {
+            this._datos.fechaData$.pipe(take(1)).subscribe((info) => {
               fecha = info;
             });
-
-            console.log(fecha);
 
             if (datos) {
               const observables = datos.map((data) =>
@@ -137,14 +135,14 @@ export class HorarioTableComponent {
                 )
               );
 
-              forkJoin(observables).subscribe({
+              forkJoin(observables).pipe(take(1)).subscribe({
                 next: (todosLosHorarios) => {
                   this._horario
                     .postHorario(this.endpoint, todosLosHorarios)
                     .subscribe({
                       next: (h) => {
                         console.log(h);
-                        this.loading = true;
+                        this.secondLoading = true;
                       },
                       error: (err) => {
                         console.log(err);
@@ -154,7 +152,6 @@ export class HorarioTableComponent {
                       },
                       complete: () => {
                         this.cargarTabla();
-                        this.loading = false;
                       },
                     });
                 },
@@ -197,7 +194,7 @@ export class HorarioTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((e) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((e) => {
       if (e) {
         this.cargarTabla();
       } else {
@@ -215,7 +212,7 @@ export class HorarioTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((response) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((response) => {
       if (!response) {
         this._toastr.info('Se canceló la operación', 'Información');
       } else {
@@ -250,7 +247,7 @@ export class HorarioTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
       if (result) {
         this._horario.deleteHorarioAuto(this.endpointElimnarAuto).subscribe({
           error: (err) => {

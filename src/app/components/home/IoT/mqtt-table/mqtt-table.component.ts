@@ -13,7 +13,7 @@ import {
   MatTableDataSource,
   MatTableModule,
 } from '@angular/material/table';
-import { forkJoin, map, switchMap } from 'rxjs';
+import { forkJoin, map, switchMap, take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -98,10 +98,10 @@ export class MqttTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe({
+    dialogRef.afterClosed().pipe(take(1)).subscribe({
       next: (n) => {
         if (n) {
-          this._datos.fechaData$.subscribe({
+          this._datos.fechaData$.pipe(take(1)).subscribe({
             next: (f: any) => {
               this._mqtt
                 .filtradoIot(
@@ -182,10 +182,10 @@ export class MqttTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe({
+    dialogRef.afterClosed().pipe(take(1)).subscribe({
       next: (n) => {
         if (n) {
-          this._datos.fechaData$.subscribe({
+          this._datos.fechaData$.pipe(take(1)).subscribe({
             next: (f: any) => {
               console.log(f);
               this._mqtt
@@ -383,7 +383,7 @@ export class MqttTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((response) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((response) => {
       if (!response) {
         this._toastr.info('Se canceló la operación', 'Información');
       } else {

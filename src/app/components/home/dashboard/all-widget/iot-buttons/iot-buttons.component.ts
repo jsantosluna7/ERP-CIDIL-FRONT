@@ -6,6 +6,7 @@ import { DatosService } from '../../../../../services/Datos/datos.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TimerDialogComponent } from './timer-dialog/timer-dialog.component';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-iot-buttons',
@@ -60,7 +61,7 @@ export class IotButtonsComponent implements OnInit {
         },
       });
 
-      dialogRef.afterClosed().subscribe({
+      dialogRef.afterClosed().pipe(take(1)).subscribe({
         next: (n) => {
           if (n) {
             this._data.timerData$.subscribe({
