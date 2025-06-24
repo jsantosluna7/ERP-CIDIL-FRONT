@@ -91,7 +91,7 @@ aprobar(solicitud: Solicitud) {
     idEstado: 1,
     idUsuarioAprobador: this.usuarioLogueado.id,
     fechaAprobacion: new Date().toISOString(),
-    comentarioAprobacion: 'Aprobado por el usuario logueado'
+    comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`
   };
 
   console.log('Body que se enviará: ', body);
@@ -99,8 +99,11 @@ aprobar(solicitud: Solicitud) {
   this.reservaLaboratorioService.updateEstado( body).subscribe({
     next: () => {
       solicitud.idEstado = 1;
-      this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
       this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
+
+      this.reservaLaboratorioService.eliminarSolicitud(solicitud.id).subscribe(() => {
+        this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
+      });
     },
     error: (err) => {
       console.error('Error al aprobar solicitud:', err);
@@ -146,8 +149,11 @@ desaprobar(solicitud: Solicitud) {
   this.reservaLaboratorioService.updateEstado(body).subscribe({
     next: () => {
       // Quita del frontend la solicitud rechazada
-      this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
       this.toastr.info('Solicitud desaprobada correctamente', 'Información');
+      this.reservaLaboratorioService.eliminarSolicitud(solicitud.id).subscribe(() => {
+        this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
+      });
+      
     },
     error: (err) => {
       console.error('Error al desaprobar solicitud:', err);

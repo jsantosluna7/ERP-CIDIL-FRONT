@@ -45,18 +45,6 @@
           placeholder="Laboratorio" />
       </div>
     </div>
-    <div class="col-md-6 mt-1 row">
-      <label for="inputEmail4"  class="form-label">Lista de espera</label>
-      <div class="location">
-        <fa-icon [icon]="estado"></fa-icon>
-        <select class="form-select " formControlName="aprobacion" aria-label="Default select example">
-          <option [ngValue]="null" disabled selected>Seleccione un estado</option>
-          <option [ngValue]="1">Espera</option>
-          <option [ngValue]="2">Aprobado</option>
-          <option [ngValue]="3">Desaprobado</option>
-        </select>
-      </div>
-    </div>
 
 
     <!--Comentarios -->
@@ -66,12 +54,7 @@
         <textarea class="form-control" formControlName="motivo" id="exampleFormControlTextarea1" rows="3"></textarea>
       </div>
     </div>
-    <div class="col-md-6 mt-1 row">
-      <div class="mb-3">
-        <label for="exampleFormControlTextarea1" class="form-label">Comentario de aprobacion</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" readonly></textarea>
-      </div>
-    </div>
+  
 
     <button type="button" class="btn btn-success" (click)="enviarSolicitud()">Enviar Solicitud</button>
 
