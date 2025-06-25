@@ -3,6 +3,12 @@ import { ReservaEquipos } from '../../../interfaces/solicitud-reserva-equipos.in
 import { SolicitudEquipoService } from '../../../services/reserva-equipo/reserva-equipo.service';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { InventarioService } from '../../../services/Inventario/inventario.service';
+import { forkJoin } from 'rxjs';
+import { UsuarioService } from '../usuario/usuarios/usuarios.service';
+import { Carta } from '../../../interfaces/carta';
+import { Usuarios } from '../../../interfaces/usuarios.interface';
 
 @Component({
   selector: 'app-solicitud-reserva-equipo',
@@ -12,65 +18,110 @@ import { CommonModule } from '@angular/common';
 })
 export class SolicitudReservaEquipoComponent {
 solicitud: ReservaEquipos[] = [];
+usuarioLogueado: any;
 
 constructor(private SolicitudEquipoService: SolicitudEquipoService,
-   private toastr: ToastrService
+   private toastr: ToastrService,
+   private usuariosService: UsuariosService,
+   private inventarioService: InventarioService,
+   private usuarios: UsuarioService
 ){}
 
-ngOnInit(): void{
-  this.SolicitudEquipoService.getReservaE().subscribe({
-    next: (data: any) => {
-      this.solicitud = data.datos;
-      console.log(data.datos)
+ ngOnInit(): void {
+  this.usuariosService.user$.subscribe(user => {
+    this.usuarioLogueado = user;
+  });
+
+  forkJoin({
+    solicitudesResp: this.SolicitudEquipoService.getReservaE(),
+    usuariosResp: this.usuarios.obtenerUsuarios(),
+    equiposResp: this.inventarioService.getCartas(1, 1000)  // asumiendo que quieres todos los equipos
+  }).subscribe({
+    next: ({ solicitudesResp, usuariosResp, equiposResp }) => {
+      const solicitudes = solicitudesResp.datos;
+      const usuarios = usuariosResp?.datos || [];
+      const equipos = equiposResp?.datos || equiposResp || [];
+
+      this.solicitud = solicitudes.map((solicitud) => {
+        const usuario = usuarios.find(u => u.id === solicitud.idUsuario);
+        const equipo = equipos.find((e: Carta) => e.id === solicitud.idInventario);
+
+        return {
+          ...solicitud,
+          nombreUsuario: usuario ? `${usuario.nombreUsuario} ${usuario.apellidoUsuario}` : 'Desconocido',
+          nombreEquipo: equipo?.nombre || 'Equipo no encontrado'
+        };
+      });
     },
-    error: (error) =>{
-      console.error('Error al cargar las solicitudes', error);
-      this.toastr.error('Ocurrió un error al cargar la solicitud.', 'Error');
-    
+    error: (err) => {
+      console.error('Error al cargar datos', err);
+      this.toastr.error('Error al cargar solicitudes', 'Error');
     }
   });
 }
 
-aprobar(solicitud: ReservaEquipos){
 
-   const body: ReservaEquipos = {
-      ...solicitud,
-      idEstado: 1,
-   };
+ aprobar(solicitud: ReservaEquipos) {
+  if (!this.usuarioLogueado) {
+    this.toastr.error('Usuario logueado no encontrado');
+    return;
+  }
 
-  this.SolicitudEquipoService.updateEstado(solicitud.id, body).subscribe({
+  const body: ReservaEquipos = {
+    ...solicitud,
+    idEstado: 1,
+    idUsuarioAprobador: this.usuarioLogueado.id,
+    fechaEntrega: new Date().toISOString(),
+    comentarioAprobacion: 'Aprobado por el usuario logueado'
+  };
+
+  this.SolicitudEquipoService.updateEstado( body).subscribe({
     next: () => {
       solicitud.idEstado = 1;
-      this.toastr.success(`Solicitud #${solicitud.idInventario} Aprobada correctamente.`, 'Exito');
-      console.log('Body enviado:', body);
+      this.toastr.success(`Solicitud del equipo "${solicitud.nombreEquipo}" aprobada.`, 'Éxito');
+      this.SolicitudEquipoService.eliminarSolicitud(solicitud.id).subscribe(() => {
+        this.solicitud = this.solicitud.filter(s => s.id !== solicitud.id);
+      });
     },
     error: (error) => {
       console.error('Error al aprobar solicitud:', error);
-        this.toastr.error('Ocurrió un error al aprobar la solicitud.', 'Error');
-    },
-  });
-}
-
-
-desaprobar(solicitud: ReservaEquipos) {
-
-  const body: ReservaEquipos = {
-      ...solicitud,
-      idEstado: 3,
-   }
-  this.SolicitudEquipoService.updateEstado(solicitud.id, body).subscribe({
-    next: () => {
-      solicitud.idEstado = 3;
-      this.toastr.success(`Solicitud ${solicitud.idInventario} desaprobada.`);
-      console.log(body);
-    },
-    error: (error) => {
-      console.error('Error al desaprobar solicitud:', error);
-      this.toastr.error('Ocurrió un error al desaprobar la solicitud.', 'Error');
-    
+      this.toastr.error('Error al aprobar la solicitud.', 'Error');
     }
   });
 }
+
+
+
+
+desaprobar(solicitud: ReservaEquipos) {
+  if (!this.usuarioLogueado) {
+    this.toastr.error('Usuario logueado no encontrado');
+    return;
+  }
+
+  const body: ReservaEquipos = {
+    ...solicitud,
+    idEstado: 3,
+    idUsuarioAprobador: this.usuarioLogueado.id,
+    fechaEntrega: new Date().toISOString(),
+    comentarioAprobacion: 'Solicitud rechazada por el usuario logueado'
+  };
+
+  this.SolicitudEquipoService.updateEstado( body).subscribe({
+    next: () => {
+      solicitud.idEstado = 3;
+      this.toastr.success(`Solicitud del equipo "${solicitud.nombreEquipo}" rechazada.`, 'Desaprobada');
+      this.SolicitudEquipoService.eliminarSolicitud(solicitud.id).subscribe(() => {
+        this.solicitud = this.solicitud.filter(s => s.id !== solicitud.id);
+      });
+    },
+    error: (error) => {
+      console.error('Error al desaprobar solicitud:', error);
+      this.toastr.error('Error al desaprobar la solicitud.', 'Error');
+    }
+  });
+}
+
 
 
 

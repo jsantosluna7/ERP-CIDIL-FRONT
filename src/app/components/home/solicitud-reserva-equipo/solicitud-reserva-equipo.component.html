@@ -5,26 +5,34 @@
     <table class="table table-bordered table-hover">
       <thead class="table-dark">
         <tr>
-          <th>ID Usuario</th>
-          <th>ID Inventario</th>
+          <th>Usuario</th>
+          <th>Equipo</th>
           <th>Fecha Inicio</th>
           <th>Fecha Final</th>
           <th>Motivo</th>
-          <th>Fecha de Solicitud</th>
+          <th>Fecha Solicitud</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        @for (solicitud of solicitud; track solicitud.idUsuario) {
+        @for (solicitud of solicitud; track solicitud.id) {
           <tr>
-            <td>{{ solicitud.idUsuario }}</td>
-            <td>{{ solicitud.idInventario }}</td>
+            <td>{{ solicitud.nombreUsuario }}</td>
+            <td>{{ solicitud.nombreEquipo }}</td>
             <td>{{ solicitud.fechaInicio }}</td>
             <td>{{ solicitud.fechaFinal }}</td>
             <td>{{ solicitud.motivo }}</td>
-            <td>{{ solicitud.fechaSolicitud }}</td>
-             <td>{{ solicitud.idEstado }}</td>
+            <td>{{ solicitud.fechaEntrega }}</td>
+            <td>
+              {{
+                solicitud.idEstado === 1
+                  ? 'Aprobado'
+                  : solicitud.idEstado === 3
+                  ? 'Rechazado'
+                  : 'Pendiente'
+              }}
+            </td>
             <td>
               <button class="btn btn-success btn-sm me-2" (click)="aprobar(solicitud)">Aprobar</button>
               <button class="btn btn-danger btn-sm" (click)="desaprobar(solicitud)">Desaprobar</button>
@@ -37,4 +45,3 @@
     <div class="alert alert-info">No hay solicitudes disponibles.</div>
   }
 </div>
-

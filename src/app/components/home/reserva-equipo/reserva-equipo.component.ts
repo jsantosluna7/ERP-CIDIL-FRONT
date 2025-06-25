@@ -8,6 +8,9 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { SolicitudEquipoService } from '../../../services/reserva-equipo/reserva-equipo.service';
+import { ReservaEquipoNueva } from '../../../interfaces/reservaEquipoNueva.interface';
 
 
 @Component({
@@ -30,7 +33,7 @@ export class ReservaEquipoComponent implements OnInit {
   fahouse= faHome;
   faclock = faClock;
 
- constructor(private carritoService: CarritoService, private toastr: ToastrService, private router: Router) {
+ constructor(private carritoService: CarritoService, private toastr: ToastrService, private router: Router, private _usuarios: UsuariosService,private solicituEquipoService: SolicitudEquipoService ) {
     this.solicitudesForm = new FormGroup({
     fechaInicio: new FormControl('', [Validators.required]),
     fechaDevolucion: new FormControl('',[Validators.required]),
@@ -38,43 +41,59 @@ export class ReservaEquipoComponent implements OnInit {
   });
  }
 
+ usuarioLogueado: any;
+
  ngOnInit(): void {
   this.equiposSeleccionados = this.carritoService.getCarrito();
   console.log(this.equiposSeleccionados)
+
+    //datos del usuario
+   this._usuarios.user$.subscribe(user => {
+    this.usuarioLogueado = user;
+  });
  }
 
  enviarSolicitud(): void {
   const fechaInicio = this.solicitudesForm.get('fechaInicio')?.value;
   const fechaFin = this.solicitudesForm.get('fechaDevolucion')?.value;
+  const motivo = this.solicitudesForm.get('Motivo')?.value;
 
-
-   if (this.equiposSeleccionados.length === 0) {
-     this.toastr.error('Debe seleccionar al menos un equipo!', '')
+  if (this.equiposSeleccionados.length === 0) {
+    this.toastr.error('Debe seleccionar al menos un equipo!', '');
     return;
   }
 
-  if (!fechaInicio) {
-     this.toastr.error('El campo "Fecha de inicio" está vacío!', '')
+  if (!fechaInicio || !fechaFin || !motivo) {
+    this.toastr.error('Complete todos los campos requeridos!', '');
     return;
   }
 
-  if (!fechaFin) {
-     this.toastr.error('El campo "Fecha de fin" está vacío!', '')
-    return;
-  }
+  const fechaSolicitud = new Date().toISOString();
 
-  // Si pasa todas las validaciones, se envía la solicitud
-  if (this.solicitudesForm.valid) {
-    const solicitud = {
-      ...this.solicitudesForm.value,
-      equipos: this.equiposSeleccionados
+  // Enviar una solicitud por cada equipo
+  this.equiposSeleccionados.forEach((equipo) => {
+    const solicitud: ReservaEquipoNueva = {
+      idUsuario: this.usuarioLogueado.id,
+      idInventario: equipo.id,
+      fechaInicio,
+      fechaFinal: fechaFin,
+      motivo,
+      fechaSolicitud
     };
-    this.toastr.success('Solicitud enviada!', '') 
-  }
-   this.carritoService.vaciarCarrito();
- 
- }
 
+    this.solicituEquipoService.crearReserva(solicitud).subscribe({
+      next: () => {
+        this.toastr.success(`Solicitud para el equipo ${equipo.nombre} enviada.`, '');
+      },
+      error: (err) => {
+        console.error('Error al enviar la solicitud:', err);
+        this.toastr.error('Error al enviar la solicitud', '');
+      }
+    });
+  });
+
+  this.carritoService.vaciarCarrito();
+}
 
  ruta(){
     this.router.navigate(['/home/solicitud-laboratorio']);

@@ -5,6 +5,12 @@ export interface ReservaEquipos{
     fechaInicio: string;
     fechaFinal: string;
     motivo: string;
-    fechaSolicitud: string;
+    fechaEntrega: string;
     idEstado:number;
+    idUsuarioAprobador: number;
+    comentarioAprobacion: string;
+
+    // Campos adicionales para mostrar en frontend
+   nombreUsuario?: string;
+   nombreEquipo?: string;
 }
