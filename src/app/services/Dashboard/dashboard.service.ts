@@ -18,7 +18,7 @@ export class DashboardService {
     },
     {
       id: 2,
-      label: 'Users Widget',
+      label: 'Solicitudes de Espacio Widget',
       content: UsersWidgetComponent, // Replace with actual component
       rows: 2,
       columns: 2

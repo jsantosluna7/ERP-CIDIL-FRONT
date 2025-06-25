@@ -27,6 +27,8 @@ import { ElegirFechaComponent } from '../../crud/elegir-fecha/elegir-fecha.compo
 import { EditarHorarioComponent } from '../../crud/editar-horario/editar-horario.component';
 import { PreguntaDialogComponent } from '../../../../elements/pregunta-dialog/pregunta-dialog.component';
 import { FechaDialogComponent } from '../../../../elements/fecha-dialog/fecha-dialog.component';
+import { Router } from '@angular/router';
+import { error } from 'console';
 
 @Component({
   selector: 'app-horario-table',
@@ -60,7 +62,8 @@ export class HorarioTableComponent {
     private _lab: LaboratorioService,
     private _toastr: ToastrService,
     public _dialog: MatDialog,
-    private _utilities: UtilitiesService
+    private _utilities: UtilitiesService,
+    private _router: Router
   ) {}
 
   displayedColumns: string[] = [
@@ -98,75 +101,86 @@ export class HorarioTableComponent {
   openDialog(): void {
     const dialogRef = this.dialog.open(FileDialogComponent);
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
-      const horaDialogRef = this.dialog.open(FechaDialogComponent, {
-        data: {
-          titulo: 'Diga la fecha de inicio y fin',
-          ifLab: false
-        },
-      });
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result) => {
+        const horaDialogRef = this.dialog.open(FechaDialogComponent, {
+          data: {
+            titulo: 'Diga la fecha de inicio y fin',
+            ifLab: false,
+          },
+        });
 
-      horaDialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
-        if (result) {
-          this._datos.jsonData$.pipe(take(1)).subscribe((datos) => {
-            
-            var fecha: any;
-            this._datos.fechaData$.pipe(take(1)).subscribe((info) => {
-              fecha = info;
-            });
+        horaDialogRef
+          .afterClosed()
+          .pipe(take(1))
+          .subscribe((result) => {
+            if (result) {
+              this._datos.jsonData$.pipe(take(1)).subscribe((datos) => {
+                var fecha: any;
+                this._datos.fechaData$.pipe(take(1)).subscribe((info) => {
+                  fecha = info;
+                });
 
-            if (datos) {
-              const observables = datos.map((data) =>
-                this.obtenerIdLab(data.AULA).pipe(
-                  map((id) => ({
-                    asignatura: data.ASIGNATURA,
-                    profesor: data.PROFESOR,
-                    idLaboratorio: id,
-                    horaInicio: this._datos.excelTiempoAString(
-                      data['HORA INICIO']
-                    ),
-                    horaFinal: this._datos.excelTiempoAString(
-                      data['HORA FINAL']
-                    ),
-                    fechaInicio: fecha.fechaInicio,
-                    fechaFinal: fecha.fechaFinal,
-                    dia: data.DIA,
-                  }))
-                )
-              );
+                if (datos) {
+                  const observables = datos.map((data) =>
+                    this.obtenerIdLab(data.AULA).pipe(
+                      map((id) => ({
+                        asignatura: data.ASIGNATURA,
+                        profesor: data.PROFESOR,
+                        idLaboratorio: id,
+                        horaInicio: this._datos.excelTiempoAString(
+                          data['HORA INICIO']
+                        ),
+                        horaFinal: this._datos.excelTiempoAString(
+                          data['HORA FINAL']
+                        ),
+                        fechaInicio: fecha.fechaInicio,
+                        fechaFinal: fecha.fechaFinal,
+                        dia: data.DIA,
+                      }))
+                    )
+                  );
 
-              forkJoin(observables).pipe(take(1)).subscribe({
-                next: (todosLosHorarios) => {
-                  this._horario
-                    .postHorario(this.endpoint, todosLosHorarios)
+                  forkJoin(observables)
+                    .pipe(take(1))
                     .subscribe({
-                      next: (h) => {
-                        console.log(h);
-                        this.secondLoading = true;
+                      next: (todosLosHorarios) => {
+                        console.log(todosLosHorarios);
+                        this._horario
+                          .postHorario(this.endpoint, todosLosHorarios)
+                          .subscribe({
+                            next: (h) => {
+                              this.secondLoading = true;
+                            },
+                            error: (err) => {
+                              this.abrirErrores(err.error.detalles);
+
+                              this._toastr.error(
+                                err.error.mensaje,
+                                'Hubo un error'
+                              );
+                            },
+                            complete: () => {
+                              this.cargarTabla();
+                            },
+                          });
                       },
                       error: (err) => {
                         console.log(err);
-                        this._horario.buildHTML(err.error.detalles);
-
-                        this._toastr.error(err.error.mensaje, 'Hubo un error');
-                      },
-                      complete: () => {
-                        this.cargarTabla();
+                        this._toastr.error(
+                          'Error al obtener IDs de laboratorios'
+                        );
                       },
                     });
-                },
-                error: (err) => {
-                  console.log(err);
-                  this._toastr.error('Error al obtener IDs de laboratorios');
-                },
+                }
               });
+            } else {
+              this._toastr.info('Se canceló la operación', 'Información');
             }
           });
-        } else {
-          this._toastr.info('Se canceló la operación', 'Información');
-        }
       });
-    });
   }
 
   applyFilter(event: Event) {
@@ -189,18 +203,25 @@ export class HorarioTableComponent {
         dia: element.dia,
         horaInicio: element.horaInicio,
         horaFinal: element.horaFinal,
-        fechaInicio: this._utilities.desformatearHorarioFecha(element.fechaInicio),
-        fechaFinal: this._utilities.desformatearHorarioFecha(element.fechaFinal),
+        fechaInicio: this._utilities.desformatearHorarioFecha(
+          element.fechaInicio
+        ),
+        fechaFinal: this._utilities.desformatearHorarioFecha(
+          element.fechaFinal
+        ),
       },
     });
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe((e) => {
-      if (e) {
-        this.cargarTabla();
-      } else {
-        this._toastr.info('Se canceló la operación', 'Información');
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((e) => {
+        if (e) {
+          this.cargarTabla();
+        } else {
+          this._toastr.info('Se canceló la operación', 'Información');
+        }
+      });
   }
 
   eliminar(element: any) {
@@ -212,20 +233,23 @@ export class HorarioTableComponent {
       },
     });
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe((response) => {
-      if (!response) {
-        this._toastr.info('Se canceló la operación', 'Información');
-      } else {
-        this._horario.deleteHorario(this.endpoint, element.id).subscribe({
-          next: (h) => {
-            this.cargarTabla();
-          },
-          error: (err) => {
-            this._toastr.error(err.error, 'Hubo un error');
-          },
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((response) => {
+        if (!response) {
+          this._toastr.info('Se canceló la operación', 'Información');
+        } else {
+          this._horario.deleteHorario(this.endpoint, element.id).subscribe({
+            next: (h) => {
+              this.cargarTabla();
+            },
+            error: (err) => {
+              this._toastr.error(err.error, 'Hubo un error');
+            },
+          });
+        }
+      });
   }
 
   updatePageSize(event: Event) {
@@ -247,19 +271,22 @@ export class HorarioTableComponent {
       },
     });
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
-      if (result) {
-        this._horario.deleteHorarioAuto(this.endpointElimnarAuto).subscribe({
-          error: (err) => {
-            this.cargarTabla();
-            console.log(err);
-            this._toastr.error(err.error, 'Hubo un error');
-          },
-        });
-      } else {
-        this._toastr.info('No se eliminaron los elementos', 'Información');
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result) => {
+        if (result) {
+          this._horario.deleteHorarioAuto(this.endpointElimnarAuto).subscribe({
+            error: (err) => {
+              this.cargarTabla();
+              console.log(err);
+              this._toastr.error(err.error, 'Hubo un error');
+            },
+          });
+        } else {
+          this._toastr.info('No se eliminaron los elementos', 'Información');
+        }
+      });
   }
 
   cargarTabla() {
@@ -281,8 +308,12 @@ export class HorarioTableComponent {
                 idLab: lab.id,
                 horaInicio: this._utilities.formatearHora(data.horaInicio),
                 horaFinal: this._utilities.formatearHora(data.horaFinal),
-                fechaInicio: this._utilities.formatearHorarioFecha(data.fechaInicio),
-                fechaFinal: this._utilities.formatearHorarioFecha(data.fechaFinal),
+                fechaInicio: this._utilities.formatearHorarioFecha(
+                  data.fechaInicio
+                ),
+                fechaFinal: this._utilities.formatearHorarioFecha(
+                  data.fechaFinal
+                ),
                 dia: data.dia,
               }))
             )
@@ -311,5 +342,21 @@ export class HorarioTableComponent {
     return this._horario.getIdLaboratorio(this.endpointCodigoLab, codigo).pipe(
       map((e) => e.id) // extraemos sólo el id
     );
+  }
+
+  abrirErrores(todosErrores: any[]) {
+    // console.log(todosErrores);
+    // this._router.navigate(['/home/horario/errores'], {
+    //   state: { error: todosErrores },
+    // });
+
+    const url = this._router.serializeUrl(
+      this._router.createUrlTree(['/home/horario/errores'], { queryParams: {} })
+    );
+    // Guardamos datos en sessionStorage
+    const key = 'erroresTemp';
+    localStorage.setItem(key, JSON.stringify(todosErrores));
+    // Abrimos nueva pestaña, pasamos key como query param
+    window.open(`${url}?key=${key}`, '_blank', 'noopener,noreferrer');
   }
 }

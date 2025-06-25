@@ -81,6 +81,10 @@ body {
   flex-grow: 1;
 }
 
+.mdc-list-item--with-one-line {
+  height: 5rem !important;
+}
+
 mat-tab-group {
   display: flex;
   flex-direction: column;
@@ -89,6 +93,7 @@ mat-tab-group {
 
 .calendar-container {
   flex: 1;
-  min-height: 0; /* importante para evitar overflow */
+  min-height: 0;
+  /* importante para evitar overflow */
   margin-top: 2rem;
 }

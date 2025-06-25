@@ -85,4 +85,9 @@ export class UtilitiesService {
       }
     );
   }
+
+  formatPDFContent(html: string): string {
+    // Detecta "* ... ." y añade <br><br> después
+    return html.replace(/<li>\*(.*?)<\/li>/g, '<li class="asterisco">*$1</li>');
+  }
 }
