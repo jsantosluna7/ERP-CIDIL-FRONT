@@ -1,0 +1,14 @@
+.encabezado-azul {
+  background-color: #101A88 !important;
+  color: white !important;
+}
+
+.botones-red{
+    background-color: #CC3333 !important;
+    color: white !important;
+}
+
+.botones-green{
+    background-color: green !important;
+    color:white !important;
+}

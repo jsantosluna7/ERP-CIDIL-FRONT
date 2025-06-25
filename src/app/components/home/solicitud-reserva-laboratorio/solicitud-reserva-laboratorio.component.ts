@@ -9,15 +9,28 @@ import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.se
 import { forkJoin } from 'rxjs';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
-  imports: [CommonModule, ToastrModule],
+  imports: [CommonModule, ToastrModule, MatTableModule,MatButtonModule],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
   styleUrl: './solicitud-reserva-laboratorio.component.css',
 })
 export class SolicitudReservaLaboratorioComponent {
   solicitudes: Solicitud[] = [];
+
+  columnas: string[] = [
+  'nombreUsuario',
+  'nombreLaboratorio',
+  'horaInicio',
+  'horaFinal',
+  'motivo',
+  'fechaSolicitud',
+  'estado',
+  'acciones'
+];
 
   constructor(
     private reservaLaboratorioService: SolicitudReservaService,

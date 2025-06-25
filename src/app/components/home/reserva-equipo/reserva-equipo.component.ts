@@ -83,7 +83,7 @@ export class ReservaEquipoComponent implements OnInit {
 
     this.solicituEquipoService.crearReserva(solicitud).subscribe({
       next: () => {
-        this.toastr.success(`Solicitud para el equipo ${equipo.nombre} enviada.`, '');
+        this.toastr.success(`Solicitud para el equipo ${equipo.nombreData} enviada.`, '');
       },
       error: (err) => {
         console.error('Error al enviar la solicitud:', err);
@@ -93,6 +93,7 @@ export class ReservaEquipoComponent implements OnInit {
   });
 
   this.carritoService.vaciarCarrito();
+   this.solicitudesForm.reset();
 }
 
  ruta(){

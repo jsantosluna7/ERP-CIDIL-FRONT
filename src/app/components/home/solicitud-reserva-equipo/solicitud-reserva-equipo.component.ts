@@ -9,10 +9,14 @@ import { forkJoin } from 'rxjs';
 import { UsuarioService } from '../usuario/usuarios/usuarios.service';
 import { Carta } from '../../../interfaces/carta';
 import { Usuarios } from '../../../interfaces/usuarios.interface';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-solicitud-reserva-equipo',
-  imports: [ CommonModule, ToastrModule],
+  imports: [ CommonModule, ToastrModule,MatTableModule, MatButtonModule,MatIconModule ],
   templateUrl: './solicitud-reserva-equipo.component.html',
   styleUrl: './solicitud-reserva-equipo.component.css'
 })
@@ -20,6 +24,15 @@ export class SolicitudReservaEquipoComponent {
 solicitud: ReservaEquipos[] = [];
 usuarioLogueado: any;
 
+  columnas = [
+    'nombreUsuario',
+    'nombreEquipo',
+    'fechaInicio',
+    'fechaFinal',
+    'motivo',
+    'estado',
+    'acciones'
+  ];
 constructor(private SolicitudEquipoService: SolicitudEquipoService,
    private toastr: ToastrService,
    private usuariosService: UsuariosService,
