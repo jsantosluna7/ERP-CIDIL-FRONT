@@ -25,7 +25,13 @@ export class CarritoComponent implements OnInit {
   this.carrito = this.carritoService.getCarrito();
   console.log('Contenido del carrito:', this.carrito);
 }
-  
+
+
+  actualizarCantidad(carta: any): void {
+  this.carritoService.actualizarCantidad(carta.id, carta.cantidadSeleccionada);
+  console.log('Cantidad actualizada en carrito:', carta.id, carta.cantidadSeleccionada);
+}
+
 
   eliminar(id: number){
     this.carritoService.eliminarDelCarrito(id);

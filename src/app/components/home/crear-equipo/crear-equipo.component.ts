@@ -43,17 +43,21 @@ ngOnInit(): void {
 }
 
 crearEquipo(): void {
+
+  
     if (this.solicitudesForm.invalid) {
       this.toastr.error('Por favor, completa todos los campos requeridos.');
       return;
     }
 
     const nuevoEquipo: Carta = this.solicitudesForm.value;
+    console.log(nuevoEquipo)
     this.inventarioService.agregarCarta(nuevoEquipo).subscribe({
       next: () => {
         this.toastr.success('Equipo creado correctamente.');
         this.solicitudesForm.reset();
-        this.solicitudesForm.patchValue({ disponible: true, validacionPrestamo: true, importeActivo: 0, cantidad: 1 });
+        this.solicitudesForm.patchValue({ disponible: true, validacionPrestamo: true, importeActivo: 1, cantidad: 1 });
+        console.log(nuevoEquipo)
       },
       error: (err) => {
         console.error('Error al crear el equipo:', err);

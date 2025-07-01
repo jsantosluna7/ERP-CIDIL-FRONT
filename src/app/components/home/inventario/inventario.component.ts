@@ -20,8 +20,8 @@ import { CartaCarrito } from '../carrito/cartaCarrito.interface';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import {  forkJoin, map } from 'rxjs';
-import { ContentObserver } from '@angular/cdk/observers';
-import { subscribe } from 'diagnostics_channel';
+
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
@@ -74,12 +74,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       this.laboratorios =labs;
        this.cargarCartas();
     })
-    
-   
-    /*this.laboratorioService.getLaboratorios().subscribe((n: any) =>{
-       console.log(n)
-    })*/
-    
+        
   }
 
   cargarCartas() {
@@ -89,17 +84,19 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     next: (d: any) => {
       const all = d.datos;
 
-      const datos = all.map((data: any) => {
-        const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
-        return {
-          id: data.id,
-          nombre: lab ? lab.codigoDeLab : 'Sin laboratorio',
-          nombreData: data.nombre,
-          cantidad: data.cantidad,
-          disponible: data.disponible,
-          imagen: data.imagenEquipo
-        };
-      });
+      const datos = all
+  .filter((data: any) => data.disponible)  
+  .map((data: any) => {
+    const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
+    return {
+      id: data.id,
+      nombre: lab ? lab.codigoDeLab : 'Sin laboratorio',
+      nombreData: data.nombre,
+      cantidad: data.cantidad,
+      disponible: data.disponible,
+      imagen: data.imagenEquipo
+    };
+  });
 
       this.cartasConLaboratorio = datos;
       this.totalItems = d.total;
@@ -130,54 +127,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 }
 
 
-  /*cargarCartas() {
-    this.inventarioService
-      .getCartas(this.paginaActual, this.pageSize)
-      .subscribe({
-        next: (d: any) => {
-          const all = d.datos
-          const datos = all.map((data: any) => forkJoin({
-            lab: this.laboratorioService.getLaboratorioPorId(data.idLaboratorio),
-          }).pipe(
-            map(({ lab }) => ({
-              id: data.id,
-              nombre: lab.codigoDeLab,
-              nombreData: data.nombre,
-              cantidad: data.cantidad,
-              disponible: data.disponible,
-              imagen:data.imagenEquipo,
-            }))
-          ));
-
-          forkJoin(datos).subscribe({
-            next: (i: any) => {
-              this.cartasConLaboratorio = i;
-              this.loading = false;
-              console.log(i);
-
-
-               this.dataSource = new MatTableDataSource(this.cartasConLaboratorio);
-               this.dataSource.paginator = this.paginator;
-               this.dataSource.sort = this.sort;
-
-               this.dataSource.filterPredicate = (data: any, filter: string) => {
-               const dataStr = (
-                data.nombreData +
-                ' ' +
-               data.nombre +
-               ' ' +
-               data.cantidad +
-               ' ' +
-               (data.disponible ? 'disponible' : 'no disponible')
-               ).toLowerCase();
-               return dataStr.includes(filter);
-               this.loading = false;
-             };
-            },
-          });
-        },
-      });
-  }*/
+ 
 
   updatePageSize(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -197,7 +147,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 agregarAlCarrito(carta: any): void {
   const cartaConCantidad = {
     ...carta,
-    cantidadSeleccionada: 1
+    cantidadSeleccionada: carta.cantidadSeleccionada?? 1
   };
 
   this.carritoService.agregar(cartaConCantidad);
@@ -213,7 +163,7 @@ agregarAlCarrito(carta: any): void {
 
   ngAfterViewInit() {
   this.paginator.page.subscribe((event: PageEvent) => {
-    this.paginaActual = event.pageIndex + 1; // recordando que pageIndex empieza en 0
+    this.paginaActual = event.pageIndex + 1;
     this.pageSize = event.pageSize;
     this.cargarCartas();
   });

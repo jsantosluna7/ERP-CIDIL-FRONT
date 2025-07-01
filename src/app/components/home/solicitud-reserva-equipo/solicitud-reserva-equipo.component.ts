@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class SolicitudReservaEquipoComponent {
 solicitud: ReservaEquipos[] = [];
+
 usuarioLogueado: any;
 
   columnas = [
@@ -30,6 +31,7 @@ usuarioLogueado: any;
     'fechaInicio',
     'fechaFinal',
     'motivo',
+    'cantidad',
     'estado',
     'acciones'
   ];
@@ -43,6 +45,7 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
  ngOnInit(): void {
   this.usuariosService.user$.subscribe(user => {
     this.usuarioLogueado = user;
+    
   });
 
   forkJoin({
@@ -55,12 +58,16 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
       const usuarios = usuariosResp?.datos || [];
       const equipos = equiposResp?.datos || equiposResp || [];
 
+      console.log('Solicitudes crudas recibidas:', solicitudes);
+
+
       this.solicitud = solicitudes.map((solicitud) => {
         const usuario = usuarios.find(u => u.id === solicitud.idUsuario);
         const equipo = equipos.find((e: Carta) => e.id === solicitud.idInventario);
 
         return {
           ...solicitud,
+          cantidad: solicitud.cantidad,
           nombreUsuario: usuario ? `${usuario.nombreUsuario} ${usuario.apellidoUsuario}` : 'Desconocido',
           nombreEquipo: equipo?.nombre || 'Equipo no encontrado'
         };
@@ -79,14 +86,22 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
     this.toastr.error('Usuario logueado no encontrado');
     return;
   }
+  console.log('Cantidad recibida de solicitud:', solicitud.cantidad);
 
   const body: ReservaEquipos = {
-    ...solicitud,
-    idEstado: 1,
-    idUsuarioAprobador: this.usuarioLogueado.id,
-    fechaEntrega: new Date().toISOString(),
-    comentarioAprobacion: 'Aprobado por el usuario logueado'
+     id: solicitud.id,
+  idUsuario: solicitud.idUsuario,
+  idInventario: solicitud.idInventario,
+  fechaInicio: solicitud.fechaInicio,
+  fechaFinal: solicitud.fechaFinal,
+  motivo: solicitud.motivo,
+  cantidad: !isNaN(Number(solicitud.cantidad)) ? Number(solicitud.cantidad) : 1,
+  fechaEntrega: new Date().toISOString(),
+  idEstado: 1,
+  idUsuarioAprobador: this.usuarioLogueado.id,
+  comentarioAprobacion: 'Aprobado por el usuario logueado'
   };
+      console.log('Datos enviados al backend:', body);
 
   this.SolicitudEquipoService.updateEstado( body).subscribe({
     next: () => {
@@ -99,6 +114,7 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
     error: (error) => {
       console.error('Error al aprobar solicitud:', error);
       this.toastr.error('Error al aprobar la solicitud.', 'Error');
+       console.log('Datos enviados al backend:', body);
     }
   });
 }

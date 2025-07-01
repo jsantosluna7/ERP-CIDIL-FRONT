@@ -20,42 +20,24 @@ export class CarritoService {
      return guardado ? JSON.parse(guardado) : this.carrito;
     }
 
-   /* agregar(carta: Carta): void {
-        this.carrito.push(carta);
-    }*/
 
-    /*agregar(carta: Carta): void {
-    const yaExiste = this.carrito.find(item => item.id === carta.id);
-
-    if (!yaExiste) {
-      const cartaConCantidad: CartaCarrito = {
-        ...carta,
-        cantidadSeleccionada: 1
-      };
-      this.carrito.push(cartaConCantidad);
-    }
-  }*/
- agregar(carta: Carta): void {
+ agregar(carta: CartaCarrito): void {
   const yaExiste = this.carrito.find(item => item.id === carta.id);
 
   if (!yaExiste) {
-    const cartaConCantidad: CartaCarrito = {
-      ...carta,
-      cantidadSeleccionada: 1
-    };
-    this.carrito.push(cartaConCantidad);
+    this.carrito.push(carta);
     this.guardarCarrito();
   }
 }
 
-    /*eliminarDelCarrito(id: number): void {
-        this.carrito =this.carrito.filter(item => item.id !==id);
-        
-    }
+actualizarCantidad(id: number, nuevaCantidad: number): void {
+  const index = this.carrito.findIndex(item => item.id === id);
+  if (index !== -1) {
+    this.carrito[index].cantidadSeleccionada = nuevaCantidad;
+    this.guardarCarrito();
+  }
+}
 
-    vaciarCarrito(): void {
-        this.carrito =[];
-    }*/
 
 
 eliminarDelCarrito(id: number): void {

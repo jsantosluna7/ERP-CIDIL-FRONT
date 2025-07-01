@@ -1,7 +1,7 @@
 export interface Carta {
   id: number; // opcional si es generado por el backend
   nombre: string;
-  nombreData:string;
+  nombreData?:string;
   nombreCorto: string;
   perfil: string;
   idLaboratorio: number;
@@ -19,7 +19,7 @@ export interface Carta {
 
   // Campos adicionales para el frontend (no van al backend, pero útiles en Angular)
   cantidad?: number;
-  cantidadSeleccionada?: number;
+  cantidadSeleccionada: number;
 
 }
 

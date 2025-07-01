@@ -11,10 +11,10 @@ export class InventarioService {
 
   constructor(private http: HttpClient) {}
 
-  /*getCartas(paginaActual: number, pageSize: number): Observable<Carta[]> {
-    return this.http.get<Carta[]>(this.apiUrl);
+  obtenerCartaPorId(id: number): Observable<Carta> {
+  return this.http.get<Carta>(`${this.apiUrl}/${id}`);
+}
 
-  }*/
 
   getCartas(pagina: number, tamanoPagina: number): Observable<any> {
     return this.http.get(

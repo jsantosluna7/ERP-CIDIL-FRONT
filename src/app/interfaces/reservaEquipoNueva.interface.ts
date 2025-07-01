@@ -5,4 +5,5 @@ export interface ReservaEquipoNueva {
   fechaFinal: string;
   motivo: string;
   fechaSolicitud: string;
+  cantidad:number;
 }

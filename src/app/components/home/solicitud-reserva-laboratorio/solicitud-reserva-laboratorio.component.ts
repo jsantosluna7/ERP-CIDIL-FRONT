@@ -66,14 +66,14 @@ ngOnInit(): void {
           ...sol,
           nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
           nombreLaboratorio: lab?.nombre || 'Desconocido',
-          fechaInicio: sol.fechaInicio,    // ✅ importante conservar
-          fechaFinal: sol.fechaFinal       // ✅ importante conservar
+          fechaInicio: sol.fechaInicio,    
+          fechaFinal: sol.fechaFinal       
         };
       });
     },
     error: (err) => {
       console.error('Error al cargar datos', err);
-      this.toastr.error('Error al cargar solicitudes', 'Error');
+      this.toastr.warning('Error al cargar solicitudes o no existen solicitudes', 'Error');
     }
   });
 }
