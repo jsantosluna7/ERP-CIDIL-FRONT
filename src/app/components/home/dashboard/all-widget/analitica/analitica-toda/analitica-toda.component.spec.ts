@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IotButtonsComponent } from './iot-buttons.component';
+import { AnaliticaTodaComponent } from './analitica-toda.component';
 
-describe('IotButtonsComponent', () => {
-  let component: IotButtonsComponent;
-  let fixture: ComponentFixture<IotButtonsComponent>;
+describe('AnaliticaTodaComponent', () => {
+  let component: AnaliticaTodaComponent;
+  let fixture: ComponentFixture<AnaliticaTodaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IotButtonsComponent]
+      imports: [AnaliticaTodaComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(IotButtonsComponent);
+    fixture = TestBed.createComponent(AnaliticaTodaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

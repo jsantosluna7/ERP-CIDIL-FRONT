@@ -13,7 +13,7 @@ import { take } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FontAwesomeModule, RouterLink, MatButtonModule,MatDialogModule],
+  imports: [FontAwesomeModule,  MatButtonModule,MatDialogModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush

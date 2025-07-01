@@ -1,45 +1,72 @@
-import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
-import { WidgetComponent } from "../../elements/widget/widget.component";
+import { Component, OnInit } from '@angular/core';
 import { DashboardService } from '../../../services/Dashboard/dashboard.service';
+import { CommonModule, NgComponentOutlet } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { CommonModule } from '@angular/common';
-import { wrapGrid } from 'animate-css-grid';
-import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
-import { WidgetPanelComponent } from "../../elements/widget/widget-panel/widget-panel.component";
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { DashboardBodyComponent } from './dashboard-body/dashboard-body.component';
+import { DatosService } from '../../../services/Datos/datos.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, WidgetComponent, MatButtonModule, MatIcon, MatMenuModule, CdkDrag , CdkDropList, CdkDropListGroup, WidgetPanelComponent],
+  imports: [
+    CommonModule,
+    MatTabsModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    NgComponentOutlet,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
-  providers: [DashboardService]
+  providers: [DashboardService],
 })
-export class DashboardComponent implements OnInit {
-  aplicacion = inject(DashboardService);
+export class DashboardComponent {
+  panelOpen = true;
+  listaDeLabs1erPiso: string[] = ['1A', '1B', '1C', '1D'];
+  listaDeLabs2doPiso: string[] = ['2A', '2B', '2C', '2D'];
+  listaDeLabs3erPiso: string[] = ['3A', '3B', '3C', '3D'];
+  listaDeLabsTodo: string[] = [];
 
-  abrirWidget = signal(false);
+  pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
+  tabList: string[] = this.listaDeLabs1erPiso;
 
-  dashboard = viewChild.required<ElementRef>('dashboard');
+  constructor(private _datos: DatosService){
+    _datos.actualizarTabList(this.listaDeLabs1erPiso);
+  }
 
-  drop(event: CdkDragDrop<number, any>) {
-
-    const { previousContainer, container, item: { data } } = event;
-    if (data){
-      this.aplicacion.insertarWidgetEnPosicion(data, container.data);
-      return;
+  cambiarPiso(index: number) {
+    this.pisoSeleccionado = index;
+    switch (index) {
+      case 0:
+        this._datos.actualizarTabList(this.listaDeLabs1erPiso)
+        this.tabList = this.listaDeLabs1erPiso;
+        break;
+      case 1:
+        this._datos.actualizarTabList(this.listaDeLabs2doPiso)
+        this.tabList = this.listaDeLabs2doPiso;
+        break;
+      case 2:
+        this._datos.actualizarTabList(this.listaDeLabs3erPiso)
+        this.tabList = this.listaDeLabs3erPiso;
+        break;
+      case 3:
+        this._datos.actualizarTabList(this.listaDeLabsTodo)
+        this.tabList = this.listaDeLabsTodo;
+        break;
     }
-      this.aplicacion.actualizarPosicionWidget(previousContainer.data, container.data);
-
+    // this._datos.actualizarLabAnalitica(this.tabList[0]);
   }
 
-  ponerDeVueltaWidget(event: CdkDragDrop<number, any>) {
-    const { previousContainer } = event;
-    this.aplicacion.eliminarWidget(previousContainer.data);
-  }
-
-  ngOnInit() {
-    wrapGrid(this.dashboard().nativeElement, { duration: 300 });
-  };
+  componente = DashboardBodyComponent;
 }

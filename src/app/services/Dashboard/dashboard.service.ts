@@ -3,7 +3,6 @@ import { Widget } from '../../interfaces/widget';
 import { UsersWidgetComponent } from '../../components/home/dashboard/all-widget/users-widget/users-widget.component';
 import { AnaliticaComponent } from '../../components/home/dashboard/all-widget/analitica/analitica.component';
 import { CalendarioComponent } from '../../components/home/dashboard/all-widget/calendario/calendario.component';
-import { IotButtonsComponent } from '../../components/home/dashboard/all-widget/iot-buttons/iot-buttons.component';
 
 @Injectable()
 export class DashboardService {
@@ -26,7 +25,7 @@ export class DashboardService {
     {
       id: 3,
       label: 'IoT Botones',
-      content: IotButtonsComponent, // Replace with actual component
+      content: UsersWidgetComponent, // Replace with actual component
       rows: 2,
       columns: 2
     },

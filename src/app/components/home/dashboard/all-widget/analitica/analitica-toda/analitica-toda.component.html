@@ -1,0 +1,61 @@
+<div class="analitica-completa">
+    <p>{{lab}}</p>
+  <div class="analitica-container">
+    <!-- TEMPERATURA -->
+    <ngx-gauge
+      [type]="gaugeType"
+      [value]="temp()"
+      label="Temperatura"
+      append="°C"
+      [cap]="gaugeCap"
+      [thick]="gaugeThick"
+    ></ngx-gauge>
+
+    <!-- HUMEDAD -->
+    <ngx-gauge
+      [type]="gaugeType"
+      [value]="hum()"
+      label="Humedad"
+      append="%"
+      [cap]="gaugeCap"
+      [thick]="gaugeThick"
+    ></ngx-gauge>
+
+    <!-- LUZ -->
+    <ngx-gauge
+      [type]="gaugeType"
+      [value]="luz()"
+      label="Luz"
+      append="%"
+      [cap]="gaugeCap"
+      [thick]="gaugeThick"
+    ></ngx-gauge>
+
+    <!-- SONIDO -->
+    <ngx-gauge
+      [type]="gaugeType"
+      [value]="sonido()"
+      label="Sonido"
+      append="%"
+      [cap]="gaugeCap"
+      [thick]="gaugeThick"
+    ></ngx-gauge>
+  </div>
+  <div class="analitica-btn">
+    <div class="botones">
+      <div class="boton">
+        <h3>Actuador:</h3>
+        <ui-switch
+          [checked]="actuador()"
+          (change)="toggleActuador()"
+        ></ui-switch>
+      </div>
+
+      <div class="boton">
+        <h3>Reiniciar:</h3>
+        <ui-switch [checked]="estadoReiniciar" (change)="toggleReiniciar()">
+        </ui-switch>
+      </div>
+    </div>
+  </div>
+</div>

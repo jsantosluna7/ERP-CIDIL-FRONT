@@ -1,3 +1,12 @@
+.analitica-completa{
+    display: flex;
+    flex-direction: row;
+}
+
+.analitica-container{
+    width: 70%;
+}
+
 .botones{
     margin-top: 3.5rem;
     display: flex;

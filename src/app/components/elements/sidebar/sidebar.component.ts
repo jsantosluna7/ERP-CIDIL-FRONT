@@ -20,6 +20,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
+import { ConfiguracionComponent } from '../navbar/configuracion/configuracion.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Usuarios } from '../../../interfaces/usuarios.interface';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,7 +31,7 @@ import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive'
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })
-export class SidebarComponent implements OnInit{
+export class SidebarComponent implements OnInit {
   arrowright = faGreaterThan;
   house = faHouse;
   solid = faMagnifyingGlass;
@@ -54,13 +58,22 @@ export class SidebarComponent implements OnInit{
 
   // }
 
-  constructor(private _usuarios: UsuariosService, private _router: Router){}
+  constructor(
+    private _usuarios: UsuariosService,
+    private _router: Router,
+    private dialog: MatDialog,
+    private usuarioService: UsuariosService
+  ) {}
+
+  usuarioLogueado!: Usuarios;
 
   ngOnInit(): void {
-    this._usuarios.user$.subscribe(e => {
-     
-    })
-
+    this.usuarioService.user$.subscribe((usuario) => {
+      if (usuario) {
+        this.usuarioLogueado = usuario;
+      }
+    });
+    console.log(this.usuarioLogueado);
   }
 
   @Output() toggleSidebar = new EventEmitter<void>();
@@ -74,5 +87,19 @@ export class SidebarComponent implements OnInit{
   salir() {
     this._usuarios.cerrarSesion();
     this._router.navigate(['/login']);
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ConfiguracionComponent, {
+      data: this.usuarioLogueado,
+      width: '600px',
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result) => {
+        console.log(`Dialog result: ${result}`);
+      });
   }
 }
