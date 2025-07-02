@@ -50,7 +50,8 @@
 
     <div class="col-md-6 mt-3">
       <label for="imagenEquipo" class="form-label">Imagen (URL)</label>
-      <input type="text" id="imagenEquipo" class="form-control" formControlName="imagenEquipo" />
+      <input type="file" (change)="onFileSelected($event)" formControlName="imagenEquipo" accept="image/*" />
+
     </div>
 
     <div class="col-md-6 mt-3">
