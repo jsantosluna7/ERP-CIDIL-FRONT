@@ -16,6 +16,8 @@ import {
   faMicrochip,
   faShop,
   faUser,
+  faFlask,
+  faToolbox,
 } from '@fortawesome/free-solid-svg-icons';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 
@@ -38,6 +40,8 @@ export class SidebarComponent implements OnInit{
   iot = faMicrochip;
   faclok = faClock;
   carro = faCartShopping;
+  laboratorio = faFlask;
+  equipo = faToolbox;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");

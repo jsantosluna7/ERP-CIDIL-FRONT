@@ -50,12 +50,12 @@ ngOnInit(): void {
   });
 
   forkJoin({
-    solicitudesResp: this.reservaLaboratorioService.getResevas(),  // <- este devuelve un objeto con .datos
+    solicitudesResp: this.reservaLaboratorioService.getResevas(),  
     usuariosResp: this.usuarioService.obtenerUsuarios(),
     laboratorios: this.laboratorioService.getLaboratorios()
   }).subscribe({
     next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-      const solicitudes = solicitudesResp.datos; // ✅ aquí accedes a las solicitudes reales
+      const solicitudes = solicitudesResp.datos; 
       const usuarios = usuariosResp.datos;
 
       this.solicitudes = solicitudes.map((sol: Solicitud) => {

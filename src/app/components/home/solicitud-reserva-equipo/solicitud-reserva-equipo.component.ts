@@ -51,7 +51,7 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
   forkJoin({
     solicitudesResp: this.SolicitudEquipoService.getReservaE(),
     usuariosResp: this.usuarios.obtenerUsuarios(),
-    equiposResp: this.inventarioService.getCartas(1, 1000)  // asumiendo que quieres todos los equipos
+    equiposResp: this.inventarioService.getCartas(1, 1000)  
   }).subscribe({
     next: ({ solicitudesResp, usuariosResp, equiposResp }) => {
       const solicitudes = solicitudesResp.datos;
