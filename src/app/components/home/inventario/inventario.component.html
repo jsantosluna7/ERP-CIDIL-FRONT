@@ -36,6 +36,12 @@
             <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)">
               Añadir al carrito
             </button>
+               @if (carta.cantidad === 0) {
+          <div class="text-danger small mt-1">
+            Equipo en uso
+          </div>
+        }
+            
           </div>
         </div>
       </div>

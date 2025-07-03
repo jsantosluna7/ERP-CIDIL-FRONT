@@ -1,0 +1,92 @@
+<div class="fondo d-flex justify-content-center align-items-center">
+  <form [formGroup]="solicitudesForm" class="row container w-75 h-auto border rounded-5 p-4 mt-5">
+    <h2 class="text-center mb-4">Registrar Nuevo Equipo</h2>
+    <hr />
+
+    <div class="col-md-6 mt-3">
+      <label for="nombre" class="form-label">Nombre</label>
+      <input type="text" id="nombre" class="form-control" formControlName="nombre" placeholder="Ej. Osciloscopio" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="nombreCorto" class="form-label">Nombre Corto</label>
+      <input type="text" id="nombreCorto" class="form-control" formControlName="nombreCorto" placeholder="Ej. Osc" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="perfil" class="form-label">Perfil</label>
+      <input type="text" id="perfil" class="form-control" formControlName="perfil" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="departamento" class="form-label">Departamento</label>
+      <input type="text" id="departamento" class="form-control" formControlName="departamento" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="fabricante" class="form-label">Fabricante</label>
+      <input type="text" id="fabricante" class="form-control" formControlName="fabricante" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="modelo" class="form-label">Modelo</label>
+      <input type="text" id="modelo" class="form-control" formControlName="modelo" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="serial" class="form-label">Serial</label>
+      <input type="text" id="serial" class="form-control" formControlName="serial" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="importeActivo" class="form-label">Importe Activo</label>
+      <input type="number" id="importeActivo" class="form-control" formControlName="importeActivo" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="cantidad" class="form-label">Cantidad</label>
+      <input type="number" id="cantidad" class="form-control" formControlName="cantidad" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="imagenEquipo" class="form-label">Imagen (URL)</label>
+      <input type="file" (change)="onFileSelected($event)" formControlName="imagenEquipo" accept="image/*" />
+
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="idLaboratorio" class="form-label">ID del Laboratorio</label>
+      <input type="number" id="idLaboratorio" class="form-control" formControlName="idLaboratorio" />
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label for="idEstadoFisico" class="form-label">Estado Físico</label>
+      <input type="number" id="idEstadoFisico" class="form-control" formControlName="idEstadoFisico" />
+    </div>
+
+    <div class="col-12 mt-3">
+      <label for="descripcionLarga" class="form-label">Descripción Larga</label>
+      <textarea id="descripcionLarga" class="form-control" rows="4" formControlName="descripcionLarga"></textarea>
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label class="form-label">¿Está Disponible?</label>
+      <select class="form-select" formControlName="disponible">
+        <option [value]="true">Sí</option>
+        <option [value]="false">No</option>
+      </select>
+    </div>
+
+    <div class="col-md-6 mt-3">
+      <label class="form-label">¿Requiere Validación de Préstamo?</label>
+      <select class="form-select" formControlName="validacionPrestamo">
+        <option [value]="true">Sí</option>
+        <option [value]="false">No</option>
+      </select>
+    </div>
+
+    <div class="col-12 mt-4 d-flex justify-content-end">
+      <button type="button" class="btn btn-success" (click)="crearEquipo()">Registrar Equipo</button>
+    </div>
+  </form>
+</div>

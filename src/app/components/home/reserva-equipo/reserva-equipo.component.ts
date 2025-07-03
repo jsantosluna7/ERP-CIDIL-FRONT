@@ -8,6 +8,10 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { SolicitudEquipoService } from '../../../services/reserva-equipo/reserva-equipo.service';
+import { ReservaEquipoNueva } from '../../../interfaces/reservaEquipoNueva.interface';
+import { InventarioService } from '../../../services/Inventario/inventario.service';
 
 
 @Component({
@@ -30,7 +34,7 @@ export class ReservaEquipoComponent implements OnInit {
   fahouse= faHome;
   faclock = faClock;
 
- constructor(private carritoService: CarritoService, private toastr: ToastrService, private router: Router) {
+ constructor(private carritoService: CarritoService, private toastr: ToastrService, private router: Router, private _usuarios: UsuariosService,private solicitudEquipoService: SolicitudEquipoService,private inventarioService: InventarioService  ) {
     this.solicitudesForm = new FormGroup({
     fechaInicio: new FormControl('', [Validators.required]),
     fechaDevolucion: new FormControl('',[Validators.required]),
@@ -38,49 +42,113 @@ export class ReservaEquipoComponent implements OnInit {
   });
  }
 
+ usuarioLogueado: any;
+
  ngOnInit(): void {
   this.equiposSeleccionados = this.carritoService.getCarrito();
-  console.log(this.equiposSeleccionados)
+  console.log('Equipos del carrito',this.equiposSeleccionados)
+
+    //datos del usuario
+   this._usuarios.user$.subscribe(user => {
+    this.usuarioLogueado = user;
+  });
  }
 
- enviarSolicitud(): void {
+   enviarSolicitud(): void {
+   this.equiposSeleccionados = this.carritoService.getCarrito(); 
   const fechaInicio = this.solicitudesForm.get('fechaInicio')?.value;
   const fechaFin = this.solicitudesForm.get('fechaDevolucion')?.value;
+  const motivo = this.solicitudesForm.get('Motivo')?.value;
 
-
-   if (this.equiposSeleccionados.length === 0) {
-     this.toastr.error('Debe seleccionar al menos un equipo!', '')
+  if (this.equiposSeleccionados.length === 0) {
+    this.toastr.error('Debe seleccionar al menos un equipo');
     return;
   }
 
-  if (!fechaInicio) {
-     this.toastr.error('El campo "Fecha de inicio" está vacío!', '')
+  if (!fechaInicio || !fechaFin || !motivo) {
+    this.toastr.error('Complete todos los campos requeridos');
     return;
   }
 
-  if (!fechaFin) {
-     this.toastr.error('El campo "Fecha de fin" está vacío!', '')
-    return;
-  }
+  const fechaSolicitud = new Date().toISOString();
 
-  // Si pasa todas las validaciones, se envía la solicitud
-  if (this.solicitudesForm.valid) {
-    const solicitud = {
-      ...this.solicitudesForm.value,
-      equipos: this.equiposSeleccionados
+  this.equiposSeleccionados.forEach((equipo) => {
+    const solicitud: ReservaEquipoNueva = {
+      idUsuario: this.usuarioLogueado.id,
+      idInventario: equipo.id,
+      fechaInicio,
+      fechaFinal: fechaFin,
+      motivo,
+      fechaSolicitud,
+      cantidad: equipo.cantidadSeleccionada
+      
     };
-    this.toastr.success('Solicitud enviada!', '') 
-  }
-   this.carritoService.vaciarCarrito();
- 
- }
 
 
- ruta(){
+     // Resta la cantidad
+    const cantidadRestante = equipo.cantidad! - equipo.cantidadSeleccionada!;
+    const equipoActualizado = {
+      ...equipo,
+      cantidad: cantidadRestante,
+      disponible: cantidadRestante > 0
+    };
+
+
+    
+    this.solicitudEquipoService.crearReserva(solicitud).subscribe({
+      next: () => {
+        this.toastr.success(`Solicitud para ${equipo.nombreData} enviada.`);
+
+        console.log('Salud',solicitud)
+      
+        this.inventarioService.obtenerCartaPorId(equipo.id).subscribe({
+          next: (cartaCompleta) => {
+            const cantidadRestante =
+              (equipo.cantidad || 0) - (equipo.cantidadSeleccionada || 0);
+
+            const equipoActualizado: Carta = {
+              ...cartaCompleta,
+              cantidad: cantidadRestante,
+              disponible: cantidadRestante > 0
+            };
+              console.log(solicitud)
+            this.inventarioService.actualizarCarta(equipo.id, equipoActualizado).subscribe({
+              next: () => {
+                console.log('Equipo actualizado correctamente');
+              },
+              error: () => {
+                console.error(' Error al actualizar el inventario');
+              }
+            });
+          },
+          error: () => {
+            this.toastr.error('No se pudo obtener la información completa del equipo');
+          }
+        });
+      },
+      error: (err) => {
+        console.error(' Error al enviar la solicitud:', err);
+        this.toastr.error('Error al enviar la solicitud');
+      }
+    });
+  });
+
+  this.carritoService.vaciarCarrito();
+  this.solicitudesForm.reset();
+}
+
+
+ /*ruta(){
     this.router.navigate(['/home/solicitud-laboratorio']);
     console.log(this.router)
-  }
+  }*/
 
  
+
+
+
+
+
+
 
 }

@@ -2,44 +2,74 @@
   <h2 class="mb-3">Solicitudes de Reserva de Laboratorio</h2>
 
   @if (solicitudes.length > 0) {
-    <table class="table table-bordered table-hover">
-      <thead class="table-dark">
-  <tr>
-    <th>Usuario</th>
-    <th>Laboratorio</th>
-    <th>Hora de Inicio</th>
-    <th>Hora de Finalización</th>
-    <th>Motivo</th>
-    <th>Fecha de Solicitud</th>
-    <th>Estado</th>
-    <th>Acciones</th>
-  </tr>
-</thead>
-<tbody>
-  @for (solicitud of solicitudes; track solicitud.id) {
-    <tr>
-      <td>{{ solicitud.nombreUsuario }}</td>
-      <td>{{ solicitud.nombreLaboratorio }}</td>
-      <td>{{ solicitud.horaInicio }}</td>
-      <td>{{ solicitud.horaFinal }}</td>
-      <td>{{ solicitud.motivo }}</td>
-      <td>{{ solicitud.fechaSolicitud }}</td>
-      <td>
-        {{
-          solicitud.idEstado === 1
-            ? 'Aprobado'
-            : solicitud.idEstado === 3
-            ? 'Rechazado'
-            : 'Pendiente'
-        }}
-      </td>
-      <td>
-        <button class="btn btn-success btn-sm me-2" (click)="aprobar(solicitud)">Aprobar</button>
-        <button class="btn btn-danger btn-sm" (click)="desaprobar(solicitud)">Desaprobar</button>
-      </td>
-    </tr>
-  }
-</tbody>
+    <table mat-table [dataSource]="solicitudes" class="mat-elevation-z8 full-width-table tabla-letra-grande  ">
+
+      <!-- Usuario -->
+      <ng-container matColumnDef="nombreUsuario">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Usuario</th>
+        <td mat-cell *matCellDef="let solicitud">{{ solicitud.nombreUsuario }}</td>
+      </ng-container>
+
+      <!-- Laboratorio -->
+      <ng-container matColumnDef="nombreLaboratorio">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Laboratorio</th>
+        <td mat-cell *matCellDef="let solicitud">{{ solicitud.nombreLaboratorio }}</td>
+      </ng-container>
+
+      <!-- Hora de Inicio -->
+      <ng-container matColumnDef="horaInicio">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Hora de Inicio</th>
+        <td mat-cell *matCellDef="let solicitud">{{ solicitud.horaInicio }}</td>
+      </ng-container>
+
+      <!-- Hora de Finalización -->
+      <ng-container matColumnDef="horaFinal">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Hora de Finalización</th>
+        <td mat-cell *matCellDef="let solicitud">{{ solicitud.horaFinal }}</td>
+      </ng-container>
+
+      <!-- Motivo -->
+      <ng-container matColumnDef="motivo">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Motivo</th>
+        <td mat-cell *matCellDef="let solicitud">{{ solicitud.motivo }}</td>
+      </ng-container>
+
+      <!-- Fecha de Solicitud -->
+      <ng-container matColumnDef="fechaSolicitud">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Fecha de Solicitud</th>
+        <td mat-cell *matCellDef="let solicitud">{{ solicitud.fechaSolicitud }}</td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Estado</th>
+        <td mat-cell *matCellDef="let solicitud">
+          {{
+            solicitud.idEstado === 1
+              ? 'Aprobado'
+              : solicitud.idEstado === 3
+              ? 'Rechazado'
+              : 'Pendiente'
+          }}
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Acciones</th>
+        <td mat-cell *matCellDef="let solicitud">
+          <button mat-raised-button color="primary" class="botones-green" (click)="aprobar(solicitud)">
+            Apr
+          </button>
+          <button mat-raised-button color="warn" class="botones-red" (click)="desaprobar(solicitud)">
+            Negar
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Filas -->
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let solicitud; columns: columnas;"></tr>
 
     </table>
   } @else {

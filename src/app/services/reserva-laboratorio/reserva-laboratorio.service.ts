@@ -14,6 +14,7 @@ export class SolicitudReservaService{
 
 private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDR']}`;
 private apiUrlP = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDLB']}`;
+private apiUrlDLT = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDELETE']}`;
 
 constructor(private http: HttpClient){}
 
@@ -28,6 +29,8 @@ updateEstado( body: any) {
   
 }
 
-
+eliminarSolicitud(id: number){
+  return this.http.delete(`${this.apiUrlDLT}/${id}`);
+}
 
 }

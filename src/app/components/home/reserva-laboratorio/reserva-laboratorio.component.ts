@@ -125,8 +125,8 @@ export class ReservaLaboratorioComponent {
   this.laboratorioService.enviarSolicitud(solicitud).subscribe({
     next: () => {
       this.toastr.success('¡Solicitud enviada correctamente!', 'Éxito');
-      this.solicitudesForm.reset(); // Limpiar el formulario
-      this.laboratoriosSelect = []; // Limpiar equipos
+      this.solicitudesForm.reset(); 
+      this.laboratoriosSelect = []; 
     },
     error: (err) => {
       console.error(err);

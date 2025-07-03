@@ -9,15 +9,28 @@ import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.se
 import { forkJoin } from 'rxjs';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
-  imports: [CommonModule, ToastrModule],
+  imports: [CommonModule, ToastrModule, MatTableModule,MatButtonModule],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
   styleUrl: './solicitud-reserva-laboratorio.component.css',
 })
 export class SolicitudReservaLaboratorioComponent {
   solicitudes: Solicitud[] = [];
+
+  columnas: string[] = [
+  'nombreUsuario',
+  'nombreLaboratorio',
+  'horaInicio',
+  'horaFinal',
+  'motivo',
+  'fechaSolicitud',
+  'estado',
+  'acciones'
+];
 
   constructor(
     private reservaLaboratorioService: SolicitudReservaService,
@@ -37,12 +50,12 @@ ngOnInit(): void {
   });
 
   forkJoin({
-    solicitudesResp: this.reservaLaboratorioService.getResevas(),  // <- este devuelve un objeto con .datos
+    solicitudesResp: this.reservaLaboratorioService.getResevas(),  
     usuariosResp: this.usuarioService.obtenerUsuarios(),
     laboratorios: this.laboratorioService.getLaboratorios()
   }).subscribe({
     next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-      const solicitudes = solicitudesResp.datos; // ✅ aquí accedes a las solicitudes reales
+      const solicitudes = solicitudesResp.datos; 
       const usuarios = usuariosResp.datos;
 
       this.solicitudes = solicitudes.map((sol: Solicitud) => {
@@ -53,14 +66,14 @@ ngOnInit(): void {
           ...sol,
           nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
           nombreLaboratorio: lab?.nombre || 'Desconocido',
-          fechaInicio: sol.fechaInicio,    // ✅ importante conservar
-          fechaFinal: sol.fechaFinal       // ✅ importante conservar
+          fechaInicio: sol.fechaInicio,    
+          fechaFinal: sol.fechaFinal       
         };
       });
     },
     error: (err) => {
       console.error('Error al cargar datos', err);
-      this.toastr.error('Error al cargar solicitudes', 'Error');
+      this.toastr.warning('Error al cargar solicitudes o no existen solicitudes', 'Error');
     }
   });
 }
@@ -91,7 +104,7 @@ aprobar(solicitud: Solicitud) {
     idEstado: 1,
     idUsuarioAprobador: this.usuarioLogueado.id,
     fechaAprobacion: new Date().toISOString(),
-    comentarioAprobacion: 'Aprobado por el usuario logueado'
+    comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`
   };
 
   console.log('Body que se enviará: ', body);
@@ -99,8 +112,11 @@ aprobar(solicitud: Solicitud) {
   this.reservaLaboratorioService.updateEstado( body).subscribe({
     next: () => {
       solicitud.idEstado = 1;
-      this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
       this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
+
+      this.reservaLaboratorioService.eliminarSolicitud(solicitud.id).subscribe(() => {
+        this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
+      });
     },
     error: (err) => {
       console.error('Error al aprobar solicitud:', err);
@@ -146,8 +162,11 @@ desaprobar(solicitud: Solicitud) {
   this.reservaLaboratorioService.updateEstado(body).subscribe({
     next: () => {
       // Quita del frontend la solicitud rechazada
-      this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
       this.toastr.info('Solicitud desaprobada correctamente', 'Información');
+      this.reservaLaboratorioService.eliminarSolicitud(solicitud.id).subscribe(() => {
+        this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
+      });
+      
     },
     error: (err) => {
       console.error('Error al desaprobar solicitud:', err);

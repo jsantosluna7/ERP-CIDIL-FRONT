@@ -20,7 +20,7 @@
                 <p class="card-text">Laboratorio: {{ carta.nombre }}</p>
                 <p><strong>Stock disponible:</strong> {{ carta.cantidad }}</p>
 
-                <!-- 👇 Input para seleccionar cantidad -->
+                <!--  Input para seleccionar cantidad -->
                 <div class="mb-2">
                   <label for="cantidad{{ carta.id }}">Cantidad a prestar:</label>
                   <input
@@ -28,6 +28,7 @@
                     type="number"
                     class="form-control"
                     [(ngModel)]="carta.cantidadSeleccionada"
+                    (ngModelChange)="actualizarCantidad(carta)"
                     [min]="1"
                     [max]="carta.cantidad"
                   />

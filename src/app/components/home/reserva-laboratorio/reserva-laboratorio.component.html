@@ -1,5 +1,5 @@
 <div class="fondo d-flex justify-content-center  align-items-center ">
-  <form [formGroup]="solicitudesForm" class="row container w-75 h-auto border border rounded-5  p-4 form mt-5 ite">
+  <form [formGroup]="solicitudesForm" class="row container w-50 h-auto border border rounded-5  p-4 form mt-5 ite">
     <h2>Reserva de Espacios</h2> 
    <section>
   <div class="example-button-row">
@@ -9,7 +9,7 @@
 
 
     <hr>
-    <div class="col-md-6 mt-1 row">
+    <div class="col-md-6 mt-1 row w-100">
       <label for="laboratorioSelect" class="form-label">Laboratorio</label>
       <div class="location">
         <fa-icon [icon]="fahouse"></fa-icon>
@@ -28,8 +28,32 @@
         </select>
         }
       </div>
+
+
+      <label for="inputEmail4" class="form-label">Hora de Inicio</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input type="datetime-local" formControlName="horaInicio" class="form-control" id="inputEmail4"
+          placeholder="Laboratorio" />
+      </div>
+
+       <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input type="datetime-local" formControlName="horaFinal" class="form-control" id="inputEmail4"
+          placeholder="Laboratorio" />
+      </div>
+
+       <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
+        <textarea class="form-control" formControlName="motivo" id="exampleFormControlTextarea1" rows="3"></textarea>
+      </div>
+
     </div>
-    <div class="col-md-6 mt-1 row">
+
+
+
+    <!--<div class="col-md-6 mt-1 row">
       <label for="inputEmail4" class="form-label">Hora de Inicio</label>
       <div class="location">
         <fa-icon [icon]="faclock"></fa-icon>
@@ -44,34 +68,17 @@
         <input type="datetime-local" formControlName="horaFinal" class="form-control" id="inputEmail4"
           placeholder="Laboratorio" />
       </div>
-    </div>
-    <div class="col-md-6 mt-1 row">
-      <label for="inputEmail4"  class="form-label">Lista de espera</label>
-      <div class="location">
-        <fa-icon [icon]="estado"></fa-icon>
-        <select class="form-select " formControlName="aprobacion" aria-label="Default select example">
-          <option [ngValue]="null" disabled selected>Seleccione un estado</option>
-          <option [ngValue]="1">Espera</option>
-          <option [ngValue]="2">Aprobado</option>
-          <option [ngValue]="3">Desaprobado</option>
-        </select>
-      </div>
-    </div>
+    </div> -->
 
 
     <!--Comentarios -->
-    <div class="col-md-6 mt-1 row">
+    <!-- <div class="col-md-6 mt-1 row">
       <div class="mb-3">
         <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
         <textarea class="form-control" formControlName="motivo" id="exampleFormControlTextarea1" rows="3"></textarea>
       </div>
-    </div>
-    <div class="col-md-6 mt-1 row">
-      <div class="mb-3">
-        <label for="exampleFormControlTextarea1" class="form-label">Comentario de aprobacion</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" readonly></textarea>
-      </div>
-    </div>
+    </div> -->
+  
 
     <button type="button" class="btn btn-success" (click)="enviarSolicitud()">Enviar Solicitud</button>
 

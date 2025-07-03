@@ -4,7 +4,7 @@ export interface Laboratorio {
   capacidad: number;
   descripcion: string;
   nombre: string;
-  piso: string;
+  piso: number;
   activado: boolean;
 }
 export interface SolicitudReserva {
