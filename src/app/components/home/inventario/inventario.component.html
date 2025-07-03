@@ -1,3 +1,9 @@
+
+  @if (loading) {
+  <mat-spinner *ngIf="loading" diameter="40" strokeWidth="5" class="mx-auto d-block my-4"></mat-spinner>
+
+  }
+
 <div class="container mt-4">
 
   <mat-form-field appearance="outline" class="field">
@@ -6,11 +12,12 @@
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
 
-   <div class="row">
-  @for (carta of cartasFiltradas; track carta.id) {
+   @if(!loading){
+    <div class="row">
+  @for (carta of dataSource.filteredData; track carta.id) {
     <div class="col-md-4 mb-3">
       <div class="  card h-100 shadow-sm">
-        @if (carta.imagenEquipo && carta.imagenEquipo.trim() !== '' && carta.imagenEquipo !== 'null') {
+        @if (!carta.imagenEquipo || carta.imagenEquipo.trim() === '' || carta.imagenEquipo === 'null') {
         <img src="/Imagenes/Imagen de WhatsApp 2025-06-03 a las 14.17.00_691d2cbd.jpg" class="card-img-top" alt="p"
           style="height: 300px; object-fit: cover;">
         } @else {
@@ -19,8 +26,8 @@
         }
 
         <div class="card-body">
-          <h5 class="card-title">{{ carta.nombre }}</h5>
-          <p class="card-text">{{ carta.descripcionLarga }}</p>
+          <h5 class="card-title">{{ carta.nombreData }}</h5>
+          <p class="card-text">Laboratorio: {{ carta.nombre }}</p>
           <p><strong>Cantidad:</strong> {{ carta.cantidad }}</p>
           <span class="badge" [ngClass]="carta.disponible ? 'bg-success' : 'bg-danger'">
             {{ carta.disponible ? 'Disponible' : 'No disponible' }}
@@ -36,36 +43,6 @@
   }
 </div> 
 
-  <div class="row">
-    @for (carta of cartas; track carta.id) {
-    <div class="col-md-4 mb-3">
-      <div class="  card h-100 shadow-sm">
-        @if (carta.imagenEquipo && carta.imagenEquipo.trim() !== '' && carta.imagenEquipo !== 'null') {
-        <img src="/Imagenes/Imagen de WhatsApp 2025-06-03 a las 14.17.00_691d2cbd.jpg" class="card-img-top" alt="p"
-          style="height: 300px; object-fit: cover;">
-        } @else {
-        <img [src]="carta.imagenEquipo" class="card-img-top" alt="Imagen por defecto"
-          style="height: 300px; object-fit: cover;">
-        }
-
-        <div class="card-body">
-          <h5 class="card-title">{{ carta.nombre }}</h5>
-          <p class="card-text">{{ carta.descripcionLarga }}</p>
-          <p><strong>Cantidad:</strong> {{ carta.cantidad }}</p>
-          <span class="badge" [ngClass]="carta.disponible ? 'bg-success' : 'bg-danger'">
-            {{ carta.disponible ? 'Disponible' : 'No disponible' }}
-          </span>
-          <div class="mb-2 mt-2">
-            <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)">
-              Añadir al carrito
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    }
-  </div>
-
   <!--Paginacion-->
   <mat-paginator class="paginator" [length]="dataSource.data.length" [pageSize]="pageSize" [pageSizeOptions]="[]"
     [hidePageSize]="true" showFirstLastButtons>
@@ -77,5 +54,8 @@
     <input matInput type="text" [value]="pageSize" (change)="updatePageSize($event)" />
   </div>
 
+   }
+
+  
 
 </div>

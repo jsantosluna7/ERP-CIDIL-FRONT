@@ -1,8 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Carta } from '../../../interfaces/carta';
 import { CommonModule } from '@angular/common';
 import { CarritoService } from '../carrito/carrito.service';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +16,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
 import { MatCardModule } from '@angular/material/card';
+import { CartaCarrito } from '../carrito/cartaCarrito.interface';
+import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
+import { Laboratorio } from '../../../interfaces/laboratorio.interface';
+import {  forkJoin, map } from 'rxjs';
+import { ContentObserver } from '@angular/cdk/observers';
+import { subscribe } from 'diagnostics_channel';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-inventario',
@@ -24,128 +35,188 @@ import { MatCardModule } from '@angular/material/card';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatCardModule ],
+    MatCardModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './inventario.component.html',
-  styleUrl: './inventario.component.css'
+  styleUrl: './inventario.component.css',
 })
-export class InventarioComponent implements OnInit {
+export class InventarioComponent implements OnInit, AfterViewInit {
+
+  loading: boolean = true;
 
   pageSize = 20;
   totalItems = 0;
   paginaActual = 1;
 
   cartas: Carta[] = [];
-  cartasFiltradas: Carta[] =[];
+  cartasConLaboratorio: any[] = [];
+  cartasFiltradas: Carta[] = [];
+  laboratorios: Laboratorio[] = [];
 
-  
-   /* ---------- Paginacion ------------ */
-
- 
+  /* ---------- Paginacion ------------ */
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-
   constructor(
     private inventarioService: InventarioService,
     private carritoService: CarritoService,
-    private toastr: ToastrService
-  ){}
+    private toastr: ToastrService,
+    private laboratorioService: LaboratorioService
+  ) {}
 
   dataSource = new MatTableDataSource<any>([]);
 
-ngOnInit(): void {
-  this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe((data: any) => {
-    this.cartas = data.datos;
-    this.cartasFiltradas = [...this.cartas]
-    this.dataSource = new MatTableDataSource(this.cartas);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    console.log(data)
+  ngOnInit(): void {
+    this.loading = true;
+    this.laboratorioService.getLaboratorios().subscribe((labs: Laboratorio[]) => {
+      this.laboratorios =labs;
+       this.cargarCartas();
+    })
+    
+   
+    /*this.laboratorioService.getLaboratorios().subscribe((n: any) =>{
+       console.log(n)
+    })*/
+    
+  }
 
-     // Establecer el filtro personalizado
-    this.dataSource.filterPredicate = (data: any, filter: string) => {
-      const dataStr = (
-        data.nombre +
-        ' ' +
-        data.descripcionLarga +
-        ' ' +
-        data.cantidad +
-        ' ' +
-        (data.disponible ? 'activo' : 'inactivo')
-      ).toLowerCase();
-      return dataStr.includes(filter);
-    };
+  cargarCartas() {
+  this.loading = true;
+
+  this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
+    next: (d: any) => {
+      const all = d.datos;
+
+      const datos = all.map((data: any) => {
+        const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
+        return {
+          id: data.id,
+          nombre: lab ? lab.codigoDeLab : 'Sin laboratorio',
+          nombreData: data.nombre,
+          cantidad: data.cantidad,
+          disponible: data.disponible,
+          imagen: data.imagenEquipo
+        };
+      });
+
+      this.cartasConLaboratorio = datos;
+      this.totalItems = d.total;
+      this.loading = false;
+
+      this.dataSource = new MatTableDataSource(this.cartasConLaboratorio);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const dataStr = (
+          data.nombreData +
+          ' ' +
+          data.nombre +
+          ' ' +
+          data.cantidad +
+          ' ' +
+          (data.disponible ? 'disponible' : 'no disponible')
+        ).toLowerCase();
+        return dataStr.includes(filter);
+      };
+    },
+    error: () => {
+      this.loading = false;
+      this.toastr.error('Error al cargar los datos');
+    }
   });
 }
 
- /* ngOnInit(): void {
-  this.inventarioService.getCartas().subscribe((data: any) => {
-    this.cartas = data.datos
-  console.log(data)
-  }); // ← devuelve el arreglo directamente
-  this.dataSource = new MatTableDataSource(this.cartas);
-  this.dataSource.paginator = this.paginator;
-  this.dataSource.sort = this.sort; 
+
+  /*cargarCartas() {
+    this.inventarioService
+      .getCartas(this.paginaActual, this.pageSize)
+      .subscribe({
+        next: (d: any) => {
+          const all = d.datos
+          const datos = all.map((data: any) => forkJoin({
+            lab: this.laboratorioService.getLaboratorioPorId(data.idLaboratorio),
+          }).pipe(
+            map(({ lab }) => ({
+              id: data.id,
+              nombre: lab.codigoDeLab,
+              nombreData: data.nombre,
+              cantidad: data.cantidad,
+              disponible: data.disponible,
+              imagen:data.imagenEquipo,
+            }))
+          ));
+
+          forkJoin(datos).subscribe({
+            next: (i: any) => {
+              this.cartasConLaboratorio = i;
+              this.loading = false;
+              console.log(i);
+
+
+               this.dataSource = new MatTableDataSource(this.cartasConLaboratorio);
+               this.dataSource.paginator = this.paginator;
+               this.dataSource.sort = this.sort;
+
+               this.dataSource.filterPredicate = (data: any, filter: string) => {
+               const dataStr = (
+                data.nombreData +
+                ' ' +
+               data.nombre +
+               ' ' +
+               data.cantidad +
+               ' ' +
+               (data.disponible ? 'disponible' : 'no disponible')
+               ).toLowerCase();
+               return dataStr.includes(filter);
+               this.loading = false;
+             };
+            },
+          });
+        },
+      });
   }*/
-  
+
   updatePageSize(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  const newSize = parseInt(input.value, 10);
-  if (newSize > 0) {
-    this.pageSize = newSize;
-    this.paginaActual = 1; // Siempre vuelve a la primera página
-    this.paginator.pageSize = newSize;
-    this.paginator.firstPage();
-
-    this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe((data: any) => {
-      this.cartas = data.datos;
-      this.cartasFiltradas = this.cartas;
-      this.dataSource = new MatTableDataSource(this.cartas);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      console.log(data);
-    });
-  }
-}
-
-
-   /*updatePageSize(event: Event) {
     const input = event.target as HTMLInputElement;
     const newSize = parseInt(input.value, 10);
     if (newSize > 0) {
+       this.loading = true;
       this.pageSize = newSize;
+      this.paginaActual = 1; // Siempre vuelve a la primera página
       this.paginator.pageSize = newSize;
-      this.inventarioService.getCartas().subscribe((data: any) => {
-        this.cartas = data.datos
-        console.log(data)
-      });
+      this.paginator.firstPage();
+      this.cargarCartas();
+      
     }
-  }*/
-
-  agregarAlCarrito(carta: Carta): void {
-    this.carritoService.agregar(carta);
-    console.log('Producto agregado', this.cartas);
-    this.toastr.success('Producto añadido al carrito!', '')
   }
 
-  
+ 
+agregarAlCarrito(carta: any): void {
+  const cartaConCantidad = {
+    ...carta,
+    cantidadSeleccionada: 1
+  };
 
-applyFilter(event: Event): void {
-  const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
-
-  this.cartasFiltradas = this.cartas.filter(carta => {
-    return (     
-    (carta.nombre?.toLowerCase().includes(filterValue) || '') ||
-    (carta.descripcionLarga?.toLowerCase().includes(filterValue) || '') ||
-    String(carta.cantidad).includes(filterValue) ||
-    (carta.disponible ? 'activo' : 'inactivo').includes(filterValue)
-    );
-});
+  this.carritoService.agregar(cartaConCantidad);
+  this.toastr.success('Producto añadido al carrito!', '');
 }
 
-  
 
 
+    applyFilter(event: Event) {
+  const filterValue = (event.target as HTMLInputElement).value;
+  this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  ngAfterViewInit() {
+  this.paginator.page.subscribe((event: PageEvent) => {
+    this.paginaActual = event.pageIndex + 1; // recordando que pageIndex empieza en 0
+    this.pageSize = event.pageSize;
+    this.cargarCartas();
+  });
+}
 
 }

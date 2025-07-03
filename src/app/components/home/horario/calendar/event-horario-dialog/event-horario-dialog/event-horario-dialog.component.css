@@ -1,0 +1,119 @@
+.data {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+.top-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.all-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.all-content p {
+    font-weight: bold;
+}
+
+.motivo-content {
+    align-self: center;
+}
+
+.aprobado {
+    background-color: rgba(0, 128, 0, 0.747);
+    color: white;
+    padding: .7rem;
+    border-radius: 1.5rem;
+}
+
+.pendiente {
+    background-color: rgba(255, 255, 51, 0.747);
+    color: white;
+    padding: .7rem;
+    border-radius: 1.5rem;
+}
+
+.rechazado {
+    background-color: rgba(204, 51, 51, 0.747);
+    color: white;
+    padding: .7rem;
+    border-radius: 1.5rem;
+}
+
+.p-lab {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.lab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.p-header {
+    font-size: .7rem;
+    margin: 0;
+    padding: 0;
+}
+
+.h-inicio,
+.h-fin,
+.f-inicio,
+.f-fin {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: .5rem;
+}
+
+.h,
+.f {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: .7rem;
+}
+
+.h-all {
+    margin-top: 1rem;
+}
+
+.h-all,
+.f-all {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.comentario {
+    margin-top: 1rem;
+}
+
+.info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.p-info, .d-info, .a-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

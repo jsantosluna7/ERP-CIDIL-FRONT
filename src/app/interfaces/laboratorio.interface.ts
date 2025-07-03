@@ -8,10 +8,14 @@ export interface Laboratorio {
   activado: boolean;
 }
 export interface SolicitudReserva {
-  laboratorioId: number;
-  fechaInicio: string;
-  fechaDevolucion: string;
+  idUsuario: number;
+  idLaboratorio: number;
+  horaInicio: string;
+  horaFinal: string;
+  fechaInicio:string;
+  fechaFinal:string;
   motivo: string;
-  comentarioAprobacion?: string;
-  laboratorio?: any[]; // según lo que estés usando
+  fechaSolicitud: string;
+  //idEstado: number;
+  laboratorio?: any[];
 }

@@ -11,7 +11,8 @@
         <ul class="list-group mb-3">
             @for (equipo of equiposSeleccionados; track equipo.id) {
             <li class="list-group-item">
-                {{ equipo.nombre }} - {{ equipo.descripcionLarga }}
+                <p><strong>Lab:</strong> {{ equipo.nombre }} <strong>Nomb:</strong> {{ equipo.nombreData }} <strong>Cant:</strong>{{ equipo.cantidadSeleccionada }} <strong>Dis:</strong>{{ equipo.cantidad }} </p>
+
             </li>
             }
         </ul>

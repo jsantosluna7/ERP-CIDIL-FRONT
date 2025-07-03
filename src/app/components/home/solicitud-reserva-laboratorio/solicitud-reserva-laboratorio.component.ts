@@ -4,6 +4,11 @@ import { SolicitudReservaService } from '../../../services/reserva-laboratorio/r
 import { error } from 'console';
 import { CommonModule } from '@angular/common';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { UsuarioService } from '../usuario/usuarios/usuarios.service';
+import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
+import { forkJoin } from 'rxjs';
+import { Laboratorio } from '../../../interfaces/laboratorio.interface';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
@@ -16,103 +21,142 @@ export class SolicitudReservaLaboratorioComponent {
 
   constructor(
     private reservaLaboratorioService: SolicitudReservaService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private usuarioService: UsuarioService,
+    private laboratorioService: LaboratorioService,
+    private _usuarios: UsuariosService
   ) {}
 
-  ngOnInit(): void {
-    this.reservaLaboratorioService.getResevas().subscribe({
-      next: (data: any) => {
-        this.solicitudes = data.datos;
-      },
-      error: (error) => {
-        console.error('Error al cargar las solicitudes', error);
-        this.toastr.error('Ocurrió un error al cargar  la solicitud.', 'Error');
-      },
-    });
+usuarioLogueado: any;
+idUsuarioAprobador: number = 0;
+
+ngOnInit(): void {
+
+  this._usuarios.user$.subscribe(user => {
+    this.usuarioLogueado = user;
+  });
+
+  forkJoin({
+    solicitudesResp: this.reservaLaboratorioService.getResevas(),  // <- este devuelve un objeto con .datos
+    usuariosResp: this.usuarioService.obtenerUsuarios(),
+    laboratorios: this.laboratorioService.getLaboratorios()
+  }).subscribe({
+    next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
+      const solicitudes = solicitudesResp.datos; // ✅ aquí accedes a las solicitudes reales
+      const usuarios = usuariosResp.datos;
+
+      this.solicitudes = solicitudes.map((sol: Solicitud) => {
+        const usuario = usuarios.find((u) => u.id === sol.idUsuario);
+        const lab = laboratorios.find((l) => l.id === sol.idLaboratorio);
+
+        return {
+          ...sol,
+          nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+          nombreLaboratorio: lab?.nombre || 'Desconocido',
+          fechaInicio: sol.fechaInicio,    // ✅ importante conservar
+          fechaFinal: sol.fechaFinal       // ✅ importante conservar
+        };
+      });
+    },
+    error: (err) => {
+      console.error('Error al cargar datos', err);
+      this.toastr.error('Error al cargar solicitudes', 'Error');
+    }
+  });
+}
+
+
+aprobar(solicitud: Solicitud) {
+  console.log('aprobar solicitud:', solicitud);
+  if (!solicitud) {
+    console.error('Solicitud es undefined o null');
+    return;
   }
 
- /* aprobar(solicitud: Solicitud) {
-    const body = {
-      idEstado: 3,
-      idLaboratorio:1,
-      idUsuarioAprobador: 4,
-      idUsuario: 3,
-    };
-    
-    
-    this.reservaLaboratorioService.updateEstado(solicitud.id, body).subscribe({
-      next: () => {
-        solicitud.idEstado = 1;
-        this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
-        console.log(body)
-      },
-      error: (err) => {
-        console.error('Error al aprobar solicitud:', err);
-        this.toastr.error('Error al aprobar la solicitud', 'Error');
-      },
-    });
-  }*/
+  if (!this.usuarioLogueado) {
+    console.error('Usuario logueado no está definido');
+    return;
+  }
 
-
-    aprobar(solicitud: Solicitud) {
-  const body: Solicitud = {
-    ...solicitud,
+  const body = {
+    id: solicitud.id,
+    idUsuario: solicitud.idUsuario,
+    idLaboratorio: solicitud.idLaboratorio,
+    horaInicio: solicitud.horaInicio,
+    horaFinal: solicitud.horaFinal,
+    fechaInicio: solicitud.fechaInicio,
+    fechaFinal: solicitud.fechaFinal,
+    motivo: solicitud.motivo,
+    fechaSolicitud: solicitud.fechaSolicitud,
     idEstado: 1,
-    
+    idUsuarioAprobador: this.usuarioLogueado.id,
+    fechaAprobacion: new Date().toISOString(),
+    comentarioAprobacion: 'Aprobado por el usuario logueado'
   };
 
-  this.reservaLaboratorioService.updateEstado(solicitud.id, body).subscribe({
+  console.log('Body que se enviará: ', body);
+
+  this.reservaLaboratorioService.updateEstado( body).subscribe({
     next: () => {
       solicitud.idEstado = 1;
+      this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
       this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
-      console.log('Body enviado:', body);
     },
     error: (err) => {
       console.error('Error al aprobar solicitud:', err);
       this.toastr.error('Error al aprobar la solicitud', 'Error');
-    },
+    }
   });
 }
 
- /* desaprobar(solicitud: Solicitud) {
-    const body = {
-      idEstado: 3,
-      idLaboratorio:0,
-      idUsuarioAprobador: 4,
-      idUsuario: 3,
-    };
-
-    this.reservaLaboratorioService.updateEstado(solicitud.id, body).subscribe({
-      next: () => {
-        console.log(solicitud.id);
-        this.toastr.info('Solicitud desaprobada correctamente', 'Información');
-      },
-      error: (err) => {
-        console.error('Error al desaprobar solicitud:', err);
-        this.toastr.error('Error al desaprobar la solicitud', 'Error');
-      },
-    });
-  }*/
 
 
-    desaprobar(solicitud: Solicitud) {
+
+desaprobar(solicitud: Solicitud) {
+  console.log('desaprobar solicitud:', solicitud);
+  
+  if (!solicitud) {
+    console.error('Solicitud es undefined o null');
+    return;
+  }
+
+  if (!this.usuarioLogueado) {
+    console.error('Usuario logueado no está definido');
+    return;
+  }
+
   const body = {
-    idEstado: 3, // Asegúrate que 2 representa "desaprobado"
+    id: solicitud.id,
+    idUsuario: solicitud.idUsuario,
     idLaboratorio: solicitud.idLaboratorio,
-    idUsuarioAprobador: 4, // Puedes cambiarlo por el usuario actual si es dinámico
-    idUsuario: solicitud.idUsuario
+    horaInicio: solicitud.horaInicio,
+    horaFinal: solicitud.horaFinal,
+    fechaInicio: solicitud.fechaInicio,
+    fechaFinal: solicitud.fechaFinal,
+    motivo: solicitud.motivo,
+    fechaSolicitud: solicitud.fechaSolicitud,
+    idEstado: 3, // Rechazado
+    idUsuarioAprobador: this.usuarioLogueado.id,
+    fechaAprobacion: new Date().toISOString(),
+    comentarioAprobacion: 'Solicitud rechazada por el usuario logueado'
   };
 
-  this.reservaLaboratorioService.updateEstado(solicitud.id, body).subscribe({
+  console.log('Body que se enviará (desaprobar): ', body);
+
+  this.reservaLaboratorioService.updateEstado(body).subscribe({
     next: () => {
-      solicitud.idEstado = 3;
+      // Quita del frontend la solicitud rechazada
+      this.solicitudes = this.solicitudes.filter(s => s.id !== solicitud.id);
       this.toastr.info('Solicitud desaprobada correctamente', 'Información');
-      console.log(body);
     },
     error: (err) => {
       console.error('Error al desaprobar solicitud:', err);
       this.toastr.error('Error al desaprobar la solicitud', 'Error');
-    },
+    }
   });
 }
+
+
+
+
 }

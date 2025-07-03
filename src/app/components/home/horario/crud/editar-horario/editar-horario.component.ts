@@ -20,6 +20,7 @@ import { HorarioService } from '../../../../../services/Api/Horario/horario.serv
 import { ToastrService } from 'ngx-toastr';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { error } from 'console';
+import { UtilitiesService } from '../../../../../services/Utilities/utilities.service';
 
 @Component({
   selector: 'app-editar-horario',
@@ -60,9 +61,12 @@ export class EditarHorarioComponent implements OnInit {
       dia: string;
       horaInicio: string;
       horaFinal: string;
+      fechaInicio: string;
+      fechaFinal: string;
     },
     private _horario: HorarioService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
+    private _utilities: UtilitiesService
   ) {
     this.editarForm = new FormGroup({
       asignatura: new FormControl(data.asignatura, [Validators.required]),
@@ -71,6 +75,8 @@ export class EditarHorarioComponent implements OnInit {
       dia: new FormControl(data.dia, [Validators.required]),
       horaInicio: new FormControl(data.horaInicio, [Validators.required]),
       horaFinal: new FormControl(data.horaFinal, [Validators.required]),
+      fechaInicio: new FormControl(data.fechaInicio, [Validators.required]),
+      fechaFinal: new FormControl(data.fechaFinal, [Validators.required]),
     });
   }
 
@@ -95,8 +101,11 @@ export class EditarHorarioComponent implements OnInit {
   datos() {
     var todoData: any;
     const form = this.editarForm.value;
-    var inicioISO = new Date(form.horaInicio).toISOString();
-    var finISO = new Date(form.horaFinal).toISOString();
+    var inicioISO = new Date(form.fechaInicio).toISOString();
+    var finISO = new Date(form.fechaFinal).toISOString();
+
+    var horainicio = this._utilities.desformatearHora(form.horaInicio);
+    var horafin = this._utilities.desformatearHora(form.horaFinal);
 
     //Si se cambio el valor del select
     if (this.cambio) {
@@ -104,8 +113,10 @@ export class EditarHorarioComponent implements OnInit {
         asignatura: form.asignatura,
         profesor: form.profesor,
         idLaboratorio: this.idLab,
-        horaInicio: inicioISO,
-        horaFinal: finISO,
+        horaInicio: horainicio,
+        horaFinal: horafin,
+        fechaInicio: inicioISO,
+        fechaFinal: finISO,
         dia: form.dia,
       };
     } else {
@@ -113,19 +124,25 @@ export class EditarHorarioComponent implements OnInit {
         asignatura: form.asignatura,
         profesor: form.profesor,
         idLaboratorio: this.data.idLabEdit,
-        horaInicio: inicioISO,
-        horaFinal: finISO,
+        horaInicio: horainicio,
+        horaFinal: horafin,
+        fechaInicio: inicioISO,
+        fechaFinal: finISO,
         dia: form.dia,
       };
     }
-    
-    this._horario.putHorario(this.endpointHorario, this.data.id, todoData).subscribe({
-      next: (e) => {
-        console.log(e);
-      }, error: (err) => {
-        console.log(err);
-      }
-    })
+
+    console.log(todoData);
+    this._horario
+      .putHorario(this.endpointHorario, this.data.id, todoData)
+      .subscribe({
+        next: (e) => {
+          console.log(e);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
 
   onNo() {

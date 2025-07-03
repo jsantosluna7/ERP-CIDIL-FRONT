@@ -6,8 +6,11 @@ export interface Usuarios{
     correoInstitucional:string;
     telefono:string;
     direccion:string;
-    activado: boolean;
-    idrol:'Estudiante' | 'Administrador' | 'Super Usuario';
+    activado?: boolean;
+    idrol:'Estudiante' | 'Administrador' | 'Super Usuario' | 'Profesor';
+    fechaCreacion:string;
+    fechaUltimaModificacion: string;
+
 }
 
 export interface RespuestaUsuarios {

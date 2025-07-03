@@ -14,4 +14,6 @@ export class ServicioMqttService {
     toggle(topic: string, message: string):void {
       return this._mqttService.unsafePublish(topic, message);
     }
+
+    preservarTab1 = false;
 }

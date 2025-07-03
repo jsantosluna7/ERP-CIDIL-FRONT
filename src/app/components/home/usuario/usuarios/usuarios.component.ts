@@ -7,16 +7,30 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ToastrService } from 'ngx-toastr';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.component';
+import { MatInputModule } from '@angular/material/input';
+import { PreguntaDialogComponent } from '../../../elements/pregunta-dialog/pregunta-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { take } from 'rxjs';
 
 
 @Component({
   selector: 'app-usuarios',
-  imports: [MatTableModule,MatSortModule,MatIconModule,MatButtonModule,MatFormFieldModule, MatSelectModule,MatButtonModule,MatDialogModule],
+  imports: [MatTableModule,
+            MatSortModule,
+            MatIconModule,
+            MatButtonModule,
+            MatFormFieldModule,
+            MatSelectModule,
+            MatButtonModule,
+            MatDialogModule,
+            MatInputModule,
+            MatPaginatorModule,
+            MatTooltipModule],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })
@@ -26,7 +40,7 @@ export class UsuariosComponent implements OnInit {
   dataSource = new MatTableDataSource<Usuarios>([]);
   
 
-  constructor(private usuarioService: UsuarioService, private toastr: ToastrService){}
+  constructor(private usuarioService: UsuarioService, private toastr: ToastrService, private _dialog: MatDialog){}
 
   @ViewChild(MatSort) sort: MatSort | undefined;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined; 
@@ -34,36 +48,46 @@ export class UsuariosComponent implements OnInit {
   ngOnInit(): void{
     this.usuarioService.obtenerUsuarios().subscribe(data => {
       this.dataSource.data = data.datos;
+      this.dataSource = new MatTableDataSource(data.datos);
+      this.dataSource.paginator = this.paginator!;
+      this.dataSource.sort = this.sort!;
       console.log(data)
+
+       this.dataSource.filterPredicate = (usuario, filter: string) => {
+      const dataStr = (
+        usuario.nombreUsuario +
+        ' ' + usuario.apellidoUsuario +
+        ' ' + usuario.idMatricula 
+      ).toLowerCase();
+      return dataStr.includes(filter);
+    };
     });
   }
 
-/*eliminar(id: number) {
-  this.usuarioService.eliminarUsuario(id).subscribe((resultado: void) => {
-    if (resultado) {
-      this.usuarioService.obtenerUsuarios().subscribe(data => {
-        this.dataSource.data = data;
-        this.toastr.success('El Usuario se a eliminado!', '');
-      });
-      
-    } else {
-      alert('No se pudo eliminar el usuario.');
-    }
-  });
-}*/
-
 
 eliminar(id: string) {
-  this.usuarioService.eliminarUsuario(id).subscribe({
+
+const dialogRef = this._dialog.open(PreguntaDialogComponent, {
+      data: {
+        titulo: '¿Seguro?',
+        mensaje:
+          '¿Quieres eliminar el usuario de forma PERMANENTE?',
+      },
+    });
+
+  dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
+    if(result){
+       this.usuarioService.eliminarUsuario(id).subscribe({
     next: () => {
       this.toastr.success('Usuario eliminado correctamente');
       this.ngOnInit();
     },
     error: (err) => {
       console.error('Error al eliminar usuario:', err);
-      this.toastr.error('No se pudo eliminar el usuario.');
     }
   });
+    }else{this.toastr.info('No se pudo eliminar el usuario.');}
+  })
 }
 
   cambiarRol(usuario: Usuarios) {
@@ -84,11 +108,21 @@ eliminar(id: string) {
     this.toastr.warning('Rol inválido.');
   }
 }
-  desactivarUsuario(usuario: Usuarios): void{
-    
-    const nuevoEstado = !usuario.activado;
 
-    this.usuarioService.desactivarUsuario(usuario.id, nuevoEstado).subscribe({
+
+  desactivarUsuario(usuario: Usuarios): void{
+    const dialogRef = this._dialog.open(PreguntaDialogComponent, {
+      data: {
+        titulo: '¿Seguro?',
+        mensaje:
+          '¿Quieres desactivar el usuario?',
+      },
+    });
+
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
+      if(result){
+         const nuevoEstado = !usuario.activado;
+         this.usuarioService.desactivarUsuario(usuario.id, nuevoEstado).subscribe({
       next: () => {
         usuario.activado = nuevoEstado;
         this.toastr.success(
@@ -97,11 +131,23 @@ eliminar(id: string) {
       },
       error: (err) => {
         console.error(err);
-        this.toastr.error('Error al cambiar el estado del usuario')
+        this.toastr.info('Se  desactivo  el usuario')
       }
     })
+      }else{
+        this.toastr.info('No se  cambio el estado del usuario')
+      }
+    })
+   
   }
-  
+
+  applyFilter(event: Event) {
+  const filterValue = (event.target as HTMLInputElement).value;
+  this.dataSource.filter = filterValue.trim().toLowerCase();
+}
+
+
+
  //otra vista 
 
  readonly dialog = inject(MatDialog);
@@ -112,20 +158,20 @@ eliminar(id: string) {
     data: usuario
   });
 
-  dialogRef.afterClosed().subscribe(result => {
+  dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
     if (result) {
-      // Aquí puedes actualizar la lista con el usuario editado o llamar servicio para guardar
-      console.log('Usuario editado:', result);
+      this.usuarioService.obtenerUsuarios().subscribe(data => {
+        this.dataSource.data = data.datos;
+        this.dataSource.paginator = this.paginator!;
+        this.dataSource.sort = this.sort!;
+        this.toastr.success('Tabla actualizada tras edición');
+      });
     }
   });
-
-
-
 }
 
 
 
 
-  
 
 }

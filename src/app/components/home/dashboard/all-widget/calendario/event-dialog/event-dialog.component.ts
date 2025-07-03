@@ -33,12 +33,14 @@ export class EventDialogComponent {
       motivo: string;
       inicio: string;
       fin: string;
+      horaInicio: string;
+      horaFin: string;
     }
   ) {
-    if(data.fin == null){
-      console.log('nulo')
-    }else{
-      console.log(data.fin)
+    if (data.fin == null) {
+      console.log('nulo');
+    } else {
+      console.log(data.fin);
     }
   }
   onOk() {

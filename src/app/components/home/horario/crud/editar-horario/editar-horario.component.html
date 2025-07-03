@@ -28,12 +28,23 @@
             <input type="text" formControlName="dia" class="form-control" id="dia" placeholder="Lunes, Martes..." />
         </div>
         <div class="col-md-6">
-            <label for="horaInicio" class="form-label">Hora Inicio</label>
-            <input type="datetime-local" formControlName="horaInicio" class="form-control" id="horaInicio" />
+            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+            <input type="date" formControlName="fechaInicio" class="form-control" id="fechaInicio" />
         </div>
+
+        <div class="col-md-6">
+            <label for="fechaFinal" class="form-label">Fecha Final</label>
+            <input type="date" formControlName="fechaFinal" class="form-control" id="fechaFinal" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="horaInicio" class="form-label">Hora Inicio</label>
+            <input type="text" formControlName="horaInicio" class="form-control" id="horaInicio" />
+        </div>
+
         <div class="col-md-6">
             <label for="horaFinal" class="form-label">Hora Final</label>
-            <input type="datetime-local" formControlName="horaFinal" class="form-control" id="horaFinal" />
+            <input type="text" formControlName="horaFinal" class="form-control" id="horaFinal" />
         </div>
     </form>
 </mat-dialog-content>

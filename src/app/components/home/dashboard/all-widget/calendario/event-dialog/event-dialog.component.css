@@ -17,7 +17,7 @@
     flex-direction: column;
 }
 
-.hora-content p{
+.hora-content p {
     font-weight: bold;
 }
 
@@ -34,7 +34,7 @@
 
 .pendiente {
     background-color: rgba(255, 255, 51, 0.747);
-    color: white;
+    color: black;
     padding: .7rem;
     border-radius: 1.5rem;
 }
@@ -66,18 +66,30 @@
     padding: 0;
 }
 
-.h-inicio, .h-fin{
+.h-inicio,
+.h-fin,
+.f-inicio,
+.f-fin {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: .5rem;
 }
 
-.h-inicio{
+.comentario {
+    margin-top: 1rem;
+}
+
+.h {
     margin-top: 1.5rem;
     margin-bottom: .5rem;
 }
 
-.comentario{
-    margin-top: 1rem;
+.h,
+.f {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: .7rem;
 }

@@ -5,7 +5,14 @@ export interface Carta {
     cantidad:number;
     disponible: boolean;
     imagenEquipo:string;
+    idLaboratorio:number;
+    nombreData: string;
+    cantidadSeleccionada:number;
+
+
 }
+
+
 
 export interface PaginacionResponse {
   paginaActual: number;

@@ -1,41 +1,43 @@
-<div class="analitica-container">
-  <!-- TEMPERATURA -->
-  <ngx-gauge
-    [type]="gaugeType"
-    [value]="temp()"
-    label="Temperatura"
-    append="°C"
-    [cap]="gaugeCap"
-    [thick]="gaugeThick"
-  ></ngx-gauge>
+<!-- <div class="botonera">
+  @for (tab of tabList; track tab; let index = $index) {
+  <button
+    mat-raised-button
+    (click)="seleccionarTab(tab)"
+    [class]="tabSeleccionado() === tab ? 'selectedBtn' : undefined"
+  >
+    {{ tab }}
+  </button>
 
-  <!-- HUMEDAD -->
-  <ngx-gauge
-    [type]="gaugeType"
-    [value]="hum()"
-    label="Humedad"
-    append="%"
-    [cap]="gaugeCap"
-    [thick]="gaugeThick"
-  ></ngx-gauge>
+  <button
+    mat-icon-button
+    color="warn"
+    aria-label="Eliminar"
+    (click)="eliminarBoton(tab)"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+  }
 
-  <!-- LUZ -->
-  <ngx-gauge
-    [type]="gaugeType"
-    [value]="luz()"
-    label="Luz"
-    append="%"
-    [cap]="gaugeCap"
-    [thick]="gaugeThick"
-  ></ngx-gauge>
 
-  <!-- SONIDO -->
-  <ngx-gauge
-    [type]="gaugeType"
-    [value]="sonido()"
-    label="Sonido"
-    append="%"
-    [cap]="gaugeCap"
-    [thick]="gaugeThick"
-  ></ngx-gauge>
+  <button
+    mat-icon-button
+    color="primary"
+    (click)="agregarBoton()"
+    aria-label="Agregar botón"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div> -->
+
+<div class="componente">
+  <div class="iconos">
+    <fa-icon class="icon" [icon]="fontTemp" size="3x"></fa-icon>
+    <fa-icon class="icon" [icon]="fontHum" size="3x"></fa-icon>
+    <fa-icon class="icon" [icon]="fontLuz" size="3x"></fa-icon>
+    <fa-icon class="icon" [icon]="fontSonido" size="3x"></fa-icon>
+  </div>
+
+  @for (lab of tabList; track $index) {
+  <app-analitica-toda [laboratorio]="lab"></app-analitica-toda>
+  }
 </div>
