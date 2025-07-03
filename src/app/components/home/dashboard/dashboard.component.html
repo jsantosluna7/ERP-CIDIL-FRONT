@@ -43,7 +43,8 @@
 </mat-accordion>
 
 <div class="contenido">
-  <ng-container
-    [ngComponentOutlet]="componente"
-  ></ng-container>
+  <ng-container *ngIf="mostrarComponente">
+    <ng-container [ngComponentOutlet]="componente"></ng-container>
+  </ng-container>
 </div>
+

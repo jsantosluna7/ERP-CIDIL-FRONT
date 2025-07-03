@@ -1,4 +1,4 @@
-import { Component, computed, effect, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, OnInit, signal } from '@angular/core';
 import { AnaliticaTodaComponent } from './analitica-toda/analitica-toda.component';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -37,6 +37,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   templateUrl: './analitica.component.html',
   styleUrl: './analitica.component.css',
   providers: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AnaliticaComponent implements OnInit {
   fontTemp = faTemperature3;

@@ -40,8 +40,9 @@ export class DashboardComponent {
 
   pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
   tabList: string[] = this.listaDeLabs1erPiso;
+  mostrarComponente = true;
 
-  constructor(private _datos: DatosService){
+  constructor(private _datos: DatosService) {
     _datos.actualizarTabList(this.listaDeLabs1erPiso);
   }
 
@@ -49,22 +50,30 @@ export class DashboardComponent {
     this.pisoSeleccionado = index;
     switch (index) {
       case 0:
-        this._datos.actualizarTabList(this.listaDeLabs1erPiso)
+        this._datos.actualizarTabList(this.listaDeLabs1erPiso);
+        console.log(this.listaDeLabs1erPiso);
         this.tabList = this.listaDeLabs1erPiso;
         break;
       case 1:
-        this._datos.actualizarTabList(this.listaDeLabs2doPiso)
+        this._datos.actualizarTabList(this.listaDeLabs2doPiso);
+        console.log(this.listaDeLabs2doPiso);
         this.tabList = this.listaDeLabs2doPiso;
         break;
       case 2:
-        this._datos.actualizarTabList(this.listaDeLabs3erPiso)
+        this._datos.actualizarTabList(this.listaDeLabs3erPiso);
         this.tabList = this.listaDeLabs3erPiso;
         break;
       case 3:
-        this._datos.actualizarTabList(this.listaDeLabsTodo)
+        this._datos.actualizarTabList(this.listaDeLabsTodo);
         this.tabList = this.listaDeLabsTodo;
         break;
     }
+
+    // 🔁 Forzar la recreación del componente
+    this.mostrarComponente = false;
+    setTimeout(() => {
+      this.mostrarComponente = true;
+    }, 0);
     // this._datos.actualizarLabAnalitica(this.tabList[0]);
   }
 
