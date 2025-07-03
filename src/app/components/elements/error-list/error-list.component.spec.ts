@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IotButtonsComponent } from './iot-buttons.component';
+import { ErrorListComponent } from './error-list.component';
 
-describe('IotButtonsComponent', () => {
-  let component: IotButtonsComponent;
-  let fixture: ComponentFixture<IotButtonsComponent>;
+describe('ErrorListComponent', () => {
+  let component: ErrorListComponent;
+  let fixture: ComponentFixture<ErrorListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IotButtonsComponent]
+      imports: [ErrorListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(IotButtonsComponent);
+    fixture = TestBed.createComponent(ErrorListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

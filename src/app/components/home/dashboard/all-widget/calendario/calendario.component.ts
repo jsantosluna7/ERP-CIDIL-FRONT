@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
   FullCalendarComponent,
   FullCalendarModule,
@@ -11,7 +11,7 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { CalendarioService } from '../../../../../services/Api/Calendario/calendario.service';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, map } from 'rxjs';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DateDialogComponent } from './date-dialog/date-dialog.component';
 import { UtilitiesService } from '../../../../../services/Utilities/utilities.service';
@@ -73,11 +73,13 @@ export class CalendarioComponent {
               map(({ lab, estado }) => ({
                 id: e.id,
                 title: lab.codigoDeLab,
-                start: e.horaInicio,
-                end: e.horaFinal,
+                start: e.fechaInicio,
+                end: e.fechaFinal,
                 extendedProps: {
                   estado: estado.estado1,
                   motivo: e.motivo,
+                  horaInicio: this._utilities.formatearHora(e.horaInicio),
+                  horaFin: this._utilities.formatearHora(e.horaFinal),
                 },
               }))
             );
@@ -85,6 +87,7 @@ export class CalendarioComponent {
 
           forkJoin(eventosObservables).subscribe(
             (eventos) => {
+              console.log(eventos)
               successCallback(eventos);
             },
             (error) => {
@@ -105,8 +108,10 @@ export class CalendarioComponent {
         lab: evento.title,
         estado: evento.extendedProps.estado,
         motivo: evento.extendedProps.motivo,
-        inicio: this._utilities.formatearFecha(evento.startStr),
-        fin: this._utilities.formatearFecha(evento.endStr),
+        inicio: this._utilities.formatearHorarioFecha(evento.startStr),
+        fin: this._utilities.formatearHorarioFecha(evento.endStr),
+        horaInicio: evento.extendedProps.horaInicio,
+        horaFin: evento.extendedProps.horaFin
       },
     });
   }
@@ -123,8 +128,10 @@ export class CalendarioComponent {
         lab: evt.title,
         estado: evt.extendedProps.estado,
         motivo: evt.extendedProps.motivo,
-        inicio: this._utilities.formatearFecha(evt.startStr),
-        fin: this._utilities.formatearFecha(evt.endStr),
+        inicio: this._utilities.formatearHorarioFecha(evt.startStr),
+        fin: this._utilities.formatearHorarioFecha(evt.endStr),
+        horaInicio: evt.extendedProps.horaInicio,
+        horaFin: evt.extendedProps.horaFin
       }));
 
       this.dialog.open(DateDialogComponent, {

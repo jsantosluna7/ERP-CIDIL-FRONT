@@ -1,13 +1,30 @@
-<div class="container custom-elevation" cdkDrag cdkDragPreviewContainer="parent">
-    <h3 class="m-0">{{data().label}}</h3>
-    <button mat-icon-button class="settings-button" (click)="mostrarOpciones.set(true)">
-        <mat-icon>settings</mat-icon>
-    </button>
-    <ng-container [ngComponentOutlet]="data().content"></ng-container>
-
-    @if (mostrarOpciones()) {
-        <app-widget-options [(mostrarOpciones)]="mostrarOpciones" [data]="data()"></app-widget-options>
+<div
+  class="container custom-elevation"
+  cdkDrag
+  cdkDragPreviewContainer="parent"
+>
+  <h3 class="m-0">{{ data().label }}</h3>
+  <button
+    mat-icon-button
+    class="settings-button"
+    (click)="
+      data().label === 'IoT Analitica'
+        ? mostrarOpciones.set(false)
+        : mostrarOpciones.set(true)
+    "
+  >
+    @if (data().label === 'IoT Analitica') {  }@else {
+    <mat-icon>settings</mat-icon>
     }
+  </button>
+  <ng-container [ngComponentOutlet]="data().content"></ng-container>
 
-    <div *cdkDragPlaceholder></div>
+  @if (mostrarOpciones()) {
+  <app-widget-options
+    [(mostrarOpciones)]="mostrarOpciones"
+    [data]="data()"
+  ></app-widget-options>
+  }
+
+  <div *cdkDragPlaceholder></div>
 </div>

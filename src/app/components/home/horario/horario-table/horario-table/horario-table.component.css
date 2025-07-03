@@ -1,3 +1,7 @@
+.body {
+    margin-top: 2rem;
+}
+
 .nav {
     display: flex;
     flex-direction: row;
@@ -41,17 +45,17 @@
     text-align: center;
 }
 
-.botones{
+.botones {
     display: flex;
     flex-direction: row;
     gap: 1rem;
 }
 
-.delete-button{
+.delete-button {
     background-color: #CC3333 !important;
     color: white !important;
 }
 
-.delete-button:hover{
+.delete-button:hover {
     background-color: #cc3333f6 !important;
 }

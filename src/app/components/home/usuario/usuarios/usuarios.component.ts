@@ -15,6 +15,7 @@ import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.componen
 import { MatInputModule } from '@angular/material/input';
 import { PreguntaDialogComponent } from '../../../elements/pregunta-dialog/pregunta-dialog.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { take } from 'rxjs';
 
 
 @Component({
@@ -74,7 +75,7 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
       },
     });
 
-  dialogRef.afterClosed().subscribe((result) => {
+  dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
     if(result){
        this.usuarioService.eliminarUsuario(id).subscribe({
     next: () => {
@@ -118,7 +119,7 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
       if(result){
          const nuevoEstado = !usuario.activado;
          this.usuarioService.desactivarUsuario(usuario.id, nuevoEstado).subscribe({
@@ -157,7 +158,7 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
     data: usuario
   });
 
-  dialogRef.afterClosed().subscribe(result => {
+  dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
     if (result) {
       this.usuarioService.obtenerUsuarios().subscribe(data => {
         this.dataSource.data = data.datos;

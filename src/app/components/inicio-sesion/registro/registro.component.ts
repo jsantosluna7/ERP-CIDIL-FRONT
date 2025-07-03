@@ -6,6 +6,7 @@ import { BackButtonComponent } from "../../elements/back-button/back-button.comp
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { error } from 'console';
 
 @Component({
   selector: 'app-registro',
@@ -65,7 +66,8 @@ export class RegistroComponent implements OnInit {
         this._toastr.success(`Bienvenido, ${e.nombreUsuario} ${e.apellidoUsuario}`, 'Registro Éxitoso');
         this._router.navigate(['home']);
       },error: (e) => {
-        this._toastr.error(e.error, 'Hubo un error');
+        console.log(e)
+        this._toastr.error(e.error.error, 'Hubo un error');
       }
     })
   }
@@ -99,7 +101,7 @@ export class RegistroComponent implements OnInit {
     console.log(this.registroForm.value);
   }
 
-  openPopup($event: Event) {
+  openPopup(event: Event) {
     const contrasenaElem = document.querySelector('#contrasena');
     if (contrasenaElem) {
       const rect = contrasenaElem.getBoundingClientRect();

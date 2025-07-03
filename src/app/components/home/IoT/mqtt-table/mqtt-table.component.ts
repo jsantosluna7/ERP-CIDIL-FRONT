@@ -13,7 +13,7 @@ import {
   MatTableDataSource,
   MatTableModule,
 } from '@angular/material/table';
-import { forkJoin, map, switchMap } from 'rxjs';
+import { forkJoin, map, switchMap, take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -88,10 +88,6 @@ export class MqttTableComponent {
 
   ngOnInit() {
     this.cargarTabla();
-    // this.cargarPagina();
-
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   exportar(tipo: 'xlsx' | 'xls' | 'csv') {
@@ -102,10 +98,10 @@ export class MqttTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe({
+    dialogRef.afterClosed().pipe(take(1)).subscribe({
       next: (n) => {
         if (n) {
-          this._datos.fechaData$.subscribe({
+          this._datos.fechaData$.pipe(take(1)).subscribe({
             next: (f: any) => {
               this._mqtt
                 .filtradoIot(
@@ -186,10 +182,10 @@ export class MqttTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe({
+    dialogRef.afterClosed().pipe(take(1)).subscribe({
       next: (n) => {
         if (n) {
-          this._datos.fechaData$.subscribe({
+          this._datos.fechaData$.pipe(take(1)).subscribe({
             next: (f: any) => {
               console.log(f);
               this._mqtt
@@ -326,7 +322,6 @@ export class MqttTableComponent {
   // }
 
   cargarTabla() {
-    // this.loading = true;
     this._mqtt
       .getIot(this.endpoint, this.pageIndex + 1, this.pageSize)
       .pipe(
@@ -388,17 +383,19 @@ export class MqttTableComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((response) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((response) => {
       if (!response) {
         this._toastr.info('Se canceló la operación', 'Información');
       } else {
         this._mqtt.deleteIot(this.endpoint, element.id).subscribe({
-          next: (h) => {
+          next: (resp) => {
+            this._toastr.success(resp, 'Eliminado correctamente');
+            this.secondLoading = true;
             this.cargarTabla();
           },
           error: (err) => {
-            console.log(err);
-            this._toastr.info(err.error.text, 'Información');
+            this.secondLoading = true;
+            this.cargarTabla();
           },
         });
       }
