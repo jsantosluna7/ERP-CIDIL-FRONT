@@ -1,23 +1,36 @@
 import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { NgxGaugeModule } from 'ngx-gauge';
 import { ToastrService } from 'ngx-toastr';
-import { firstValueFrom, Subscription, timeout } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { UiSwitchModule } from 'ngx-ui-switch';
 import { ServicioMqttService } from '../../../../../../services/loT/servicio-mqtt.service';
 import { DatosService } from '../../../../../../services/Datos/datos.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faLock, faLockOpen, faRepeat } from '@fortawesome/free-solid-svg-icons';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-analitica-toda',
-  imports: [NgxGaugeModule, UiSwitchModule],
+  imports: [NgxGaugeModule, UiSwitchModule, FontAwesomeModule, MatButtonModule],
   templateUrl: './analitica-toda.component.html',
   styleUrl: './analitica-toda.component.css',
   providers: [ServicioMqttService],
 })
 export class AnaliticaTodaComponent implements OnInit, OnDestroy {
+
+  faLock = faLock;
+  faUnlock = faLockOpen;
+  faRestart = faRepeat;
+
   // GAUGE CONFIG
   gaugeType: any = 'arch';
   gaugeCap: any = 'round';
   gaugeThick: any = 18;
+
+  gaugeColorTemp: string = '#CC3333';
+  gaugeColorHum: string = '#1825AA';
+  gaugeColorLuz: string = '#FFD94A';
+
   @Input() laboratorio: string = '1A';
 
   temp: any = signal('---');

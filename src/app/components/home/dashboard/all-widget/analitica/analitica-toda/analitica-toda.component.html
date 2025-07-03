@@ -1,61 +1,78 @@
 <div class="analitica-completa">
-    <p>{{lab}}</p>
   <div class="analitica-container">
     <!-- TEMPERATURA -->
     <ngx-gauge
       [type]="gaugeType"
       [value]="temp()"
-      label="Temperatura"
       append="°C"
       [cap]="gaugeCap"
       [thick]="gaugeThick"
-    ></ngx-gauge>
+      [foregroundColor]="gaugeColorTemp"
+    >
+    </ngx-gauge>
 
     <!-- HUMEDAD -->
     <ngx-gauge
       [type]="gaugeType"
       [value]="hum()"
-      label="Humedad"
       append="%"
       [cap]="gaugeCap"
       [thick]="gaugeThick"
-    ></ngx-gauge>
+      [foregroundColor]="gaugeColorHum"
+    >
+    </ngx-gauge>
 
     <!-- LUZ -->
     <ngx-gauge
       [type]="gaugeType"
       [value]="luz()"
-      label="Luz"
       append="%"
       [cap]="gaugeCap"
       [thick]="gaugeThick"
-    ></ngx-gauge>
+      [foregroundColor]="gaugeColorLuz"
+    >
+    </ngx-gauge>
 
     <!-- SONIDO -->
     <ngx-gauge
       [type]="gaugeType"
       [value]="sonido()"
-      label="Sonido"
       append="%"
       [cap]="gaugeCap"
       [thick]="gaugeThick"
-    ></ngx-gauge>
+    >
+    </ngx-gauge>
   </div>
   <div class="analitica-btn">
+    <p>{{ lab }}</p>
     <div class="botones">
       <div class="boton">
-        <h3>Actuador:</h3>
-        <ui-switch
-          [checked]="actuador()"
-          (change)="toggleActuador()"
-        ></ui-switch>
+        @if (actuador()) {
+        <fa-icon
+          class="icon"
+          [icon]="faUnlock"
+          size="3x"
+          class="lock-open"
+        ></fa-icon>
+        <button mat-raised-button (click)="toggleActuador()" class="toggle-btn">Cerrar</button>
+        }@else {
+        <fa-icon
+          class="icon"
+          [icon]="faLock"
+          size="3x"
+          class="lock-close"
+        ></fa-icon>
+        <button mat-raised-button (click)="toggleActuador()" class="toggle-btn">Abrir</button>
+        }
       </div>
 
       <div class="boton">
-        <h3>Reiniciar:</h3>
-        <ui-switch [checked]="estadoReiniciar" (change)="toggleReiniciar()">
-        </ui-switch>
+        <fa-icon class="icon" [icon]="faRestart" size="3x"></fa-icon>
+        <button mat-raised-button (click)="toggleReiniciar()" class="toggle-btn">
+          Reiniciar
+        </button>
       </div>
     </div>
   </div>
 </div>
+<hr />

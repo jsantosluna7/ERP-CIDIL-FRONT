@@ -1,0 +1,11 @@
+.iconos{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 1.5rem 10rem;
+    gap: 10.3rem;
+}
+
+.componente{
+    overflow: auto;
+}

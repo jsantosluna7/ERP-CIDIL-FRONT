@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, effect, OnInit, signal } from '@angular/core';
 import { AnaliticaTodaComponent } from './analitica-toda/analitica-toda.component';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -10,6 +10,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { DatosService } from '../../../../../services/Datos/datos.service';
+import {
+  faDroplet,
+  faLightbulb,
+  faTemperature3,
+  faVolumeHigh,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-analitica',
@@ -25,29 +32,37 @@ import { DatosService } from '../../../../../services/Datos/datos.service';
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
+    FontAwesomeModule,
   ],
   templateUrl: './analitica.component.html',
   styleUrl: './analitica.component.css',
   providers: [],
 })
 export class AnaliticaComponent implements OnInit {
+  fontTemp = faTemperature3;
+  fontHum = faDroplet;
+  fontLuz = faLightbulb;
+  fontSonido = faVolumeHigh;
 
   tabList: string[] = [];
   seleccionado: string = this.tabList[0];
 
-  constructor(private _datos: DatosService){}
+  constructor(private _datos: DatosService) {
+  }
 
   ngOnInit(): void {
     this._datos.tabList$.subscribe({
       next: (e) => {
         this.tabList = e;
-      }, error: (err) => {
-        console.error(err)
-      }
-    })
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
 
     console.log(this.tabList);
   }
+
   tabSeleccionado() {
     return this.seleccionado;
   }
@@ -56,6 +71,7 @@ export class AnaliticaComponent implements OnInit {
     this.seleccionado = tab;
     // this._datos.actualizarLabAnalitica(tab);
   }
+
 
   agregarBoton() {
     const nombre = prompt('Escribe el nombre del nuevo botón');

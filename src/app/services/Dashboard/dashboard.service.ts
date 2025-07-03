@@ -12,8 +12,8 @@ export class DashboardService {
       id: 1,
       label: 'IoT Analitica',
       content: AnaliticaComponent, // Replace with actual component
-      rows: 2,
-      columns: 2
+      rows: 6,
+      columns: 7
     },
     {
       id: 2,

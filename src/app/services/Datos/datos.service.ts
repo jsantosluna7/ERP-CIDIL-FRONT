@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -16,6 +16,7 @@ export class DatosService {
 
   // private labAnaliticaSubject = new BehaviorSubject<string>('1A');
   // labAnalitica$ = this.labAnaliticaSubject.asObservable();
+
 
   private tabListSubject = new BehaviorSubject<string[]>([]);
   tabList$ = this.tabListSubject.asObservable();

@@ -29,6 +29,15 @@
   </button>
 </div> -->
 
-@for (lab of tabList; track $index) {
-<app-analitica-toda [laboratorio]="lab"></app-analitica-toda>
-}
+<div class="componente">
+  <div class="iconos">
+    <fa-icon class="icon" [icon]="fontTemp" size="3x"></fa-icon>
+    <fa-icon class="icon" [icon]="fontHum" size="3x"></fa-icon>
+    <fa-icon class="icon" [icon]="fontLuz" size="3x"></fa-icon>
+    <fa-icon class="icon" [icon]="fontSonido" size="3x"></fa-icon>
+  </div>
+
+  @for (lab of tabList; track $index) {
+  <app-analitica-toda [laboratorio]="lab"></app-analitica-toda>
+  }
+</div>
