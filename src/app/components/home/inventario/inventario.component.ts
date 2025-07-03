@@ -16,10 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
 import { MatCardModule } from '@angular/material/card';
-import { CartaCarrito } from '../carrito/cartaCarrito.interface';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
-import {  forkJoin, map } from 'rxjs';
 
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -77,11 +75,17 @@ export class InventarioComponent implements OnInit, AfterViewInit {
         
   }
 
+  imagen(img: any): string{
+    return `http://100.89.68.57:5000${img.imagen}`
+  }
+
   cargarCartas() {
   this.loading = true;
 
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
+      console.log(d);
+
       const all = d.datos;
 
       const datos = all

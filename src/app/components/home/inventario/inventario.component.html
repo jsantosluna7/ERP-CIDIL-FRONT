@@ -17,11 +17,11 @@
   @for (carta of dataSource.filteredData; track carta.id) {
     <div class="col-md-4 mb-3">
       <div class="  card h-100 shadow-sm">
-        @if (!carta.imagenEquipo || carta.imagenEquipo.trim() === '' || carta.imagenEquipo === 'null') {
+        @if (!carta.imagen || carta.imagen.trim() === '' || carta.imagen === '\\x6e756c6c') {
         <img src="/Imagenes/Imagen de WhatsApp 2025-06-03 a las 14.17.00_691d2cbd.jpg" class="card-img-top" alt="p"
           style="height: 300px; object-fit: cover;">
         } @else {
-        <img [src]="carta.imagenEquipo" class="card-img-top" alt="Imagen por defecto"
+        <img [src]="imagen(carta)" class="card-img-top" alt="Imagen por defecto"
           style="height: 300px; object-fit: cover;">
         }
 

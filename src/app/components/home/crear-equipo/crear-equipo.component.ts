@@ -181,8 +181,9 @@ crearEquipo(): void {
           formData
         )
         .subscribe({
-          next: (rutaFoto) => {
-            this.solicitudesForm.get('imagenEquipo')?.setValue(rutaFoto);
+          next: (rutaFoto: any) => {
+            console.log(rutaFoto.ruta);
+            this.solicitudesForm.get('imagenEquipo')?.setValue(rutaFoto.ruta);
           },
           error: (err) => console.error('Error al subir imagen:',err),
         });
