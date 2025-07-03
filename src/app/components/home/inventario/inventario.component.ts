@@ -83,7 +83,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
       const all = d.datos;
-
       const datos = all
   .filter((data: any) => data.disponible)  
   .map((data: any) => {
@@ -142,6 +141,11 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       
     }
   }
+
+
+
+
+
 
  
 agregarAlCarrito(carta: any): void {
