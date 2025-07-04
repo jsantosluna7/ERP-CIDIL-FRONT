@@ -46,6 +46,9 @@ export class SidebarComponent implements OnInit {
   iot = faMicrochip;
   faclok = faClock;
   carro = faCartShopping;
+   laboratorio = faFlask;
+  equipo = faToolbox;
+  calendar = faCalendar;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");

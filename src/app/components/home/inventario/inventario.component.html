@@ -14,7 +14,7 @@
 
    @if(!loading){
     <div class="row">
-  @for (carta of dataSource.filteredData; track carta.id) {
+  @for (carta of cartasConLaboratorio; track carta.id) {
     <div class="col-md-4 mb-3">
       <div class="  card h-100 shadow-sm">
         @if (!carta.imagenEquipo || carta.imagenEquipo.trim() === '' || carta.imagenEquipo === 'null') {
@@ -50,8 +50,14 @@
 </div> 
 
   <!--Paginacion-->
-  <mat-paginator class="paginator" [length]="dataSource.data.length" [pageSize]="pageSize" [pageSizeOptions]="[]"
-    [hidePageSize]="true" showFirstLastButtons>
+  <mat-paginator class="paginator"
+   [length]="totalItems"
+   [pageSize]="pageSize"
+   [pageIndex]="paginaActual - 1"
+  [pageSizeOptions]="[]"
+   [hidePageSize]="true" 
+   showFirstLastButtons
+   (page)="onPageChange($event)">
   </mat-paginator>
 
   <!-- Campo de entrada personalizado para el tamaño de página -->
