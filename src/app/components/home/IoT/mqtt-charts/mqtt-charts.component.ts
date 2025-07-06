@@ -7,6 +7,7 @@ import * as echarts from 'echarts/core';
 import { LineChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { DatosService } from '../../../../services/Datos/datos.service';
 echarts.use([GridComponent, CanvasRenderer, LineChart, TitleComponent, LegendComponent]);
 
 @Component({
@@ -41,7 +42,8 @@ export class MqttChartsComponent implements OnInit {
 
   constructor(
     private _mqttService: ServicioMqttService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
+    private _datos: DatosService
   ) {}
 
   createBaseOptions(
@@ -79,6 +81,12 @@ export class MqttChartsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this._datos.tabListMqtt$.subscribe({
+      next: (labs) => {
+        console.log(labs);
+      }
+    })
     this._mqttService
       .observarTopico(this.observar)
       .subscribe((message: IMqttMessage) => {

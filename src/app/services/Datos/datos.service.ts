@@ -18,6 +18,13 @@ export class DatosService {
   private tabListSubject = new BehaviorSubject<string[]>([]);
   tabList$ = this.tabListSubject.asObservable();
 
+  private tabListMqttSubject = new BehaviorSubject<string[]>([]);
+  tabListMqtt$ = this.tabListMqttSubject.asObservable();
+
+  actualizarTabListMqtt(tabListMqtt: string[]) {
+    this.tabListMqttSubject.next(tabListMqtt);
+  }
+
   private obtenerPisoSubject = new BehaviorSubject<number>(1);
   obtenerPiso$ = this.obtenerPisoSubject.asObservable();
 
@@ -30,6 +37,13 @@ export class DatosService {
 
   obtenerPisoHorario(piso: number) {
     this.obtenerPisoHorarioSubject.next(piso);
+  }
+
+  private obtenerPisoMqttSubject = new BehaviorSubject<number>(1);
+  obtenerPisoMqtt$ = this.obtenerPisoMqttSubject.asObservable();
+
+  obtenerPisoMqtt(piso: number) {
+    this.obtenerPisoMqttSubject.next(piso);
   }
 
   actualizarTabList(tabList: string[]) {

@@ -1,18 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MqttChartsComponent } from './mqtt-charts/mqtt-charts.component';
 import { MqttTableComponent } from './mqtt-table/mqtt-table.component';
 import { ServicioMqttService } from '../../../services/loT/servicio-mqtt.service';
+import { MqttLabsComponent } from './mqtt-labs/mqtt-labs.component';
 
 @Component({
   selector: 'app-iot',
-  imports: [
-    CommonModule,
-    MatTabsModule,
-    MqttChartsComponent,
-    MqttTableComponent,
-  ],
+  imports: [CommonModule, MatTabsModule, MqttTableComponent, MqttLabsComponent],
   templateUrl: './iot.component.html',
   styleUrl: './iot.component.css',
   providers: [ServicioMqttService],
