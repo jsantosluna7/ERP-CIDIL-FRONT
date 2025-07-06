@@ -36,7 +36,7 @@ export class DashboardComponent {
   listaDeLabs1erPiso: string[] = ['1A', '1B', '1C', '1D'];
   listaDeLabs2doPiso: string[] = ['2A', '2B', '2C', '2D'];
   listaDeLabs3erPiso: string[] = ['3A', '3B', '3C', '3D'];
-  listaDeLabsTodo: string[] = [];
+  listaDeLabsTodo: string[] = ['1A', '1B', '1C', '1D','2A', '2B', '2C', '2D','3A', '3B', '3C', '3D'];
 
   pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
   tabList: string[] = this.listaDeLabs1erPiso;
@@ -51,21 +51,29 @@ export class DashboardComponent {
     switch (index) {
       case 0:
         this._datos.actualizarTabList(this.listaDeLabs1erPiso);
+        this._datos.obtenerPiso(1);
+
         console.log(this.listaDeLabs1erPiso);
         this.tabList = this.listaDeLabs1erPiso;
         break;
       case 1:
         this._datos.actualizarTabList(this.listaDeLabs2doPiso);
+        this._datos.obtenerPiso(2);
+
         console.log(this.listaDeLabs2doPiso);
         this.tabList = this.listaDeLabs2doPiso;
         break;
       case 2:
         this._datos.actualizarTabList(this.listaDeLabs3erPiso);
+        this._datos.obtenerPiso(3);
+
         this.tabList = this.listaDeLabs3erPiso;
         break;
       case 3:
         this._datos.actualizarTabList(this.listaDeLabsTodo);
+
         this.tabList = this.listaDeLabsTodo;
+        this._datos.obtenerPiso(4);
         break;
     }
 

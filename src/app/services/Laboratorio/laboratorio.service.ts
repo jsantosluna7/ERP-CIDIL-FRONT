@@ -17,7 +17,6 @@ export class LaboratorioService {
     return this.http.get<Laboratorio[]>(this.apiUrl);
   }
   
-
   getLaboratorioPorId(id: number): Observable<Laboratorio> {
     return this.http.get<Laboratorio>(`${this.apiUrl}/${id}`);
   }
