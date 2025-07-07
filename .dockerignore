@@ -1,0 +1,27 @@
+# Archivos y directorios de control de versiones
+.git/
+.gitignore
+
+
+# Archivos de configuración de editores y entornos de desarrollo
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Archivos de compilación y dependencias
+node_modules/
+dist/
+build/
+tmp/
+*.log
+*.bak
+*.swp
+
+# Archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de documentación y licencia
+LICENSE
+README.md
