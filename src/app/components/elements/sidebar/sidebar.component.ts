@@ -17,7 +17,6 @@ import {
   faShop,
   faUser,
   faCalendar,
-  faCalendar,
   faFlask,
   faToolbox,
 } from '@fortawesome/free-solid-svg-icons';
