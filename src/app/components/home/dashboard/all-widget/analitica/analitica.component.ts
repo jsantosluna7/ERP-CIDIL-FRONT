@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -25,6 +26,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { PisosService } from '../../../../../services/Pisos/pisos.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AgregarLabDialogComponent } from './agregar-lab-dialog/agregar-lab-dialog.component';
 
 @Component({
   selector: 'app-analitica',
@@ -59,7 +62,7 @@ export class AnaliticaComponent implements OnInit {
 
   // seleccionado: string = this.tabList[0];
 
-  constructor(private _piso: PisosService) {}
+  constructor(private _piso: PisosService, private _dialog: MatDialog, private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this._piso.tabList$.subscribe({
@@ -83,9 +86,19 @@ export class AnaliticaComponent implements OnInit {
   // }
 
   agregarBoton() {
-    const nombre = prompt('Escribe el nombre del nuevo laboratorio');
-    if (!nombre) return;
+    // const nombre = prompt('Escribe el nombre del nuevo laboratorio');
+    // if (!nombre) return;
 
-    this._piso.agregarLaboratorio(nombre, this.pisoSeleccionado);
+    // this._piso.agregarLaboratorio(nombre, this.pisoSeleccionado);
+
+    const dialogRef = this._dialog.open(AgregarLabDialogComponent, {
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe((nombre: string) => {
+      if (!nombre) return;
+      this._piso.agregarLaboratorio(nombre, this.pisoSeleccionado);
+      this.cd.detectChanges();
+    });
   }
 }
