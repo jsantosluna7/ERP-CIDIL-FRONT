@@ -81,18 +81,18 @@
           <span class="text nav-text">Usuarios</span>
         </a>
       </li>
-            <li class="nav-link" *appCualRol="[1, 2]">
-                <a routerLink="/home/crear-laboratorio">
-                    <fa-icon class="icon" [icon]="laboratorio"></fa-icon>
-                    <span class="text nav-text">Crear Espacio</span>
-                </a>
-            </li>
-            <li class="nav-link" *appCualRol="[1, 2]">
-                <a routerLink="/home/crear-equipo">
-                    <fa-icon class="icon" [icon]="equipo"></fa-icon>
-                    <span class="text nav-text">Crear Equipos</span>
-                </a>
-            </li>
+      <li class="nav-link" *appCualRol="[1, 2]">
+        <a routerLink="/home/crear-laboratorio">
+          <fa-icon class="icon" [icon]="laboratorio"></fa-icon>
+          <span class="text nav-text">Crear Espacio</span>
+        </a>
+      </li>
+      <li class="nav-link" *appCualRol="[1, 2]">
+        <a routerLink="/home/crear-equipo">
+          <fa-icon class="icon" [icon]="equipo"></fa-icon>
+          <span class="text nav-text">Crear Equipos</span>
+        </a>
+      </li>
       <!-- </ul> -->
     </div>
     <div class="buttom-content">
@@ -105,10 +105,9 @@
           <img
             src="/Imagenes/loyola.jpeg"
             alt="Usuario"
-            width="40"
-            height="40"
-            class="rounded-circle me-2"
+            class="rounded-circle me-2 li-usuario"
           />
+          <span class="text nav-text fw-bold">{{nombreUsuario}}</span>
         </a>
       </li>
       <li class="">

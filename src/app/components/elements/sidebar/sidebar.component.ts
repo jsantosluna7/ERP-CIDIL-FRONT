@@ -70,11 +70,14 @@ export class SidebarComponent implements OnInit {
   ) {}
 
   usuarioLogueado!: Usuarios;
+  nombreUsuario: string = '';
 
   ngOnInit(): void {
     this.usuarioService.user$.subscribe((usuario) => {
       if (usuario) {
         this.usuarioLogueado = usuario;
+
+        this.nombreUsuario = `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`
       }
     });
     console.log(this.usuarioLogueado);

@@ -1,4 +1,10 @@
- /* =====Sidebar===== */
+.li-usuario{
+    margin-left: 1rem;
+    width: 30px;
+    height: 30px;
+}
+
+/* =====Sidebar===== */
 
 .sidebar{
     position: fixed;
