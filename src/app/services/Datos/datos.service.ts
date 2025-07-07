@@ -15,41 +15,6 @@ export class DatosService {
   private timerDataSubject = new BehaviorSubject<any[]>([]);
   timerData$ = this.timerDataSubject.asObservable();
 
-  private tabListSubject = new BehaviorSubject<string[]>([]);
-  tabList$ = this.tabListSubject.asObservable();
-
-  private tabListMqttSubject = new BehaviorSubject<string[]>([]);
-  tabListMqtt$ = this.tabListMqttSubject.asObservable();
-
-  actualizarTabListMqtt(tabListMqtt: string[]) {
-    this.tabListMqttSubject.next(tabListMqtt);
-  }
-
-  private pisoSubject = new BehaviorSubject<number>(1);
-  piso$ = this.pisoSubject.asObservable();
-
-  piso(piso: number) {
-    this.pisoSubject.next(piso);
-  }
-
-  private obtenerPisoHorarioSubject = new BehaviorSubject<number>(1);
-  obtenerPisoHorario$ = this.obtenerPisoHorarioSubject.asObservable();
-
-  obtenerPisoHorario(piso: number) {
-    this.obtenerPisoHorarioSubject.next(piso);
-  }
-
-  private obtenerPisoMqttSubject = new BehaviorSubject<number>(1);
-  obtenerPisoMqtt$ = this.obtenerPisoMqttSubject.asObservable();
-
-  obtenerPisoMqtt(piso: number) {
-    this.obtenerPisoMqttSubject.next(piso);
-  }
-
-  actualizarTabList(tabList: string[]) {
-    this.tabListSubject.next(tabList);
-  }
-
   obtenerData(data: any[]) {
     this.jsonDataSubject.next(data);
   }

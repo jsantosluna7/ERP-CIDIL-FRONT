@@ -41,9 +41,15 @@ export class PisosService {
 
   private pisoHorarioSubject = new BehaviorSubject<number>(1);
   pisoHorario$ = this.pisoHorarioSubject.asObservable();
-  
+
+  private pisoMqttSubject = new BehaviorSubject<number>(1);
+  pisoMqtt$ = this.pisoMqttSubject.asObservable();
+
   private tabListSubject = new BehaviorSubject<string[]>([]);
   tabList$ = this.tabListSubject.asObservable();
+
+  private tabListMqttSubject = new BehaviorSubject<string[]>([]);
+  tabListMqtt$ = this.tabListMqttSubject.asObservable();
 
   constructor() {
     this.cargarDesdeLocalStorage();
@@ -58,6 +64,16 @@ export class PisosService {
         this.tabListSubject.next(list);
       }
     );
+
+    combineLatest([this.pisoMqttSubject, this.laboratoriosPorPiso$]).subscribe(
+      ([piso, data]: any) => {
+        const list =
+          piso === 4
+            ? [...data[1], ...data[2], ...data[3]]
+            : [...(data[piso] ?? [])];
+        this.tabListMqttSubject.next(list);
+      }
+    );
   }
 
   setPiso(piso: number) {
@@ -66,6 +82,10 @@ export class PisosService {
 
   setPisoHorario(piso: number) {
     this.pisoHorarioSubject.next(piso);
+  }
+
+  setPisoMqtt(piso: number) {
+    this.pisoMqttSubject.next(piso);
   }
 
   agregarLaboratorio(nombre: string, piso: number) {

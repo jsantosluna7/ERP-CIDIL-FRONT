@@ -13,6 +13,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers';
 import { DatosService } from '../../../../services/Datos/datos.service';
 import { Subscription } from 'rxjs';
+import { PisosService } from '../../../../services/Pisos/pisos.service';
 echarts.use([
   GridComponent,
   CanvasRenderer,
@@ -57,7 +58,7 @@ export class MqttChartsComponent implements OnInit, OnDestroy {
   constructor(
     private _mqttService: ServicioMqttService,
     private _toastr: ToastrService,
-    private _datos: DatosService
+    private _piso: PisosService
   ) {}
 
   createBaseOptions(
@@ -95,7 +96,7 @@ export class MqttChartsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._datos.tabListMqtt$.subscribe({
+    this._piso.tabListMqtt$.subscribe({
       next: (labs) => {
         // Cancelar subscripciones anteriores
         this.subs.forEach((s) => s.unsubscribe());

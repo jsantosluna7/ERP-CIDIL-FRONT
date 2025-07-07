@@ -4,6 +4,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DatosService } from '../../../../services/Datos/datos.service';
 import { MqttChartsComponent } from '../mqtt-charts/mqtt-charts.component';
+import { PisosService } from '../../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-mqtt-labs',
@@ -17,50 +18,25 @@ import { MqttChartsComponent } from '../mqtt-charts/mqtt-charts.component';
   styleUrl: './mqtt-labs.component.css',
 })
 export class MqttLabsComponent {
-  panelOpen = true;
-  listaDeLabs1erPiso: string[] = ['1A', '1B', '1C', '1D'];
-  listaDeLabs2doPiso: string[] = ['2A', '2B', '2C', '2D'];
-  listaDeLabs3erPiso: string[] = ['3A', '3B', '3C', '3D'];
-  listaDeLabsTodo: string[] = [
-    '1A',
-    '1B',
-    '1C',
-    '1D',
-    '2A',
-    '2B',
-    '2C',
-    '2D',
-    '3A',
-    '3B',
-    '3C',
-    '3D',
-  ];
-
-  pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
+  pisoSeleccionado: number = 0;
   mostrarComponente = true;
 
-  constructor(private _datos: DatosService) {
-    _datos.actualizarTabListMqtt(this.listaDeLabs1erPiso);
-  }
+  constructor(private _piso: PisosService) {}
 
   cambiarPiso(index: number) {
     this.pisoSeleccionado = index;
     switch (index) {
       case 0:
-        this._datos.obtenerPisoMqtt(1);
-        this._datos.actualizarTabListMqtt(this.listaDeLabs1erPiso);
+        this._piso.setPisoMqtt(1);
         break;
       case 1:
-        this._datos.obtenerPisoMqtt(2);
-        this._datos.actualizarTabListMqtt(this.listaDeLabs2doPiso);
+        this._piso.setPisoMqtt(2);
         break;
       case 2:
-        this._datos.obtenerPisoMqtt(3);
-        this._datos.actualizarTabListMqtt(this.listaDeLabs3erPiso);
+        this._piso.setPisoMqtt(3);
         break;
       case 3:
-        this._datos.obtenerPisoMqtt(4);
-        this._datos.actualizarTabListMqtt(this.listaDeLabsTodo);
+        this._piso.setPisoMqtt(4);
         break;
     }
 
