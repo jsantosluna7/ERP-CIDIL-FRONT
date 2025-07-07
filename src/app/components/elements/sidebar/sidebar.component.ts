@@ -17,6 +17,7 @@ import {
   faShop,
   faUser,
   faCalendar,
+  faCalendar,
   faFlask,
   faToolbox,
 } from '@fortawesome/free-solid-svg-icons';
@@ -46,9 +47,9 @@ export class SidebarComponent implements OnInit {
   iot = faMicrochip;
   faclok = faClock;
   carro = faCartShopping;
-  calendar = faCalendar;
-  laboratorio = faFlask;
+   laboratorio = faFlask;
   equipo = faToolbox;
+  calendar = faCalendar;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");

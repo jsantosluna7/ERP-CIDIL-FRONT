@@ -81,13 +81,13 @@
           <span class="text nav-text">Usuarios</span>
         </a>
       </li>
-            <li class="nav-link">
+            <li class="nav-link" *appCualRol="[1, 2]">
                 <a routerLink="/home/crear-laboratorio">
                     <fa-icon class="icon" [icon]="laboratorio"></fa-icon>
                     <span class="text nav-text">Crear Espacio</span>
                 </a>
             </li>
-            <li class="nav-link">
+            <li class="nav-link" *appCualRol="[1, 2]">
                 <a routerLink="/home/crear-equipo">
                     <fa-icon class="icon" [icon]="equipo"></fa-icon>
                     <span class="text nav-text">Crear Equipos</span>

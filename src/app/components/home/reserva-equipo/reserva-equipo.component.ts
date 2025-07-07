@@ -12,11 +12,12 @@ import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service
 import { SolicitudEquipoService } from '../../../services/reserva-equipo/reserva-equipo.service';
 import { ReservaEquipoNueva } from '../../../interfaces/reservaEquipoNueva.interface';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 
 @Component({
   selector: 'app-reserva-equipo',
-  imports: [CommonModule, FontAwesomeModule,ReactiveFormsModule, RouterLink, MatButtonModule],
+  imports: [CommonModule, FontAwesomeModule,ReactiveFormsModule, RouterLink, MatButtonModule,AppCualRolDirective],
   templateUrl: './reserva-equipo.component.html',
   styleUrl: './reserva-equipo.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
