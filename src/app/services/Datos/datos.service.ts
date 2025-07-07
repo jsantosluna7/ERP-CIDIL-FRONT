@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { number } from 'echarts/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -13,21 +14,6 @@ export class DatosService {
 
   private timerDataSubject = new BehaviorSubject<any[]>([]);
   timerData$ = this.timerDataSubject.asObservable();
-
-  // private labAnaliticaSubject = new BehaviorSubject<string>('1A');
-  // labAnalitica$ = this.labAnaliticaSubject.asObservable();
-
-
-  private tabListSubject = new BehaviorSubject<string[]>([]);
-  tabList$ = this.tabListSubject.asObservable();
-
-  actualizarTabList(tabList: string[]) {
-    this.tabListSubject.next(tabList);
-  }
-
-  // actualizarLabAnalitica(lab: string) {
-  //   this.labAnaliticaSubject.next(lab);
-  // }
 
   obtenerData(data: any[]) {
     this.jsonDataSubject.next(data);
@@ -49,4 +35,11 @@ export class DatosService {
     const mm = minutos.toString().padStart(2, '0');
     return `${hh}:${mm}`;
   }
+
+  // private labAnaliticaSubject = new BehaviorSubject<string>('1A');
+  // labAnalitica$ = this.labAnaliticaSubject.asObservable();
+
+  // actualizarLabAnalitica(lab: string) {
+  //   this.labAnaliticaSubject.next(lab);
+  // }
 }

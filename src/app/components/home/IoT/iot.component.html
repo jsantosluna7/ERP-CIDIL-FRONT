@@ -1,12 +1,8 @@
-<mat-tab-group mat-align-tabs="center" preserveContent>
+<mat-tab-group mat-align-tabs="center" preserveContent mat-stretch-tabs="false">
   <mat-tab label="Gráficos">
-    @if (loadedChartsTab) {
-    <app-mqtt-charts></app-mqtt-charts>
-    }@else {
     <ng-template matTabContent>
-        <app-mqtt-charts></app-mqtt-charts>
+      <app-mqtt-labs></app-mqtt-labs>
     </ng-template>
-    }
   </mat-tab>
 
   <mat-tab label="Tabla">

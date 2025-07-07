@@ -1,14 +1,8 @@
-<mat-tab-group
-  mat-align-tabs="center"
-  preserveContent
-  (selectedTabChange)="onTabChange($event)"
->
+<mat-tab-group mat-align-tabs="center" mat-stretch-tabs="false" preserveContent>
   <mat-tab label="Calendario">
-    <div class="calendar-container">
-      <div #horarioCalendar>
-        <full-calendar #hc [options]="opcionesCalendario"></full-calendar>
-      </div>
-    </div>
+    <ng-template matTabContent>
+      <app-calendar></app-calendar>
+    </ng-template>
   </mat-tab>
 
   <mat-tab label="Tabla">

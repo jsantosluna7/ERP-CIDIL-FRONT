@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardBodyComponent } from './dashboard-body/dashboard-body.component';
 import { DatosService } from '../../../services/Datos/datos.service';
+import { PisosService } from '../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,39 +34,31 @@ import { DatosService } from '../../../services/Datos/datos.service';
 })
 export class DashboardComponent {
   panelOpen = true;
-  listaDeLabs1erPiso: string[] = ['1A', '1B', '1C', '1D'];
-  listaDeLabs2doPiso: string[] = ['2A', '2B', '2C', '2D'];
-  listaDeLabs3erPiso: string[] = ['3A', '3B', '3C', '3D'];
-  listaDeLabsTodo: string[] = [];
+  pisoSeleccionado: number = 0;
+  mostrarComponente = true;
 
-  pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
-  tabList: string[] = this.listaDeLabs1erPiso;
-
-  constructor(private _datos: DatosService){
-    _datos.actualizarTabList(this.listaDeLabs1erPiso);
-  }
+  constructor(private _piso: PisosService) {}
 
   cambiarPiso(index: number) {
     this.pisoSeleccionado = index;
+
     switch (index) {
       case 0:
-        this._datos.actualizarTabList(this.listaDeLabs1erPiso)
-        this.tabList = this.listaDeLabs1erPiso;
+        this._piso.setPiso(1);
         break;
       case 1:
-        this._datos.actualizarTabList(this.listaDeLabs2doPiso)
-        this.tabList = this.listaDeLabs2doPiso;
+        this._piso.setPiso(2);
         break;
       case 2:
-        this._datos.actualizarTabList(this.listaDeLabs3erPiso)
-        this.tabList = this.listaDeLabs3erPiso;
+        this._piso.setPiso(3);
         break;
       case 3:
-        this._datos.actualizarTabList(this.listaDeLabsTodo)
-        this.tabList = this.listaDeLabsTodo;
+        this._piso.setPiso(4);
         break;
     }
-    // this._datos.actualizarLabAnalitica(this.tabList[0]);
+
+    this.mostrarComponente = false;
+    setTimeout(() => (this.mostrarComponente = true), 0);
   }
 
   componente = DashboardBodyComponent;

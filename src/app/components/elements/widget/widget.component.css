@@ -4,6 +4,22 @@
 
 }
 
+/* app-widget.component.scss */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 300px; /* Altura fija del widget */
+  resize: both;
+  overflow: hidden;
+}
+
+.widget-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+
 .container{
     position: relative;
     height: 100%;

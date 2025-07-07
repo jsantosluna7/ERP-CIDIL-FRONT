@@ -28,6 +28,10 @@ export class HorarioService {
     );
   }
 
+  getHorarioPisos(endpoint: string, piso: number, params?: any): Observable<any>{
+    return this.http.get(`${endpoint}/${piso}`, params);
+  }
+
   getHorarioCalendario(endpoint: string, params?: any): Observable<any> {
     return this.http.get(endpoint, params);
   }

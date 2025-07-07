@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
   FullCalendarComponent,
   FullCalendarModule,
@@ -10,11 +10,14 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { CalendarioService } from '../../../../../services/Api/Calendario/calendario.service';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DateDialogComponent } from './date-dialog/date-dialog.component';
 import { UtilitiesService } from '../../../../../services/Utilities/utilities.service';
+import { ServicioDashboardService } from '../../../../../services/Dashboard/servicio-dashboard.service';
+import { LaboratorioService } from '../../../../../services/Laboratorio/laboratorio.service';
+import { PisosService } from '../../../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-calendario',
@@ -22,20 +25,27 @@ import { UtilitiesService } from '../../../../../services/Utilities/utilities.se
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css',
 })
-export class CalendarioComponent {
-  @ViewChild('calendarHost', { static: true }) host!: ElementRef<HTMLDivElement>;
+export class CalendarioComponent implements OnDestroy {
+  @ViewChild('calendarHost', { static: true })
+  host!: ElementRef<HTMLDivElement>;
   @ViewChild('fc') calendarComponent!: FullCalendarComponent;
   opcionesCalendario: CalendarOptions;
 
-  endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO']}`;
+  private subs: Subscription[] = [];
+
+  endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_PISO']}`;
+  endpointReservas: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
   endpointEstado: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADO']}`;
 
   constructor(
     private _toastr: ToastrService,
     private _calendario: CalendarioService,
+    private _dashboard: ServicioDashboardService,
+    private _lab: LaboratorioService,
     public dialog: MatDialog,
-    private _utilities: UtilitiesService
+    private _utilities: UtilitiesService,
+    private _piso: PisosService
   ) {
     this.opcionesCalendario = {
       initialView: 'dayGridMonth',
@@ -50,55 +60,110 @@ export class CalendarioComponent {
   }
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
-    this._calendario
-      .getReservas(this.endpoint, {
-        params: {
-          start: info.startStr,
-          end: info.endStr,
-        },
-      })
-      .subscribe(
-        (data: any) => {
-          const eventosObservables = data.datos.map((e: any) => {
-            return forkJoin({
-              lab: this._calendario.getLaboratorio(
-                this.endpointLab,
-                e.idLaboratorio
-              ),
-              estado: this._calendario.getEstado(
-                this.endpointEstado,
-                e.idEstado
-              ),
-            }).pipe(
-              map(({ lab, estado }) => ({
-                id: e.id,
-                title: lab.codigoDeLab,
-                start: e.fechaInicio,
-                end: e.fechaFinal,
-                extendedProps: {
-                  estado: estado.estado1,
-                  motivo: e.motivo,
-                  horaInicio: this._utilities.formatearHora(e.horaInicio),
-                  horaFin: this._utilities.formatearHora(e.horaFinal),
-                },
-              }))
-            );
-          });
+    const sub = this._piso.piso$.subscribe({
+      next: (piso) => {
+        if (piso != 4) {
+          this._dashboard
+            .getReservaPiso(this.endpoint, piso, {
+              params: {
+                start: info.startStr,
+                end: info.endStr,
+              },
+            })
+            .subscribe(
+              (data: any) => {
+                const eventosObservables = data.map((e: any) => {
+                  return forkJoin({
+                    lab: this._lab.getLaboratorioPorId(e.idLaboratorio),
+                    estado: this._calendario.getEstado(
+                      this.endpointEstado,
+                      e.idEstado
+                    ),
+                  }).pipe(
+                    map(({ lab, estado }) => ({
+                      id: e.id,
+                      title: lab.codigoDeLab,
+                      start: e.fechaInicio,
+                      end: e.fechaFinal,
+                      extendedProps: {
+                        estado: estado.estado1,
+                        motivo: e.motivo,
+                        horaInicio: this._utilities.formatearHora(e.horaInicio),
+                        horaFin: this._utilities.formatearHora(e.horaFinal),
+                      },
+                    }))
+                  );
+                });
 
-          forkJoin(eventosObservables).subscribe(
-            (eventos) => {
-              console.log(eventos)
-              successCallback(eventos);
-            },
-            (error) => {
-              failureCallback(error);
-            }
-          );
-        },
-        (error) => {
-          failureCallback(error);
+                forkJoin(eventosObservables).subscribe(
+                  (eventos) => {
+                    console.log(eventos);
+                    successCallback(eventos);
+                  },
+                  (error) => {
+                    failureCallback(error);
+                  }
+                );
+              },
+              (error) => {
+                failureCallback(error);
+              }
+            );
+        } else {
+          this._calendario
+            .getReservas(this.endpointReservas, {
+              params: {
+                start: info.startStr,
+                end: info.endStr,
+              },
+            })
+            .subscribe(
+              (data: any) => {
+                const eventosObservables = data.datos.map((e: any) => {
+                  return forkJoin({
+                    lab: this._lab.getLaboratorioPorId(e.idLaboratorio),
+                    estado: this._calendario.getEstado(
+                      this.endpointEstado,
+                      e.idEstado
+                    ),
+                  }).pipe(
+                    map(({ lab, estado }) => ({
+                      id: e.id,
+                      title: lab.codigoDeLab,
+                      start: e.fechaInicio,
+                      end: e.fechaFinal,
+                      extendedProps: {
+                        estado: estado.estado1,
+                        motivo: e.motivo,
+                        horaInicio: this._utilities.formatearHora(e.horaInicio),
+                        horaFin: this._utilities.formatearHora(e.horaFinal),
+                      },
+                    }))
+                  );
+                });
+
+                forkJoin(eventosObservables).subscribe(
+                  (eventos) => {
+                    console.log(eventos);
+                    successCallback(eventos);
+                  },
+                  (error) => {
+                    failureCallback(error);
+                  }
+                );
+              },
+              (error) => {
+                failureCallback(error);
+              }
+            );
         }
-      );
+      },
+      error: (err) => {
+        this._toastr.error(err, 'Hubo un error');
+      },
+    });
+
+    this.subs.push(sub);
   }
 
   handleEventClick(info: any): void {
@@ -111,7 +176,7 @@ export class CalendarioComponent {
         inicio: this._utilities.formatearHorarioFecha(evento.startStr),
         fin: this._utilities.formatearHorarioFecha(evento.endStr),
         horaInicio: evento.extendedProps.horaInicio,
-        horaFin: evento.extendedProps.horaFin
+        horaFin: evento.extendedProps.horaFin,
       },
     });
   }
@@ -131,7 +196,7 @@ export class CalendarioComponent {
         inicio: this._utilities.formatearHorarioFecha(evt.startStr),
         fin: this._utilities.formatearHorarioFecha(evt.endStr),
         horaInicio: evt.extendedProps.horaInicio,
-        horaFin: evt.extendedProps.horaFin
+        horaFin: evt.extendedProps.horaFin,
       }));
 
       this.dialog.open(DateDialogComponent, {
@@ -144,5 +209,9 @@ export class CalendarioComponent {
     } else {
       this._toastr.info('No hay eventos en esta fecha.', 'Información');
     }
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach((s) => s.unsubscribe());
   }
 }
