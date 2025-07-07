@@ -1,78 +1,96 @@
-<div class="analitica-completa">
-  <div class="analitica-container">
-    <!-- TEMPERATURA -->
-    <ngx-gauge
-      [type]="gaugeType"
-      [value]="temp()"
-      append="°C"
-      [cap]="gaugeCap"
-      [thick]="gaugeThick"
-      [foregroundColor]="gaugeColorTemp"
-    >
-    </ngx-gauge>
+<div class="analitica-scroll">
+  <div class="analitica-completa">
+    <div class="analitica-container">
+      <!-- TEMPERATURA -->
+      <ngx-gauge
+        [type]="gaugeType"
+        [value]="temp()"
+        append="°C"
+        [cap]="gaugeCap"
+        [thick]="gaugeThick"
+        [foregroundColor]="gaugeColorTemp"
+      >
+      </ngx-gauge>
 
-    <!-- HUMEDAD -->
-    <ngx-gauge
-      [type]="gaugeType"
-      [value]="hum()"
-      append="%"
-      [cap]="gaugeCap"
-      [thick]="gaugeThick"
-      [foregroundColor]="gaugeColorHum"
-    >
-    </ngx-gauge>
+      <!-- HUMEDAD -->
+      <ngx-gauge
+        [type]="gaugeType"
+        [value]="hum()"
+        append="%"
+        [cap]="gaugeCap"
+        [thick]="gaugeThick"
+        [foregroundColor]="gaugeColorHum"
+      >
+      </ngx-gauge>
 
-    <!-- LUZ -->
-    <ngx-gauge
-      [type]="gaugeType"
-      [value]="luz()"
-      append="%"
-      [cap]="gaugeCap"
-      [thick]="gaugeThick"
-      [foregroundColor]="gaugeColorLuz"
-    >
-    </ngx-gauge>
+      <!-- LUZ -->
+      <ngx-gauge
+        [type]="gaugeType"
+        [value]="luz()"
+        append="%"
+        [cap]="gaugeCap"
+        [thick]="gaugeThick"
+        [foregroundColor]="gaugeColorLuz"
+      >
+      </ngx-gauge>
 
-    <!-- SONIDO -->
-    <ngx-gauge
-      [type]="gaugeType"
-      [value]="sonido()"
-      append="%"
-      [cap]="gaugeCap"
-      [thick]="gaugeThick"
-    >
-    </ngx-gauge>
-  </div>
-  <div class="analitica-btn">
-    <p>{{ lab }}</p>
-    <div class="botones">
-      <div class="boton">
-        @if (actuador()) {
-        <fa-icon
-          class="icon"
-          [icon]="faUnlock"
-          size="3x"
-          class="lock-open"
-        ></fa-icon>
-        <button mat-raised-button (click)="toggleActuador()" class="toggle-btn">Cerrar</button>
-        }@else {
-        <fa-icon
-          class="icon"
-          [icon]="faLock"
-          size="3x"
-          class="lock-close"
-        ></fa-icon>
-        <button mat-raised-button (click)="toggleActuador()" class="toggle-btn">Abrir</button>
-        }
-      </div>
+      <!-- SONIDO -->
+      <ngx-gauge
+        [type]="gaugeType"
+        [value]="sonido()"
+        append="%"
+        [cap]="gaugeCap"
+        [thick]="gaugeThick"
+      >
+      </ngx-gauge>
+    </div>
+    <div class="analitica-btn">
+      <p>{{ lab }}</p>
+      <div class="botones">
+        <div class="boton">
+          @if (actuador()) {
+          <fa-icon
+            class="icon"
+            [icon]="faUnlock"
+            size="3x"
+            class="lock-open"
+          ></fa-icon>
+          <button
+            mat-raised-button
+            (click)="toggleActuador()"
+            class="toggle-btn"
+          >
+            Cerrar
+          </button>
+          }@else {
+          <fa-icon
+            class="icon"
+            [icon]="faLock"
+            size="3x"
+            class="lock-close"
+          ></fa-icon>
+          <button
+            mat-raised-button
+            (click)="toggleActuador()"
+            class="toggle-btn"
+          >
+            Abrir
+          </button>
+          }
+        </div>
 
-      <div class="boton">
-        <fa-icon class="icon" [icon]="faRestart" size="3x"></fa-icon>
-        <button mat-raised-button (click)="toggleReiniciar()" class="toggle-btn">
-          Reiniciar
-        </button>
+        <div class="boton">
+          <fa-icon class="icon" [icon]="faRestart" size="3x"></fa-icon>
+          <button
+            mat-raised-button
+            (click)="toggleReiniciar()"
+            class="toggle-btn"
+          >
+            Reiniciar
+          </button>
+        </div>
       </div>
     </div>
   </div>
+  <hr />
 </div>
-<hr />

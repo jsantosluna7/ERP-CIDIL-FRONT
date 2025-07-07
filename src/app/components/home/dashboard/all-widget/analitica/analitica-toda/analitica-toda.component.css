@@ -1,9 +1,29 @@
+/* app-analitica.component.scss */
+:host {
+  display: block;
+  height: 100%;
+}
+
+.analitica-scroll {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .analitica-completa {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+
+/* .analitica-completa {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-}
+} */
 
 .analitica-btn {
     display: flex;

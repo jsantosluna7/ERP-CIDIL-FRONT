@@ -13,12 +13,14 @@
         : mostrarOpciones.set(true)
     "
   >
-    @if (data().label === 'IoT Analitica') {  }@else {
+    @if (data().label === 'IoT Analitica') { }@else {
     <mat-icon>settings</mat-icon>
     }
   </button>
-  <ng-container [ngComponentOutlet]="data().content"></ng-container>
 
+  <div class="widget-content">
+    <ng-container [ngComponentOutlet]="data().content"></ng-container>
+  </div>
   @if (mostrarOpciones()) {
   <app-widget-options
     [(mostrarOpciones)]="mostrarOpciones"
