@@ -2,7 +2,7 @@
     <form [formGroup]="solicitudesForm" class="row container w-50 h-auto border border rounded-5  p-3 form mt-5 ite">
         <h2>Reserva de Equipos</h2>
         <div class="example-button-row">
-            <a mat-button="elevated" routerLink="/home/solicitud-equipo">Ver Solicitudes</a>
+            <a mat-button="elevated" routerLink="/home/solicitud-equipo" *appCualRol="[1, 2]">Ver Solicitudes</a>
         </div>
         <hr>
 

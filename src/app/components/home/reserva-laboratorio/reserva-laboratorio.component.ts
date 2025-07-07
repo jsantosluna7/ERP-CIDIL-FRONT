@@ -8,10 +8,11 @@ import { ToastrService } from 'ngx-toastr';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 @Component({
   selector: 'app-reserva-laboratorio',
-  imports: [FontAwesomeModule, ReactiveFormsModule,MatButtonModule, RouterLink],
+  imports: [FontAwesomeModule, ReactiveFormsModule,MatButtonModule, RouterLink,AppCualRolDirective],
   templateUrl: './reserva-laboratorio.component.html',
   styleUrl: './reserva-laboratorio.component.css'
 })

@@ -36,6 +36,8 @@
             <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)">
               Añadir al carrito
             </button>
+            <button *appCualRol="[1, 2]" mat-button color="accent" (click)="abrirDialogoEditar(carta)">Editar</button>
+
                @if (carta.cantidad === 0) {
           <div class="text-danger small mt-1">
             Equipo en uso

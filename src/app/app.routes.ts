@@ -38,11 +38,11 @@ export const routes: Routes = [
 
                 ]
             },
-            { path: 'solicitud-laboratorio', loadComponent: () => import('./components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component').then(m => m.SolicitudReservaLaboratorioComponent) },
-            { path: 'solicitud-equipo', loadComponent: () => import('./components/home/solicitud-reserva-equipo/solicitud-reserva-equipo.component').then(m => m.SolicitudReservaEquipoComponent)},
+            { path: 'solicitud-laboratorio', loadComponent: () => import('./components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component').then(m => m.SolicitudReservaLaboratorioComponent) ,canActivate: [RoleGuard],data: { roles: [1, 2] }},
+            { path: 'solicitud-equipo', loadComponent: () => import('./components/home/solicitud-reserva-equipo/solicitud-reserva-equipo.component').then(m => m.SolicitudReservaEquipoComponent),canActivate: [RoleGuard],data: { roles: [1, 2] }},
             { path: 'iot', loadComponent: () => import('./components/home/IoT/iot.component').then(m => m.IotComponent) },
-            {path: 'crear-laboratorio', loadComponent: () => import('./components/home/crear-laboratorio/crear-laboratorio.component').then(m => m.CrearLaboratorioComponent)},
-            {path: 'crear-equipo', loadComponent: () => import('./components/home/crear-equipo/crear-equipo.component').then(m => m.CrearEquipoComponent)}
+            {path: 'crear-laboratorio', loadComponent: () => import('./components/home/crear-laboratorio/crear-laboratorio.component').then(m => m.CrearLaboratorioComponent),canActivate: [RoleGuard],data: { roles: [1, 2] }},
+            {path: 'crear-equipo', loadComponent: () => import('./components/home/crear-equipo/crear-equipo.component').then(m => m.CrearEquipoComponent),canActivate: [RoleGuard],data: { roles: [1, 2] }}
 
         ],
         canActivate: [AuthGuard]

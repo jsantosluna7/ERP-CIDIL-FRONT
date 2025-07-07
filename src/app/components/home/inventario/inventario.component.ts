@@ -23,6 +23,9 @@ import {  forkJoin, map } from 'rxjs';
 
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActualizarcartaComponent } from './actualizarcarta/actualizarcarta.component';
+import { MatDialog } from '@angular/material/dialog';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 @Component({
   selector: 'app-inventario',
@@ -36,7 +39,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatIconModule,
     MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule, AppCualRolDirective
   ],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.css',
@@ -63,7 +66,8 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     private inventarioService: InventarioService,
     private carritoService: CarritoService,
     private toastr: ToastrService,
-    private laboratorioService: LaboratorioService
+    private laboratorioService: LaboratorioService,
+    private dialog: MatDialog
   ) {}
 
   dataSource = new MatTableDataSource<any>([]);
@@ -174,7 +178,7 @@ cargarCartas(): void {
 
       let datosFiltrados = d.datos.filter((data: any) => data.disponible);
 
-      // ✅ Aplica filtro si hay texto escrito
+      // Aplica filtro si hay texto escrito
       if (this.textoFiltro) {
         const filtro = this.textoFiltro.toLowerCase();
 
@@ -196,7 +200,7 @@ cargarCartas(): void {
         });
       }
 
-      // ✅ Mapear los datos con información del laboratorio
+      //  Mapear los datos con información del laboratorio
       this.cartasConLaboratorio = datosFiltrados.map((data: any) => {
         const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
         return {
@@ -209,16 +213,16 @@ cargarCartas(): void {
         };
       });
 
-      // ✅ Actualiza el total desde el backend
+      //  Actualiza el total desde el backend
       this.totalItems = d.paginacion?.totalInventario ?? 0;
 
-      // ✅ Sincroniza visualmente el paginador
+      //  Sincroniza visualmente el paginador
       if (this.paginator) {
         this.paginator.pageIndex = this.paginaActual - 1;
       }
 
       this.loading = false;
-      console.log('🔁 Se actualizaron las cartas:', this.cartasConLaboratorio.map(c => c.id));
+      console.log('Se actualizaron las cartas:', this.cartasConLaboratorio.map(c => c.id));
     },
     error: () => {
       this.loading = false;
@@ -288,6 +292,38 @@ onPageChange(event: PageEvent): void {
   
 
 }
+
+abrirDialogoEditar(carta: any): void {
+  this.inventarioService.obtenerCartaPorId(carta.id).subscribe({
+    next: detalleCompleto => {
+      const dialogRef = this.dialog.open(ActualizarcartaComponent, {
+        width: '400px',
+        data: detalleCompleto
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          // Actualizar la lista local con el equipo modificado
+          const index = this.cartasConLaboratorio.findIndex(c => c.id === result.id);
+          if (index !== -1) {
+            this.cartasConLaboratorio[index] = result;
+            this.toastr.success('Carta actualizada correctamente', '');
+          }
+        }
+      });
+    },
+    error: err => {
+      console.error('Error al obtener detalles de la carta:', err);
+      this.toastr.error('No se pudo cargar el detalle del equipo para editar', 'Error');
+    }
+  });
+}
+
+
+
+
+
+
 
 
 }
