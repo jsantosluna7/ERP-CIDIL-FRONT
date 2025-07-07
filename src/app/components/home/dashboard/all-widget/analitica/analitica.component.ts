@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { AnaliticaTodaComponent } from './analitica-toda/analitica-toda.component';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -17,6 +24,7 @@ import {
   faVolumeHigh,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { PisosService } from '../../../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-analitica',
@@ -37,7 +45,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   templateUrl: './analitica.component.html',
   styleUrl: './analitica.component.css',
   providers: [],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnaliticaComponent implements OnInit {
   fontTemp = faTemperature3;
@@ -46,87 +54,42 @@ export class AnaliticaComponent implements OnInit {
   fontSonido = faVolumeHigh;
 
   tabList: string[] = [];
-  seleccionado: string = this.tabList[0];
 
-  constructor(private _datos: DatosService) {
-  }
+  pisoSeleccionado = 1;
+
+  // seleccionado: string = this.tabList[0];
+
+  constructor(private _piso: PisosService) {}
 
   ngOnInit(): void {
-    this._datos.tabList$.subscribe({
-      next: (e) => {
-        this.tabList = e;
-      },
-      error: (err) => {
-        console.error(err);
+    this._piso.tabList$.subscribe({
+      next: (labs) => {
+        this.tabList = labs;
       },
     });
 
-    console.log(this.tabList);
+    this._piso.piso$.subscribe((p) => {
+      this.pisoSeleccionado = p;
+    });
   }
 
-  tabSeleccionado() {
-    return this.seleccionado;
-  }
+  // tabSeleccionado() {
+  //   return this.seleccionado;
+  // }
 
-  seleccionarTab(tab: string) {
-    this.seleccionado = tab;
-    // this._datos.actualizarLabAnalitica(tab);
-  }
-
+  // seleccionarTab(tab: string) {
+  //   this.seleccionado = tab;
+  //   // this._datos.actualizarLabAnalitica(tab);
+  // }
 
   agregarBoton() {
-    const nombre = prompt('Escribe el nombre del nuevo botón');
+    const nombre = prompt('Escribe el nombre del nuevo laboratorio');
     if (!nombre) return;
 
-    // switch (this.pisoSeleccionado) {
-    //   case 0:
-    //     this.listaDeLabs1erPiso.push(nombre);
-    //     this.tabList = [...this.listaDeLabs1erPiso];
-    //     break;
-    //   case 1:
-    //     this.listaDeLabs2doPiso.push(nombre);
-    //     this.tabList = [...this.listaDeLabs2doPiso];
-    //     break;
-    //   case 2:
-    //     this.listaDeLabs3erPiso.push(nombre);
-    //     this.tabList = [...this.listaDeLabs3erPiso];
-    //     break;
-    //   case 3:
-    //     this.listaDeLabsTodo.push(nombre);
-    //     this.tabList = [...this.listaDeLabsTodo];
-    //     break;
-    // }
+    this._piso.agregarLaboratorio(nombre, this.pisoSeleccionado);
   }
 
   eliminarBoton(tab: string) {
-    // switch (this.pisoSeleccionado) {
-    //   case 0:
-    //     this.listaDeLabs1erPiso = this.listaDeLabs1erPiso.filter(
-    //       (t) => t !== tab
-    //     );
-    //     this.tabList = [...this.listaDeLabs1erPiso];
-    //     break;
-    //   case 1:
-    //     this.listaDeLabs2doPiso = this.listaDeLabs2doPiso.filter(
-    //       (t) => t !== tab
-    //     );
-    //     this.tabList = [...this.listaDeLabs2doPiso];
-    //     break;
-    //   case 2:
-    //     this.listaDeLabs3erPiso = this.listaDeLabs3erPiso.filter(
-    //       (t) => t !== tab
-    //     );
-    //     this.tabList = [...this.listaDeLabs3erPiso];
-    //     break;
-    //   case 3:
-    //     this.listaDeLabsTodo = this.listaDeLabsTodo.filter((t) => t !== tab);
-    //     this.tabList = [...this.listaDeLabsTodo];
-    //     break;
-    // }
-
-    // Si el eliminado estaba seleccionado, elige otro
-    if (this.seleccionado === tab) {
-      this.seleccionado = this.tabList[0];
-    }
+    this._piso.eliminarLaboratorio(tab, this.pisoSeleccionado);
   }
 }

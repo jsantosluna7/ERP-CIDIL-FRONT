@@ -40,7 +40,7 @@ export class SolicitudReservaLaboratorioComponent {
   idUsuarioAprobador: number = 0;
 
   ngOnInit(): void {
-    this._datos.obtenerPiso$.subscribe({
+    this._datos.piso$.subscribe({
       next: (pisoCorres) => {
         if (pisoCorres != 4) {
           this._usuarios.user$.subscribe((user) => {

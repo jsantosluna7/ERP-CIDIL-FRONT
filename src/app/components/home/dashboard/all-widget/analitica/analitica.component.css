@@ -9,3 +9,9 @@
 .componente{
     overflow: auto;
 }
+
+.add-btn{
+    border: none;
+    background-color: transparent;
+    margin-left: 15rem;
+}

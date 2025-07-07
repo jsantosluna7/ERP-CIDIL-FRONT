@@ -25,11 +25,11 @@ export class DatosService {
     this.tabListMqttSubject.next(tabListMqtt);
   }
 
-  private obtenerPisoSubject = new BehaviorSubject<number>(1);
-  obtenerPiso$ = this.obtenerPisoSubject.asObservable();
+  private pisoSubject = new BehaviorSubject<number>(1);
+  piso$ = this.pisoSubject.asObservable();
 
-  obtenerPiso(piso: number) {
-    this.obtenerPisoSubject.next(piso);
+  piso(piso: number) {
+    this.pisoSubject.next(piso);
   }
 
   private obtenerPisoHorarioSubject = new BehaviorSubject<number>(1);

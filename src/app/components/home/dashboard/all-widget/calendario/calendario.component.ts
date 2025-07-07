@@ -58,7 +58,7 @@ export class CalendarioComponent {
   }
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
-    this._datos.obtenerPiso$.subscribe({
+    this._datos.piso$.subscribe({
       next: (piso) => {
         if (piso != 4) {
           this._dashboard
