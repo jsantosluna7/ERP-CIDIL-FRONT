@@ -76,3 +76,8 @@ fa-icon {
 .toggle-btn{
     color: black !important;
 }
+
+.delete-btn{
+    align-self: center;
+    margin-left: 1rem;
+}

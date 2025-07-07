@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
-import { MqttTableComponent } from '../mqtt-table/mqtt-table.component';
 import { CommonModule } from '@angular/common';
-import { FullCalendarModule } from '@fullcalendar/angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ToastrService } from 'ngx-toastr';
 import { DatosService } from '../../../../services/Datos/datos.service';
 import { MqttChartsComponent } from '../mqtt-charts/mqtt-charts.component';
 

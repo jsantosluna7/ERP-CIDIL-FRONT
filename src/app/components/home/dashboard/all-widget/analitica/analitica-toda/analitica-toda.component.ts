@@ -6,18 +6,23 @@ import { UiSwitchModule } from 'ngx-ui-switch';
 import { ServicioMqttService } from '../../../../../../services/loT/servicio-mqtt.service';
 import { DatosService } from '../../../../../../services/Datos/datos.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faLock, faLockOpen, faRepeat } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLock,
+  faLockOpen,
+  faRepeat,
+} from '@fortawesome/free-solid-svg-icons';
 import { MatButtonModule } from '@angular/material/button';
+import { PisosService } from '../../../../../../services/Pisos/pisos.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-analitica-toda',
-  imports: [NgxGaugeModule, UiSwitchModule, FontAwesomeModule, MatButtonModule],
+  imports: [NgxGaugeModule, UiSwitchModule, FontAwesomeModule, MatButtonModule, MatIconModule],
   templateUrl: './analitica-toda.component.html',
   styleUrl: './analitica-toda.component.css',
   providers: [ServicioMqttService],
 })
 export class AnaliticaTodaComponent implements OnInit, OnDestroy {
-
   faLock = faLock;
   faUnlock = faLockOpen;
   faRestart = faRepeat;
@@ -32,6 +37,7 @@ export class AnaliticaTodaComponent implements OnInit, OnDestroy {
   gaugeColorLuz: string = '#FFD94A';
 
   @Input() laboratorio: string = '1A';
+  @Input() piso: number = 0;
 
   temp: any = signal('---');
   hum: any = signal('---');
@@ -57,7 +63,8 @@ export class AnaliticaTodaComponent implements OnInit, OnDestroy {
   constructor(
     private _mqttService: ServicioMqttService,
     private _datos: DatosService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
+    private _piso: PisosService
   ) {}
 
   ngOnInit() {
@@ -166,5 +173,9 @@ export class AnaliticaTodaComponent implements OnInit, OnDestroy {
       ? mensajeActivadoReiniar
       : mensajeDesactivarReiniar;
     this._mqttService.toggle(this.publicar, estado);
+  }
+
+  eliminarBoton() {
+    this._piso.eliminarLaboratorio(this.laboratorio, this.piso);
   }
 }

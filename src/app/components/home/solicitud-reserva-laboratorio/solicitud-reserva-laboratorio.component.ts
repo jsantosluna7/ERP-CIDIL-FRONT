@@ -12,6 +12,7 @@ import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service
 import { DatosService } from '../../../services/Datos/datos.service';
 import { DashboardService } from '../../../services/Dashboard/dashboard.service';
 import { ServicioDashboardService } from '../../../services/Dashboard/servicio-dashboard.service';
+import { PisosService } from '../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
@@ -21,7 +22,7 @@ import { ServicioDashboardService } from '../../../services/Dashboard/servicio-d
 })
 export class SolicitudReservaLaboratorioComponent {
   solicitudes: Solicitud[] = [];
-  @Input() piso?: number = 1;
+  @Input() mostrarPiso?: boolean = false;
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUD_RESERVA_ESPACIO_PISO']}`;
 
@@ -33,95 +34,133 @@ export class SolicitudReservaLaboratorioComponent {
     private _usuarios: UsuariosService,
     private _datos: DatosService,
     private _dashboard: ServicioDashboardService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
+    private _piso: PisosService
   ) {}
 
   usuarioLogueado: any;
   idUsuarioAprobador: number = 0;
 
   ngOnInit(): void {
-    this._datos.piso$.subscribe({
-      next: (pisoCorres) => {
-        if (pisoCorres != 4) {
-          this._usuarios.user$.subscribe((user) => {
-            this.usuarioLogueado = user;
+    if (this.mostrarPiso) {
+      this._piso.piso$.subscribe({
+        next: (pisoCorres) => {
+          if (pisoCorres != 4) {
+            this._usuarios.user$.subscribe((user) => {
+              this.usuarioLogueado = user;
+            });
+
+            forkJoin({
+              solicitudesResp: this._dashboard.getSolicitudReservaPiso(
+                this.endpoint,
+                pisoCorres
+              ), // <- este devuelve un objeto con .datos
+              usuariosResp: this.usuarioService.obtenerUsuarios(),
+              laboratorios: this.laboratorioService.getLaboratorios(),
+            }).subscribe({
+              next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
+                const solicitudes = solicitudesResp; // ✅ aquí accedes a las solicitudes reales
+                const usuarios = usuariosResp.datos;
+
+                this.solicitudes = solicitudes.map((sol: Solicitud) => {
+                  const usuario = usuarios.find((u) => u.id === sol.idUsuario);
+                  const lab = laboratorios.find(
+                    (l) => l.id === sol.idLaboratorio
+                  );
+
+                  return {
+                    ...sol,
+                    nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+                    nombreLaboratorio: lab?.nombre || 'Desconocido',
+                    fechaInicio: sol.fechaInicio, // ✅ importante conservar
+                    fechaFinal: sol.fechaFinal, // ✅ importante conservar
+                  };
+                });
+              },
+              error: (err) => {
+                console.error('Error al cargar datos', err);
+                this.toastr.error('Error al cargar solicitudes', 'Error');
+              },
+            });
+          } else {
+            this._usuarios.user$.subscribe((user) => {
+              this.usuarioLogueado = user;
+            });
+
+            forkJoin({
+              solicitudesResp: this.reservaLaboratorioService.getResevas(), // <- este devuelve un objeto con .datos
+              usuariosResp: this.usuarioService.obtenerUsuarios(),
+              laboratorios: this.laboratorioService.getLaboratorios(),
+            }).subscribe({
+              next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
+                const solicitudes = solicitudesResp.datos; // ✅ aquí accedes a las solicitudes reales
+                const usuarios = usuariosResp.datos;
+
+                this.solicitudes = solicitudes.map((sol: Solicitud) => {
+                  const usuario = usuarios.find((u) => u.id === sol.idUsuario);
+                  const lab = laboratorios.find(
+                    (l) => l.id === sol.idLaboratorio
+                  );
+
+                  return {
+                    ...sol,
+                    nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+                    nombreLaboratorio: lab?.nombre || 'Desconocido',
+                    fechaInicio: sol.fechaInicio, // ✅ importante conservar
+                    fechaFinal: sol.fechaFinal, // ✅ importante conservar
+                  };
+                });
+              },
+              error: (err) => {
+                console.error('Error al cargar datos', err);
+                this.toastr.error('Error al cargar solicitudes', 'Error');
+              },
+            });
+          }
+        },
+        error: (err) => {
+          this._toastr.error(
+            'Error al obtener las solicitudes del piso correspondiente',
+            'Hubo un error'
+          );
+        },
+      });
+    } else {
+      this._usuarios.user$.subscribe((user) => {
+        this.usuarioLogueado = user;
+      });
+
+      forkJoin({
+        solicitudesResp: this.reservaLaboratorioService.getResevas(),
+        usuariosResp: this.usuarioService.obtenerUsuarios(),
+        laboratorios: this.laboratorioService.getLaboratorios(),
+      }).subscribe({
+        next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
+          const solicitudes = solicitudesResp.datos;
+          const usuarios = usuariosResp.datos;
+
+          this.solicitudes = solicitudes.map((sol: Solicitud) => {
+            const usuario = usuarios.find((u) => u.id === sol.idUsuario);
+            const lab = laboratorios.find((l) => l.id === sol.idLaboratorio);
+
+            return {
+              ...sol,
+              nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+              nombreLaboratorio: lab?.nombre || 'Desconocido',
+              fechaInicio: sol.fechaInicio,
+              fechaFinal: sol.fechaFinal,
+            };
           });
-
-          forkJoin({
-            solicitudesResp: this._dashboard.getSolicitudReservaPiso(
-              this.endpoint,
-              pisoCorres
-            ), // <- este devuelve un objeto con .datos
-            usuariosResp: this.usuarioService.obtenerUsuarios(),
-            laboratorios: this.laboratorioService.getLaboratorios(),
-          }).subscribe({
-            next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-              const solicitudes = solicitudesResp; // ✅ aquí accedes a las solicitudes reales
-              const usuarios = usuariosResp.datos;
-
-              this.solicitudes = solicitudes.map((sol: Solicitud) => {
-                const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-                const lab = laboratorios.find(
-                  (l) => l.id === sol.idLaboratorio
-                );
-
-                return {
-                  ...sol,
-                  nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
-                  nombreLaboratorio: lab?.nombre || 'Desconocido',
-                  fechaInicio: sol.fechaInicio, // ✅ importante conservar
-                  fechaFinal: sol.fechaFinal, // ✅ importante conservar
-                };
-              });
-            },
-            error: (err) => {
-              console.error('Error al cargar datos', err);
-              this.toastr.error('Error al cargar solicitudes', 'Error');
-            },
-          });
-        } else {
-          this._usuarios.user$.subscribe((user) => {
-            this.usuarioLogueado = user;
-          });
-
-          forkJoin({
-            solicitudesResp: this.reservaLaboratorioService.getResevas(), // <- este devuelve un objeto con .datos
-            usuariosResp: this.usuarioService.obtenerUsuarios(),
-            laboratorios: this.laboratorioService.getLaboratorios(),
-          }).subscribe({
-            next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-              const solicitudes = solicitudesResp.datos; // ✅ aquí accedes a las solicitudes reales
-              const usuarios = usuariosResp.datos;
-
-              this.solicitudes = solicitudes.map((sol: Solicitud) => {
-                const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-                const lab = laboratorios.find(
-                  (l) => l.id === sol.idLaboratorio
-                );
-
-                return {
-                  ...sol,
-                  nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
-                  nombreLaboratorio: lab?.nombre || 'Desconocido',
-                  fechaInicio: sol.fechaInicio, // ✅ importante conservar
-                  fechaFinal: sol.fechaFinal, // ✅ importante conservar
-                };
-              });
-            },
-            error: (err) => {
-              console.error('Error al cargar datos', err);
-              this.toastr.error('Error al cargar solicitudes', 'Error');
-            },
-          });
-        }
-      },
-      error: (err) => {
-        this._toastr.error(
-          'Error al obtener las solicitudes del piso correspondiente',
-          'Hubo un error'
-        );
-      },
-    });
+        },
+        error: (err) => {
+          console.error('Error al cargar datos', err);
+          this.toastr.warning(
+            'Error al cargar solicitudes o no existen solicitudes',
+            'Error'
+          );
+        },
+      });
+    }
   }
 
   aprobar(solicitud: Solicitud) {

@@ -39,6 +39,9 @@ export class PisosService {
   private pisoSubject = new BehaviorSubject<number>(1);
   piso$ = this.pisoSubject.asObservable();
 
+  private pisoHorarioSubject = new BehaviorSubject<number>(1);
+  pisoHorario$ = this.pisoHorarioSubject.asObservable();
+  
   private tabListSubject = new BehaviorSubject<string[]>([]);
   tabList$ = this.tabListSubject.asObservable();
 
@@ -59,6 +62,10 @@ export class PisosService {
 
   setPiso(piso: number) {
     this.pisoSubject.next(piso);
+  }
+
+  setPisoHorario(piso: number) {
+    this.pisoHorarioSubject.next(piso);
   }
 
   agregarLaboratorio(nombre: string, piso: number) {

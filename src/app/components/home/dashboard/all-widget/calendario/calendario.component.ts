@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
   FullCalendarComponent,
   FullCalendarModule,
@@ -10,14 +10,14 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { CalendarioService } from '../../../../../services/Api/Calendario/calendario.service';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DateDialogComponent } from './date-dialog/date-dialog.component';
 import { UtilitiesService } from '../../../../../services/Utilities/utilities.service';
 import { ServicioDashboardService } from '../../../../../services/Dashboard/servicio-dashboard.service';
 import { LaboratorioService } from '../../../../../services/Laboratorio/laboratorio.service';
-import { DatosService } from '../../../../../services/Datos/datos.service';
+import { PisosService } from '../../../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-calendario',
@@ -25,11 +25,13 @@ import { DatosService } from '../../../../../services/Datos/datos.service';
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css',
 })
-export class CalendarioComponent {
+export class CalendarioComponent implements OnDestroy {
   @ViewChild('calendarHost', { static: true })
   host!: ElementRef<HTMLDivElement>;
   @ViewChild('fc') calendarComponent!: FullCalendarComponent;
   opcionesCalendario: CalendarOptions;
+
+  private subs: Subscription[] = [];
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_PISO']}`;
   endpointReservas: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO']}`;
@@ -43,7 +45,7 @@ export class CalendarioComponent {
     private _lab: LaboratorioService,
     public dialog: MatDialog,
     private _utilities: UtilitiesService,
-    private _datos: DatosService
+    private _piso: PisosService
   ) {
     this.opcionesCalendario = {
       initialView: 'dayGridMonth',
@@ -58,7 +60,7 @@ export class CalendarioComponent {
   }
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
-    this._datos.piso$.subscribe({
+    const sub = this._piso.piso$.subscribe({
       next: (piso) => {
         if (piso != 4) {
           this._dashboard
@@ -108,7 +110,8 @@ export class CalendarioComponent {
               }
             );
         } else {
-          this._calendario.getReservas(this.endpointReservas, {
+          this._calendario
+            .getReservas(this.endpointReservas, {
               params: {
                 start: info.startStr,
                 end: info.endStr,
@@ -159,6 +162,8 @@ export class CalendarioComponent {
         this._toastr.error(err, 'Hubo un error');
       },
     });
+
+    this.subs.push(sub);
   }
 
   handleEventClick(info: any): void {
@@ -204,5 +209,9 @@ export class CalendarioComponent {
     } else {
       this._toastr.info('No hay eventos en esta fecha.', 'Información');
     }
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach((s) => s.unsubscribe());
   }
 }

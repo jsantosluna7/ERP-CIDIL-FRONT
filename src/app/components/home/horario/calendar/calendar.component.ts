@@ -19,8 +19,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import esLocale from '@fullcalendar/core/locales/es';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
-import { DatosService } from '../../../../services/Datos/datos.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PisosService } from '../../../../services/Pisos/pisos.service';
 
 @Component({
   selector: 'app-calendar',
@@ -57,7 +57,7 @@ export class CalendarComponent {
     private _lab: LaboratorioService,
     public dialog: MatDialog,
     private _utilities: UtilitiesService,
-    private _datos: DatosService
+    private _piso: PisosService
   ) {
     this.opcionesCalendario = {
       initialView: 'dayGridMonth',
@@ -74,7 +74,7 @@ export class CalendarComponent {
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
     this.loading = true; // Comienza el loading
-    this._datos.obtenerPisoHorario$.subscribe({
+    this._piso.pisoHorario$.subscribe({
       next: (pisos) => {
         if (pisos != 4) {
           this._horario
@@ -298,16 +298,16 @@ export class CalendarComponent {
     this.pisoSeleccionado = index;
     switch (index) {
       case 0:
-        this._datos.obtenerPisoHorario(1);
+        this._piso.setPisoHorario(1);
         break;
       case 1:
-        this._datos.obtenerPisoHorario(2);
+        this._piso.setPisoHorario(2);
         break;
       case 2:
-        this._datos.obtenerPisoHorario(3);
+        this._piso.setPisoHorario(3);
         break;
       case 3:
-        this._datos.obtenerPisoHorario(4);
+        this._piso.setPisoHorario(4);
         break;
     }
 

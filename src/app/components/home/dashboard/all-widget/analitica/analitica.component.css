@@ -1,4 +1,4 @@
-.iconos{
+.iconos {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -6,11 +6,27 @@
     gap: 10.3rem;
 }
 
-.componente{
+.temp {
+    color: #CC3333;
+}
+
+.hum {
+    color: #1825AA;
+}
+
+.luz {
+    color: #FFD94A;
+}
+
+.sonido {
+    color: #009688;
+}
+
+.componente {
     overflow: auto;
 }
 
-.add-btn{
+.add-btn {
     border: none;
     background-color: transparent;
     margin-left: 15rem;

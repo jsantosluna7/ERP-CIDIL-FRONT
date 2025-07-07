@@ -88,8 +88,4 @@ export class AnaliticaComponent implements OnInit {
 
     this._piso.agregarLaboratorio(nombre, this.pisoSeleccionado);
   }
-
-  eliminarBoton(tab: string) {
-    this._piso.eliminarLaboratorio(tab, this.pisoSeleccionado);
-  }
 }
