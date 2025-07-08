@@ -66,7 +66,6 @@ export class RegistroComponent implements OnInit {
         this._toastr.success(`Bienvenido, ${e.nombreUsuario} ${e.apellidoUsuario}`, 'Registro Éxitoso');
         this._router.navigate(['home']);
       },error: (e) => {
-        console.log(e)
         this._toastr.error(e.error.error, 'Hubo un error');
       }
     })
@@ -98,7 +97,6 @@ export class RegistroComponent implements OnInit {
   }
 
   login() {
-    console.log(this.registroForm.value);
   }
 
   openPopup(event: Event) {

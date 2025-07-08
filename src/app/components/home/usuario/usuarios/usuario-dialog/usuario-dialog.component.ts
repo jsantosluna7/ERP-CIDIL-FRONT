@@ -64,7 +64,6 @@ export class UsuarioDialogComponent implements OnInit {
         fechaCreacion: this.usuario.fechaCreacion, // se mantiene
         fechaUltimaModificacion: new Date().toISOString() // se actualiza
       };
-        console.log('Payload actualizado:', datosActualizados);
       this.usuarioService.actualizarUsuario(this.usuario.id, datosActualizados).subscribe({
         next: () => {
           this.toastr.success('Usuario actualizado correctamente');

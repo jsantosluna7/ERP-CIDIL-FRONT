@@ -51,7 +51,6 @@ export class UsuariosComponent implements OnInit {
       this.dataSource = new MatTableDataSource(data.datos);
       this.dataSource.paginator = this.paginator!;
       this.dataSource.sort = this.sort!;
-      console.log(data)
 
        this.dataSource.filterPredicate = (usuario, filter: string) => {
       const dataStr = (

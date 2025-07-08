@@ -97,7 +97,6 @@ export class ConfiguracionComponent {
         fechaCreacion: this.usuario.fechaCreacion, // se mantiene
         fechaUltimaModificacion: new Date().toISOString(), // se actualiza
       };
-      console.log('Payload actualizado:', datosActualizados);
       this.usuarioService
         .actualizarUsuario(this.usuario.id, datosActualizados)
         .subscribe({

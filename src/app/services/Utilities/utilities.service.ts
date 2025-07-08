@@ -35,7 +35,6 @@ export class UtilitiesService {
       const hora24 = this._datePipe.transform(dateObj, 'HH:mm:ss');
       return hora24;
     } catch (error: any) {
-      console.log(error);
       this._toastr.error(
         'No se pudo editar la hora, debe ser 00:00 AM/PM',
         'Error'

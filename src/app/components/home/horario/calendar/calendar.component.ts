@@ -86,7 +86,6 @@ export class CalendarComponent {
             })
             .subscribe({
               next: (data: any) => {
-                console.log(data);
 
                 const observables = data
                   .map((e: any) => {
@@ -169,7 +168,6 @@ export class CalendarComponent {
             })
             .subscribe({
               next: (data: any) => {
-                console.log(data);
 
                 const observables = data
                   .map((e: any) => {
@@ -279,8 +277,6 @@ export class CalendarComponent {
         fechaInicio: evt.extendedProps.fechaInicio,
         fechaFinal: evt.extendedProps.fechaFinal,
       }));
-
-      console.log(seleccionados);
 
       // Abrir el diálogo con los detalles de los eventos
       this.dialog.open(DateHorarioDialogComponent, {

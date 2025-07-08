@@ -84,7 +84,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
-      console.log(d);
 
       const all = d.datos;
       const datos = all
@@ -104,7 +103,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       this.cartasConLaboratorio = datos;
       this.totalItems = d.total;
       this.loading = false;
-      console.log(this.totalItems)
 
       /*this.dataSource = new MatTableDataSource(this.cartasConLaboratorio);
       this.dataSource.paginator = this.paginator;
@@ -135,7 +133,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
-      console.log('Respuesta del backend:', d);
 
       const datosFiltrados = d.datos
         .filter((data: any) => data.disponible)
@@ -159,8 +156,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       if (this.paginator) {
         this.paginator.pageIndex = this.paginaActual - 1;
       }
-
-      console.log('Se actualizaron las cartas:', this.cartasConLaboratorio.map(c => c.id));
     },
     error: () => {
       this.loading = false;
@@ -174,7 +169,6 @@ cargarCartas(): void {
 
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
-      console.log('Respuesta del backend:', d);
 
       let datosFiltrados = d.datos.filter((data: any) => data.disponible);
 
@@ -222,7 +216,6 @@ cargarCartas(): void {
       }
 
       this.loading = false;
-      console.log('Se actualizaron las cartas:', this.cartasConLaboratorio.map(c => c.id));
     },
     error: () => {
       this.loading = false;
@@ -286,8 +279,7 @@ applyFilter(event: Event): void {
 onPageChange(event: PageEvent): void {
   this.loading = true;
   this.pageSize = event.pageSize;
-  this.paginaActual = event.pageIndex + 1; 
-  console.log('Cambio de página:', event.pageIndex + 1);
+  this.paginaActual = event.pageIndex + 1;
   this.cargarCartas();
   
 

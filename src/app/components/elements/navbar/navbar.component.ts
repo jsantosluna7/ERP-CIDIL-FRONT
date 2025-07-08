@@ -32,7 +32,6 @@ export class NavbarComponent {
         this.usuarioLogueado = usuario;
       }
     });
-    console.log(this.usuarioLogueado);
   }
 
   openDialog(): void {
@@ -42,7 +41,6 @@ export class NavbarComponent {
     });
 
     dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
-      console.log(`Dialog result: ${result}`);
     });
   }
 

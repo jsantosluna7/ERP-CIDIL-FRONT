@@ -24,7 +24,6 @@ getResevas(): Observable<{datos: Solicitud[]}> {
 }
 
 updateEstado( body: any) {
-    console.log('Llamando updateEstado con id:', ' y body:', body);
   return this.http.post(`${this.apiUrlP}`, body);
   
 }

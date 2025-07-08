@@ -69,7 +69,6 @@ export class AnaliticaTodaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const topico = `${this.path}${this.laboratorio}${this.observar}`;
-    console.log(topico);
 
     try {
       this._mqttService.observarTopico(topico).subscribe({

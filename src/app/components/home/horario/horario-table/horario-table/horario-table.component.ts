@@ -147,7 +147,6 @@ export class HorarioTableComponent {
                     .pipe(take(1))
                     .subscribe({
                       next: (todosLosHorarios) => {
-                        console.log(todosLosHorarios);
                         this._horario
                           .postHorario(this.endpoint, todosLosHorarios)
                           .subscribe({
@@ -168,7 +167,6 @@ export class HorarioTableComponent {
                           });
                       },
                       error: (err) => {
-                        console.log(err);
                         this._toastr.error(
                           'Error al obtener IDs de laboratorios'
                         );
@@ -279,7 +277,6 @@ export class HorarioTableComponent {
           this._horario.deleteHorarioAuto(this.endpointElimnarAuto).subscribe({
             error: (err) => {
               this.cargarTabla();
-              console.log(err);
               this._toastr.error(err.error, 'Hubo un error');
             },
           });
@@ -345,7 +342,6 @@ export class HorarioTableComponent {
   }
 
   abrirErrores(todosErrores: any[]) {
-    // console.log(todosErrores);
     // this._router.navigate(['/home/horario/errores'], {
     //   state: { error: todosErrores },
     // });

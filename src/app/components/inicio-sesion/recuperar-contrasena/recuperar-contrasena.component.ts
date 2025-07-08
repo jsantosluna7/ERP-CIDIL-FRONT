@@ -36,7 +36,6 @@ export class RecuperarContrasenaComponent {
         this._toastr.success('Correo enviado con éxito, revisa tu bandeja', 'Éxito');
         this._router.navigate(['login'])
       }, error: (e) => {
-        console.log(e);
         this._toastr.error(e.error, 'Hubo un Error');
       }
     })

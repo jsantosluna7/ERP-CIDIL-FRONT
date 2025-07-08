@@ -57,7 +57,6 @@ export class SidebarComponent implements OnInit {
 
   // toogle(event: any){
   //   const elemento:any = document.querySelector(".sidebar");
-  //   // console.log(elemento)
   //   elemento.classList.toggle("close");
 
   // }
@@ -80,7 +79,6 @@ export class SidebarComponent implements OnInit {
         this.nombreUsuario = `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`
       }
     });
-    console.log(this.usuarioLogueado);
   }
 
   @Output() toggleSidebar = new EventEmitter<void>();
@@ -106,7 +104,6 @@ export class SidebarComponent implements OnInit {
       .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {
-        console.log(`Dialog result: ${result}`);
       });
   }
 }

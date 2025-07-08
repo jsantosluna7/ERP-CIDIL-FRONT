@@ -17,7 +17,6 @@ export class FilesService {
       complete: (results) => {
         const data = results.data as any[];
         this._valores.obtenerData(data);
-        // console.log(data);
       },
       error: (error) => {
         console.error('Error al leer el archivo CSV', error);

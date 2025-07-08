@@ -23,13 +23,11 @@ export class CarritoComponent implements OnInit {
 
   ngOnInit(): void {
   this.carrito = this.carritoService.getCarrito();
-  console.log('Contenido del carrito:', this.carrito);
 }
 
 
   actualizarCantidad(carta: any): void {
   this.carritoService.actualizarCantidad(carta.id, carta.cantidadSeleccionada);
-  console.log('Cantidad actualizada en carrito:', carta.id, carta.cantidadSeleccionada);
 }
 
 

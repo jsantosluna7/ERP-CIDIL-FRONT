@@ -118,10 +118,6 @@ export class ReservaLaboratorioComponent {
     fechaSolicitud: new Date().toISOString()
   };
 
-  console.log('Valor idLaboratorio seleccionado:', idLaboratorio);
- 
-  console.log('Solicitud enviada:', solicitud);
-
   // Envío real al servicio
   this.laboratorioService.enviarSolicitud(solicitud).subscribe({
     next: () => {
@@ -140,7 +136,6 @@ export class ReservaLaboratorioComponent {
 
  ruta(){
     this.router.navigate(['/home/solicitud-laboratorio']);
-    console.log(this.router)
   }
 
 

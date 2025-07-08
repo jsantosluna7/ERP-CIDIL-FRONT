@@ -58,8 +58,6 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
       const usuarios = usuariosResp?.datos || [];
       const equipos = equiposResp?.datos || equiposResp || [];
 
-      console.log('Solicitudes crudas recibidas:', solicitudes);
-
 
       this.solicitud = solicitudes.map((solicitud) => {
         const usuario = usuarios.find(u => u.id === solicitud.idUsuario);
@@ -86,7 +84,6 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
     this.toastr.error('Usuario logueado no encontrado');
     return;
   }
-  console.log('Cantidad recibida de solicitud:', solicitud.cantidad);
 
   const body: ReservaEquipos = {
      id: solicitud.id,
@@ -101,7 +98,6 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
   idUsuarioAprobador: this.usuarioLogueado.id,
   comentarioAprobacion: 'Aprobado por el usuario logueado'
   };
-      console.log('Datos enviados al backend:', body);
 
   this.SolicitudEquipoService.updateEstado( body).subscribe({
     next: () => {
@@ -114,7 +110,6 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
     error: (error) => {
       console.error('Error al aprobar solicitud:', error);
       this.toastr.error('Error al aprobar la solicitud.', 'Error');
-       console.log('Datos enviados al backend:', body);
     }
   });
 }

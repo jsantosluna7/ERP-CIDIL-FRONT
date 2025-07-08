@@ -177,7 +177,6 @@ export class SolicitudReservaLaboratorioComponent {
   }
 
   aprobar(solicitud: Solicitud) {
-    console.log('aprobar solicitud:', solicitud);
     if (!solicitud) {
       console.error('Solicitud es undefined o null');
       return;
@@ -204,8 +203,6 @@ export class SolicitudReservaLaboratorioComponent {
       comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
     };
 
-    console.log('Body que se enviará: ', body);
-
     this.reservaLaboratorioService.updateEstado(body).subscribe({
       next: () => {
         solicitud.idEstado = 1;
@@ -222,15 +219,14 @@ export class SolicitudReservaLaboratorioComponent {
   }
 
   desaprobar(solicitud: Solicitud) {
-    console.log('desaprobar solicitud:', solicitud);
 
     if (!solicitud) {
-      console.error('Solicitud es undefined o null');
+      this.toastr.error('Solicitud es undefined o null')
       return;
     }
 
     if (!this.usuarioLogueado) {
-      console.error('Usuario logueado no está definido');
+      this.toastr.error('Usuario logueado no está definido')
       return;
     }
 
@@ -249,8 +245,6 @@ export class SolicitudReservaLaboratorioComponent {
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
     };
-
-    console.log('Body que se enviará (desaprobar): ', body);
 
     this.reservaLaboratorioService.updateEstado(body).subscribe({
       next: () => {

@@ -187,7 +187,6 @@ export class MqttTableComponent {
         if (n) {
           this._datos.fechaData$.pipe(take(1)).subscribe({
             next: (f: any) => {
-              console.log(f);
               this._mqtt
                 .filtradoIot(
                   this.endpointFiltrado,
@@ -266,11 +265,9 @@ export class MqttTableComponent {
   //     .paginationIot(this.endpoint, this.pageIndex + 1, this.pageSize)
   //     .subscribe({
   //       next: (resp: any) => {
-  //         console.log(resp);
   //         this.dataSource.data = resp.datos;
   //         this.totalIoT = resp.paginacion.totalLoT
   //       }, error: (err) => {
-  //         console.log(err);
   //         this._toastr.error(err.error, 'Hubo un error');
   //       }
   //     });

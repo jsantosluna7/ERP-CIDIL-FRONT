@@ -132,11 +132,9 @@ crearEquipo(): void {
         importeActivo: 1,
         cantidad: 1
       });
-      console.log(nuevoEquipo);
     },
     error: (err) => {
       console.error('Error al crear el equipo:', err);
-      console.log(nuevoEquipo)
       this.toastr.error('Error al crear el equipo.');
     }
   });
@@ -152,13 +150,11 @@ crearEquipo(): void {
     }
 
     const nuevoEquipo: Carta = this.solicitudesForm.value;
-    console.log(nuevoEquipo)
     this.inventarioService.agregarCarta(nuevoEquipo).subscribe({
       next: () => {
         this.toastr.success('Equipo creado correctamente.');
         this.solicitudesForm.reset();
         this.solicitudesForm.patchValue({ disponible: true, validacionPrestamo: true, importeActivo: 1, cantidad: 1 });
-        console.log(nuevoEquipo)
       },
       error: (err) => {
         console.error('Error al crear el equipo:', err);
@@ -182,7 +178,6 @@ crearEquipo(): void {
         )
         .subscribe({
           next: (rutaFoto: any) => {
-            console.log(rutaFoto.ruta);
             this.solicitudesForm.get('imagenEquipo')?.setValue(rutaFoto.ruta);
           },
           error: (err) => console.error('Error al subir imagen:',err),

@@ -47,7 +47,6 @@ export class ReservaEquipoComponent implements OnInit {
 
  ngOnInit(): void {
   this.equiposSeleccionados = this.carritoService.getCarrito();
-  console.log('Equipos del carrito',this.equiposSeleccionados)
 
     //datos del usuario
    this._usuarios.user$.subscribe(user => {
@@ -99,8 +98,6 @@ export class ReservaEquipoComponent implements OnInit {
     this.solicitudEquipoService.crearReserva(solicitud).subscribe({
       next: () => {
         this.toastr.success(`Solicitud para ${equipo.nombreData} enviada.`);
-
-        console.log('Salud',solicitud)
       
         this.inventarioService.obtenerCartaPorId(equipo.id).subscribe({
           next: (cartaCompleta) => {
@@ -112,13 +109,12 @@ export class ReservaEquipoComponent implements OnInit {
               cantidad: cantidadRestante,
               disponible: cantidadRestante > 0
             };
-              console.log(solicitud)
             this.inventarioService.actualizarCarta(equipo.id, equipoActualizado).subscribe({
               next: () => {
-                console.log('Equipo actualizado correctamente');
+                this.toastr.success('Equipo actualizado correctamente');
               },
               error: () => {
-                console.error(' Error al actualizar el inventario');
+                this.toastr.error('Error al actualizar el inventario')
               }
             });
           },
@@ -141,7 +137,6 @@ export class ReservaEquipoComponent implements OnInit {
 
  /*ruta(){
     this.router.navigate(['/home/solicitud-laboratorio']);
-    console.log(this.router)
   }*/
 
  

@@ -36,13 +36,7 @@ export class EventDialogComponent {
       horaInicio: string;
       horaFin: string;
     }
-  ) {
-    if (data.fin == null) {
-      console.log('nulo');
-    } else {
-      console.log(data.fin);
-    }
-  }
+  ) {}
   onOk() {
     this.dialogRef.close();
   }

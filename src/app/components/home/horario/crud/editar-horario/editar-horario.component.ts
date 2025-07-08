@@ -131,16 +131,14 @@ export class EditarHorarioComponent implements OnInit {
         dia: form.dia,
       };
     }
-
-    console.log(todoData);
     this._horario
       .putHorario(this.endpointHorario, this.data.id, todoData)
       .subscribe({
         next: (e) => {
-          console.log(e);
+          this._toastr.success('Datos enviados con éxito');
         },
         error: (err) => {
-          console.log(err);
+          this._toastr.error('Hubo un error al enviarse el horario', 'Hubo un error');
         },
       });
   }

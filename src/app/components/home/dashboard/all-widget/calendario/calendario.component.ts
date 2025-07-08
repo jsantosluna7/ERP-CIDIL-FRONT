@@ -97,7 +97,6 @@ export class CalendarioComponent implements OnDestroy {
 
                 forkJoin(eventosObservables).subscribe(
                   (eventos) => {
-                    console.log(eventos);
                     successCallback(eventos);
                   },
                   (error) => {
@@ -144,7 +143,6 @@ export class CalendarioComponent implements OnDestroy {
 
                 forkJoin(eventosObservables).subscribe(
                   (eventos) => {
-                    console.log(eventos);
                     successCallback(eventos);
                   },
                   (error) => {
@@ -205,7 +203,6 @@ export class CalendarioComponent implements OnDestroy {
         },
         width: '30rem',
       });
-      console.log(detalles);
     } else {
       this._toastr.info('No hay eventos en esta fecha.', 'Información');
     }
