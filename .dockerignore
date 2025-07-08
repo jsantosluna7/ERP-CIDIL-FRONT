@@ -2,6 +2,9 @@
 .git/
 .gitignore
 
+.angular
+.angular/cache
+
 
 # Archivos de configuración de editores y entornos de desarrollo
 .vscode/
@@ -25,3 +28,39 @@ Thumbs.db
 # Archivos de documentación y licencia
 LICENSE
 README.md
+
+# Angular / build
+dist/
+out-tsc/
+tmp/
+build/
+.angular/cache/
+
+# Dependencias
+node_modules/
+
+# Logs y temporales
+*.log
+*.bak
+*.swp
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDE / editores
+.vscode/
+.idea/
+*.sublime-workspace
+.project
+.classpath
+
+# Cobertura / pruebas
+coverage/
+test-results/
+libpeerconnection.log
+
+# TypeScript / mapas
+*.js.map
+*.d.ts
+
