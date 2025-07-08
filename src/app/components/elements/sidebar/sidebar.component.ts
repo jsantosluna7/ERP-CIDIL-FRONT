@@ -19,6 +19,7 @@ import {
   faCalendar,
   faFlask,
   faToolbox,
+  faWarehouse,
 } from '@fortawesome/free-solid-svg-icons';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
@@ -49,6 +50,7 @@ export class SidebarComponent implements OnInit {
    laboratorio = faFlask;
   equipo = faToolbox;
   calendar = faCalendar;
+  inventario = faWarehouse;
 
   // body = document.querySelector(".body");k
   //  sidebar=this.body?.querySelector(".sidebar");
