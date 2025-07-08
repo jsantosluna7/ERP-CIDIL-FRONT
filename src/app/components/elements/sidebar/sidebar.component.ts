@@ -69,7 +69,7 @@ export class SidebarComponent implements OnInit {
     private usuarioService: UsuariosService
   ) {}
 
-  usuarioLogueado!: Usuarios;
+  usuarioLogueado!: any;
   nombreUsuario: string = '';
 
   ngOnInit(): void {
