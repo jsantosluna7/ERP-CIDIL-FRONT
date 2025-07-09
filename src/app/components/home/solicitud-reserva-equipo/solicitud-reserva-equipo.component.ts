@@ -12,6 +12,7 @@ import { Usuarios } from '../../../interfaces/usuarios.interface';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { UtilitiesService } from '../../../services/Utilities/utilities.service';
 
 
 @Component({
@@ -39,7 +40,8 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
    private toastr: ToastrService,
    private usuariosService: UsuariosService,
    private inventarioService: InventarioService,
-   private usuarios: UsuarioService
+   private usuarios: UsuarioService,
+   private utilitiesService: UtilitiesService 
 ){}
 
  ngOnInit(): void {
@@ -69,7 +71,9 @@ constructor(private SolicitudEquipoService: SolicitudEquipoService,
           ...solicitud,
           cantidad: solicitud.cantidad,
           nombreUsuario: usuario ? `${usuario.nombreUsuario} ${usuario.apellidoUsuario}` : 'Desconocido',
-          nombreEquipo: equipo?.nombre || 'Equipo no encontrado'
+          nombreEquipo: equipo?.nombre || 'Equipo no encontrado',
+          fechaInicio: this.utilitiesService.formatearFecha(solicitud.fechaInicio) || '',
+          fechaFinal: this.utilitiesService.formatearFecha(solicitud.fechaFinal) || '',
         };
       });
     },
