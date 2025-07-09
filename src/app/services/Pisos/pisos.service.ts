@@ -45,11 +45,17 @@ export class PisosService {
   private pisoMqttSubject = new BehaviorSubject<number>(1);
   pisoMqtt$ = this.pisoMqttSubject.asObservable();
 
+  private pisoCalendarioSubject = new BehaviorSubject<number>(1);
+  pisoCalendario$ = this.pisoCalendarioSubject.asObservable();
+
   private tabListSubject = new BehaviorSubject<string[]>([]);
   tabList$ = this.tabListSubject.asObservable();
 
   private tabListMqttSubject = new BehaviorSubject<string[]>([]);
   tabListMqtt$ = this.tabListMqttSubject.asObservable();
+
+  private tabListCalendarioSubject = new BehaviorSubject<string[]>([]);
+  tabListCalendario$ = this.tabListCalendarioSubject.asObservable();
 
   constructor() {
     this.cargarDesdeLocalStorage();
@@ -74,10 +80,24 @@ export class PisosService {
         this.tabListMqttSubject.next(list);
       }
     );
+    
+    combineLatest([this.pisoCalendarioSubject, this.laboratoriosPorPiso$]).subscribe(
+      ([piso, data]: any) => {
+        const list =
+          piso === 4
+            ? [...data[1], ...data[2], ...data[3]]
+            : [...(data[piso] ?? [])];
+        this.tabListCalendarioSubject.next(list);
+      }
+    );
   }
 
   setPiso(piso: number) {
     this.pisoSubject.next(piso);
+  }
+
+  setPisoCalendario(piso: number) {
+    this.pisoCalendarioSubject.next(piso);
   }
 
   setPisoHorario(piso: number) {

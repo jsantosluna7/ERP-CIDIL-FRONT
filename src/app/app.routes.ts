@@ -70,8 +70,8 @@ export const routes: Routes = [
         path: 'calendario',
         loadComponent: () =>
           import(
-            './components/home/dashboard/all-widget/calendario/calendario.component'
-          ).then((m) => m.CalendarioComponent),
+            './components/home/calendario-home/calendario-home.component'
+          ).then((m) => m.CalendarioHomeComponent),
         canActivate: [RoleGuard],
         data: { roles: [1, 3, 4] },
       },
