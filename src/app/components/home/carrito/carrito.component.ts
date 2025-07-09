@@ -27,7 +27,7 @@ export class CarritoComponent implements OnInit {
 
 
   actualizarCantidad(carta: any): void {
-  this.carritoService.actualizarCantidad(carta.id, carta.cantidadSeleccionada);
+  
 }
 
 

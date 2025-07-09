@@ -24,6 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActualizarcartaComponent } from './actualizarcarta/actualizarcarta.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-inventario',
@@ -37,7 +38,7 @@ import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive'
     MatInputModule,
     MatIconModule,
     MatCardModule,
-    MatProgressSpinnerModule, AppCualRolDirective
+    MatProgressSpinnerModule, AppCualRolDirective, FormsModule
   ],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.css',
@@ -79,90 +80,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
         
   }
 
-  /*cargarCartas() {
-  this.loading = true;
-  
-  this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
-    next: (d: any) => {
 
-      const all = d.datos;
-      const datos = all
-  .filter((data: any) => data.disponible)  
-  .map((data: any) => {
-    const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
-    return {
-      id: data.id,
-      nombre: lab ? lab.codigoDeLab : 'Sin laboratorio',
-      nombreData: data.nombre,
-      cantidad: data.cantidad,
-      disponible: data.disponible,
-      imagen: data.imagenEquipo
-    };
-  });
-
-      this.cartasConLaboratorio = datos;
-      this.totalItems = d.total;
-      this.loading = false;
-
-      /*this.dataSource = new MatTableDataSource(this.cartasConLaboratorio);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const dataStr = (
-          data.nombreData +
-          ' ' +
-          data.nombre +
-          ' ' +
-          data.cantidad +
-          ' ' +
-          (data.disponible ? 'disponible' : 'no disponible')
-        ).toLowerCase();
-        return dataStr.includes(filter);
-      };
-    },
-    error: () => {
-      this.loading = false;
-      this.toastr.error('Error al cargar los datos');
-    }
-  });
-}*/
-
- /*cargarCartas() {
-  this.loading = true;
-  
-  this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
-    next: (d: any) => {
-
-      const datosFiltrados = d.datos
-        .filter((data: any) => data.disponible)
-        .map((data: any) => {
-          const lab = this.laboratorios.find(l => l.id === data.idLaboratorio);
-          return {
-            id: data.id,
-            nombre: lab ? lab.codigoDeLab : 'Sin laboratorio',
-            nombreData: data.nombre,
-            cantidad: data.cantidad,
-            disponible: data.disponible,
-            imagen: data.imagenEquipo
-          };
-        });
-
-      this.cartasConLaboratorio = datosFiltrados;
-      this.totalItems = d.paginacion?.totalInventario ?? 0;
-      this.loading = false;
-
-            // Esto sincroniza visualmente el paginador
-      if (this.paginator) {
-        this.paginator.pageIndex = this.paginaActual - 1;
-      }
-    },
-    error: () => {
-      this.loading = false;
-      this.toastr.error('Error al cargar los datos');
-    }
-  });
-}*/
 
 cargarCartas(): void {
   this.loading = true;
@@ -243,14 +161,25 @@ cargarCartas(): void {
 
  
 agregarAlCarrito(carta: any): void {
+  const cantidad = carta.cantidadSeleccionada;
+
+  if (!cantidad || cantidad <= 0 || cantidad > carta.cantidad) {
+    this.toastr.error('Cantidad inválida', '');
+    return;
+  }
+
   const cartaConCantidad = {
     ...carta,
-    cantidadSeleccionada: carta.cantidadSeleccionada?? 1
+    cantidadSeleccionada: cantidad
   };
 
   this.carritoService.agregar(cartaConCantidad);
   this.toastr.success('Producto añadido al carrito!', '');
+
+  // Limpia el input después
+  carta.cantidadSeleccionada = null;
 }
+
 
 applyFilter(event: Event): void {
   const input = event.target as HTMLInputElement;

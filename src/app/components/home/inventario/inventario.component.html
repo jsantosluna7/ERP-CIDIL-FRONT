@@ -1,8 +1,7 @@
+@if (loading) {
+<mat-spinner *ngIf="loading" diameter="40" strokeWidth="5" class="mx-auto d-block my-4"></mat-spinner>
 
-  @if (loading) {
-  <mat-spinner *ngIf="loading" diameter="40" strokeWidth="5" class="mx-auto d-block my-4"></mat-spinner>
-
-  }
+}
 
 <div class="container mt-4">
 
@@ -12,9 +11,9 @@
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
 
-   @if(!loading){
-    <div class="row">
-  @for (carta of cartasConLaboratorio; track carta.id) {
+  @if(!loading){
+  <div class="row">
+    @for (carta of cartasConLaboratorio; track carta.id) {
     <div class="col-md-4 mb-3">
       <div class="  card h-100 shadow-sm">
         @if (!carta.imagen || carta.imagen.trim() === '' || carta.imagen === '\\x6e756c6c') {
@@ -27,39 +26,45 @@
 
         <div class="card-body">
           <h5 class="card-title">{{ carta.nombreData }}</h5>
-          <p class="card-text">Laboratorio: {{ carta.nombre }}</p>
+          <p class="card-text" *appCualRol="[1, 2]">Laboratorio: {{ carta.nombre }}</p>
           <p><strong>Cantidad:</strong> {{ carta.cantidad }}</p>
           <span class="badge" [ngClass]="carta.disponible ? 'bg-success' : 'bg-danger'">
             {{ carta.disponible ? 'Disponible' : 'No disponible' }}
           </span>
+
+
           <div class="mb-2 mt-2">
-            <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)">
+            <div class="mb-2">
+              <label for="cantidad{{ carta.id }}">Cantidad a prestar:</label>
+              <input id="cantidad{{ carta.id }}" type="number" class="form-control"
+                [(ngModel)]="carta.cantidadSeleccionada" [min]="1" [max]="carta.cantidad" placeholder="Cantidad" />
+            </div>
+
+            <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)"
+              [disabled]="!carta.cantidadSeleccionada || carta.cantidadSeleccionada <= 0 || carta.cantidadSeleccionada > carta.cantidad">
               Añadir al carrito
             </button>
+
+
+
             <button *appCualRol="[1, 2]" mat-button color="accent" (click)="abrirDialogoEditar(carta)">Editar</button>
 
-               @if (carta.cantidad === 0) {
-          <div class="text-danger small mt-1">
-            Equipo en uso
-          </div>
-        }
-            
+            @if (carta.cantidad === 0) {
+            <div class="text-danger small mt-1">
+              Equipo en uso
+            </div>
+            }
+
           </div>
         </div>
       </div>
     </div>
-  }
-</div> 
+    }
+  </div>
 
   <!--Paginacion-->
-  <mat-paginator class="paginator"
-   [length]="totalItems"
-   [pageSize]="pageSize"
-   [pageIndex]="paginaActual - 1"
-  [pageSizeOptions]="[]"
-   [hidePageSize]="true" 
-   showFirstLastButtons
-   (page)="onPageChange($event)">
+  <mat-paginator class="paginator" [length]="totalItems" [pageSize]="pageSize" [pageIndex]="paginaActual - 1"
+    [pageSizeOptions]="[]" [hidePageSize]="true" showFirstLastButtons (page)="onPageChange($event)">
   </mat-paginator>
 
   <!-- Campo de entrada personalizado para el tamaño de página -->
@@ -68,8 +73,8 @@
     <input matInput type="text" [value]="pageSize" (change)="updatePageSize($event)" />
   </div>
 
-   }
+  }
 
-  
+
 
 </div>

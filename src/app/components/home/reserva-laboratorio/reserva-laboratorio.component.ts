@@ -127,7 +127,7 @@ export class ReservaLaboratorioComponent {
     },
     error: (err) => {
       console.error(err);
-      this.toastr.error('Ocurrió un error al enviar la solicitud.', 'Error');
+      this.toastr.error(err.error, 'Error');
     }
   });
 }
