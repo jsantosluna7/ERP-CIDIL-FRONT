@@ -11,6 +11,19 @@
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
 
+  <button  (click)="exportarInventario()" mat-raised-button color="primary">
+  Exportar Inventario
+  </button>
+  
+  <button mat-raised-button color="primary" (click)="fileInput.click()">
+    <mat-icon>upload</mat-icon>
+    Importar Inventario
+  </button>
+  <input #fileInput type="file" accept=".xlsx, .xls" (change)="onFileChange($event)" hidden />
+
+
+
+
   @if(!loading){
   <div class="row">
     @for (carta of cartasConLaboratorio; track carta.id) {
