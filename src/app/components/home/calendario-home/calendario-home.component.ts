@@ -6,6 +6,7 @@ import {
 } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core/index.js';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ToastrService } from 'ngx-toastr';
@@ -65,13 +66,28 @@ export class CalendarioHomeComponent implements OnDestroy {
     private _piso: PisosService
   ) {
     this.opcionesCalendario = {
-      initialView: 'dayGridMonth',
+      initialView: 'timeGridWeek',
       events: this.fetchEventos.bind(this),
       eventClick: this.handleEventClick.bind(this),
       dateClick: this.handleDateClick.bind(this),
       locales: [esLocale],
       locale: 'es',
-      plugins: [dayGridPlugin, interactionPlugin],
+      plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
+      slotLabelFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true, // 👈 formato 12h
+      },
+      eventTimeFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true, // 👈 eventos en 12h
+      },
+      // 🎯 Ajuste de tamaño:
+      height: 'auto',
+      contentHeight: 'auto',
+      handleWindowResize: true,
+      stickyFooterScrollbar: false,
     };
   }
 

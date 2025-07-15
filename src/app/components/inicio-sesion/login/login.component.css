@@ -14,12 +14,17 @@ label {
 }
 
 .main-form {
-    margin-top: 3.5rem;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    padding: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    /* por si hay desbordes */
 }
+
 
 .btn {
     background-color: #1825AA;
@@ -29,7 +34,7 @@ label {
     transition: all 0.3s ease;
 }
 
-.btn:hover{
+.btn:hover {
     background-color: #101A88;
 }
 
@@ -41,9 +46,9 @@ label {
     height: 30rem;
     width: 25rem;
     margin-right: -20px;
-    box-shadow: 23px 21px 63px -20px rgba(0,0,0,0.75);
--webkit-box-shadow: 23px 21px 63px -20px rgba(0,0,0,0.75);
--moz-box-shadow: 23px 21px 63px -20px rgba(0,0,0,0.75);
+    box-shadow: 23px 21px 63px -20px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 23px 21px 63px -20px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 23px 21px 63px -20px rgba(0, 0, 0, 0.75);
     z-index: 1;
 }
 
@@ -85,40 +90,43 @@ label {
     transition: all 0.3s ease;
 }
 
-.button:hover{
+.button:hover {
     background-color: #101A88;
 }
 
-.login-forgot a{
+.login-forgot a {
     text-decoration: none;
     color: #1825AA;
     font-size: 1rem;
     color: black;
     transition: all 0.3s ease;
     font-size: .9rem;
-    
+
 }
-.login-forgot a:hover{
+
+.login-forgot a:hover {
     color: #101A88;
 }
 
-input{
+input {
     padding-left: 1.9rem;
 }
 
-input::placeholder{
+input::placeholder {
     font-size: .8rem;
     /* padding-left: 1.5rem; */
 }
 
-.lock, .envelope{
+.lock,
+.envelope {
     display: flex;
     flex-direction: row;
     align-items: center;
     position: relative;
 }
 
-.lock fa-icon, .envelope fa-icon{
+.lock fa-icon,
+.envelope fa-icon {
     position: absolute;
     left: .5rem;
 
@@ -127,40 +135,113 @@ input::placeholder{
     margin-right: 1rem; */
 }
 
-.contextmenu{
+.contextmenu {
     position: absolute;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
 }
 
-.dropdown-content{
+.dropdown-content {
     position: absolute;
-    background-color: #ffff;
+    background-color: #fff;
     min-width: 250px;
-    box-shadow: 0px 8px 16px 0 rgba(0,0,0,0.2);
-    z-index: 1;
+    max-width: 90vw;
+    /* 🔧 evita que se desborde en móviles */
+    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.2);
+    z-index: 10;
     border-radius: 9px;
     padding: 8px;
-    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 0.85rem;
 }
 
-label{
+label {
     font-size: 14px;
 }
 
-.text-danger{
+.text-danger {
     color: #CC3333;
 }
 
-.text-success{
+.text-success {
     color: green;
 }
 
-.dropdown-content{
+.dropdown-content {
     display: flex;
     flex-direction: column;
     gap: 7px;
 }
 
-.col span fa-icon{
+.col span fa-icon {
     margin-right: 7px;
+}
+
+@media (max-width: 480px) {
+    .dropdown-content {
+        max-width: 90vw;
+        left: 5%;
+        /* opcional: centra un poco más */
+        right: auto;
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+
+    .dropdown-content label {
+        font-size: 0.8rem;
+    }
+
+    .dropdown-content .col {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        word-break: break-word;
+    }
+}
+
+
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .main-form {
+        flex-direction: column;
+    }
+
+    .first-box,
+    .second-box {
+        width: 90%;
+        height: auto;
+        margin: 0;
+        padding: 2rem;
+        box-shadow: none;
+    }
+
+    .second-box {
+        border-radius: 30px;
+        border-top-left-radius: 30px;
+        border-bottom-left-radius: 30px;
+    }
+
+    .second-box img {
+        height: 6rem;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .btn {
+        margin-bottom: 1rem;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .login-forgot {
+        text-align: center;
+    }
 }
