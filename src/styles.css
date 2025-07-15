@@ -1,5 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  --chat--window--width: 350px !important;
+  --chat--window--height: 500px !important;
+  --chat--color-primary:#6042e7 !important;
+}
+
 * {
   font-family: 'helvetica neue', sans-serif;
 }
@@ -97,4 +103,3 @@ mat-tab-group {
   /* importante para evitar overflow */
   margin-top: 2rem;
 }
-
