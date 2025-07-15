@@ -129,10 +129,9 @@ input::placeholder {
 .envelope fa-icon {
     position: absolute;
     left: .5rem;
-
-    /* color: #1825AA;
+    color: black;
     font-size: 1.2rem;
-    margin-right: 1rem; */
+    margin-right: 1rem;
 }
 
 .contextmenu {

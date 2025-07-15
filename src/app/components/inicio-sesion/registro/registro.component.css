@@ -2,10 +2,12 @@
     background-color: #1825AA;
     color: white;
     border: none;
-  }
+}
+
 .btn-custom-blue:hover {
-    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
-  }
+    background-color: #12208c;
+    /* un poco más oscuro al pasar el mouse */
+}
 
 .btn-custom-blue:hover {
     background-color: #12208c;
@@ -20,7 +22,7 @@ input::placeholder {
     font-size: .8rem;
 }
 
-input{
+input {
     font-size: 1rem;
 }
 
@@ -34,26 +36,34 @@ input{
     height: 35rem;
 }
 
-h1{
+h1 {
     font-size: 1.5rem;
 }
 
-p{
+p {
     font-size: 1rem;
 }
 
-input{
+input {
     padding-left: 1.9rem;
 }
 
-  .location,.phone,.user,.lock,.envelope{
+.location,
+.phone,
+.user,
+.lock,
+.envelope {
     display: flex;
     flex-direction: row;
     align-items: center;
     position: relative;
 }
 
- .location fa-icon,.phone fa-icon,.user fa-icon,.lock fa-icon,.envelope fa-icon{
+.location fa-icon,
+.phone fa-icon,
+.user fa-icon,
+.lock fa-icon,
+.envelope fa-icon {
     position: absolute;
     left: .5rem;
     /* color: #1825AA;
@@ -61,40 +71,142 @@ input{
     margin-right: 1rem; */
 }
 
-.contextmenu{
+.contextmenu {
     position: absolute;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
 }
 
-.dropdown-content{
+.dropdown-content {
     position: absolute;
     background-color: #ffff;
     min-width: 250px;
-    box-shadow: 0px 8px 16px 0 rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.2);
     z-index: 1;
     border-radius: 9px;
     padding: 8px;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
 }
 
-label{
+label {
     font-size: 14px;
 }
 
-.text-danger{
+.text-danger {
     color: #CC3333;
 }
 
-.text-success{
+.text-success {
     color: green;
 }
 
-.dropdown-content{
+.dropdown-content {
     display: flex;
     flex-direction: column;
     gap: 7px;
 }
 
-.col span fa-icon{
+.col span fa-icon {
     margin-right: 7px;
+}
+
+/* Responsive diseño general */
+.form {
+    width: 90%;
+    max-width: 700px;
+    height: auto;
+    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+    margin-top: 1rem;
+    color: black;
+}
+
+/* Ajuste del contenedor principal */
+.fondo {
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Botón de regreso */
+.back-btn {
+    z-index: 999;
+}
+
+/* Fuerza que siempre sea 2 columnas */
+.form .col-md-6 {
+    width: 50%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+}
+
+/* Asegura que los inputs estén correctamente alineados */
+.form .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 320px) {
+    .form .col-md-6 {
+        width: 100%;
+    }
+}
+
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .form {
+        padding: 1rem;
+    }
+
+    .form h1 {
+        font-size: 1.3rem;
+    }
+
+    .form p {
+        font-size: 0.9rem;
+    }
+
+    label {
+        font-size: 13px;
+    }
+
+    input {
+        font-size: 0.9rem;
+        padding-left: 1.9rem;
+    }
+
+    .back-btn {
+        top: 0;
+        left: 0;
+        margin-top: 1rem;
+        margin-left: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .form {
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .form .col-md-6 {
+        padding: 0.25rem 0.5rem;
+    }
+
+    input {
+        padding-left: 1.7rem;
+    }
+
+    .form h1 {
+        font-size: 1.2rem;
+    }
+
+    input::placeholder {
+        font-size: 0.75rem;
+    }
+
+    .dropdown-content {
+        min-width: 200px;
+    }
 }

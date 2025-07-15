@@ -1,31 +1,30 @@
 <div class="fondo d-flex justify-content-center align-items-center">
-    <form [formGroup]="recuperarContrasenaForm"
-        class="row g-3 container w-25 border border rounded-5 bg-white p-4 form">
-        <div class="top-form">
-            <div class="back-btn">
-                <app-back-button [link]="'/login'"></app-back-button>
-            </div>
-            <div class="text-center mt-1">
-                <h1>Restablecer <strong>contraseña!</strong></h1>
-                <p>Establece una nueva contraseña.</p>
-            </div>
-        </div>
+  <form [formGroup]="recuperarContrasenaForm"
+    class="row g-3 container form">
+    
+    <div class="top-form">
+      <div class="back-btn">
+        <app-back-button [link]="'/login'"></app-back-button>
+      </div>
+      <div class="text-center mt-1">
+        <h1>Restablecer <strong>contraseña!</strong></h1>
+        <p>Establece una nueva contraseña.</p>
+      </div>
+    </div>
 
-        <div class="col-md-12">
+    <div class="col-md-12">
+      <label for="inputEmail4" class="form-label">Email</label>
+      <div class="envelope">
+        <fa-icon [icon]="faEnvelope"></fa-icon>
+        <input type="email" formControlName="email" class="form-control" id="inputEmail4"
+          placeholder="ejemplo@ipl.edu.do" />
+      </div>
+    </div>
 
-            <label for="inputEmail4" class="form-label">Email</label>
-            <div class="envelope">
-                <fa-icon [icon]="faEnvelope"></fa-icon>
-                <input type="email" formControlName="email" class="form-control" id="inputEmail4"
-                    placeholder="ejemplo@ipl.edu.do" />
-            </div>
-
-        </div>
-
-        <div class="col-12 text-center">
-            <button (click)="olvideContrasena()" class="btn btn-custom-blue mb-5 mt-3">
-                Enviar correo
-            </button>
-        </div>
-    </form>
+    <div class="col-12 text-center">
+      <button (click)="olvideContrasena()" class="btn btn-custom-blue mb-5 mt-3">
+        Enviar correo
+      </button>
+    </div>
+  </form>
 </div>

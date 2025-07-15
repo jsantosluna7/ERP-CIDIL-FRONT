@@ -1,92 +1,159 @@
 <div class="fondo d-flex justify-content-center align-items-center">
-  <form [formGroup]="registroForm" class="row container w-50 h-auto border border rounded-5 bg-white p-3 form mt-5">
-    <div class="top-form">
-      <div class="back-btn">
+  <form
+    [formGroup]="registroForm"
+    class="row container form bg-white p-3 rounded-5"
+  >
+    <!-- Flecha de retroceso en la esquina superior izquierda -->
+    <div class="position-relative w-100">
+      <div class="back-btn position-absolute top-0 start-0 mt-3 ms-3 z-3">
         <app-back-button [link]="'/login'"></app-back-button>
       </div>
-      <div class="text-center mt-1">
-        <h1>Vamos a <strong>Empezar!</strong></h1>
-        <p>Crea tu cuenta.</p>
-      </div>
     </div>
-    
+
+    <div class="text-center mt-5 w-100">
+      <h1>Vamos a <strong>Empezar!</strong></h1>
+      <p>Crea tu cuenta.</p>
+    </div>
+
     <div class="col-md-6 mt-1">
       <label for="inputEmail4" class="form-label">Nombres</label>
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
-        <input type="text" formControlName="nombre" class="form-control" id="inputEmail4" placeholder="Nombre" />
+        <input
+          type="text"
+          formControlName="nombre"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Nombre"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
       <label for="inputEmail4" class="form-label">Apellidos</label>
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
-        <input type="text" formControlName="apellido" class="form-control" id="inputEmail4" placeholder="Apellidos" />
+        <input
+          type="text"
+          formControlName="apellido"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Apellidos"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
       <label for="inputEmail4" class="form-label">Matricula</label>
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
-        <input type="text" formControlName="matricula" class="form-control" id="inputEmail4" placeholder="Matricula" />
+        <input
+          type="text"
+          formControlName="matricula"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Matricula"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
       <label for="inputEmail4" class="form-label">Email</label>
       <div class="envelope">
         <fa-icon [icon]="faEnvelope"></fa-icon>
-        <input type="email" formControlName="email" class="form-control" id="inputEmail4"
-          placeholder="ejemplo@ipl.edu.do" />
+        <input
+          type="email"
+          formControlName="email"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="ejemplo@ipl.edu.do"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
       <label for="inputEmail4" class="form-label">Telefono</label>
       <div class="phone">
         <fa-icon [icon]="faPhone"></fa-icon>
-        <input type="tel" formControlName="telefono" class="form-control" id="inputEmail4" placeholder="Telefono" />
+        <input
+          type="tel"
+          formControlName="telefono"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Telefono"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
       <label for="inputEmail4" class="form-label">Direccion</label>
       <div class="location">
         <fa-icon [icon]="faLocationDot"></fa-icon>
-        <input type="text" formControlName="direccion" class="form-control" id="inputEmail4" placeholder="Direccion" />
+        <input
+          type="text"
+          formControlName="direccion"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Direccion"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
       <label for="contrasena" class="form-label">Contraseña</label>
       <div class="lock">
         <fa-icon [icon]="faLock"></fa-icon>
-        <input type="password" formControlName="contrasena" (mouseenter)="openPopup($event)"
-          (keypress)="openPopup($event)" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
-          (mouseleave)="closePopup()" class="form-control" id="contrasena" placeholder="******" />
+        <input
+          type="password"
+          formControlName="contrasena"
+          (mouseenter)="openPopup($event)"
+          (keypress)="openPopup($event)"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
+          (mouseleave)="closePopup()"
+          class="form-control"
+          id="contrasena"
+          placeholder="******"
+        />
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputPassword4" class="form-label">Confirme su Contraseña</label>
+      <label for="inputPassword4" class="form-label"
+        >Confirme su Contraseña</label
+      >
       <div class="lock">
         <fa-icon [icon]="faLock"></fa-icon>
-        <input type="password" formControlName="confirmarcontrasena" class="form-control" id="inputPassword4"
-          placeholder="******" />
+        <input
+          type="password"
+          formControlName="confirmarcontrasena"
+          class="form-control"
+          id="inputPassword4"
+          placeholder="******"
+        />
       </div>
     </div>
     <div class="p-0 m-0 d-flex justify-content-center align-items-center">
-      <button [disabled]="registroForm.invalid" (click)="register()" class="btn btn-custom-blue mb-3 mt-4">
+      <button
+        [disabled]="registroForm.invalid"
+        (click)="register()"
+        class="btn btn-custom-blue mb-3 mt-4"
+      >
         Registrate
       </button>
     </div>
   </form>
 
   <!-- POPUP para la confirmacion de contraseña -->
-  <div id="contexmenu" class="contextmenu" (clickOutside)="closePopup()" (mouseleave)="closePopup()"
-    [style]="meterPopup">
+  <div
+    id="contexmenu"
+    class="contextmenu"
+    (clickOutside)="closePopup()"
+    (mouseleave)="closePopup()"
+    [style]="meterPopup"
+  >
     <div class="dropdown-content">
       <label class="col fw-bold">Tu Contraseña necesita:</label>
-      <label class="col" [class]="
+      <label
+        class="col"
+        [class]="
           registroForm.get('contrasena')?.hasError('required')
             ? 'text-danger'
             : 'text-success'
-        ">
+        "
+      >
         @if (registroForm.get('contrasena')?.hasError('required')) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
@@ -100,7 +167,10 @@
         </span>
         }
       </label>
-      <label class="col" [class]="!passwordValid.hasUpperCase ? 'text-danger' : 'text-success'">
+      <label
+        class="col"
+        [class]="!passwordValid.hasUpperCase ? 'text-danger' : 'text-success'"
+      >
         @if (passwordValid.hasUpperCase == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
@@ -113,7 +183,10 @@
         </span>
         }
       </label>
-      <label class="col" [class]="!passwordValid.hasLowerCase ? 'text-danger' : 'text-success'">
+      <label
+        class="col"
+        [class]="!passwordValid.hasLowerCase ? 'text-danger' : 'text-success'"
+      >
         @if (passwordValid.hasLowerCase == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
@@ -126,7 +199,10 @@
         </span>
         }
       </label>
-      <label class="col" [class]="!passwordValid.hasNumber ? 'text-danger' : 'text-success'">
+      <label
+        class="col"
+        [class]="!passwordValid.hasNumber ? 'text-danger' : 'text-success'"
+      >
         @if (passwordValid.hasNumber == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
@@ -139,7 +215,10 @@
         </span>
         }
       </label>
-      <label class="col" [class]="!passwordValid.hasSpecialChar ? 'text-danger' : 'text-success'">
+      <label
+        class="col"
+        [class]="!passwordValid.hasSpecialChar ? 'text-danger' : 'text-success'"
+      >
         @if (passwordValid.hasSpecialChar == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
@@ -152,7 +231,10 @@
         </span>
         }
       </label>
-      <label class="col" [class]="!passwordValid.hasNoSpaces ? 'text-danger' : 'text-success'">
+      <label
+        class="col"
+        [class]="!passwordValid.hasNoSpaces ? 'text-danger' : 'text-success'"
+      >
         @if (passwordValid.hasNoSpaces == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
@@ -165,7 +247,10 @@
         </span>
         }
       </label>
-      <label class="col" [class]="!passwordValid.hasMinLength ? 'text-danger' : 'text-success'">
+      <label
+        class="col"
+        [class]="!passwordValid.hasMinLength ? 'text-danger' : 'text-success'"
+      >
         @if (passwordValid.hasMinLength == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>

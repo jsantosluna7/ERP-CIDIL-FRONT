@@ -1,111 +1,129 @@
+/* Fondo general */
+.fondo {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+/* Contenedor del formulario */
+/* Botón retroceso (posición general) */
+.back-btn {
+    position: absolute;
+    top: 1.5rem;
+    /* valor normal en pantallas grandes */
+    left: 1.5rem;
+    z-index: 10;
+}
+
+/* Formulario con espacio suficiente arriba */
+.formulario {
+    position: relative;
+    background-color: white;
+    padding: 5rem 2rem 2rem 2rem;
+    /* Aumentamos padding-top para dar espacio a la flecha */
+    border-radius: 2rem;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 380px;
+    color: black;
+}
+
+
+label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    color: #333;
+}
+
+/* Botón azul */
 .btn-custom-blue {
     background-color: #1825AA;
     color: white;
     border: none;
-  }
-.btn-custom-blue:hover {
-    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
-  }
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    width: 100%;
+}
 
 .btn-custom-blue:hover {
     background-color: #12208c;
-    /* un poco más oscuro al pasar el mouse */
 }
 
-label {
-    font-size: .9rem;
-}
-
-input::placeholder {
-    font-size: .8rem;
-}
-
-input{
-    font-size: 1rem;
-}
-
-
-.form {
-    border: none;
-    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    margin-top: 6rem;
-    height: 27rem;
-    width: 35% !important;
-}
-
-h1{
-    font-size: 1.5rem;
-}
-
-p{
-    font-size: 1rem;
-}
-
-input{
-    padding-left: 1.9rem;
-}
-
- .lock{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+/* Input con icono */
+.lock {
     position: relative;
 }
 
- .lock fa-icon{
+.lock fa-icon {
     position: absolute;
-    left: .5rem;
-    /* color: #1825AA;
-    font-size: 1.2rem;
-    margin-right: 1rem; */
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #333;
 }
 
-.confirmar-label{
-    margin-top: 1.5rem;
+.lock input {
+    padding-left: 2.2rem;
 }
 
-.contextmenu{
-    position: absolute;
-    right: 50rem;
-    top: 19rem;
-    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+/* Título y texto */
+h1 {
+    font-size: 1.5rem;
 }
 
-.dropdown-content{
-    position: absolute;
-    background-color: #ffff;
-    min-width: 250px;
-    box-shadow: 0px 8px 16px 0 rgba(0,0,0,0.2);
-    z-index: 1;
-    border-radius: 9px;
-    padding: 8px;
-    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.302), 0 1px 3px 1px rgba(60, 64, 67, 0.149);
+p {
+    font-size: 1rem;
 }
 
-label{
-    font-size: 14px;
+/* Responsividad */
+@media (max-width: 768px) {
+    .formulario {
+        padding: 2rem 1.5rem;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    p {
+        font-size: 0.95rem;
+    }
 }
 
-.text-danger{
-    color: #CC3333;
+@media (max-width: 375px) {
+
+    label {
+        font-size: 13px;
+    }
+
+    .formulario {
+        padding: 1.5rem 1rem;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    p {
+        font-size: 0.85rem;
+    }
 }
 
-.text-success{
-    color: green;
-}
+@media (max-width: 576px) {
+    .back-btn {
+        top: 1rem;
+        /* sigue estando arriba, pero más separado del texto */
+    }
 
-.dropdown-content{
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.col span fa-icon{
-    margin-right: 7px;
-}
-
-.back-btn{
-    margin-bottom: 3rem;
+    .formulario {
+        padding-top: 4.5rem;
+        /* MÁS espacio en la parte superior del formulario en móviles */
+    }
 }
