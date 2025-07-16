@@ -1,5 +1,5 @@
 <div class="fondo d-flex justify-content-center p-lg-0 align-items-center ">
-    <form [formGroup]="solicitudesForm" class="row container w-50 h-auto border border rounded-5  p-3 form mt-5 ite">
+    <form [formGroup]="solicitudesForm" class="form mt-5">
         <h2>Reserva de Equipos</h2>
         <div class="example-button-row">
             <a mat-button="elevated" routerLink="/home/solicitud-equipo" *appCualRol="[1, 2]">Ver Solicitudes</a>
@@ -21,14 +21,7 @@
         } @else {
         <p>No hay equipos seleccionados.</p>
         }
-        <!--- <div class="col-md-6 mt-1 row">
-            <label for="inputEmail4" class="form-label">Equipos</label>
-            <div class="location">
-                <fa-icon [icon]="fahouse"></fa-icon>
-                <input type="text" formControlName="direccion" class="form-control" id="inputEmail4" placeholder="Equipos" />
-            </div>
-        </div>
-        -->
+     
 
         <div class="col-md-6 mt-1 row w-100">
             <label for="inputEmail4" class="form-label">Hora de Inicio</label>
@@ -53,24 +46,7 @@
 
 
         </div>
-       <!-- <div class="col-md-6 mt-1 row">
-            <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
-            <div class="location">
-                <fa-icon [icon]="faclock"></fa-icon>
-                <input type="datetime-local" formControlName="fechaDevolucion" class="form-control" id="inputEmail4"
-                    placeholder="Laboratorio" />
-            </div>
-        </div>  -->
-       
-
-        <!--Comentarios -->
-       <!-- <div class="col-md-6 mt-1 row">
-            <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
-                <textarea class="form-control" formControlName="Motivo" id="exampleFormControlTextarea1"
-                    rows="3"></textarea>
-            </div>
-        </div> -->
+     
      
 
         <button class="btn btn-success" (click)="enviarSolicitud()">Enviar Solicitud</button>

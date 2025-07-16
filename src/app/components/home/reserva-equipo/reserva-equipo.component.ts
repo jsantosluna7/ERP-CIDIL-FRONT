@@ -23,6 +23,8 @@ import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReservaEquipoComponent implements OnInit {
+  
+   
 
   solicitudesForm: FormGroup;
   equiposSeleccionados: Carta[] = [];
