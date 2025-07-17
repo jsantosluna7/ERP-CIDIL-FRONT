@@ -11,6 +11,7 @@ import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive'
 import { MatIconModule } from '@angular/material/icon';
 import {
   faArrowRightFromBracket,
+  faBars,
   faBell,
   faCalendar,
   faCartShopping,
@@ -73,6 +74,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   calendar = faCalendar;
   inventario = faWarehouse;
   config = faGear;
+  bars = faBars;
 
   constructor(
     private elRef: ElementRef,

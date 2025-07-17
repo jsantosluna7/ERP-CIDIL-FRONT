@@ -1,6 +1,6 @@
 <!-- Mobile Sidebar Menu Button -->
 <button class="sidebar-menu-button">
-  <mat-icon class="material-symbols-rounded">menu</mat-icon>
+  <fa-icon class="icon" [icon]="bars"></fa-icon>
 </button>
 <aside class="sidebar">
   <!-- Sidebar Header -->
@@ -129,7 +129,7 @@
       <!-- Dropdown -->
       <li class="nav-item-sd dropdown-container-sd" *appCualRol="[1, 2]">
         <a href="#" class="nav-link-sd dropdown-toggle-sd">
-          <fa-icon class="icon" [icon]="laboratorio"></fa-icon>
+          <fa-icon class="icon" [icon]="laboratorio" size="lg"></fa-icon>
           <span class="nav-label-sd">Crear</span>
           <mat-icon class="dropdown-icon material-symbols-rounded"
             >keyboard_arrow_down</mat-icon

@@ -66,16 +66,19 @@ body {
     transform: translate(-4px, 65px);
 }
 
-.sidebar-header .sidebar-toggler-sd mat-icon {
+.sidebar-header .sidebar-toggler-sd mat-icon,
+.sidebar-header .sidebar-toggler-sd fa-icon {
     transition: 0.4s ease;
 }
 
-.sidebar-menu-button mat-icon {
+.sidebar-menu-button mat-icon,
+.sidebar-menu-button fa-icon {
     font-size: 1.75rem;
     transition: 0.4s ease;
 }
 
-.sidebar.collapsed .sidebar-header .sidebar-toggler-sd mat-icon {
+.sidebar.collapsed .sidebar-header .sidebar-toggler-sd mat-icon,
+.sidebar.collapsed .sidebar-header .sidebar-toggler-sd fa-icon {
     transform: rotate(180deg);
 }
 
