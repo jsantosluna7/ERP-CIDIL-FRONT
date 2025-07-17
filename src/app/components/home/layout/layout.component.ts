@@ -13,7 +13,7 @@ import { createChat } from '@n8n/chat';
   encapsulation: ViewEncapsulation.None
 })
 export class LayoutComponent implements AfterViewInit {
-  isSidebarClosed = true;
+  isSidebarClosed = false;
 
   toggleSidebar() {
     this.isSidebarClosed = !this.isSidebarClosed;

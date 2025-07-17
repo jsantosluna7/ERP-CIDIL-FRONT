@@ -10,7 +10,7 @@
 
 body {
     min-height: 100vh;
-    background: linear-gradient(#F1F3FF, #CBD4FF);
+    background-color: #ECF1F2;
 }
 
 
@@ -45,12 +45,24 @@ body {
     border-radius: 50%;
 }
 
-.sidebar-menu-button{
-    z-index: 1000;
+.sidebar-menu-button {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    height: 40px;
+    width: 42px;
+    display: flex;
+    color: #F1F4FF;
+    background: #151A2D;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    z-index: 2000;
+    /* Asegura que esté por encima del contenido */
 }
 
-.sidebar-header .sidebar-toggler-sd,
-.sidebar-menu-button {
+
+.sidebar-header .sidebar-toggler-sd {
     position: absolute;
     right: 20px;
     height: 35px;
@@ -236,8 +248,12 @@ body {
 
 /* Responsive media query code for small screens */
 @media (max-width: 768px) {
+    body {
+        padding-top: 80px;
+    }
+
     .sidebar-menu-button {
-        position: fixed;
+        position: absolute;
         left: 20px;
         top: 20px;
         height: 40px;

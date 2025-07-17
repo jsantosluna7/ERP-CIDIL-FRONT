@@ -3,7 +3,9 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   OnInit,
+  Output,
   ViewEncapsulation,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -86,6 +88,10 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   usuarioLogueado!: any;
   nombreUsuario: string = '';
+
+  @Output() toggleSidebar = new EventEmitter<boolean>();
+
+  private isCollapsed = false;
 
   ngOnInit(): void {
     this.usuarioService.user$.subscribe((usuario) => {
@@ -172,6 +178,11 @@ export class SidebarComponent implements OnInit, AfterViewInit {
           '.sidebar'
         ) as HTMLElement;
         sidebar?.classList.toggle('collapsed');
+
+        this.isCollapsed = sidebar.classList.contains('collapsed');
+
+        // 🔥 Emitimos el nuevo estado al padre:
+        this.toggleSidebar.emit(this.isCollapsed);
       });
     });
 
@@ -181,6 +192,8 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     ) as HTMLElement;
     if (window.innerWidth <= 1024 && sidebar) {
       sidebar.classList.add('collapsed');
+      this.isCollapsed = true;
+      this.toggleSidebar.emit(this.isCollapsed);
     }
   }
 }

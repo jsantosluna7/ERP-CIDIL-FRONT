@@ -3,7 +3,7 @@
 :root {
   --chat--window--width: 350px !important;
   --chat--window--height: 500px !important;
-  --chat--color-primary:#6042e7 !important;
+  --chat--color-primary: #6042e7 !important;
 }
 
 * {
@@ -15,11 +15,37 @@
     width: calc(100% - 110px) !important;
 } */
 
-.body.sidebar-closed .home {
-  left: 110px !important;
-  width: calc(100% - 110px) !important;
-  transition: all 0.3s ease;
+body {
+  background-color: #ECF1F2;
 }
+
+.body .home {
+  transition: margin-left 0.4s ease;
+  padding: 20px;
+  background-color: #ECF1F2;
+  /* Esto agrega espacio interno al contenido */
+}
+
+/* Cuando el sidebar está abierto (270px) */
+.body:not(.sidebar-collapsed) .home {
+  margin-left: 280px;
+  /* 270px sidebar + 10px de separación */
+}
+
+/* Cuando el sidebar está cerrado (85px) */
+.body.sidebar-collapsed .home {
+  margin-left: 95px;
+  /* 85px sidebar + 10px separación */
+}
+
+/* En móviles no se aplica margen */
+@media (max-width: 768px) {
+  .body .home {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+}
+
 
 html,
 body {
