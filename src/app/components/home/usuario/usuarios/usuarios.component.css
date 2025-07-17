@@ -50,6 +50,9 @@ input{
 .table-container{
     position: relative;
     margin-top: 1.5rem;
+    /**/
+     width: 100%;
+  overflow-x: auto;
 }
 
 .field{
@@ -83,3 +86,7 @@ input{
     inline-size: 3rem;
     text-align: center;
 }
+
+/*Prueba */
+
+
