@@ -1,8 +1,9 @@
 <div class="container mt-4">
   <h2 class="mb-3">Solicitudes de Reserva de Equipos</h2>
 
-  @if (solicitud.length > 0) {
-    <table mat-table [dataSource]="solicitud" class="mat-elevation-z8 full-width-table">
+  <div class="table-scroll">
+    @if (solicitud.length > 0) {
+    <table mat-table [dataSource]="solicitud" class="mat-elevation-z8 full-width-table ">
 
       <!-- Usuario -->
       <ng-container matColumnDef="nombreUsuario">
@@ -71,4 +72,5 @@
   } @else {
     <div class="alert alert-info">No hay solicitudes disponibles.</div>
   }
+  </div>
 </div>

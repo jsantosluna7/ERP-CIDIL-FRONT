@@ -1,7 +1,8 @@
 <div class="container mt-4">
   <h2 class="mb-3">Solicitudes de Reserva de Laboratorio</h2>
 
-  @if (solicitudes.length > 0) {
+ <div class="table-scroll">
+     @if (solicitudes.length > 0) {
     <table mat-table [dataSource]="solicitudes" class="mat-elevation-z8 full-width-table tabla-letra-grande  ">
 
       <!-- Usuario -->
@@ -75,4 +76,5 @@
   } @else {
     <div class="alert alert-info">No hay solicitudes disponibles.</div>
   }
+ </div>
 </div>
