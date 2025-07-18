@@ -6,6 +6,7 @@ import {
   Input,
   signal,
   viewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import { WidgetComponent } from '../../../elements/widget/widget.component';
 import { MatIcon } from '@angular/material/icon';
@@ -37,6 +38,7 @@ import { AnaliticaComponent } from '../all-widget/analitica/analitica.component'
   templateUrl: './dashboard-body.component.html',
   styleUrl: './dashboard-body.component.css',
   providers: [DashboardService],
+  encapsulation: ViewEncapsulation.None
 })
 export class DashboardBodyComponent {
   aplicacion = inject(DashboardService);
