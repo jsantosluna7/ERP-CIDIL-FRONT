@@ -3,7 +3,7 @@ import {
   FullCalendarComponent,
   FullCalendarModule,
 } from '@fullcalendar/angular';
-import { CalendarOptions } from '@fullcalendar/core/index.js';
+import { CalendarOptions, ViewApi } from '@fullcalendar/core/index.js';
 import { ToastrService } from 'ngx-toastr';
 import { HorarioService } from '../../../../services/Api/Horario/horario.service';
 import { LaboratorioService } from '../../../../services/Laboratorio/laboratorio.service';
@@ -60,16 +60,44 @@ export class CalendarComponent {
     private _piso: PisosService
   ) {
     this.opcionesCalendario = {
-      initialView: 'dayGridMonth',
+      initialView: this.getResponsiveView(),
+      windowResize: this.onCalendarResize.bind(this),
       events: this.fetchEventos.bind(this),
       eventClick: this.handleEventClick.bind(this),
       dateClick: this.handleDateClick.bind(this),
       locales: [esLocale],
       locale: 'es',
       plugins: [dayGridPlugin, interactionPlugin],
-      height: '100%',
+      height: 'auto',
       contentHeight: 'auto',
+      windowResizeDelay: 100,
     };
+  }
+
+  getResponsiveView(): string {
+    const width = window.innerWidth;
+
+    if (width < 600) return 'dayGridDay'; // Móviles pequeños
+    if (width < 768) return 'dayGridWeek'; // Móviles medianos
+    if (width < 992) return 'dayGridWeek'; // Tablets
+    return 'dayGridMonth'; // Escritorio
+  }
+
+  onCalendarResize(arg: { view: ViewApi }) {
+    const api = this.calendarComponent.getApi();
+    const newView = this.getResponsiveView();
+    if (api.view.type !== newView) {
+      api.changeView(newView);
+    }
+  }
+
+  ngAfterViewInit() {
+    window.addEventListener('resize', () => {
+      const api = this.calendarComponent?.getApi();
+      if (api) {
+        api.changeView(this.getResponsiveView());
+      }
+    });
   }
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
@@ -86,7 +114,6 @@ export class CalendarComponent {
             })
             .subscribe({
               next: (data: any) => {
-
                 const observables = data
                   .map((e: any) => {
                     // Mapear el día como número: 0 = domingo, 1 = lunes, ..., 6 = sábado
@@ -168,7 +195,6 @@ export class CalendarComponent {
             })
             .subscribe({
               next: (data: any) => {
-
                 const observables = data
                   .map((e: any) => {
                     // Mapear el día como número: 0 = domingo, 1 = lunes, ..., 6 = sábado
