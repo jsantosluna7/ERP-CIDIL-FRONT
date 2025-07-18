@@ -6,22 +6,6 @@
     gap: 10.3rem;
 }
 
-.temp {
-    color: #CC3333;
-}
-
-.hum {
-    color: #1825AA;
-}
-
-.luz {
-    color: #FFD94A;
-}
-
-.sonido {
-    color: #009688;
-}
-
 .componente {
     overflow: auto;
 }
@@ -30,4 +14,119 @@
     border: none;
     background-color: transparent;
     margin-left: 15rem;
+}
+
+.header-analitica {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 2rem;
+}
+
+.add-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+
+/* === MOBILE SMALL: hasta 400px (iPhone SE, móviles mini) === */
+@media screen and (max-width: 400px) {
+    .iconos {
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin: 1rem;
+        justify-content: center;
+    }
+
+    .add-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .analitica-container {
+        width: 100%;
+    }
+
+    .botones {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .analitica-btn p {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    fa-icon {
+        font-size: 2rem !important;
+    }
+}
+
+
+/* === MOBILE LARGE / TABLET: hasta 600px (Galaxy S25 Ultra) === */
+@media screen and (max-width: 600px) {
+    .iconos {
+        flex-wrap: wrap;
+        gap: 3rem;
+        margin: 1rem 2rem;
+        justify-content: center;
+    }
+
+    .add-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .analitica-container {
+        width: 90%;
+    }
+
+    .botones {
+        flex-direction: row;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .analitica-btn p {
+        font-size: 1.6rem;
+    }
+
+    fa-icon {
+        font-size: 2.5rem !important;
+    }
+}
+
+
+/* === LAPTOP (hasta 1024px) === */
+@media screen and (max-width: 1024px) {
+    .iconos {
+        gap: 6rem;
+        margin: 1rem 3rem;
+    }
+
+    .add-btn {
+        margin-left: 4rem;
+    }
+
+    .analitica-container {
+        width: 80%;
+    }
+}
+
+
+/* === DESKTOP LARGE (desde 1025px en adelante) === */
+@media screen and (min-width: 1025px) {
+    .iconos {
+        gap: 10.3rem;
+        margin: 1.5rem 6.5rem;
+    }
+
+    .add-btn {
+        margin-left: 15rem;
+    }
+
+    .analitica-container {
+        width: 70%;
+    }
 }

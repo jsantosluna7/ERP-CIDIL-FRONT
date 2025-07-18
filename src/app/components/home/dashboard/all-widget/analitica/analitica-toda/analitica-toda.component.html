@@ -2,48 +2,61 @@
   <div class="analitica-completa">
     <div class="analitica-container">
       <!-- TEMPERATURA -->
-      <ngx-gauge
-        [type]="gaugeType"
-        [value]="temp()"
-        append="°C"
-        [cap]="gaugeCap"
-        [thick]="gaugeThick"
-        [foregroundColor]="gaugeColorTemp"
-      >
-      </ngx-gauge>
+      <div class="gauge-with-icon">
+        <fa-icon class="icon temp" [icon]="faTemp" size="lg"></fa-icon>
+        <ngx-gauge
+          [type]="gaugeType"
+          [value]="temp()"
+          append="°C"
+          [cap]="gaugeCap"
+          [thick]="gaugeThick"
+          [foregroundColor]="gaugeColorTemp"
+        >
+        </ngx-gauge>
+      </div>
 
       <!-- HUMEDAD -->
-      <ngx-gauge
-        [type]="gaugeType"
-        [value]="hum()"
-        append="%"
-        [cap]="gaugeCap"
-        [thick]="gaugeThick"
-        [foregroundColor]="gaugeColorHum"
-      >
-      </ngx-gauge>
+      <div class="gauge-with-icon">
+        <fa-icon class="icon hum" [icon]="faHum" size="lg"></fa-icon>
+        <ngx-gauge
+          [type]="gaugeType"
+          [value]="hum()"
+          append="%"
+          [cap]="gaugeCap"
+          [thick]="gaugeThick"
+          [foregroundColor]="gaugeColorHum"
+        >
+        </ngx-gauge>
+      </div>
 
       <!-- LUZ -->
-      <ngx-gauge
-        [type]="gaugeType"
-        [value]="luz()"
-        append="%"
-        [cap]="gaugeCap"
-        [thick]="gaugeThick"
-        [foregroundColor]="gaugeColorLuz"
-      >
-      </ngx-gauge>
+      <div class="gauge-with-icon">
+        <fa-icon class="icon luz" [icon]="faLuz" size="lg"></fa-icon>
+        <ngx-gauge
+          [type]="gaugeType"
+          [value]="luz()"
+          append="%"
+          [cap]="gaugeCap"
+          [thick]="gaugeThick"
+          [foregroundColor]="gaugeColorLuz"
+        >
+        </ngx-gauge>
+      </div>
 
       <!-- SONIDO -->
-      <ngx-gauge
-        [type]="gaugeType"
-        [value]="sonido()"
-        append="%"
-        [cap]="gaugeCap"
-        [thick]="gaugeThick"
-      >
-      </ngx-gauge>
+      <div class="gauge-with-icon">
+        <fa-icon class="icon sonido" [icon]="faSonido" size="lg"></fa-icon>
+        <ngx-gauge
+          [type]="gaugeType"
+          [value]="sonido()"
+          append="%"
+          [cap]="gaugeCap"
+          [thick]="gaugeThick"
+        >
+        </ngx-gauge>
+      </div>
     </div>
+
     <div class="analitica-btn">
       <p>{{ lab }}</p>
       <div class="botones">
