@@ -51,10 +51,6 @@ import { AgregarLabDialogComponent } from './agregar-lab-dialog/agregar-lab-dial
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnaliticaComponent implements OnInit {
-  fontTemp = faTemperature3;
-  fontHum = faDroplet;
-  fontLuz = faLightbulb;
-  fontSonido = faVolumeHigh;
 
   tabList: string[] = [];
 

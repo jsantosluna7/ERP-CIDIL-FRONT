@@ -7,9 +7,13 @@ import { ServicioMqttService } from '../../../../../../services/loT/servicio-mqt
 import { DatosService } from '../../../../../../services/Datos/datos.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faDroplet,
+  faLightbulb,
   faLock,
   faLockOpen,
   faRepeat,
+  faTemperature3,
+  faVolumeHigh,
 } from '@fortawesome/free-solid-svg-icons';
 import { MatButtonModule } from '@angular/material/button';
 import { PisosService } from '../../../../../../services/Pisos/pisos.service';
@@ -17,7 +21,13 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-analitica-toda',
-  imports: [NgxGaugeModule, UiSwitchModule, FontAwesomeModule, MatButtonModule, MatIconModule],
+  imports: [
+    NgxGaugeModule,
+    UiSwitchModule,
+    FontAwesomeModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './analitica-toda.component.html',
   styleUrl: './analitica-toda.component.css',
   providers: [ServicioMqttService],
@@ -26,6 +36,10 @@ export class AnaliticaTodaComponent implements OnInit, OnDestroy {
   faLock = faLock;
   faUnlock = faLockOpen;
   faRestart = faRepeat;
+  faTemp = faTemperature3;
+  faHum = faDroplet;
+  faLuz = faLightbulb;
+  faSonido = faVolumeHigh;
 
   // GAUGE CONFIG
   gaugeType: any = 'arch';

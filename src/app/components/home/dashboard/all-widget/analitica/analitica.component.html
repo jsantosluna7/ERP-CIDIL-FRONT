@@ -1,45 +1,10 @@
-<!-- <div class="botonera">
-  @for (tab of tabList; track tab; let index = $index) {
-  <button
-    mat-raised-button
-    (click)="seleccionarTab(tab)"
-    [class]="tabSeleccionado() === tab ? 'selectedBtn' : undefined"
-  >
-    {{ tab }}
-  </button>
-
-  <button
-    mat-icon-button
-    color="warn"
-    aria-label="Eliminar"
-    (click)="eliminarBoton(tab)"
-  >
-    <mat-icon>delete</mat-icon>
-  </button>
-  }
-
-
-  <button
-    mat-icon-button
-    color="primary"
-    (click)="agregarBoton()"
-    aria-label="Agregar botón"
-  >
-    <mat-icon>add</mat-icon>
-  </button>
-</div> -->
-
 <div class="componente">
-  <div class="iconos">
-    <fa-icon class="icon temp" [icon]="fontTemp" size="3x"></fa-icon>
-    <fa-icon class="icon hum" [icon]="fontHum" size="3x"></fa-icon>
-    <fa-icon class="icon luz" [icon]="fontLuz" size="3x"></fa-icon>
-    <fa-icon class="icon sonido" [icon]="fontSonido" size="3x"></fa-icon>
-    
-    <button class="add-btn" aria-label="Agregar Botones" (click)="agregarBoton()">
-      <mat-icon>add_2</mat-icon>
-    </button>
-  </div>
+<div class="header-analitica">
+  <button class="add-btn" aria-label="Agregar Botones" (click)="agregarBoton()">
+    <mat-icon>add_2</mat-icon>
+  </button>
+</div>
+
 
   @for (lab of tabList; track $index) {
   <app-analitica-toda [laboratorio]="lab" [piso]="pisoSeleccionado"></app-analitica-toda>
