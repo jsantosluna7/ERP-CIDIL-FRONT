@@ -8,7 +8,8 @@
         <input matInput (input)="applyFilter($event)" placeholder="Buscar..." />
       </mat-form-field>
 
-      <!-- Tabla de Usuarios -->
+      <div class="table-scroll">
+        <!-- Tabla de Usuarios -->
       <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
         <!-- ID -->
@@ -90,6 +91,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+      </div>
 
       <mat-paginator [length]="dataSource.data.length"
                [pageSize]="5"
