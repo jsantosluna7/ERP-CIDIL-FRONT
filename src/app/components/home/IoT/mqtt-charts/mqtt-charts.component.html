@@ -1,31 +1,31 @@
-<div class="body">
+<div class="body-mq-charts">
   <div class="grid">
     <div
       echarts
       [options]="chartOptionsTemp"
       (chartInit)="onInit($event, 'temp')"
-      class="chart chart1"
+      class="chart"
     ></div>
 
     <div
       echarts
       [options]="chartOptionsHum"
       (chartInit)="onInit($event, 'hum')"
-      class="chart chart2"
+      class="chart"
     ></div>
 
     <div
       echarts
       [options]="chartOptionsLuz"
       (chartInit)="onInit($event, 'luz')"
-      class="chart chart3"
+      class="chart"
     ></div>
 
     <div
       echarts
       [options]="chartOptionsSon"
       (chartInit)="onInit($event, 'sonido')"
-      class="chart chart4"
+      class="chart"
     ></div>
   </div>
 </div>

@@ -11,7 +11,6 @@ import {
   TitleComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import { DatosService } from '../../../../services/Datos/datos.service';
 import { Subscription } from 'rxjs';
 import { PisosService } from '../../../../services/Pisos/pisos.service';
 echarts.use([
