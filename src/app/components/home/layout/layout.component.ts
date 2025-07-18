@@ -7,7 +7,7 @@ import { createChat } from '@n8n/chat';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterOutlet, SidebarComponent, NavbarComponent],
+  imports: [CommonModule, RouterOutlet, SidebarComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   encapsulation: ViewEncapsulation.None

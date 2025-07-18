@@ -89,6 +89,11 @@ export class CalendarioHomeComponent implements OnDestroy {
       handleWindowResize: true,
       stickyFooterScrollbar: false,
     };
+
+    const isMobile = window.innerWidth < 600;
+    this.opcionesCalendario.initialView = isMobile
+      ? 'timeGridDay'
+      : 'timeGridWeek';
   }
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
