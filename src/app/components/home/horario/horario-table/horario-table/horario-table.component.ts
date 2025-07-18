@@ -23,12 +23,11 @@ import { HorarioService } from '../../../../../services/Api/Horario/horario.serv
 import { LaboratorioService } from '../../../../../services/Api/Laboratorio/laboratorio.service';
 import { UtilitiesService } from '../../../../../services/Utilities/utilities.service';
 import { FileDialogComponent } from '../../dialog/file-dialog/file-dialog.component';
-import { ElegirFechaComponent } from '../../crud/elegir-fecha/elegir-fecha.component';
 import { EditarHorarioComponent } from '../../crud/editar-horario/editar-horario.component';
 import { PreguntaDialogComponent } from '../../../../elements/pregunta-dialog/pregunta-dialog.component';
 import { FechaDialogComponent } from '../../../../elements/fecha-dialog/fecha-dialog.component';
 import { Router } from '@angular/router';
-import { error } from 'console';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-horario-table',
@@ -41,6 +40,7 @@ import { error } from 'console';
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatExpansionModule,
   ],
   templateUrl: './horario-table.component.html',
   styleUrl: './horario-table.component.css',
@@ -87,9 +87,32 @@ export class HorarioTableComponent {
   endpointElimnarAuto: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_AUTO']}`;
   endpointCodigoLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_CODIGO']}`;
 
+  isScreenSmall: boolean = false;
+
   ngOnInit() {
     this.cargarTabla();
+    // this.setResponsiveColumns();
+    // window.addEventListener('resize', () => this.setResponsiveColumns());
   }
+
+  // setResponsiveColumns() {
+  //   const width = window.innerWidth;
+  //   if (width <= 768) {
+  //     this.displayedColumns = ['asignatura', 'profesor', 'codigoDeLab'];
+  //   } else {
+  //     this.displayedColumns = [
+  //       'asignatura',
+  //       'profesor',
+  //       'codigoDeLab',
+  //       'dia',
+  //       'horaInicio',
+  //       'horaFinal',
+  //       'fechaInicio',
+  //       'fechaFinal',
+  //       'acciones',
+  //     ];
+  //   }
+  // }
 
   onPageChange(event: PageEvent) {
     this.secondLoading = true;

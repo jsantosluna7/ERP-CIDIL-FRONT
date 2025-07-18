@@ -1,4 +1,4 @@
-<div class="body">
+<div class="body-h-table">
   <div class="nav">
     <h1>Horarios</h1>
     <div class="botones">
@@ -33,67 +33,85 @@
       </div>
       }
 
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        matSort
-        class="mat-elevation-z8"
-      >
-        <ng-container matColumnDef="asignatura">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Asignatura</th>
-          <td mat-cell *matCellDef="let element">{{ element.asignatura }}</td>
-        </ng-container>
+      <div class="table-scroll">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          class="mat-elevation-z8"
+        >
+          <ng-container matColumnDef="asignatura">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Asignatura
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.asignatura }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="profesor">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Profesor</th>
-          <td mat-cell *matCellDef="let element">{{ element.profesor }}</td>
-        </ng-container>
+          <ng-container matColumnDef="profesor">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Profesor</th>
+            <td mat-cell *matCellDef="let element">{{ element.profesor }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="codigoDeLab">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Laboratorio</th>
-          <td mat-cell *matCellDef="let element">{{ element.codigoDeLab }}</td>
-        </ng-container>
+          <ng-container matColumnDef="codigoDeLab">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Laboratorio
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.codigoDeLab }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="dia">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Dia</th>
-          <td mat-cell *matCellDef="let element">{{ element.dia }}</td>
-        </ng-container>
+          <ng-container matColumnDef="dia">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Dia</th>
+            <td mat-cell *matCellDef="let element">{{ element.dia }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="horaInicio">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora Inicio</th>
-          <td mat-cell *matCellDef="let element">{{ element.horaInicio }}</td>
-        </ng-container>
+          <ng-container matColumnDef="horaInicio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Hora Inicio
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.horaInicio }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="horaFinal">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Hora Final</th>
-          <td mat-cell *matCellDef="let element">{{ element.horaFinal }}</td>
-        </ng-container>
+          <ng-container matColumnDef="horaFinal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Hora Final
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.horaFinal }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="fechaInicio">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Inicio</th>
-          <td mat-cell *matCellDef="let element">{{ element.fechaInicio }}</td>
-        </ng-container>
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Fecha Inicio
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.fechaInicio }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="fechaFinal">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Final</th>
-          <td mat-cell *matCellDef="let element">{{ element.fechaFinal }}</td>
-        </ng-container>
+          <ng-container matColumnDef="fechaFinal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Fecha Final
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.fechaFinal }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let element">
-            <button mat-icon-button color="primary" (click)="editar(element)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="eliminar(element)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary" (click)="editar(element)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="eliminar(element)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
 
       <mat-paginator
         class="paginator"
