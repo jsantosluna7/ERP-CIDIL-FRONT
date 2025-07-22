@@ -21,6 +21,7 @@ import { DatosService } from '../../../../../services/Datos/datos.service';
 import {
   faDroplet,
   faLightbulb,
+  faMicrophone,
   faTemperature3,
   faVolumeHigh,
 } from '@fortawesome/free-solid-svg-icons';
@@ -52,6 +53,11 @@ import { AgregarLabDialogComponent } from './agregar-lab-dialog/agregar-lab-dial
 })
 export class AnaliticaComponent implements OnInit {
 
+    faTemp = faTemperature3;
+    faHum = faDroplet;
+    faLuz = faLightbulb;
+    faSonido = faMicrophone;
+    
   tabList: string[] = [];
 
   pisoSeleccionado = 1;

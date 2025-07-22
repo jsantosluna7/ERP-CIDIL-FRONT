@@ -11,6 +11,7 @@ import {
   faLightbulb,
   faLock,
   faLockOpen,
+  faMicrophone,
   faRepeat,
   faTemperature3,
   faVolumeHigh,
@@ -39,7 +40,7 @@ export class AnaliticaTodaComponent implements OnInit, OnDestroy {
   faTemp = faTemperature3;
   faHum = faDroplet;
   faLuz = faLightbulb;
-  faSonido = faVolumeHigh;
+  faSonido = faMicrophone;
 
   // GAUGE CONFIG
   gaugeType: any = 'arch';

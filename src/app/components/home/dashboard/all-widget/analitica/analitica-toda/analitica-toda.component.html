@@ -3,7 +3,7 @@
     <div class="analitica-container">
       <!-- TEMPERATURA -->
       <div class="gauge-with-icon">
-        <fa-icon class="icon temp" [icon]="faTemp" size="lg"></fa-icon>
+        <fa-icon class="d-icon icon temp" [icon]="faTemp" size="sm"></fa-icon>
         <ngx-gauge
           [type]="gaugeType"
           [value]="temp()"
@@ -11,13 +11,14 @@
           [cap]="gaugeCap"
           [thick]="gaugeThick"
           [foregroundColor]="gaugeColorTemp"
+          [size]="120"
         >
         </ngx-gauge>
       </div>
 
       <!-- HUMEDAD -->
       <div class="gauge-with-icon">
-        <fa-icon class="icon hum" [icon]="faHum" size="lg"></fa-icon>
+        <fa-icon class="d-icon icon hum" [icon]="faHum" size="sm"></fa-icon>
         <ngx-gauge
           [type]="gaugeType"
           [value]="hum()"
@@ -25,13 +26,14 @@
           [cap]="gaugeCap"
           [thick]="gaugeThick"
           [foregroundColor]="gaugeColorHum"
+          [size]="120"
         >
         </ngx-gauge>
       </div>
 
       <!-- LUZ -->
       <div class="gauge-with-icon">
-        <fa-icon class="icon luz" [icon]="faLuz" size="lg"></fa-icon>
+        <fa-icon class="d-icon icon luz" [icon]="faLuz" size="sm"></fa-icon>
         <ngx-gauge
           [type]="gaugeType"
           [value]="luz()"
@@ -39,19 +41,21 @@
           [cap]="gaugeCap"
           [thick]="gaugeThick"
           [foregroundColor]="gaugeColorLuz"
+          [size]="120"
         >
         </ngx-gauge>
       </div>
 
       <!-- SONIDO -->
       <div class="gauge-with-icon">
-        <fa-icon class="icon sonido" [icon]="faSonido" size="lg"></fa-icon>
+        <fa-icon class="d-icon icon sonido" [icon]="faSonido" size="sm"></fa-icon>
         <ngx-gauge
           [type]="gaugeType"
           [value]="sonido()"
           append="%"
           [cap]="gaugeCap"
           [thick]="gaugeThick"
+          [size]="120"
         >
         </ngx-gauge>
       </div>
@@ -65,7 +69,7 @@
           <fa-icon
             class="icon"
             [icon]="faUnlock"
-            size="3x"
+            size="lg"
             class="lock-open"
           ></fa-icon>
           <button
@@ -79,7 +83,7 @@
           <fa-icon
             class="icon"
             [icon]="faLock"
-            size="3x"
+            size="lg"
             class="lock-close"
           ></fa-icon>
           <button
@@ -93,7 +97,7 @@
         </div>
 
         <div class="boton">
-          <fa-icon class="icon" [icon]="faRestart" size="3x"></fa-icon>
+          <fa-icon class="icon" [icon]="faRestart" size="lg"></fa-icon>
           <button
             mat-raised-button
             (click)="toggleReiniciar()"

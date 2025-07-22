@@ -168,21 +168,98 @@ fa-icon {
 
 /* === DESKTOP FORZADO (para mantener vista horizontal en escritorio) === */
 @media (min-width: 900px) {
+
+    .d-icon {
+        display: none;
+    }
+
+    /* app-analitica.component.scss */
+    :host {
+        display: block !important;
+        height: 100% !important;
+    }
+
+    .analitica-scroll {
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+    }
+
     .analitica-completa {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 2rem;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+
+
+    /* .analitica-completa {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+} */
+
+    .analitica-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    .analitica-btn p {
+        font-weight: bold !important;
+        background-color: #1825AA !important;
+        padding: .2rem 1rem .2rem 1rem !important;
+        border-radius: 25px !important;
+        color: white !important;
+        font-size: 2rem !important;
+        margin: 0 !important;
     }
 
     .analitica-container {
-        width: auto;
+        width: 70% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: center;
+        gap: 5rem;
     }
 
     .botones {
-        align-items: center;
-        gap: 1rem;
+        margin-top: .5rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 3rem !important;
+    }
+
+    .boton {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .lock-open {
+        color: #008000 !important;
+    }
+
+    .lock-close {
+        color: #CC3333 !important;
+    }
+
+    fa-icon {
+        margin-bottom: .8rem !important;
+    }
+
+    .toggle-btn {
+        color: black !important;
+    }
+
+    .delete-btn {
+        align-self: center !important;
+        margin-left: 1rem !important;
     }
 }
 

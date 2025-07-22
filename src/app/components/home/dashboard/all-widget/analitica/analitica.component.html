@@ -1,12 +1,42 @@
-<div class="componente">
-<div class="header-analitica">
-  <button class="add-btn" aria-label="Agregar Botones" (click)="agregarBoton()">
-    <mat-icon>add_2</mat-icon>
-  </button>
-</div>
+<div class="componente desktop">
+  <div class="iconos">
+    <fa-icon class="icon temp" [icon]="faTemp" size="3x"></fa-icon>
+    <fa-icon class="icon hum" [icon]="faHum" size="3x"></fa-icon>
+    <fa-icon class="icon luz" [icon]="faLuz" size="3x"></fa-icon>
+    <fa-icon class="icon sonido" [icon]="faSonido" size="3x"></fa-icon>
 
+    <button
+      class="add-btn"
+      aria-label="Agregar Botones"
+      (click)="agregarBoton()"
+    >
+      <mat-icon>add_2</mat-icon>
+    </button>
+  </div>
 
   @for (lab of tabList; track $index) {
-  <app-analitica-toda [laboratorio]="lab" [piso]="pisoSeleccionado"></app-analitica-toda>
+  <app-analitica-toda
+    [laboratorio]="lab"
+    [piso]="pisoSeleccionado"
+  ></app-analitica-toda>
+  }
+</div>
+
+<div class="componente mobile">
+  <div class="header-analitica">
+    <button
+      class="add-btn"
+      aria-label="Agregar Botones"
+      (click)="agregarBoton()"
+    >
+      <mat-icon>add_2</mat-icon>
+    </button>
+  </div>
+
+  @for (lab of tabList; track $index) {
+  <app-analitica-toda
+    [laboratorio]="lab"
+    [piso]="pisoSeleccionado"
+  ></app-analitica-toda>
   }
 </div>

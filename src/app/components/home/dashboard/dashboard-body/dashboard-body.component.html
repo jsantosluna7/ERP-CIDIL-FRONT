@@ -10,17 +10,34 @@
 
     <ul class="box-info">
       <li>
-        <i class="bx bxs-calendar-check"></i>
+        <fa-icon
+          [icon]="faCalendar"
+          size="xl"
+          class="bx bxs-calendar-check"
+        ></fa-icon>
         <span class="text">
           <h3>1020</h3>
-          <p>New Order</p>
+          <p>Espacios</p>
+          <p>(Pendientes)</p>
         </span>
       </li>
       <li>
-        <i class="bx bxs-group"></i>
+        <fa-icon
+          [icon]="faElectronics"
+          size="xl"
+          class="bx bxs-calendar-check"
+        ></fa-icon>
+        <span class="text">
+          <h3>1020</h3>
+          <p>Equipos</p>
+          <p>(Pendientes)</p>
+        </span>
+      </li>
+      <li>
+        <fa-icon [icon]="faGroup" size="xl" class="bx bxs-group"></fa-icon>
         <span class="text">
           <h3>2834</h3>
-          <p>Visitors</p>
+          <p>Usuarios</p>
         </span>
       </li>
       <li>
@@ -35,90 +52,19 @@
     <div class="table-data">
       <div class="order">
         <div class="head">
-          <h3>Recent Orders</h3>
+          <h3>Analíticas</h3>
           <i class="bx bx-search"></i>
           <i class="bx bx-filter"></i>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Date Order</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <img src="img/people.png" />
-                <p>John Doe</p>
-              </td>
-              <td>01-10-2021</td>
-              <td><span class="status completed">Completed</span></td>
-            </tr>
-            <tr>
-              <td>
-                <img src="img/people.png" />
-                <p>John Doe</p>
-              </td>
-              <td>01-10-2021</td>
-              <td><span class="status pending">Pending</span></td>
-            </tr>
-            <tr>
-              <td>
-                <img src="img/people.png" />
-                <p>John Doe</p>
-              </td>
-              <td>01-10-2021</td>
-              <td><span class="status process">Process</span></td>
-            </tr>
-            <tr>
-              <td>
-                <img src="img/people.png" />
-                <p>John Doe</p>
-              </td>
-              <td>01-10-2021</td>
-              <td><span class="status pending">Pending</span></td>
-            </tr>
-            <tr>
-              <td>
-                <img src="img/people.png" />
-                <p>John Doe</p>
-              </td>
-              <td>01-10-2021</td>
-              <td><span class="status completed">Completed</span></td>
-            </tr>
-          </tbody>
-        </table>
+        <app-analitica></app-analitica>
       </div>
       <div class="todo">
         <div class="head">
-          <h3>Todos</h3>
+          <h3>Calendario</h3>
           <i class="bx bx-plus"></i>
           <i class="bx bx-filter"></i>
         </div>
-        <ul class="todo-list">
-          <li class="completed">
-            <p>Todo List</p>
-            <i class="bx bx-dots-vertical-rounded"></i>
-          </li>
-          <li class="completed">
-            <p>Todo List</p>
-            <i class="bx bx-dots-vertical-rounded"></i>
-          </li>
-          <li class="not-completed">
-            <p>Todo List</p>
-            <i class="bx bx-dots-vertical-rounded"></i>
-          </li>
-          <li class="completed">
-            <p>Todo List</p>
-            <i class="bx bx-dots-vertical-rounded"></i>
-          </li>
-          <li class="not-completed">
-            <p>Todo List</p>
-            <i class="bx bx-dots-vertical-rounded"></i>
-          </li>
-        </ul>
+        <app-calendario></app-calendario>
       </div>
     </div>
   </main>
