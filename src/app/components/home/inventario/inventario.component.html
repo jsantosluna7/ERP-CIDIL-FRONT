@@ -67,7 +67,9 @@
     [pageSizeOptions]="[]" [hidePageSize]="true" showFirstLastButtons (page)="onPageChange($event)">
   </mat-paginator>
 
-  <!-- Campo de entrada personalizado para el tamaño de página -->
+
+  
+    <!-- Campo de entrada personalizado para el tamaño de página -->
   <div class="entrada-pagina">
     <p>Elementos por página:</p>
     <input matInput type="text" [value]="pageSize" (change)="updatePageSize($event)" />
