@@ -1,10 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import {
   FullCalendarComponent,
   FullCalendarModule,
 } from '@fullcalendar/angular';
-import { CalendarOptions } from '@fullcalendar/core/index.js';
+import { CalendarOptions, ViewApi } from '@fullcalendar/core/index.js';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
@@ -25,7 +31,7 @@ import { PisosService } from '../../../../../services/Pisos/pisos.service';
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css',
 })
-export class CalendarioComponent implements OnDestroy {
+export class CalendarioComponent implements OnDestroy, AfterViewInit {
   @ViewChild('calendarHost', { static: true })
   host!: ElementRef<HTMLDivElement>;
   @ViewChild('fc') calendarComponent!: FullCalendarComponent;
@@ -48,15 +54,44 @@ export class CalendarioComponent implements OnDestroy {
     private _piso: PisosService
   ) {
     this.opcionesCalendario = {
-      initialView: 'dayGridMonth',
+      initialView: this.getResponsiveView(),
+      windowResize: this.onCalendarResize.bind(this),
       events: this.fetchEventos.bind(this),
       eventClick: this.handleEventClick.bind(this),
       dateClick: this.handleDateClick.bind(this),
       locales: [esLocale],
       locale: 'es',
       plugins: [dayGridPlugin, interactionPlugin],
-      height: '100%', // ocupa toda la altura del contenedor
+      height: 'auto',
+      contentHeight: 'auto',
+      windowResizeDelay: 100,
     };
+  }
+
+  getResponsiveView(): string {
+    const width = window.innerWidth;
+
+    if (width < 600) return 'dayGridDay'; // Móviles pequeños
+    if (width < 768) return 'dayGridWeek'; // Móviles medianos
+    if (width < 992) return 'dayGridWeek'; // Tablets
+    return 'dayGridMonth'; // Escritorio
+  }
+
+  onCalendarResize(arg: { view: ViewApi }) {
+    const api = this.calendarComponent.getApi();
+    const newView = this.getResponsiveView();
+    if (api.view.type !== newView) {
+      api.changeView(newView);
+    }
+  }
+
+  ngAfterViewInit() {
+    window.addEventListener('resize', () => {
+      const api = this.calendarComponent?.getApi();
+      if (api) {
+        api.changeView(this.getResponsiveView());
+      }
+    });
   }
 
   fetchEventos(info: any, successCallback: any, failureCallback: any) {
