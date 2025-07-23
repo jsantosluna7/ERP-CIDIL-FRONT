@@ -1,31 +1,25 @@
 .iconos {
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    margin: 1.5rem 6.5rem;
-    gap: 10.3rem;
+    flex-wrap: nowrap;
+    /* no permitir que bajen */
+    padding: 0 2vw;
+    gap: clamp(1rem, 4vw, 5rem);
+    /* responsivo */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .componente {
     overflow-x: hidden;
-}
-
-.add-btn {
-    border: none;
-    background-color: transparent;
-    margin-left: 15rem;
+    width: 100%;
 }
 
 .header-analitica {
     display: flex;
     justify-content: flex-end;
     padding: 1rem 2rem;
-}
-
-.add-btn {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
 }
 
 
@@ -101,15 +95,12 @@
 /* === LAPTOP (hasta 1024px) === */
 @media screen and (max-width: 1024px) {
     .iconos {
-        gap: 6rem;
+        gap: clamp(0.5rem, 2vw, 3rem);
         margin: 1rem 3rem;
     }
 
-    .add-btn {
-        margin-left: 4rem;
-    }
-
     .analitica-container {
+        gap: clamp(0.5rem, 2vw, 3rem);
         width: 80%;
     }
 }
@@ -118,12 +109,9 @@
 /* === DESKTOP LARGE (desde 1025px en adelante) === */
 @media screen and (min-width: 1025px) {
     .iconos {
-        gap: 10.3rem;
-        margin: 1.5rem 6.5rem;
-    }
-
-    .add-btn {
-        margin-left: 15rem;
+        gap: clamp(2rem, 4vw, 6rem);
+        margin: 1.5rem 2.5rem;
+        justify-content: center;
     }
 
     .analitica-container {
@@ -147,8 +135,6 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        margin: 1.5rem 6.5rem;
-        gap: 10.3rem;
     }
 
     .temp {
@@ -167,13 +153,8 @@
         color: #009688;
     }
 
-    .componente {
-        overflow: auto;
-    }
-
     .add-btn {
         border: none;
         background-color: transparent;
-        margin-left: 15rem;
     }
 }

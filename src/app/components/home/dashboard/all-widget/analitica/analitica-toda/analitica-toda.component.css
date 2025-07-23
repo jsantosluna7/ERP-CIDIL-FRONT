@@ -5,19 +5,33 @@
 }
 
 .analitica-scroll {
-    height: 100%;
-    min-height: 0;
-    overflow-y: auto;
+    overflow-x: hidden !important;
+    width: 100%;
 }
 
 .analitica-completa {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    /* permite que se acomoden hacia abajo si no caben */
+    justify-content: center;
+    /* centra elementos si sobran espacio */
     gap: 2rem;
     padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    /* importante para que padding no sume al ancho */
 }
+
+.analitica-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    padding: 0 2vw;
+    gap: clamp(1rem, 4vw, 5rem);
+    box-sizing: border-box;
+}
+
 
 .analitica-btn {
     display: flex;
@@ -34,10 +48,6 @@
     color: white;
     font-size: 2rem;
     margin: 0;
-}
-
-.analitica-container {
-    width: 70%;
 }
 
 .botones {
