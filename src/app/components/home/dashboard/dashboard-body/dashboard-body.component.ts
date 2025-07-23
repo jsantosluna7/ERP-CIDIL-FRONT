@@ -1,32 +1,14 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  input,
-  Input,
-  signal,
-  viewChild,
-  ViewEncapsulation,
-} from '@angular/core';
-import { WidgetComponent } from '../../../elements/widget/widget.component';
-import { MatIcon } from '@angular/material/icon';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
-import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDropList,
-  CdkDropListGroup,
-} from '@angular/cdk/drag-drop';
-import { WidgetPanelComponent } from '../../../elements/widget/widget-panel/widget-panel.component';
 import { DashboardService } from '../../../../services/Dashboard/dashboard.service';
-import { wrapGrid } from 'animate-css-grid';
-import { Console } from 'console';
-import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import { AnaliticaComponent } from '../all-widget/analitica/analitica.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCalendarCheck, faMicrochip, faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
-import { AnaliticaTodaComponent } from "../all-widget/analitica/analitica-toda/analitica-toda.component";
-import { CalendarioComponent } from "../all-widget/calendario/calendario.component";
+import {
+  faCalendarCheck,
+  faMicrochip,
+  faPeopleGroup,
+} from '@fortawesome/free-solid-svg-icons';
+import { CalendarioComponent } from '../all-widget/calendario/calendario.component';
 
 @Component({
   selector: 'app-dashboard-body',
@@ -34,15 +16,51 @@ import { CalendarioComponent } from "../all-widget/calendario/calendario.compone
     MatMenuModule,
     FontAwesomeModule,
     AnaliticaComponent,
-    CalendarioComponent
-],
+    CalendarioComponent,
+  ],
   templateUrl: './dashboard-body.component.html',
   styleUrl: './dashboard-body.component.css',
   providers: [DashboardService],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
-export class DashboardBodyComponent {
-  faCalendar = faCalendarCheck
-  faGroup = faPeopleGroup
-  faElectronics = faMicrochip
+export class DashboardBodyComponent implements OnInit {
+  faCalendar = faCalendarCheck;
+  faGroup = faPeopleGroup;
+  faElectronics = faMicrochip;
+
+  cantidadPrestamosEquipos: number = 0;
+  cantidadReservaEspacios: number = 0;
+  cantidadUsuarios: number = 0;
+
+  endpointPrestamosEquipos: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_PRESTAMOS_EQUIPOS']}`;
+  endpointReservaEspacios: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_RESERVA_ESPACIO']}`;
+  endpointUsuarios: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_USUARIOS']}`;
+
+  constructor(private _dashboardService: DashboardService) {}
+
+  ngOnInit(): void {
+    this._dashboardService
+      .getCantidadPrestamosEquipos(this.endpointPrestamosEquipos)
+      .subscribe({
+        next: (data) => {
+          this.cantidadPrestamosEquipos = data.totalPrestamosEquipos;
+        },
+      });
+
+    this._dashboardService
+      .getCantidadReservaEspacios(this.endpointReservaEspacios)
+      .subscribe({
+        next: (data) => {
+          this.cantidadReservaEspacios = data.totalReservaEspacios;
+        },
+      });
+
+    this._dashboardService
+      .getCantidadUsuarios(this.endpointUsuarios)
+      .subscribe({
+        next: (data) => {
+          this.cantidadUsuarios = data.totalUsuarios;
+        },
+      });
+  }
 }
