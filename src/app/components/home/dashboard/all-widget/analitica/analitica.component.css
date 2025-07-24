@@ -3,10 +3,8 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap;
-    /* no permitir que bajen */
-    padding: 0 2vw;
+    padding: 0 30vw;
     gap: clamp(1rem, 4vw, 5rem);
-    /* responsivo */
     width: 100%;
     box-sizing: border-box;
 }
@@ -22,8 +20,6 @@
     padding: 1rem 2rem;
 }
 
-
-/* === MOBILE SMALL: hasta 400px (iPhone SE, móviles mini) === */
 @media screen and (max-width: 400px) {
     .iconos {
         flex-wrap: wrap;
@@ -57,7 +53,6 @@
 }
 
 
-/* === MOBILE LARGE / TABLET: hasta 600px (Galaxy S25 Ultra) === */
 @media screen and (max-width: 600px) {
     .iconos {
         flex-wrap: wrap;
@@ -91,8 +86,6 @@
     }
 }
 
-
-/* === LAPTOP (hasta 1024px) === */
 @media screen and (max-width: 1024px) {
     .iconos {
         gap: clamp(0.5rem, 2vw, 3rem);
@@ -105,8 +98,6 @@
     }
 }
 
-
-/* === DESKTOP LARGE (desde 1025px en adelante) === */
 @media screen and (min-width: 1025px) {
     .iconos {
         gap: clamp(2rem, 4vw, 6rem);
@@ -122,6 +113,11 @@
 @media (max-width: 900px) {
     .desktop {
         display: none;
+    }
+
+    .add-btn {
+        border: none;
+        background-color: transparent;
     }
 }
 
