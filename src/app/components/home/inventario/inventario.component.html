@@ -3,13 +3,33 @@
 
 }
 
-<div class="container mt-4">
+
+
+<div class="d-flex justify-content-end">
+  <button (click)="exportarInventario()" mat-raised-button color="primary" class="ms-2">
+    Exportar Inventario
+  </button>
+
+  <button mat-raised-button color="primary" (click)="fileInput.click()" class="ms-2">
+    <mat-icon>upload</mat-icon>
+    Importar Inventario
+  </button>
+</div>
+
+
+<div class="container mt-4 ">
 
   <mat-form-field appearance="outline" class="field">
     <mat-label>Filtrar</mat-label>
     <input type="text" matInput (input)="applyFilter($event)" placeholder="Buscar..." />
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
+
+
+  <input #fileInput type="file" accept=".xlsx, .xls" (change)="onFileChange($event)" hidden />
+
+
+
 
   @if(!loading){
   <div class="row">
