@@ -3,6 +3,20 @@
 
 }
 
+
+
+<div class="d-flex justify-content-end">
+  <button (click)="exportarInventario()" mat-raised-button color="primary" class="ms-2">
+    Exportar Inventario
+  </button>
+
+  <button mat-raised-button color="primary" (click)="fileInput.click()" class="ms-2">
+    <mat-icon>upload</mat-icon>
+    Importar Inventario
+  </button>
+</div>
+
+
 <div class="container mt-4 ">
 
   <mat-form-field appearance="outline" class="field">
@@ -11,14 +25,7 @@
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
 
-  <button  (click)="exportarInventario()" mat-raised-button color="primary">
-  Exportar Inventario
-  </button>
-  
-  <button mat-raised-button color="primary" (click)="fileInput.click()">
-    <mat-icon>upload</mat-icon>
-    Importar Inventario
-  </button>
+
   <input #fileInput type="file" accept=".xlsx, .xls" (change)="onFileChange($event)" hidden />
 
 
