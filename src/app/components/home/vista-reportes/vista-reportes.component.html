@@ -1,0 +1,62 @@
+
+<div class="container mt-4">
+  <h2>Reportes de Fallas</h2>
+<div class="table-scroll">
+  
+  @if (reportes.length > 0) {
+    <table mat-table [dataSource]="reportes" class="mat-elevation-z8 full-width-table tabla-letra-grande ">
+
+      <ng-container matColumnDef="nombreSolicitante">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Solicitante</th>
+        <td mat-cell *matCellDef="let reporte">{{ reporte.nombreSolicitante }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Descripción</th>
+        <td mat-cell *matCellDef="let reporte">{{ reporte.descripcion }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="lugar">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Lugar</th>
+        <td mat-cell *matCellDef="let reporte">{{ reporte.lugar || 'No especificado' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="idLaboratorio">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Laboratorio</th>
+        <td mat-cell *matCellDef="let reporte">{{ getNombreLaboratorio(reporte.idLaboratorio) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="idEstado">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Estado</th>
+        <td mat-cell *matCellDef="let reporte">
+          {{
+            reporte.idEstado === 1 ? 'Abierto' :
+            reporte.idEstado === 2 ? 'En proceso' :
+            reporte.idEstado === 3 ? 'Cerrado' :
+            'Desconocido'
+          }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Acciones</th>
+        <td mat-cell *matCellDef="let reporte">
+  <button mat-raised-button color="primary" (click)="cerrarReporte(reporte)" [disabled]="reporte.idEstado === 3">
+    Cerrar
+  </button>
+  <!--<button mat-raised-button color="accent" (click)="reabrirReporte(reporte)" [disabled]="reporte.idEstado === 1">
+    Reabrir
+  </button>
+  -->
+</td>
+
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+  } @else {
+    <div class="alert alert-info mt-3">No hay reportes disponibles.</div>
+  }
+</div>
+</div>

@@ -203,6 +203,13 @@ export const routes: Routes = [
          canActivate: [RoleGuard],
          data: {roles: [1, 2 , 3]},
       },
+      {
+        path: 'vista-reportes',
+        loadComponent: () => import('./components/home/vista-reportes/vista-reportes.component').then(
+         (m) => m.VistaReportesComponent),
+         canActivate: [RoleGuard],
+         data: {roles: [1, 2 , 3]}, 
+      },
     ],
     canActivate: [AuthGuard],
   },
