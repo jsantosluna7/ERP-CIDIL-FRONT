@@ -13,9 +13,9 @@
     background-color: #FAF9FD !important;
     margin: 0px 0px 2rem 0px;
 }
-
+/*barra inferiol*/
 .entrada-pagina{
-    position: absolute;
+    position:absolute;
     bottom: 1rem;
     left: 2.5rem;
     display: flex;
@@ -38,4 +38,63 @@
     font-size: 0.9rem;
     inline-size: 3rem;
     text-align: center;
+     width: 100%; 
+     max-width: 6rem; 
+    
+
 }
+
+
+/*Prueba para movil*/
+
+
+
+/* Pantallas grandes: flotar abajo a la izquierda */
+@media screen and (min-width: 768px) {
+  .entrada-pagina {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 2rem;
+    flex-direction: row; /* fila */
+    align-items: center;
+  }
+  .entrada-pagina input {
+    margin-top: 0; /* quitas separación arriba */
+    margin-left: 0.5rem; /* separación a la izquierda */
+    width: auto;
+  }
+}
+
+/* Teléfonos grandes */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  .entrada-pagina {
+    position: static; /* revierte a flujo normal */
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .entrada-pagina input {
+    margin-top: 0.3rem;
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Teléfonos pequeños */
+@media screen and (max-width: 479px) {
+  .entrada-pagina {
+    position: static; /* revierte a flujo normal */
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .entrada-pagina input {
+    margin-top: 0.3rem;
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+
+
+
+
+
