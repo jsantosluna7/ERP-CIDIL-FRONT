@@ -16,8 +16,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
 import { MatCardModule } from '@angular/material/card';
+import { CartaCarrito } from '../carrito/cartaCarrito.interface';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
+import {  forkJoin, map } from 'rxjs';
 
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -25,6 +27,8 @@ import { ActualizarcartaComponent } from './actualizarcarta/actualizarcarta.comp
 import { MatDialog } from '@angular/material/dialog';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 import { FormsModule } from '@angular/forms';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-inventario',
@@ -87,6 +91,7 @@ cargarCartas(): void {
 
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
+      console.log('Respuesta del backend:', d);
 
       let datosFiltrados = d.datos.filter((data: any) => data.disponible);
 
@@ -134,6 +139,7 @@ cargarCartas(): void {
       }
 
       this.loading = false;
+      console.log('Se actualizaron las cartas:', this.cartasConLaboratorio.map(c => c.id));
     },
     error: () => {
       this.loading = false;
@@ -208,7 +214,8 @@ applyFilter(event: Event): void {
 onPageChange(event: PageEvent): void {
   this.loading = true;
   this.pageSize = event.pageSize;
-  this.paginaActual = event.pageIndex + 1;
+  this.paginaActual = event.pageIndex + 1; 
+  console.log('Cambio de página:', event.pageIndex + 1);
   this.cargarCartas();
   
 
@@ -241,10 +248,71 @@ abrirDialogoEditar(carta: any): void {
 }
 
 
+//Espacio para la exportacion del inventario 
 
 
+    exportarInventario() {
+    this.inventarioService.obtenerTodoElInventario().subscribe({
+      next: (datos) => {
+        console.log(datos)
+        const ws = XLSX.utils.json_to_sheet(datos);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
 
+        const excelBuffer: any = XLSX.write(wb, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
 
+        const data: Blob = new Blob([excelBuffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+        });
 
+        FileSaver.saveAs(data, `Inventario_${new Date().getTime()}.xlsx`);
+      },
+      error: (err) => {
+        console.error('Error al exportar inventario:', err);
+      },
+    });
+  }
 
+  //Este espacio es para importar el inventario
+
+     onFileChange(evt: any) {
+    const target: DataTransfer = <DataTransfer>evt.target;
+    if (target.files.length !== 1) {
+      console.error('Solo se permite un archivo');
+      return;
+    }
+
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+      const bstr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      const data = XLSX.utils.sheet_to_json(ws);
+      console.log('Datos importados:', data);
+
+     
+      const equipos = data.map((e: any) => ({
+        ...e,
+        serial: String(e.serial || '')
+      }));
+
+      console.log('apiUrl:', this.inventarioService['apiUrlImpor']);
+      console.log('Voy a llamar a:', this.inventarioService['apiUrlImpor']);
+
+      this.inventarioService.importarInventarioLote(equipos).subscribe({
+        next: (res) => console.log('Respuesta:', res),
+        error: (err) => console.error('Error en importación:', err),
+      });
+    };
+    reader.readAsBinaryString(target.files[0]);
+  }
+  
 }
+
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';

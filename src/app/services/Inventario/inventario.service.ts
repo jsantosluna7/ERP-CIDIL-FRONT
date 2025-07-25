@@ -8,6 +8,8 @@ import { Carta, PaginacionResponse } from '../../interfaces/carta';
 })
 export class InventarioService {
   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO']}`;
+  private apiUrltodos = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_TODOS']}`;
+  private apiUrlImpor = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_IMPORTAR']}`
 
   constructor(private http: HttpClient) {}
 
@@ -33,4 +35,18 @@ export class InventarioService {
   eliminarCarta(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  //Este apartado es para le exportacion del inventario
+
+   obtenerTodoElInventario() {
+    return this.http.get<any[]>(`${this.apiUrltodos}`);
+  }
+
+  //Este apartado es para importar el inventario
+
+importarInventarioLote(equipos: any[]) {
+  console.log('Voy a enviar:', equipos);
+  return this.http.post(this.apiUrlImpor, equipos);  
+}
+
 }
