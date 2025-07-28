@@ -9,10 +9,13 @@ import { createChat } from '@n8n/chat';
   styleUrl: './login-layout.component.css',
 })
 export class LoginLayoutComponent implements AfterViewInit {
+
+  urlLia: string = `${process.env['CHATBOT_LIA_URL']}`;
+  
   ngAfterViewInit(): void {
     createChat({
       webhookUrl:
-        'http://10.122.120.87:8765/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat',
+        this.urlLia,
       webhookConfig: {
         method: 'POST',
       },
