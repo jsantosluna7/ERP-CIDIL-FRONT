@@ -15,6 +15,8 @@ import { createChat } from '@n8n/chat';
 export class LayoutComponent implements AfterViewInit {
   isSidebarClosed = false;
 
+  urlLia: string = `${process.env['CHATBOT_LIA_URL']}`;
+
   toggleSidebar() {
     this.isSidebarClosed = !this.isSidebarClosed;
   }
@@ -22,7 +24,7 @@ export class LayoutComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     createChat({
       webhookUrl:
-        'http://10.122.120.87:8765/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat',
+        this.urlLia,
       webhookConfig: {
         method: 'POST',
       },
