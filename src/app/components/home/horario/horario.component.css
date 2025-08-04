@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+::ng-deep .mat-tab-group {
+  width: 100%;
+}
+
+::ng-deep .mat-tab-body-wrapper {
+  flex-grow: 1;
+}
+
+::ng-deep .mat-tab-body {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+::ng-deep .mat-tab-body-content {
+  overflow: visible !important;
+  height: auto !important;
+}

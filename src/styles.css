@@ -1,6 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
-*{
-    font-family: 'helvetica neue', sans-serif;
+
+:root {
+  --chat--window--width: 350px !important;
+  --chat--window--height: 500px !important;
+  --chat--color-primary: #6042e7 !important;
+}
+
+* {
+  font-family: 'helvetica neue', sans-serif;
 }
 
 /* .sidebar.close ~ .home{
@@ -8,8 +15,117 @@
     width: calc(100% - 110px) !important;
 } */
 
-.body.sidebar-closed .home {
-  left: 110px !important;
-  width: calc(100% - 110px) !important;
-  transition: all 0.3s ease;
+body {
+  background-color: #ECF1F2;
+}
+
+.body .home {
+  transition: margin-left 0.4s ease;
+  padding: 20px;
+  background-color: #ECF1F2;
+  /* Esto agrega espacio interno al contenido */
+}
+
+/* Cuando el sidebar está abierto (270px) */
+.body:not(.sidebar-collapsed) .home {
+  margin-left: 280px;
+  /* 270px sidebar + 10px de separación */
+}
+
+/* Cuando el sidebar está cerrado (85px) */
+.body.sidebar-collapsed .home {
+  margin-left: 95px;
+  /* 85px sidebar + 10px separación */
+}
+
+/* En móviles no se aplica margen */
+@media (max-width: 768px) {
+  .body .home {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+}
+
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.cdk-drop-list-dragging {
+  opacity: 0.5;
+  border-left: 5px solid black;
+  padding-left: 8px;
+}
+
+::view-transition-old(.widget) {
+  height: 100%;
+}
+
+::view-transition-new(.widget) {
+  height: 100%;
+}
+
+.mat-mdc-form-field-bottom-align::before {
+  content: "";
+  height: 0px !important;
+  display: none !important;
+}
+
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell-cushion {
+  text-decoration: none;
+  color: #1825AA;
+}
+
+.fc .fc-scrollgrid,
+.fc .fc-scrollgrid-section>td {
+  border-radius: 20px;
+}
+
+/* SPINNER GLOBAL */
+.spinner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.6);
+  z-index: 9999;
+}
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mat-tab-body-wrapper,
+.mat-mdc-tab-body-wrapper {
+  flex-grow: 1;
+}
+
+.mdc-list-item--with-one-line {
+  height: 5rem !important;
+}
+
+mat-tab-group {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.calendar-container {
+  flex: 1;
+  min-height: 0;
+  /* importante para evitar overflow */
+  margin-top: 2rem;
 }

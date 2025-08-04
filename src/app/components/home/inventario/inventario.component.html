@@ -1,0 +1,102 @@
+@if (loading) {
+<mat-spinner *ngIf="loading" diameter="40" strokeWidth="5" class="mx-auto d-block my-4"></mat-spinner>
+
+}
+
+
+
+<div class="d-flex justify-content-end">
+  <button (click)="exportarInventario()" mat-raised-button color="primary" class="ms-2">
+    Exportar Inventario
+  </button>
+
+  <button mat-raised-button color="primary" (click)="fileInput.click()" class="ms-2">
+    <mat-icon>upload</mat-icon>
+    Importar Inventario
+  </button>
+</div>
+
+
+<div class="container mt-4 ">
+
+  <mat-form-field appearance="outline" class="field">
+    <mat-label>Filtrar</mat-label>
+    <input type="text" matInput (input)="applyFilter($event)" placeholder="Buscar..." />
+    <mat-hint class="hint"></mat-hint>
+  </mat-form-field>
+
+
+  <input #fileInput type="file" accept=".xlsx, .xls" (change)="onFileChange($event)" hidden />
+
+
+
+
+  @if(!loading){
+  <div class="row">
+    @for (carta of cartasConLaboratorio; track carta.id) {
+    <div class="col-md-4 mb-3">
+      <div class="  card h-100 shadow-sm">
+        @if (!carta.imagen || carta.imagen.trim() === '' || carta.imagen === '\\x6e756c6c') {
+        <img src="/Imagenes/Imagen de WhatsApp 2025-06-03 a las 14.17.00_691d2cbd.jpg" class="card-img-top" alt="p"
+          style="height: 300px; object-fit: cover;">
+        } @else {
+        <img [src]="carta.imagenEquipo" class="card-img-top" alt="Imagen por defecto"
+          style="height: 300px; object-fit: cover;">
+        }
+
+        <div class="card-body">
+          <h5 class="card-title">{{ carta.nombreData }}</h5>
+          <p class="card-text" *appCualRol="[1, 2]">Laboratorio: {{ carta.nombre }}</p>
+          <p><strong>Cantidad:</strong> {{ carta.cantidad }}</p>
+          <span class="badge" [ngClass]="carta.disponible ? 'bg-success' : 'bg-danger'">
+            {{ carta.disponible ? 'Disponible' : 'No disponible' }}
+          </span>
+
+
+          <div class="mb-2 mt-2">
+            <div class="mb-2">
+              <label for="cantidad{{ carta.id }}">Cantidad a prestar:</label>
+              <input id="cantidad{{ carta.id }}" type="number" class="form-control"
+                [(ngModel)]="carta.cantidadSeleccionada" [min]="1" [max]="carta.cantidad" placeholder="Cantidad" />
+            </div>
+
+            <button class="btn btn-primary mt-2 w-100" (click)="agregarAlCarrito(carta)"
+              [disabled]="!carta.cantidadSeleccionada || carta.cantidadSeleccionada <= 0 || carta.cantidadSeleccionada > carta.cantidad">
+              Añadir al carrito
+            </button>
+
+
+
+            <button *appCualRol="[1, 2]" mat-button color="accent" (click)="abrirDialogoEditar(carta)">Editar</button>
+
+            @if (carta.cantidad === 0) {
+            <div class="text-danger small mt-1">
+              Equipo en uso
+            </div>
+            }
+
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!--Paginacion-->
+  <mat-paginator class="paginator" [length]="totalItems" [pageSize]="pageSize" [pageIndex]="paginaActual - 1"
+    [pageSizeOptions]="[]" [hidePageSize]="true" showFirstLastButtons (page)="onPageChange($event)">
+  </mat-paginator>
+
+
+  
+    <!-- Campo de entrada personalizado para el tamaño de página -->
+  <div class="entrada-pagina">
+    <p>Elementos por página:</p>
+    <input matInput type="text" [value]="pageSize" (change)="updatePageSize($event)" />
+  </div>
+
+  }
+
+
+
+</div>

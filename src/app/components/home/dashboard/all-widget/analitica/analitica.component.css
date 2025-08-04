@@ -1,0 +1,156 @@
+.iconos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 0 30vw;
+    gap: clamp(1rem, 4vw, 5rem);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.componente {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.header-analitica {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 2rem;
+}
+
+@media screen and (max-width: 400px) {
+    .iconos {
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin: 1rem;
+        justify-content: center;
+    }
+
+    .add-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .analitica-container {
+        width: 100%;
+    }
+
+    .botones {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .analitica-btn p {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    fa-icon {
+        font-size: 2rem !important;
+    }
+}
+
+
+@media screen and (max-width: 600px) {
+    .iconos {
+        flex-wrap: wrap;
+        gap: 3rem;
+        margin: 1rem 2rem;
+        justify-content: center;
+    }
+
+    .add-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .analitica-container {
+        width: 90%;
+    }
+
+    .botones {
+        flex-direction: row;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .analitica-btn p {
+        font-size: 1.6rem;
+    }
+
+    fa-icon {
+        font-size: 2.5rem !important;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .iconos {
+        gap: clamp(0.5rem, 2vw, 3rem);
+        margin: 1rem 3rem;
+    }
+
+    .analitica-container {
+        gap: clamp(0.5rem, 2vw, 3rem);
+        width: 80%;
+    }
+}
+
+@media screen and (min-width: 1025px) {
+    .iconos {
+        gap: clamp(2rem, 4vw, 6rem);
+        margin: 1.5rem 2.5rem;
+        justify-content: center;
+    }
+
+    .analitica-container {
+        width: 70%;
+    }
+}
+
+@media (max-width: 900px) {
+    .desktop {
+        display: none;
+    }
+
+    .add-btn {
+        border: none;
+        background-color: transparent;
+    }
+}
+
+@media (min-width: 900px) {
+
+    .mobile {
+        display: none;
+    }
+
+    .iconos {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .temp {
+        color: #CC3333;
+    }
+
+    .hum {
+        color: #1825AA;
+    }
+
+    .luz {
+        color: #FFD94A;
+    }
+
+    .sonido {
+        color: #009688;
+    }
+
+    .add-btn {
+        border: none;
+        background-color: transparent;
+    }
+}

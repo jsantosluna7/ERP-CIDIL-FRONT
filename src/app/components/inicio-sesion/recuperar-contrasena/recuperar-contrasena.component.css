@@ -1,62 +1,126 @@
-.btn-custom-blue {
-    background-color: #1825AA;
-    color: white;
-    border: none;
-  }
-.btn-custom-blue:hover {
-    background-color: #12208c; /* un poco más oscuro al pasar el mouse */
-  }
-
-.btn-custom-blue:hover {
-    background-color: #12208c;
-    /* un poco más oscuro al pasar el mouse */
+/* Contenedor general */
+.fondo {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Formulario */
+.form {
+  position: relative;
+  width: 100%;
+  max-width: 400px; /* perfecto para laptops */
+  background-color: white;
+  border-radius: 2rem;
+  box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
+  padding: 2.5rem 2rem 2rem 2rem;
+  margin: auto;
+  color: black;
+}
+
+/* Botón de retroceso */
+.back-btn {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 2;
+}
+
+/* Títulos */
+h1 {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+p {
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Etiquetas */
 label {
-    font-size: .9rem;
+  font-size: 0.9rem;
+}
+
+/* Inputs */
+input {
+  padding-left: 1.9rem;
+  font-size: 1rem;
 }
 
 input::placeholder {
-    font-size: .8rem;
+  font-size: 0.8rem;
 }
 
-input{
-    font-size: 1rem;
+/* Icono en input */
+.envelope {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-
-.form {
-    border: none;
-    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    margin-top: 10rem;
-    height: 20rem;
+.envelope fa-icon {
+  position: absolute;
+  left: 0.5rem;
 }
 
-h1{
-    font-size: 1.5rem;
+/* Botón enviar */
+.btn-custom-blue {
+  background-color: #1825AA;
+  color: white;
+  border: none;
+  width: 100%;
 }
 
-p{
-    font-size: 1rem;
+.btn-custom-blue:hover {
+  background-color: #12208c;
 }
 
-input{
-    padding-left: 1.9rem;
+/* Responsive Tablets */
+@media (max-width: 1024px) {
+  .form {
+    max-width: 90%;
+    padding: 2rem 1.5rem;
+  }
+
+  .back-btn {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+  }
 }
 
- .envelope{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: relative;
-}
+/* Responsive Móviles */
+@media (max-width: 480px) {
+  .form {
+    max-width: 95%;
+    padding: 2rem 1rem;
+  }
 
- .envelope fa-icon{
-    position: absolute;
-    left: .5rem;
-    /* color: #1825AA;
+  h1 {
     font-size: 1.2rem;
-    margin-right: 1rem; */
+  }
+
+  p {
+    font-size: 0.85rem;
+  }
+
+  input {
+    font-size: 0.95rem;
+  }
+
+  .btn-custom-blue {
+    font-size: 0.95rem;
+  }
 }

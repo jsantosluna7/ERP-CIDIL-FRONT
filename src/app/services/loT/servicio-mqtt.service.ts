@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService } from 'ngx-mqtt';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ServicioMqttService {
 
     constructor(private _mqttService: MqttService) {}
@@ -12,4 +10,10 @@ export class ServicioMqttService {
     observarTopico(topic: string): Observable<IMqttMessage> {
         return this._mqttService.observe(topic);
     }
+
+    toggle(topic: string, message: string):void {
+      return this._mqttService.unsafePublish(topic, message);
+    }
+
+    preservarTab1 = false;
 }

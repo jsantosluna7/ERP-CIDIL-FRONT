@@ -1,0 +1,139 @@
+<div class="body-h-table">
+  <div class="nav">
+    <h1>Horarios</h1>
+    <div class="botones">
+      <button mat-raised-button color="secondary" (click)="openDialog()">
+        Importar Horario
+      </button>
+
+      <button mat-raised-button class="delete-button" (click)="borradoAuto()">
+        Borrado Automático
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+  <div class="spinner-container">
+    <mat-spinner mode="indeterminate"></mat-spinner>
+  </div>
+  } @if (!loading) { @if(noData){
+  <p>No hay datos!</p>
+  }@else {
+  <div class="tables">
+    <div class="table-container">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Filtrar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" />
+        <mat-hint class="hint"></mat-hint>
+      </mat-form-field>
+
+      @if (secondLoading) {
+      <div class="spinner-container">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+      }
+
+      <div class="table-scroll">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          class="mat-elevation-z8"
+        >
+          <ng-container matColumnDef="asignatura">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Asignatura
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.asignatura }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="profesor">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Profesor</th>
+            <td mat-cell *matCellDef="let element">{{ element.profesor }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="codigoDeLab">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Laboratorio
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.codigoDeLab }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dia">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Dia</th>
+            <td mat-cell *matCellDef="let element">{{ element.dia }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="horaInicio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Hora Inicio
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.horaInicio }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="horaFinal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Hora Final
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.horaFinal }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Fecha Inicio
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.fechaInicio }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaFinal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Fecha Final
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.fechaFinal }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary" (click)="editar(element)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="eliminar(element)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        class="paginator"
+        [length]="totalHorario"
+        [pageSize]="pageSize"
+        (page)="onPageChange($event)"
+        [pageSizeOptions]="[]"
+        [hidePageSize]="true"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+
+      <div class="entrada-pagina">
+        <p>Elementos por página:</p>
+        <input
+          matInput
+          type="text"
+          [value]="pageSize"
+          (change)="updatePageSize($event)"
+        />
+      </div>
+    </div>
+  </div>
+  } }
+</div>

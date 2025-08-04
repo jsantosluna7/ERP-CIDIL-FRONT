@@ -1,0 +1,54 @@
+<div class="fondo d-flex justify-content-center align-items-center">
+  <form [formGroup]="solicitudesForm" class="row container w-auto h-auto  rounded-5 p-4 mt-5">
+
+    <h2>Reporte de Falla</h2>
+
+    <hr>
+
+    <section class="mb-3">
+      <div class="example-button-row">
+        <a mat-button="elevated" routerLink="/home/vista-reportes" *appCualRol="[1, 2]">Ver Reportes</a>
+      </div>
+    </section>
+
+    <div class="col-md-12 mt-1 row w-100">
+
+      <!-- Selección de laboratorio -->
+      <label for="laboratorioSelect" class="form-label">Laboratorio</label>
+      <div class="location">
+        <fa-icon [icon]="fahouse"></fa-icon>
+        @if (laboratorios.length > 0) {
+          <select id="laboratorioSelect" class="form-select" formControlName="idLaboratorio">
+            <option value="" disabled selected>Seleccione un laboratorio</option>
+            @for (lab of laboratorios; track lab.id) {
+              <option [value]="lab.id">{{ lab.codigoDeLab }}</option>
+            }
+          </select>
+        } @else {
+          <select class="form-select" disabled>
+            <option>Cargando laboratorios...</option>
+          </select>
+        }
+      </div>
+
+      <!-- Descripción de la falla -->
+      <label for="descripcion" class="form-label mt-3">Descripción de la Falla</label>
+      <div class="location">
+        <fa-icon [icon]="faEnvelope"></fa-icon>
+        <textarea id="descripcion" class="form-control" formControlName="descripcion" rows="3" placeholder="Describe la falla..."></textarea>
+      </div>
+
+      <!-- Lugar específico -->
+      <label for="lugar" class="form-label mt-3">Lugar</label>
+      <div class="location">
+        <fa-icon [icon]="faLocationDot"></fa-icon>
+        <input type="text" class="form-control" id="lugar" formControlName="lugar" placeholder="Ejemplo: Aula 203, Rack principal..." />
+      </div>
+
+    </div>
+
+    <!-- Botón enviar -->
+    <button type="button" class="btn btn-success mt-4" (click)="enviarReporte()">Enviar Reporte</button>
+
+  </form>
+</div>

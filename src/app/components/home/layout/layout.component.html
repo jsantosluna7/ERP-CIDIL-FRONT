@@ -1,7 +1,9 @@
-<div class="body" [class.sidebar-closed]="isSidebarClosed">
-    <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
-    <section class="home">
-        <router-outlet></router-outlet>
-        <!-- <div class="text">Dashboar</div> -->
-    </section>
+<div class="body" [class.sidebar-collapsed]="isSidebarClosed">
+  <app-sidebar (toggleSidebar)="toggleSidebar()"></app-sidebar>
+  
+  <section class="home">
+    <router-outlet></router-outlet>
+  </section>
+
+  <div id="n8n-chat"></div>
 </div>

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>{{data.titulo}}</h2>
+<mat-dialog-content class="contenido">
+    <form class="row g-3" [formGroup]="horaForm">
+        <div class="col-md-6">
+            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+            <input type="date" formControlName="fechaInicio" class="form-control" id="fechaInicio" />
+        </div>
+        <div class="col-md-6">
+            <label for="fechaFinal" class="form-label">Fecha Final</label>
+            <input type="date" formControlName="fechaFinal" class="form-control" id="fechaFinal" />
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onNo()">No</button>
+    <button mat-button [mat-dialog-close]="selection()" (click)="fechas()" cdkFocusInitial>
+        Ok
+    </button>
+</mat-dialog-actions>

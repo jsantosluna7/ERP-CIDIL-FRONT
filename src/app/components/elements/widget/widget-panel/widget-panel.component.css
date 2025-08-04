@@ -1,0 +1,40 @@
+:host {
+    background: #D7E3FF;
+    color: #00458F;
+    position: absolute;
+    right: 0px;
+    top: 100px;
+    width: 200px;
+    z-index: 2;
+    border-radius: 1rem;
+}
+
+.widget-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    background: #EFEDF0;
+    color: #2F3033;
+    cursor: pointer;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+.widget-box:hover{
+    background: #E9E7EB;
+}
+
+.widgets-list{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.widgets-panel-header{
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}

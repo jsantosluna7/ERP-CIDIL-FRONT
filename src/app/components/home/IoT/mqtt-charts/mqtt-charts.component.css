@@ -1,0 +1,59 @@
+* {
+    box-sizing: border-box;
+}
+
+.body-mq-charts {
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* CHART GENERAL */
+.chart {
+    height: 300px;
+    width: 100%;
+    background: white;
+    /* opcional */
+    border-radius: 8px;
+}
+
+/* TABLETS y móviles grandes (<= 768px) */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        /* Centra los charts */
+    }
+
+    .chart {
+        width: 90%;
+        max-width: 500px;
+        height: 260px;
+    }
+}
+
+/* Evitar scroll horizontal innecesario en desktop */
+@media (min-width: 769px) {
+
+    body,
+    html {
+        overflow-x: hidden;
+    }
+
+    .body {
+        overflow-x: hidden;
+    }
+}
+
+/* MÓVILES pequeños (<= 480px) */
+@media (max-width: 480px) {
+    .chart {
+        width: 95%;
+        height: 220px;
+    }
+}

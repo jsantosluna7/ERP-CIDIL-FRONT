@@ -1,0 +1,63 @@
+<!-- CONTENT -->
+<section id="content">
+  <!-- MAIN -->
+  <main>
+    <div class="head-title">
+      <div class="left">
+        <h1>Dashboard</h1>
+      </div>
+    </div>
+
+    <ul class="box-info">
+      <li>
+        <fa-icon
+          [icon]="faCalendar"
+          size="xl"
+          class="bx bxs-calendar-check"
+        ></fa-icon>
+        <span class="text">
+          <h3>{{cantidadReservaEspacios}}</h3>
+          <p>Espacios (Pendientes)</p>
+        </span>
+      </li>
+      <li>
+        <fa-icon
+          [icon]="faElectronics"
+          size="xl"
+          class="bx bxs-calendar-check"
+        ></fa-icon>
+        <span class="text">
+          <h3>{{cantidadPrestamosEquipos}}</h3>
+          <p>Equipos (Pendientes)</p>
+        </span>
+      </li>
+      <li>
+        <fa-icon [icon]="faGroup" size="xl" class="bx bxs-group"></fa-icon>
+        <span class="text">
+          <h3>{{cantidadUsuarios}}</h3>
+          <p>Usuarios</p>
+        </span>
+      </li>
+    </ul>
+
+    <div class="table-data">
+      <div class="order">
+        <div class="head">
+          <h3>Analíticas</h3>
+          <i class="bx bx-search"></i>
+          <i class="bx bx-filter"></i>
+        </div>
+        <app-analitica></app-analitica>
+      </div>
+      <div class="todo">
+        <div class="head">
+          <h3>Calendario</h3>
+          <i class="bx bx-plus"></i>
+          <i class="bx bx-filter"></i>
+        </div>
+        <app-calendario></app-calendario>
+      </div>
+    </div>
+  </main>
+  <!-- MAIN -->
+</section>

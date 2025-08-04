@@ -1,0 +1,152 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+
+export interface LaboratoriosPorPiso {
+  1: string[]; // 1er piso
+  2: string[];
+  3: string[];
+  4: string[]; // todo
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class PisosService {
+  private laboratoriosPorPisoSubject = new BehaviorSubject<LaboratoriosPorPiso>(
+    {
+      1: ['1A', '1B', '1C', '1D'],
+      2: ['2A', '2B', '2C', '2D'],
+      3: ['3A', '3B', '3C', '3D'],
+      4: [
+        '1A',
+        '1B',
+        '1C',
+        '1D',
+        '2A',
+        '2B',
+        '2C',
+        '2D',
+        '3A',
+        '3B',
+        '3C',
+        '3D',
+      ],
+    }
+  );
+  laboratoriosPorPiso$ = this.laboratoriosPorPisoSubject.asObservable();
+
+  // 👇 tabList se actualiza en base al piso actual
+  private pisoSubject = new BehaviorSubject<number>(1);
+  piso$ = this.pisoSubject.asObservable();
+
+  private pisoHorarioSubject = new BehaviorSubject<number>(1);
+  pisoHorario$ = this.pisoHorarioSubject.asObservable();
+
+  private pisoMqttSubject = new BehaviorSubject<number>(1);
+  pisoMqtt$ = this.pisoMqttSubject.asObservable();
+
+  private pisoCalendarioSubject = new BehaviorSubject<number>(1);
+  pisoCalendario$ = this.pisoCalendarioSubject.asObservable();
+
+  private tabListSubject = new BehaviorSubject<string[]>([]);
+  tabList$ = this.tabListSubject.asObservable();
+
+  private tabListMqttSubject = new BehaviorSubject<string[]>([]);
+  tabListMqtt$ = this.tabListMqttSubject.asObservable();
+
+  private tabListCalendarioSubject = new BehaviorSubject<string[]>([]);
+  tabListCalendario$ = this.tabListCalendarioSubject.asObservable();
+
+  constructor() {
+    this.cargarDesdeLocalStorage();
+
+    // Cuando cambie el piso o los laboratorios, actualiza tabList
+    combineLatest([this.pisoSubject, this.laboratoriosPorPiso$]).subscribe(
+      ([piso, data]: any) => {
+        const list =
+          piso === 4
+            ? [...data[1], ...data[2], ...data[3]]
+            : [...(data[piso] ?? [])];
+        this.tabListSubject.next(list);
+      }
+    );
+
+    combineLatest([this.pisoMqttSubject, this.laboratoriosPorPiso$]).subscribe(
+      ([piso, data]: any) => {
+        const list =
+          piso === 4
+            ? [...data[1], ...data[2], ...data[3]]
+            : [...(data[piso] ?? [])];
+        this.tabListMqttSubject.next(list);
+      }
+    );
+    
+    combineLatest([this.pisoCalendarioSubject, this.laboratoriosPorPiso$]).subscribe(
+      ([piso, data]: any) => {
+        const list =
+          piso === 4
+            ? [...data[1], ...data[2], ...data[3]]
+            : [...(data[piso] ?? [])];
+        this.tabListCalendarioSubject.next(list);
+      }
+    );
+  }
+
+  setPiso(piso: number) {
+    this.pisoSubject.next(piso);
+  }
+
+  setPisoCalendario(piso: number) {
+    this.pisoCalendarioSubject.next(piso);
+  }
+
+  setPisoHorario(piso: number) {
+    this.pisoHorarioSubject.next(piso);
+  }
+
+  setPisoMqtt(piso: number) {
+    this.pisoMqttSubject.next(piso);
+  }
+
+  agregarLaboratorio(nombre: string, piso: number) {
+    const actual = this.laboratoriosPorPisoSubject.value;
+    const nuevos: any = { ...actual };
+
+    nuevos[piso] = [...nuevos[piso], nombre];
+
+    // Si es piso distinto a 4, también lo agregamos al "todo"
+    if (piso !== 4 && !nuevos[4].includes(nombre)) {
+      nuevos[4] = [...nuevos[4], nombre];
+    }
+
+    this.laboratoriosPorPisoSubject.next(nuevos);
+    this.guardarEnLocalStorage(nuevos);
+  }
+
+  eliminarLaboratorio(nombre: string, piso: number) {
+    const actual = this.laboratoriosPorPisoSubject.value;
+    const nuevos: any = { ...actual };
+
+    nuevos[piso] = nuevos[piso].filter((lab: any) => lab !== nombre);
+    nuevos[4] = nuevos[4].filter((lab: any) => lab !== nombre); // Siempre lo quitamos de "todo"
+
+    this.laboratoriosPorPisoSubject.next(nuevos);
+    this.guardarEnLocalStorage(nuevos);
+  }
+
+  private guardarEnLocalStorage(data: LaboratoriosPorPiso) {
+    localStorage.setItem('labs', JSON.stringify(data));
+  }
+
+  private cargarDesdeLocalStorage() {
+    const raw = localStorage.getItem('labs');
+    if (raw) {
+      try {
+        const data: LaboratoriosPorPiso = JSON.parse(raw);
+        this.laboratoriosPorPisoSubject.next(data);
+      } catch (e) {
+        console.warn('Error cargando laboratorios desde LocalStorage');
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<mat-tab-group
+  class="vertical-tabs"
+  mat-stretch-tabs="false"
+  (selectedIndexChange)="cambiarPiso($event)"
+  dynamicHeight="true"
+>
+  <mat-tab label="1er Piso"></mat-tab>
+  <mat-tab label="2do Piso"></mat-tab>
+  <mat-tab label="3er Piso"></mat-tab>
+  <mat-tab label="Todo"></mat-tab>
+</mat-tab-group>
+
+<!-- Contenedor principal -->
+<div class="calendar-wrapper">
+  <!-- Spinner tipo overlay -->
+  <div class="overlay-spinner" *ngIf="loading">
+    <mat-spinner mode="indeterminate" diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Calendario (siempre visible) -->
+  <ng-container *ngIf="mostrarComponente">
+    <div class="calendar-container">
+      <div #calendarHost>
+        <full-calendar #fc [options]="opcionesCalendario"></full-calendar>
+      </div>
+    </div>
+  </ng-container>
+</div>

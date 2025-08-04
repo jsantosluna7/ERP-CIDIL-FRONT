@@ -1,0 +1,86 @@
+<div class="fondo d-flex justify-content-center  align-items-center ">
+  <form [formGroup]="solicitudesForm" class="row container w-auto h-auto    p-4 form mt-5 ite">
+    <h2>Reserva de Espacios</h2> 
+   <section>
+  <div class="example-button-row">
+    <a mat-button="elevated" routerLink="/home/solicitud-laboratorio" *appCualRol="[1, 2]">Ver Solicitudes</a>
+  </div>
+</section>
+
+
+    <hr>
+    <div class="col-md-6 mt-1 row w-100">
+      <label for="laboratorioSelect" class="form-label">Laboratorio</label>
+      <div class="location">
+        <fa-icon [icon]="fahouse"></fa-icon>
+
+        @if (laboratorios.length > 0) {
+        <select id="laboratorioSelect" class="form-select" aria-label="Seleccionar laboratorio"
+          formControlName="idLaboratorio">
+          <option value="" disabled selected>Seleccione un laboratorio</option>
+          @for (lab of laboratorios; track lab.id) {
+          <option [value]="lab.id">{{ lab.codigoDeLab }} </option>
+          }
+        </select>
+        } @else {
+        <select class="form-select" disabled>
+          <option>Cargando laboratorios...</option>
+        </select>
+        }
+      </div>
+
+
+      <label for="inputEmail4" class="form-label">Hora de Inicio</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input type="datetime-local" formControlName="horaInicio" class="form-control" id="inputEmail4"
+          placeholder="Laboratorio" />
+      </div>
+
+       <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input type="datetime-local" formControlName="horaFinal" class="form-control" id="inputEmail4"
+          placeholder="Laboratorio" />
+      </div>
+
+       <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
+        <textarea class="form-control" formControlName="motivo" id="exampleFormControlTextarea1" rows="3"></textarea>
+      </div>
+
+    </div>
+
+
+
+    <!--<div class="col-md-6 mt-1 row">
+      <label for="inputEmail4" class="form-label">Hora de Inicio</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input type="datetime-local" formControlName="horaInicio" class="form-control" id="inputEmail4"
+          placeholder="Laboratorio" />
+      </div>
+    </div>
+    <div class="col-md-6 mt-1 row">
+      <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input type="datetime-local" formControlName="horaFinal" class="form-control" id="inputEmail4"
+          placeholder="Laboratorio" />
+      </div>
+    </div> -->
+
+
+    <!--Comentarios -->
+    <!-- <div class="col-md-6 mt-1 row">
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
+        <textarea class="form-control" formControlName="motivo" id="exampleFormControlTextarea1" rows="3"></textarea>
+      </div>
+    </div> -->
+  
+
+    <button type="button" class="btn btn-success" (click)="enviarSolicitud()">Enviar Solicitud</button>
+
+  </form>
+</div>

@@ -1,0 +1,78 @@
+::ng-deep .mdc-tab {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--mdc-typography-button-font-family, var(--mdc-typography-button-font-family, Roboto, sans-serif));
+  font-size: var(--mdc-typography-button-font-size, .8rem) !important;
+  line-height: var(--mdc-typography-button-line-height, 36px);
+  font-weight: var(--mdc-typography-button-font-weight, 600) !important;
+  letter-spacing: var(--mdc-typography-button-letter-spacing, 2px) !important;
+  text-decoration: var(--mdc-typography-button-text-decoration, none);
+  text-transform: var(--mdc-typography-button-text-transform, uppercase);
+}
+
+.botonera{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.7rem;
+}
+
+.selectedBtn{
+  background-color: #101A88 !important;
+  color: white !important;
+  box-shadow: none !important;
+  font-weight: bold !important;
+}
+
+.mat-expansion-panel {
+  box-shadow: none !important;
+  background-color: transparent;
+
+}
+
+.toggle-button {
+  display: flex;
+  justify-content: end;
+  padding: 4px;
+}
+
+mat-expansion-panel-header {
+  min-height: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+.custom-header {
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex;
+  justify-content: center;
+}
+
+.contenido-expansion {
+  padding: 16px;
+  margin-bottom: 1rem;
+}
+
+.botonera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  .tab-button {
+    display: flex;
+    align-items: end;
+    gap: 4px;
+  }
+}
+
+
+
+

@@ -1,0 +1,189 @@
+<!-- Mobile Sidebar Menu Button -->
+<button class="sidebar-menu-button">
+  <fa-icon class="icon" [icon]="bars"></fa-icon>
+</button>
+<aside class="sidebar">
+  <!-- Sidebar Header -->
+  <header class="sidebar-header">
+    <a routerLink="/home/dashboard" class="header-logo">
+      <img src="/Imagenes/loyola.jpeg" alt="CIDIL" />
+    </a>
+    <button class="sidebar-toggler-sd">
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
+    </button>
+  </header>
+  <nav class="sidebar-nav-sd">
+    <!-- Primary Top Nav -->
+    <ul class="nav-list-sd primary-nav-sd">
+      <li class="nav-item-sd" *appCualRol="[1, 2]">
+        <a routerLink="/home/dashboard" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="house" size="lg"></fa-icon>
+          <span class="nav-label-sd">Dashboard</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Dashboard</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item-sd" *appCualRol="[1, 3, 4]">
+        <a routerLink="/home/calendario" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="calendar" size="lg"></fa-icon>
+          <span class="nav-label-sd">Calendario</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Calendario</a>
+          </li>
+        </ul>
+      </li>
+      <!-- Dropdown -->
+      <li class="nav-item-sd dropdown-container-sd">
+        <a href="#" class="nav-link-sd dropdown-toggle-sd">
+          <fa-icon class="icon" [icon]="car" size="lg"></fa-icon>
+          <span class="nav-label-sd">Servicios</span>
+          <mat-icon class="dropdown-icon material-symbols-rounded"
+            >keyboard_arrow_down</mat-icon
+          >
+        </a>
+        <!-- Dropdown Menu -->
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Servicios</a>
+          </li>
+          <li class="nav-item-sd">
+            <a routerLink="/home/inventario" class="nav-link-sd dropdown-link"
+              >Inventario</a
+            >
+          </li>
+          <li class="nav-item-sd">
+            <a
+              routerLink="/home/reserva-laboratorio"
+              class="nav-link-sd dropdown-link"
+              >Reserva de Laboratorios</a
+            >
+          </li>
+          <li class="nav-item-sd">
+            <a
+              routerLink="/home/reserva-equipo"
+              class="nav-link-sd dropdown-link"
+              >Reserva de Equipos</a
+            >
+          </li>
+          <li class="nav-item-sd" *appCualRol="[1, 2]">
+            <a routerLink="/home/horario" class="nav-link-sd dropdown-link"
+              >Horarios</a
+            >
+          </li>
+          <li class="nav-item-sd" *appCualRol="[1, 2]">
+            <a routerLink="/home/usuarios" class="nav-link-sd dropdown-link"
+              >Usuarios</a
+            >
+          </li>
+           <li class="nav-item-sd" *appCualRol="[1, 2 , 3]">
+            <a routerLink="/home/reportes" class="nav-link-sd dropdown-link"
+              >Reportes</a
+            >
+          </li>
+        </ul>
+      </li>
+      <!-- <li class="nav-item-sd">
+        <a href="#" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="faclok" size="lg"></fa-icon>
+          <span class="nav-label-sd">Horarios</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Horarios</a>
+          </li>
+        </ul>
+      </li> -->
+      <li class="nav-item-sd">
+        <a routerLink="/home/carrito" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="carro" size="lg"></fa-icon>
+          <span class="nav-label-sd">Carrito</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Carrito</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item-sd">
+        <a routerLink="/home/iot" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="iot" size="lg"></fa-icon>
+          <span class="nav-label-sd">IoT</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">IoT</a>
+          </li>
+        </ul>
+      </li>
+      <!-- <li class="nav-item-sd">
+        <a href="#" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="credi" size="lg"></fa-icon>
+          <span class="nav-label-sd">Usuarios</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Usuarios</a>
+          </li>
+        </ul>
+      </li> -->
+      <!-- Dropdown -->
+      <li class="nav-item-sd dropdown-container-sd" *appCualRol="[1, 2]">
+        <a href="#" class="nav-link-sd dropdown-toggle-sd">
+          <fa-icon class="icon" [icon]="laboratorio" size="lg"></fa-icon>
+          <span class="nav-label-sd">Crear</span>
+          <mat-icon class="dropdown-icon material-symbols-rounded"
+            >keyboard_arrow_down</mat-icon
+          >
+        </a>
+        <!-- Dropdown Menu -->
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Crear</a>
+          </li>
+          <li class="nav-item-sd">
+            <a
+              routerLink="/home/crear-laboratorio"
+              class="nav-link-sd dropdown-link"
+              >Crear Espacio</a
+            >
+          </li>
+          <li class="nav-item-sd">
+            <a routerLink="/home/crear-equipo" class="nav-link-sd dropdown-link"
+              >Crear Equipos</a
+            >
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <!-- Secondary Bottom Nav -->
+    <ul class="nav-list-sd secondary-nav">
+      <li class="nav-item-sd">
+        <a (click)="openDialog()" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="config" size="lg"></fa-icon>
+          <span class="nav-label-sd">Configuración</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Configuración</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item-sd">
+        <a class="nav-link-sd" (click)="salir()">
+          <fa-icon class="icon" [icon]="left" size="lg"></fa-icon>
+          <span class="nav-label-sd">Cerrar Sesión</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Cerrar Sesión</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</aside>

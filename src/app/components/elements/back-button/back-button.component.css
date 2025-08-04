@@ -1,0 +1,36 @@
+/* Estilos base del botón */
+.back-icon-btn {
+  background-color: #1825AA;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+/* Hover */
+.back-icon-btn:hover {
+  background-color: #12208c;
+}
+
+/* Tamaños del ícono */
+.back-icon-btn fa-icon {
+  font-size: 1.1rem;
+}
+
+/* Responsive: dispositivos pequeños */
+@media (max-width: 375px) {
+  .back-icon-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .back-icon-btn fa-icon {
+    font-size: 1rem;
+  }
+}

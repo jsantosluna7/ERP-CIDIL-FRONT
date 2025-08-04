@@ -1,0 +1,24 @@
+.calendario-container {
+  width: 100%;
+  height: auto;
+  position: relative;
+  overflow: hidden; /* evita scroll extra */
+}
+
+::ng-deep .fc {
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .fc-view {
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .fc-scroller {
+  overflow: hidden !important;
+}
+
+::ng-deep .fc-daygrid-body {
+  overflow: hidden !important;
+}

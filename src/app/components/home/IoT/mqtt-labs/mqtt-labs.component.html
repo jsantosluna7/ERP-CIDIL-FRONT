@@ -1,0 +1,15 @@
+<mat-tab-group
+  class="vertical-tabs"
+  mat-stretch-tabs="false"
+  (selectedIndexChange)="cambiarPiso($event)"
+  dynamicHeight="true"
+>
+  <mat-tab label="1er Piso"></mat-tab>
+  <mat-tab label="2do Piso"></mat-tab>
+  <mat-tab label="3er Piso"></mat-tab>
+  <mat-tab label="Todo"></mat-tab>
+</mat-tab-group>
+
+<ng-container *ngIf="mostrarComponente">
+  <app-mqtt-charts></app-mqtt-charts>
+</ng-container>

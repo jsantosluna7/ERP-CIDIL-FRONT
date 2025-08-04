@@ -1,1 +1,49 @@
-<p>dashboard works!</p>
+<mat-accordion>
+  <mat-expansion-panel [(expanded)]="panelOpen" #panel>
+    @if (!panel.expanded) {
+    <mat-expansion-panel-header hideToggle>
+      <mat-panel-title> </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    } @if (panel.expanded) {
+    <!-- Botón flotante de toggle cuando está expandido -->
+    <div class="toggle-button">
+      <button
+        mat-icon-button
+        (click)="panel.close()"
+        aria-label="Cerrar opciones"
+      >
+        <mat-icon>expand_less</mat-icon>
+      </button>
+    </div>
+
+    <!-- Tabs solo para cambiar el estado -->
+    <div class="contenido-expansion">
+      <mat-tab-group
+        class="vertical-tabs"
+        mat-stretch-tabs="false"
+        (selectedIndexChange)="cambiarPiso($event)"
+      >
+        <mat-tab label="1er Piso"></mat-tab>
+        <mat-tab label="2do Piso"></mat-tab>
+        <mat-tab label="3er Piso"></mat-tab>
+        <mat-tab label="Todo"></mat-tab>
+      </mat-tab-group>
+    </div>
+    }
+  </mat-expansion-panel>
+
+  @if (!panel.expanded) {
+  <div class="toggle-button">
+    <button mat-icon-button (click)="panel.open()" aria-label="Cerrar opciones">
+      <mat-icon>expand_more</mat-icon>
+    </button>
+  </div>
+  }
+</mat-accordion>
+
+<div class="contenido">
+  <ng-container *ngIf="mostrarComponente">
+    <ng-container [ngComponentOutlet]="componente"></ng-container>
+  </ng-container>
+</div>
