@@ -21,14 +21,10 @@
                         <div class="lock">
                             <fa-icon [icon]="faLock"></fa-icon>
                             <input type="password" formControlName="contrasena" class="form-control" id="contrasena"
-                                (mouseenter)="openPopup($event)"
-                                (keypress)="openPopup($event)"
-                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
-                                (mouseleave)="closePopup()"
                                 placeholder="******" />
                         </div>
                     </div>
-                    <button class="btn" (click)="login()" [disabled]="loginForm.invalid">Iniciar Sesión</button>
+                    <button class="btn" (click)="login()">Iniciar Sesión</button>
                 </form>
             </div>
             <div class="login-forgot">
@@ -42,7 +38,7 @@
     </div>
 
     <!-- POPUP para la confirmacion de contraseña -->
-    <div id="contexmenu" class="contextmenu" (clickOutside)="closePopup()" (mouseleave)="closePopup()" [style]="meterPopup">
+    <!-- <div id="contexmenu" class="contextmenu" (clickOutside)="closePopup()" (mouseleave)="closePopup()" [style]="meterPopup">
         <div class="dropdown-content">
             <label class="col fw-bold">Tu Contraseña necesita:</label>
             <label class="col" [class]="loginForm.get('contrasena')?.hasError('required') ? 'text-danger' : 'text-success'">
@@ -137,5 +133,5 @@
                 }
             </label>
         </div>
-    </div>
+    </div> -->
 </div>
