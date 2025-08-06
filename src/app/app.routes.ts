@@ -45,6 +45,13 @@ export const routes: Routes = [
           import('./components/inicio-sesion/cambiar-contrasena/cambiar-contrasena.component')
             .then((m) => m.CambiarContrasenaComponent),
       },
+      {
+        path: 'verificacion-otp',
+        loadComponent: () =>
+          import('./components/inicio-sesion/verificacion-otp/verificacion-otp.component')
+            .then((m) => m.VerificacionOtpComponent),
+        canActivate: [AuthGuard],
+      },
     ],
   },
 
