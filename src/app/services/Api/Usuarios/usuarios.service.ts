@@ -41,6 +41,17 @@ export class UsuariosService {
     );
   }
 
+  usuarioPendiente(endpoint: string, body: any): Observable<any> {
+    return this.http.post(endpoint, body);
+    // .pipe(
+    //   tap({
+    //     next: (user) => {
+    //       this.userPendienteSubject.next(user);
+    //     },
+    //   })
+    // );
+  }
+
   olvideContrasena(endpoint: string, body: any): Observable<any> {
     return this.http.post(endpoint, body);
   }

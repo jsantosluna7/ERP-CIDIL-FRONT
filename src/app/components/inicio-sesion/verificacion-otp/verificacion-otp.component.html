@@ -1,0 +1,61 @@
+<div class="opt-body">
+  <div class="opt-form">
+    <div class="header-form">
+      <div class="auth-icon">
+        <fa-icon [icon]="faEnvelope"></fa-icon>
+      </div>
+      <h4>Verifica tu email</h4>
+      <p>
+        Por favor, introduce el código de verificación enviado <br />
+        a <strong>{{ correoUsuario }}</strong>
+      </p>
+    </div>
+    <form [formGroup]="otpForm">
+      <div class="auth-pin-wrap">
+        <input
+          #otp0
+          type="text"
+          maxlength="1"
+          class="code-input"
+          formControlName="code1"
+          (input)="onInput($event, 0)"
+          (keydown)="onKeyDown($event, 0)"
+          (paste)="onPaste($event)"
+        />
+        <input
+          #otp1
+          type="text"
+          maxlength="1"
+          class="code-input"
+          formControlName="code2"
+          (input)="onInput($event, 1)"
+          (keydown)="onKeyDown($event, 1)"
+          (paste)="onPaste($event)"
+        />
+        <input
+          #otp2
+          type="text"
+          maxlength="1"
+          class="code-input"
+          formControlName="code3"
+          (input)="onInput($event, 2)"
+          (keydown)="onKeyDown($event, 2)"
+          (paste)="onPaste($event)"
+        />
+        <input
+          #otp3
+          type="text"
+          maxlength="1"
+          class="code-input"
+          formControlName="code4"
+          (input)="onInput($event, 3)"
+          (keydown)="onKeyDown($event, 3)"
+          (paste)="onPaste($event)"
+        />
+      </div>
+      <div class="btn-wrap">
+        <button type="button" (click)="confirmarOtp()">Enviar</button>
+      </div>
+    </form>
+  </div>
+</div>
