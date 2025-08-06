@@ -21,6 +21,10 @@
     height: 35rem;
 }
 
+.ocultar{
+    display: none;
+}
+
 label {
     font-size: .9rem;
 }
