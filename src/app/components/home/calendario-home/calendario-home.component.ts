@@ -10,7 +10,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map, Observable, Subscription } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { CalendarioService } from '../../../services/Api/Calendario/calendario.service';
 import { ServicioDashboardService } from '../../../services/Dashboard/servicio-dashboard.service';
@@ -108,13 +108,23 @@ export class CalendarioHomeComponent implements OnDestroy {
 
           const reservas$ = this._dashboard
             .getReservaPiso(this.endpoint, piso, { params })
-            .pipe(map((res: any) => res));
+            .pipe(
+              map((res: any) => (Array.isArray(res) ? res : [])),
+              catchError((err) => {
+                console.warn('Reservas error:', err?.error || err?.message);
+                return of([]); // 💡 Aquí resolvemos el error devolviendo un array vacío
+              })
+            );
 
-          const horarios$ = this._horario.getHorarioPisos(
-            this.endpointHorarioPisos,
-            piso,
-            { params }
-          );
+          const horarios$ = this._horario
+            .getHorarioPisos(this.endpointHorarioPisos, piso, { params })
+            .pipe(
+              map((res: any) => (Array.isArray(res) ? res : [])),
+              catchError((err) => {
+                console.warn('Horarios error:', err?.error || err?.message);
+                return of([]);
+              })
+            );
 
           forkJoin({ reservas: reservas$, horarios: horarios$ }).subscribe({
             next: ({ reservas, horarios }) => {
@@ -187,8 +197,8 @@ export class CalendarioHomeComponent implements OnDestroy {
                 .filter((obs: any): obs is Observable<any> => obs !== null);
 
               forkJoin([
-                forkJoin(reservasObservables) as Observable<any[]>,
-                forkJoin(horariosObservables) as Observable<any[]>,
+                this.forkJoinSalvo(reservasObservables) as Observable<any[]>,
+                this.forkJoinSalvo(horariosObservables) as Observable<any[]>,
               ]).subscribe(
                 ([eventosReservas, eventosHorarios]) => {
                   const eventos = [...eventosReservas, ...eventosHorarios];
@@ -510,5 +520,9 @@ export class CalendarioHomeComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.subs.forEach((s) => s.unsubscribe());
+  }
+
+  forkJoinSalvo(obsArray: Observable<any>[]): Observable<any[]> {
+    return obsArray.length > 0 ? forkJoin(obsArray) : of([]); // Retorna un observable vacío si no hay observables
   }
 }

@@ -16,7 +16,7 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { CalendarioService } from '../../../../../services/Api/Calendario/calendario.service';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, map, Subscription } from 'rxjs';
+import { catchError, forkJoin, map, of, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DateDialogComponent } from './date-dialog/date-dialog.component';
@@ -105,6 +105,13 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                 end: info.endStr,
               },
             })
+            .pipe(
+              map((res: any) => (Array.isArray(res) ? res : [])),
+              catchError((err) => {
+                console.warn('Reservas error:', err?.error || err?.message);
+                return of([]); // 💡 Aquí resolvemos el error devolviendo un array vacío
+              })
+            )
             .subscribe(
               (data: any) => {
                 const eventosObservables = data.map((e: any) => {
@@ -151,6 +158,13 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                 end: info.endStr,
               },
             })
+            .pipe(
+              map((res: any) => (Array.isArray(res) ? res : [])),
+              catchError((err) => {
+                console.warn('Reservas error:', err?.error || err?.message);
+                return of([]); // 💡 Aquí resolvemos el error devolviendo un array vacío
+              })
+            )
             .subscribe(
               (data: any) => {
                 const eventosObservables = data.datos.map((e: any) => {
@@ -176,14 +190,18 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                   );
                 });
 
-                forkJoin(eventosObservables).subscribe(
-                  (eventos) => {
-                    successCallback(eventos);
-                  },
-                  (error) => {
-                    failureCallback(error);
-                  }
-                );
+                if (eventosObservables.length > 0) {
+                  forkJoin(eventosObservables).subscribe(
+                    (eventos) => {
+                      successCallback(eventos);
+                    },
+                    (error) => {
+                      failureCallback(error);
+                    }
+                  );
+                } else {
+                  successCallback([]); // Si no hay eventos, devolvemos un array vacío
+                }
               },
               (error) => {
                 failureCallback(error);
