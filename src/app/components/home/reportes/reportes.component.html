@@ -21,7 +21,7 @@
           <select id="laboratorioSelect" class="form-select" formControlName="idLaboratorio">
             <option value="" disabled selected>Seleccione un laboratorio</option>
             @for (lab of laboratorios; track lab.id) {
-              <option [value]="lab.id">{{ lab.codigoDeLab }}</option>
+              <option [value]="lab.id">{{ lab.nombre }}</option>
             }
           </select>
         } @else {
@@ -29,6 +29,22 @@
             <option>Cargando laboratorios...</option>
           </select>
         }
+      </div>
+
+            <div
+        [class]="solicitudesForm.get('idLaboratorio')?.value ? '' : 'ocultar'"
+      >
+        <label for="inputEmail4" class="form-label"
+          >Descripción del Laboratorio</label
+        >
+        <div class="location">
+          <textarea
+            readonly
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+          >{{obtenerDescripcionLaboratorio(solicitudesForm.get("idLaboratorio")?.value)}}</textarea>
+        </div>
       </div>
 
       <!-- Descripción de la falla -->

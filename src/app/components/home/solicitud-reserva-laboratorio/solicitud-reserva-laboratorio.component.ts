@@ -72,7 +72,7 @@ export class SolicitudReservaLaboratorioComponent {
               laboratorios: this.laboratorioService.getLaboratorios(),
             }).subscribe({
               next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-                const solicitudes = solicitudesResp; // ✅ aquí accedes a las solicitudes reales
+                const solicitudes = solicitudesResp; //aquí accedes a las solicitudes reales
                 const usuarios = usuariosResp.datos;
 
                 this.solicitudes = solicitudes.map((sol: Solicitud) => {
@@ -85,8 +85,8 @@ export class SolicitudReservaLaboratorioComponent {
                     ...sol,
                     nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
                     nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: sol.fechaInicio, // ✅ importante conservar
-                    fechaFinal: sol.fechaFinal, // ✅ importante conservar
+                    fechaInicio: sol.fechaInicio, // importante conservar
+                    fechaFinal: sol.fechaFinal, // importante conservar
                   };
                 });
               },
