@@ -137,7 +137,6 @@ export class ReservaEquipoComponent implements OnInit {
 
  ruta(){
     this.router.navigate(['/home/inventario']);
-    console.log(this.router)
   }
 
  

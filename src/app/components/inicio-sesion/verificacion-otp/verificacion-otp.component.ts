@@ -20,6 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { _StructuralStylesLoader } from '@angular/material/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-verificacion-otp',
@@ -55,10 +56,10 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this._userService.user$.subscribe((user) => {
+    this._userService.user$.pipe(take(1)).subscribe((user) => {
       if (user) {
         this.correoUsuario = user.correoInstitucional;
-        this.usuarioPendienteId = user.id;
+        this.usuarioPendienteId = user.sub;
       } else {
         this._toastr.error('No se encontró información del usuario pendiente.');
       }
@@ -129,7 +130,7 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
       next: (response) => {
         this._router.navigate(['home']);
         this._toastr.success('OTP verificado exitosamente.', 'Éxito');
-        this._userService.user$.subscribe((user) => {
+        this._userService.user$.pipe(take(1)).subscribe((user) => {
           this._toastr.success(
             `Bienvenido, ${user.nombreUsuario} ${user.apellidoUsuario}`,
             'Registro Éxitoso'

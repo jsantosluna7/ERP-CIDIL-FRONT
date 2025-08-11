@@ -63,7 +63,6 @@ export class RegistroComponent implements OnInit {
 
     this._usuarios.registro(this.registrar, data).subscribe({
       next: (e) => {
-        console.log(e);
         this._router.navigate(['verificacion-otp']);
       },error: (e) => {
         this._toastr.error(e.error.error, 'Hubo un error');

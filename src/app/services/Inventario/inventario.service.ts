@@ -45,7 +45,6 @@ export class InventarioService {
   //Este apartado es para importar el inventario
 
 importarInventarioLote(equipos: any[]) {
-  console.log('Voy a enviar:', equipos);
   return this.http.post(this.apiUrlImpor, equipos);  
 }
 
