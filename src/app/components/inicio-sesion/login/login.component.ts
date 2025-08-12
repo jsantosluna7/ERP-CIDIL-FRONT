@@ -16,18 +16,20 @@ import { Router, RouterLink } from '@angular/router';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, FontAwesomeModule],
+  imports: [ReactiveFormsModule, RouterLink, FontAwesomeModule, MatProgressSpinnerModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   faEnvelope = faEnvelope;
   faLock = faLock;
   faCheck = faCheck;
   faXmark = faXmark;
+  loading = false;
 
   // FormGroup para el formulario de inicio de sesión
   // Se utiliza ReactiveFormsModule para la gestión de formularios reactivos
@@ -48,18 +50,10 @@ export class LoginComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
       contrasena: new FormControl('', [
         Validators.required,
-        Validators.minLength(6),
+        Validators.minLength(8),
       ]),
       // rememberMe: new FormControl(false)
     });
-  }
-
-  ngOnInit() {
-    this.loginForm.get('contrasena')?.valueChanges.subscribe((value) => {
-      this.passwordValidation(value);
-    });
-
-    this.closePopup();
   }
 
   login() {
@@ -68,9 +62,16 @@ export class LoginComponent implements OnInit {
       contrasena: this.loginForm.value.contrasena,
     };
 
+    this.loading = true;
+
+    // Llamada al servicio de inicio de sesión
+    // Se utiliza el servicio UsuariosService para realizar la petición
+    // Se maneja la respuesta y los posibles errores
+
     this._usuario.iniciarSesion(this.iniciarSesion, data).subscribe({
       next: (e) => {
         this._usuario.user$.pipe(take(1)).subscribe((u: any) => {
+          this.loading = false;
           if (u) {
             this._toastr.success(
               `Bienvenido, ${u.nombreUsuario} ${u.apellidoUsuario}`,
@@ -81,44 +82,9 @@ export class LoginComponent implements OnInit {
         this._router.navigate(['home']);
       },
       error: (err) => {
+        this.loading = false;
         this._toastr.error(err.error.error, 'Hubo un error');
       },
     });
-  }
-
-  openPopup($event: Event) {
-    const contrasenaElem = document.querySelector('#contrasena');
-    if (contrasenaElem) {
-      const rect = contrasenaElem.getBoundingClientRect();
-      this.meterPopup = {
-        display: 'block',
-        position: 'absolute',
-        'left.px': window.scrollY + rect.left,
-        'top.px': window.scrollY + rect.top + 39,
-      };
-    } else {
-      this.meterPopup = {
-        display: 'none',
-      };
-      console.warn('Elemento con id "contrasena" no encontrado.');
-    }
-  }
-  closePopup() {
-    this.meterPopup = { display: 'none' };
-  }
-  passwordValidation(PasswordText: any) {
-    const hasUpperCase = /[A-Z]/.test(PasswordText);
-    const hasLowerCase = /[a-z]/.test(PasswordText);
-    const hasNumeric = /[0-9]/.test(PasswordText);
-    const hasSpecialCharacterCheck = /\W|_/g;
-    const hasSpecialCharacter = hasSpecialCharacterCheck.test(PasswordText);
-    const hasNoSpaces = !/\s/.test(PasswordText);
-
-    this.passwordValid.hasMinLength = PasswordText.length >= 6 ? true : false;
-    this.passwordValid.hasUpperCase = hasUpperCase;
-    this.passwordValid.hasLowerCase = hasLowerCase;
-    this.passwordValid.hasNumber = hasNumeric;
-    this.passwordValid.hasSpecialChar = hasSpecialCharacter;
-    this.passwordValid.hasNoSpaces = hasNoSpaces;
   }
 }

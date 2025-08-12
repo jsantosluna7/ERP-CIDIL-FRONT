@@ -1,3 +1,19 @@
+.btn {
+    background-color: #1825AA;
+    color: white;
+    width: 100%;
+    margin-bottom: 3rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+}
+
+.btn:hover {
+    background-color: #101A88;
+}
+
 .btn-custom-blue {
     background-color: #1825AA;
     color: white;
