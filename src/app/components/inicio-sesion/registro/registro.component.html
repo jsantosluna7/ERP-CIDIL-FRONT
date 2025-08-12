@@ -42,7 +42,9 @@
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputMat" class="form-label">Matrícula o ID de Empleado</label>
+      <label for="inputMat" class="form-label"
+        >Matrícula o ID de Empleado</label
+      >
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
         <input
@@ -102,7 +104,7 @@
           formControlName="contrasena"
           (mouseenter)="openPopup($event)"
           (keypress)="openPopup($event)"
-          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,}$"
           (mouseleave)="closePopup()"
           class="form-control"
           id="contrasena"
@@ -127,11 +129,21 @@
     </div>
     <div class="p-0 m-0 d-flex justify-content-center align-items-center">
       <button
-        [disabled]="registroForm.invalid"
+        type="button"
+        [disabled]="!registroForm.valid || loading"
         (click)="register()"
         class="btn btn-custom-blue mb-3 mt-4"
       >
-        Registrate
+        @if(loading){
+        <mat-progress-spinner
+          diameter="30"
+          mode="indeterminate"
+          strokeWidth="3"
+          class="white-spinner"
+        ></mat-progress-spinner>
+        } @if(!loading){
+        <span>Registrate</span>
+        }
       </button>
     </div>
   </form>
@@ -254,12 +266,12 @@
         @if (passwordValid.hasMinLength == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
-          <strong>6 caracteres</strong>
+          <strong>8 caracteres</strong>
         </span>
         }@else if (passwordValid.hasMinLength == true) {
         <span>
           <fa-icon [icon]="faCheck"></fa-icon>
-          <strong>6 caracteres</strong>
+          <strong>8 caracteres</strong>
         </span>
         }
       </label>

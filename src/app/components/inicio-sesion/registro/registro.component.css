@@ -4,6 +4,13 @@
     border: none;
 }
 
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
+    display: flex;
+    justify-self: center;
+    align-self: center;
+}
+
 .btn-custom-blue:hover {
     background-color: #12208c;
     /* un poco más oscuro al pasar el mouse */

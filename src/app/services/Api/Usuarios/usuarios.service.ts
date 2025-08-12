@@ -13,9 +13,15 @@ export class UsuariosService {
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem('token');
+    const tokenRegistro = localStorage.getItem('tokenRegistro');
 
-    if(token){
+    if (token) {
       const decodificado: JwtPayload = jwtDecode(token);
+      this.userSubject.next(decodificado);
+    }
+
+    if (tokenRegistro) {
+      const decodificado: JwtPayload = jwtDecode(tokenRegistro);
       this.userSubject.next(decodificado);
     }
   }
@@ -37,9 +43,24 @@ export class UsuariosService {
   cerrarSesion() {
     this.userSubject.next(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('tokenRegistro');
   }
 
   registro(endpoint: string, body: any): Observable<any> {
+    return this.http.post(endpoint, body).pipe(
+      tap({
+        next: (user: any) => {
+          const token = user.tokenId;
+          const tokenDecodificado: JwtPayload = jwtDecode(token);
+
+          this.userSubject.next(tokenDecodificado);
+          localStorage.setItem('tokenRegistro', token);
+        },
+      })
+    );
+  }
+
+  usuarioPendiente(endpoint: string, body: any): Observable<any> {
     return this.http.post(endpoint, body).pipe(
       tap({
         next: (user: any) => {
@@ -51,17 +72,6 @@ export class UsuariosService {
         },
       })
     );
-  }
-
-  usuarioPendiente(endpoint: string, body: any): Observable<any> {
-    return this.http.post(endpoint, body);
-    // .pipe(
-    //   tap({
-    //     next: (user) => {
-    //       this.userPendienteSubject.next(user);
-    //     },
-    //   })
-    // );
   }
 
   olvideContrasena(endpoint: string, body: any): Observable<any> {
