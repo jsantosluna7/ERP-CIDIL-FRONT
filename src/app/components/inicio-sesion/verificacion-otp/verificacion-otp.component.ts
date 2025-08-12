@@ -25,7 +25,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-verificacion-otp',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './verificacion-otp.component.html',
   styleUrl: './verificacion-otp.component.css',
 })
@@ -146,6 +151,7 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
             'Registro Éxitoso'
           );
         });
+        localStorage.removeItem('tokenRegistro');
       },
       error: (err) => {
         this.loading = false;

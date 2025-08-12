@@ -13,15 +13,9 @@ export class UsuariosService {
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem('token');
-    const tokenRegistro = localStorage.getItem('tokenRegistro');
 
     if (token) {
       const decodificado: JwtPayload = jwtDecode(token);
-      this.userSubject.next(decodificado);
-    }
-
-    if (tokenRegistro) {
-      const decodificado: JwtPayload = jwtDecode(tokenRegistro);
       this.userSubject.next(decodificado);
     }
   }
@@ -43,7 +37,6 @@ export class UsuariosService {
   cerrarSesion() {
     this.userSubject.next(null);
     localStorage.removeItem('token');
-    localStorage.removeItem('tokenRegistro');
   }
 
   registro(endpoint: string, body: any): Observable<any> {
