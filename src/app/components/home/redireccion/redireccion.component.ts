@@ -10,8 +10,7 @@ import { Router } from '@angular/router';
 })
 export class RedireccionComponent {
   constructor(private _usuarios: UsuariosService, private router: Router) {
-    const rol = this._usuarios.userSubject.value?.idRol;
-
+    const rol = Number(this._usuarios.userSubject.value?.idRol);
     switch (rol) {
       case 1: // Superusuario
         this.router.navigate(['/home/dashboard']);

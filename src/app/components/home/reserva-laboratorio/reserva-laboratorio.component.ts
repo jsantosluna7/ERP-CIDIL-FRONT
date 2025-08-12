@@ -165,7 +165,6 @@ export class ReservaLaboratorioComponent {
   }
 
   obtenerDescripcionLaboratorio(id: number): string {
-    console.log('ID del laboratorio seleccionado:', id);
     const laboratorio = this.laboratorios.find((lab) => lab.id == id);
 
     return laboratorio?.descripcion.trimStart() || '';

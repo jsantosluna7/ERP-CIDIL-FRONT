@@ -16,79 +16,81 @@
     </div>
 
     <div class="col-md-6 mt-1">
-      <label for="inputEmail4" class="form-label">Nombres</label>
+      <label for="inputNombre" class="form-label">Nombres</label>
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
         <input
           type="text"
           formControlName="nombre"
           class="form-control"
-          id="inputEmail4"
+          id="inputNombre"
           placeholder="Nombre"
         />
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputEmail4" class="form-label">Apellidos</label>
+      <label for="inputApellidos" class="form-label">Apellidos</label>
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
         <input
           type="text"
           formControlName="apellido"
           class="form-control"
-          id="inputEmail4"
+          id="inputApellidos"
           placeholder="Apellidos"
         />
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputEmail4" class="form-label">Matrícula o ID de Empleado</label>
+      <label for="inputMat" class="form-label"
+        >Matrícula o ID de Empleado</label
+      >
       <div class="user">
         <fa-icon [icon]="faUser"></fa-icon>
         <input
           type="text"
           formControlName="matricula"
           class="form-control"
-          id="inputEmail4"
+          id="inputMat"
           placeholder="Ej: 10089635 o 1513"
         />
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputEmail4" class="form-label">Email</label>
+      <label for="inputEmail" class="form-label">Email</label>
       <div class="envelope">
         <fa-icon [icon]="faEnvelope"></fa-icon>
         <input
           type="email"
           formControlName="email"
           class="form-control"
-          id="inputEmail4"
+          id="inputEmail"
           placeholder="ejemplo@ipl.edu.do"
         />
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputEmail4" class="form-label">Telefono</label>
+      <label for="inputTel" class="form-label">Telefono</label>
       <div class="phone">
         <fa-icon [icon]="faPhone"></fa-icon>
         <input
           type="tel"
           formControlName="telefono"
           class="form-control"
-          id="inputEmail4"
+          id="inputTel"
           placeholder="Telefono"
         />
       </div>
     </div>
     <div class="col-md-6 mt-1">
-      <label for="inputEmail4" class="form-label">Direccion</label>
+      <label for="inputDirec" class="form-label">Direccion</label>
       <div class="location">
         <fa-icon [icon]="faLocationDot"></fa-icon>
         <input
           type="text"
           formControlName="direccion"
           class="form-control"
-          id="inputEmail4"
+          id="inputDirec"
           placeholder="Direccion"
         />
       </div>
@@ -102,7 +104,7 @@
           formControlName="contrasena"
           (mouseenter)="openPopup($event)"
           (keypress)="openPopup($event)"
-          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,}$"
           (mouseleave)="closePopup()"
           class="form-control"
           id="contrasena"
@@ -127,11 +129,21 @@
     </div>
     <div class="p-0 m-0 d-flex justify-content-center align-items-center">
       <button
-        [disabled]="registroForm.invalid"
+        type="button"
+        [disabled]="!registroForm.valid || loading"
         (click)="register()"
         class="btn btn-custom-blue mb-3 mt-4"
       >
-        Registrate
+        @if(loading){
+        <mat-progress-spinner
+          diameter="30"
+          mode="indeterminate"
+          strokeWidth="3"
+          class="white-spinner"
+        ></mat-progress-spinner>
+        } @if(!loading){
+        <span>Registrate</span>
+        }
       </button>
     </div>
   </form>
@@ -254,12 +266,12 @@
         @if (passwordValid.hasMinLength == false) {
         <span>
           <fa-icon [icon]="faXmark"></fa-icon>
-          <strong>6 caracteres</strong>
+          <strong>8 caracteres</strong>
         </span>
         }@else if (passwordValid.hasMinLength == true) {
         <span>
           <fa-icon [icon]="faCheck"></fa-icon>
-          <strong>6 caracteres</strong>
+          <strong>8 caracteres</strong>
         </span>
         }
       </label>

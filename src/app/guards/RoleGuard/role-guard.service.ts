@@ -12,7 +12,7 @@ export class RoleGuard implements CanActivate {
     const expectedRoles: number[] = route.data['roles'];
     const user = this._usuario.userSubject.value;
 
-    if (user && expectedRoles.includes(user.idRol)) {
+    if (user && expectedRoles.includes(Number(user.idRol))) {
       return true;
     }
 

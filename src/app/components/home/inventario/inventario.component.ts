@@ -91,7 +91,6 @@ cargarCartas(): void {
 
   this.inventarioService.getCartas(this.paginaActual, this.pageSize).subscribe({
     next: (d: any) => {
-      console.log('Respuesta del backend:', d);
 
       let datosFiltrados = d.datos.filter((data: any) => data.disponible);
 
@@ -139,7 +138,6 @@ cargarCartas(): void {
       }
 
       this.loading = false;
-      console.log('Se actualizaron las cartas:', this.cartasConLaboratorio.map(c => c.id));
     },
     error: () => {
       this.loading = false;
@@ -215,7 +213,6 @@ onPageChange(event: PageEvent): void {
   this.loading = true;
   this.pageSize = event.pageSize;
   this.paginaActual = event.pageIndex + 1; 
-  console.log('Cambio de página:', event.pageIndex + 1);
   this.cargarCartas();
   
 
@@ -254,7 +251,6 @@ abrirDialogoEditar(carta: any): void {
     exportarInventario() {
     this.inventarioService.obtenerTodoElInventario().subscribe({
       next: (datos) => {
-        console.log(datos)
         const ws = XLSX.utils.json_to_sheet(datos);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
@@ -294,19 +290,17 @@ abrirDialogoEditar(carta: any): void {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       const data = XLSX.utils.sheet_to_json(ws);
-      console.log('Datos importados:', data);
 
      
       const equipos = data.map((e: any) => ({
         ...e,
         serial: String(e.serial || '')
       }));
-
-      console.log('apiUrl:', this.inventarioService['apiUrlImpor']);
-      console.log('Voy a llamar a:', this.inventarioService['apiUrlImpor']);
-
       this.inventarioService.importarInventarioLote(equipos).subscribe({
-        next: (res) => console.log('Respuesta:', res),
+        complete: () => {
+          this.toastr.success('Inventario importado exitosamente', '');
+          this.cargarCartas(); // Recargar las cartas después de la importación
+        },
         error: (err) => console.error('Error en importación:', err),
       });
     };

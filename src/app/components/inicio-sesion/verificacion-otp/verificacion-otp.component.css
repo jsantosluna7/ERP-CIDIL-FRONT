@@ -7,6 +7,10 @@
     padding: 15px;
 }
 
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
+}
+
 .opt-form {
     width: 100%;
     max-width: 550px;

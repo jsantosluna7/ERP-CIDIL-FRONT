@@ -20,10 +20,12 @@ import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { _StructuralStylesLoader } from '@angular/material/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-verificacion-otp',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, MatProgressSpinnerModule],
   templateUrl: './verificacion-otp.component.html',
   styleUrl: './verificacion-otp.component.css',
 })
@@ -33,7 +35,7 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
 
   // Iconos
   faEnvelope = faEnvelope;
-
+  loading = false;
   otpForm: FormGroup;
 
   VerificacionOtp = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIOS_PENDIENTES']}`;
@@ -55,10 +57,10 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this._userService.user$.subscribe((user) => {
+    this._userService.user$.pipe(take(1)).subscribe((user) => {
       if (user) {
         this.correoUsuario = user.correoInstitucional;
-        this.usuarioPendienteId = user.id;
+        this.usuarioPendienteId = user.sub;
       } else {
         this._toastr.error('No se encontró información del usuario pendiente.');
       }
@@ -118,6 +120,14 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
   }
 
   confirmarOtp() {
+    if (this.otpForm.invalid) {
+      this._toastr.error(
+        'Por favor, complete todos los campos del OTP.',
+        'Error'
+      );
+      return;
+    }
+    this.loading = true;
     const otpCode = Object.values(this.otpForm.value).join('');
 
     const body = {
@@ -127,14 +137,19 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
 
     this._userService.usuarioPendiente(this.VerificacionOtp, body).subscribe({
       next: (response) => {
+        this.loading = false;
         this._router.navigate(['home']);
         this._toastr.success('OTP verificado exitosamente.', 'Éxito');
-        this._userService.user$.subscribe((user) => {
+        this._userService.user$.pipe(take(1)).subscribe((user) => {
           this._toastr.success(
             `Bienvenido, ${user.nombreUsuario} ${user.apellidoUsuario}`,
             'Registro Éxitoso'
           );
         });
+      },
+      error: (err) => {
+        this.loading = false;
+        this._toastr.error('Error verificando OTP', 'Error');
       },
     });
   }

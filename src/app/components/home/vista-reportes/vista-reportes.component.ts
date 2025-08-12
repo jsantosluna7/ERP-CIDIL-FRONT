@@ -69,7 +69,6 @@ export class VistaReportesComponent {
     error: (err) => {
       this.toastr.error('Error al cerrar el reporte', 'Error');
       console.error('Error cerrar:', err);
-      console.log(dto)
     },
   });
 }
@@ -86,7 +85,6 @@ reabrirReporte(reporte: ReporteFalla) {
     error: (err) => {
       this.toastr.error('Error al reabrir el reporte', 'Error');
       console.error('Error reabrir:', err);
-      console.log(dto)
     },
   });
 }
