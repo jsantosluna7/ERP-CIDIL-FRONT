@@ -46,7 +46,7 @@ export class UsuariosComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined; 
 
   ngOnInit(): void{
-    this.usuarioService.obtenerUsuarios().subscribe(data => {
+    this.usuarioService.obtenerUsuariosPag().subscribe(data => {
       this.dataSource.data = data.datos;
       this.dataSource = new MatTableDataSource(data.datos);
       this.dataSource.paginator = this.paginator!;
@@ -159,7 +159,7 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
 
   dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
     if (result) {
-      this.usuarioService.obtenerUsuarios().subscribe(data => {
+      this.usuarioService.obtenerUsuariosPag().subscribe(data => {
         this.dataSource.data = data.datos;
         this.dataSource.paginator = this.paginator!;
         this.dataSource.sort = this.sort!;

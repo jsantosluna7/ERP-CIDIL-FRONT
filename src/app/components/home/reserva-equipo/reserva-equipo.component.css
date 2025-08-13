@@ -1,23 +1,49 @@
-.location,.phone,.user,.envelope{
+.location,
+.phone,
+.user,
+.envelope {
     display: flex;
     flex-direction: row;
     align-items: center;
     position: relative;
 }
- .location fa-icon,.phone fa-icon,.user fa-icon,.envelope fa-icon{
+
+.location fa-icon,
+.phone fa-icon,
+.user fa-icon,
+.envelope fa-icon {
     position: absolute;
     left: 1.2rem;
-  
+
+}
+
+.btn {
+    background-color: #1825AA;
+    color: white;
+    width: 96%;
+    margin-bottom: 3rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+}
+
+.btn:hover {
+    background-color: #101A88;
+}
+
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
 }
 
 .form {
-    
     border: none;
-    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.207);
-    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
     margin-top: 1rem;
     height: 35rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 label {
@@ -28,14 +54,14 @@ input::placeholder {
     font-size: .8rem;
 }
 
-input{
+input {
     font-size: 1rem;
 }
 
-input{
+input {
     padding-left: 1.9rem;
 }
 
-div a{
+div a {
     text-decoration: none;
 }

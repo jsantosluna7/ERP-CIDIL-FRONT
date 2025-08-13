@@ -1,27 +1,43 @@
-<div class="fondo d-flex justify-content-center p-lg-0 align-items-center ">
-    <form [formGroup]="solicitudesForm" class="row container w-auto h-auto   p-3 form mt-5 ite">
-        <h2>Reserva de Equipos</h2>
-        <div class="example-button-row">
-            <a mat-button="elevated" routerLink="/home/solicitud-equipo" *appCualRol="[1, 2]">Ver Solicitudes</a>
-            <a mat-button="elevated" routerLink="/home/solicitud-equipo" (click)="ruta()" >Ir al inventario</a>
-            
-        </div>
-        <hr>
+<div class="fondo d-flex justify-content-center p-lg-0 align-items-center">
+  <form
+    [formGroup]="solicitudesForm"
+    class="row container w-auto h-auto p-3 form mt-5 ite"
+  >
+    <h2>Reserva de Equipos</h2>
+    <div class="example-button-row">
+      <a
+        mat-button="elevated"
+        routerLink="/home/solicitud-equipo"
+        *appCualRol="[1, 2]"
+        >Ver Solicitudes</a
+      >
+      <a
+        mat-button="elevated"
+        routerLink="/home/solicitud-equipo"
+        (click)="ruta()"
+        >Ir al inventario</a
+      >
+    </div>
+    <hr />
 
-        <h5>Equipos seleccionados:</h5>
-        @if (equiposSeleccionados.length > 0) {
-        <ul class="list-group mb-3">
-            @for (equipo of equiposSeleccionados; track equipo.id) {
-            <li class="list-group-item">
-                <p><strong>Lab:</strong> {{ equipo.nombre }} <strong>Nomb:</strong> {{ equipo.nombreData }} <strong>Cant:</strong>{{ equipo.cantidadSeleccionada }} <strong>Dis:</strong>{{ equipo.cantidad }} </p>
-
-            </li>
-            }
-        </ul>
-        } @else {
-        <p>No hay equipos seleccionados.</p>
-        }
-        <!--- <div class="col-md-6 mt-1 row">
+    <h5>Equipos seleccionados:</h5>
+    @if (equiposSeleccionados.length > 0) {
+    <ul class="list-group mb-3">
+      @for (equipo of equiposSeleccionados; track equipo.id) {
+      <li class="list-group-item">
+        <p>
+          <strong>Lab:</strong> {{ equipo.nombre }} <strong>Nomb:</strong>
+          {{ equipo.nombreData }} <strong>Cant:</strong
+          >{{ equipo.cantidadSeleccionada }} <strong>Dis:</strong
+          >{{ equipo.cantidad }}
+        </p>
+      </li>
+      }
+    </ul>
+    } @else {
+    <p>No hay equipos seleccionados.</p>
+    }
+    <!--- <div class="col-md-6 mt-1 row">
             <label for="inputEmail4" class="form-label">Equipos</label>
             <div class="location">
                 <fa-icon [icon]="fahouse"></fa-icon>
@@ -30,30 +46,44 @@
         </div>
         -->
 
-        <div class="col-md-6 mt-1 row w-100">
-            <label for="inputEmail4" class="form-label">Hora de Inicio</label>
-            <div class="location">
-                <fa-icon [icon]="faclock"></fa-icon>
-                <input type="datetime-local" formControlName="fechaInicio" class="form-control" id="inputEmail4"
-                    placeholder="Laboratorio" />
-            </div>
-        
-              <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
-            <div class="location">
-                <fa-icon [icon]="faclock"></fa-icon>
-                <input type="datetime-local" formControlName="fechaDevolucion" class="form-control" id="inputEmail4"
-                    placeholder="Laboratorio" />
-            </div>
-            
-            <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
-                <textarea class="form-control" formControlName="Motivo" id="exampleFormControlTextarea1"
-                    rows="3"></textarea>
-            </div>
+    <div class="col-md-6 mt-1 row w-100">
+      <label for="inputEmail4" class="form-label">Hora de Inicio</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input
+          type="datetime-local"
+          formControlName="fechaInicio"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Laboratorio"
+        />
+      </div>
 
+      <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
+      <div class="location">
+        <fa-icon [icon]="faclock"></fa-icon>
+        <input
+          type="datetime-local"
+          formControlName="fechaDevolucion"
+          class="form-control"
+          id="inputEmail4"
+          placeholder="Laboratorio"
+        />
+      </div>
 
-        </div>
-       <!-- <div class="col-md-6 mt-1 row">
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label"
+          >Motivo</label
+        >
+        <textarea
+          class="form-control"
+          formControlName="Motivo"
+          id="exampleFormControlTextarea1"
+          rows="3"
+        ></textarea>
+      </div>
+    </div>
+    <!-- <div class="col-md-6 mt-1 row">
             <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
             <div class="location">
                 <fa-icon [icon]="faclock"></fa-icon>
@@ -61,18 +91,32 @@
                     placeholder="Laboratorio" />
             </div>
         </div>  -->
-       
 
-        <!--Comentarios -->
-       <!-- <div class="col-md-6 mt-1 row">
+    <!--Comentarios -->
+    <!-- <div class="col-md-6 mt-1 row">
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Motivo</label>
                 <textarea class="form-control" formControlName="Motivo" id="exampleFormControlTextarea1"
                     rows="3"></textarea>
             </div>
         </div> -->
-     
 
-        <button class="btn btn-success" (click)="enviarSolicitud()">Enviar Solicitud</button>
-    </form>
+    <button
+      type="button"
+      class="btn"
+      (click)="enviarSolicitud()"
+      [disabled]="loading"
+    >
+      @if(loading){
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="30"
+        strokeWidth="3"
+        class="white-spinner"
+      >
+      </mat-progress-spinner>
+
+      } @if(!loading){ Enviar Solicitud }
+    </button>
+  </form>
 </div>

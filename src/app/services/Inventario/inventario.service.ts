@@ -8,13 +8,14 @@ import { Carta, PaginacionResponse } from '../../interfaces/carta';
 })
 export class InventarioService {
   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO']}`;
+  private apiUrlId = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_ID']}`;
   private apiUrltodos = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_TODOS']}`;
   private apiUrlImpor = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_IMPORTAR']}`
 
   constructor(private http: HttpClient) {}
 
   obtenerCartaPorId(id: number): Observable<Carta> {
-  return this.http.get<Carta>(`${this.apiUrl}/${id}`);
+  return this.http.get<Carta>(`${this.apiUrlId}${id}`);
 }
 
 

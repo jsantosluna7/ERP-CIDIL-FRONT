@@ -52,7 +52,12 @@
             class="form-control"
             id="exampleFormControlTextarea1"
             rows="3"
-          >{{obtenerDescripcionLaboratorio(solicitudesForm.get("idLaboratorio")?.value)}}</textarea>
+            >{{
+              obtenerDescripcionLaboratorio(
+                solicitudesForm.get("idLaboratorio")?.value
+              )
+            }}</textarea
+          >
         </div>
       </div>
 
@@ -118,8 +123,17 @@
       </div>
     </div> -->
 
-    <button type="button" class="btn btn-success" (click)="enviarSolicitud()">
-      Enviar Solicitud
+    <button type="button" class="btn" (click)="enviarSolicitud()" [disabled]="loading">
+      @if(loading){
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="30"
+        strokeWidth="3"
+        class="white-spinner"
+      >
+      </mat-progress-spinner>
+
+      } @if(!loading){ Enviar Solicitud }
     </button>
   </form>
 </div>
