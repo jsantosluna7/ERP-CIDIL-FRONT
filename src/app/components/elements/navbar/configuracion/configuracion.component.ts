@@ -56,7 +56,7 @@ export class ConfiguracionComponent {
     private dialogRef: MatDialogRef<ConfiguracionComponent>
   ) {
     this.usuarioForm = this.fb.group({
-      id: [this.usuario.id],
+      id: [Number(this.usuario.sub)],
       idMatricula: [this.usuario.idMatricula, Validators.required],
       nombreUsuario: [this.usuario.nombreUsuario, Validators.required],
       apellidoUsuario: [this.usuario.apellidoUsuario, Validators.required],
@@ -87,18 +87,16 @@ export class ConfiguracionComponent {
   guardarCambios() {
     if (this.usuarioForm.valid) {
       const datosActualizados = {
-        idMatricula: this.usuarioForm.value.idMatricula,
         nombreUsuario: this.usuarioForm.value.nombreUsuario,
         apellidoUsuario: this.usuarioForm.value.apellidoUsuario,
         correoInstitucional: this.usuarioForm.value.correoInstitucional,
         telefono: this.usuarioForm.value.telefono,
         direccion: this.usuarioForm.value.direccion,
         rolNombre: this.usuarioForm.value.idRol,
-        fechaCreacion: this.usuario.fechaCreacion, // se mantiene
         fechaUltimaModificacion: new Date().toISOString(), // se actualiza
       };
       this.usuarioService
-        .actualizarUsuario(this.usuario.id, datosActualizados)
+        .actualizarUsuario(Number(this.usuario.sub), datosActualizados)
         .subscribe({
           next: () => {
             this.toastr.success('Usuario actualizado correctamente');

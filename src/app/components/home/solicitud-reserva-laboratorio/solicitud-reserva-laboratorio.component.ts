@@ -18,7 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
-  imports: [CommonModule, ToastrModule, MatTableModule,MatButtonModule],
+  imports: [CommonModule, ToastrModule, MatTableModule, MatButtonModule],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
   styleUrl: './solicitud-reserva-laboratorio.component.css',
 })
@@ -29,15 +29,15 @@ export class SolicitudReservaLaboratorioComponent {
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUD_RESERVA_ESPACIO_PISO']}`;
 
   columnas: string[] = [
-  'nombreUsuario',
-  'nombreLaboratorio',
-  'horaInicio',
-  'horaFinal',
-  'motivo',
-  'fechaSolicitud',
-  'estado',
-  'acciones'
-];
+    'nombreUsuario',
+    'nombreLaboratorio',
+    'horaInicio',
+    'horaFinal',
+    'motivo',
+    'fechaSolicitud',
+    'estado',
+    'acciones',
+  ];
 
   constructor(
     private reservaLaboratorioService: SolicitudReservaService,
@@ -73,7 +73,9 @@ export class SolicitudReservaLaboratorioComponent {
             }).subscribe({
               next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
                 const solicitudes = solicitudesResp; //aquí accedes a las solicitudes reales
-                const usuarios = usuariosResp.datos;
+                const usuarios = Array.isArray(usuariosResp)
+                  ? usuariosResp
+                  : [];
 
                 this.solicitudes = solicitudes.map((sol: Solicitud) => {
                   const usuario = usuarios.find((u) => u.id === sol.idUsuario);
@@ -101,13 +103,15 @@ export class SolicitudReservaLaboratorioComponent {
             });
 
             forkJoin({
-              solicitudesResp: this.reservaLaboratorioService.getResevas(), 
+              solicitudesResp: this.reservaLaboratorioService.getResevas(),
               usuariosResp: this.usuarioService.obtenerUsuarios(),
               laboratorios: this.laboratorioService.getLaboratorios(),
             }).subscribe({
               next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-                const solicitudes = solicitudesResp.datos; 
-                const usuarios = usuariosResp.datos;
+                const solicitudes = solicitudesResp.datos;
+                const usuarios = Array.isArray(usuariosResp)
+                  ? usuariosResp
+                  : [];
 
                 this.solicitudes = solicitudes.map((sol: Solicitud) => {
                   const usuario = usuarios.find((u) => u.id === sol.idUsuario);
@@ -119,14 +123,17 @@ export class SolicitudReservaLaboratorioComponent {
                     ...sol,
                     nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
                     nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: sol.fechaInicio, 
-                    fechaFinal: sol.fechaFinal, 
+                    fechaInicio: sol.fechaInicio,
+                    fechaFinal: sol.fechaFinal,
                   };
                 });
               },
               error: (err) => {
                 console.error('Error al cargar datos', err);
-                this.toastr.warning('Error al cargar solicitudes o no existen solicitudes', 'Error');
+                this.toastr.warning(
+                  'Error al cargar solicitudes o no existen solicitudes',
+                  'Error'
+                );
               },
             });
           }
@@ -150,7 +157,7 @@ export class SolicitudReservaLaboratorioComponent {
       }).subscribe({
         next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
           const solicitudes = solicitudesResp.datos;
-          const usuarios = usuariosResp.datos;
+          const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
 
           this.solicitudes = solicitudes.map((sol: Solicitud) => {
             const usuario = usuarios.find((u) => u.id === sol.idUsuario);
@@ -206,10 +213,15 @@ export class SolicitudReservaLaboratorioComponent {
     this.reservaLaboratorioService.updateEstado(body).subscribe({
       next: () => {
         solicitud.idEstado = 1;
-        this.solicitudes = this.solicitudes.filter(
-          (s) => s.id !== solicitud.id
-        );
         this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
+
+        this.reservaLaboratorioService
+          .eliminarSolicitud(solicitud.id)
+          .subscribe(() => {
+            this.solicitudes = this.solicitudes.filter(
+              (s) => s.id !== solicitud.id
+            );
+          });
       },
       error: (err) => {
         console.error('Error al aprobar solicitud:', err);
@@ -221,12 +233,12 @@ export class SolicitudReservaLaboratorioComponent {
   desaprobar(solicitud: Solicitud) {
 
     if (!solicitud) {
-      this.toastr.error('Solicitud es undefined o null')
+      console.error('Solicitud es undefined o null');
       return;
     }
 
     if (!this.usuarioLogueado) {
-      this.toastr.error('Usuario logueado no está definido')
+      console.error('Usuario logueado no está definido');
       return;
     }
 
@@ -249,10 +261,14 @@ export class SolicitudReservaLaboratorioComponent {
     this.reservaLaboratorioService.updateEstado(body).subscribe({
       next: () => {
         // Quita del frontend la solicitud rechazada
-        this.solicitudes = this.solicitudes.filter(
-          (s) => s.id !== solicitud.id
-        );
         this.toastr.info('Solicitud desaprobada correctamente', 'Información');
+        this.reservaLaboratorioService
+          .eliminarSolicitud(solicitud.id)
+          .subscribe(() => {
+            this.solicitudes = this.solicitudes.filter(
+              (s) => s.id !== solicitud.id
+            );
+          });
       },
       error: (err) => {
         console.error('Error al desaprobar solicitud:', err);

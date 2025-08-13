@@ -73,6 +73,7 @@ export class ReservaLaboratorioComponent {
     });
 
     this._usuarios.user$.subscribe((user) => {
+
       this.usuarioLogueado = user;
     });
 
@@ -140,7 +141,7 @@ export class ReservaLaboratorioComponent {
     // Si todo está correcto, preparar la solicitud
 
     const solicitud = {
-      idUsuario: this.usuarioLogueado.id,
+      idUsuario: Number(this.usuarioLogueado.sub),
       idLaboratorio: Number(idLaboratorio),
       horaInicio: horaInicio,
       horaFinal: horaFinal,

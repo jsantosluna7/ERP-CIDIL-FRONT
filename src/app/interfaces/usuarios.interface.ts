@@ -1,16 +1,16 @@
-export interface Usuarios{
-    id: number;
-    idMatricula: number;
-    nombreUsuario:string;
-    apellidoUsuario:string;
-    correoInstitucional:string;
-    telefono:string;
-    direccion:string;
-    activado?: boolean;
-    idrol:'Estudiante' | 'Administrador' | 'Super Usuario' | 'Profesor';
-    fechaCreacion:string;
-    fechaUltimaModificacion: string;
-
+export interface Usuarios {
+  id: number;
+  sub: number;
+  idMatricula: number;
+  nombreUsuario: string;
+  apellidoUsuario: string;
+  correoInstitucional: string;
+  telefono: string;
+  direccion: string;
+  activado?: boolean;
+  idrol: 'Estudiante' | 'Administrador' | 'Super Usuario' | 'Profesor';
+  fechaCreacion: string;
+  fechaUltimaModificacion: string;
 }
 
 export interface RespuestaUsuarios {
