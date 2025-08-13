@@ -20,6 +20,10 @@ export class UsuarioService {
     return this.http.get<RespuestaUsuarios>(this.apiUrl);
   }
 
+  obtenerUsuariosPag(): Observable<RespuestaUsuarios> {
+    return this.http.get<RespuestaUsuarios>(this.apiUrlUsuario);
+  }
+
   obtenerRol(): Observable<RespuestaUsuarios> {
     return this.http.get<RespuestaUsuarios>(this.apiUrlRol);
   }

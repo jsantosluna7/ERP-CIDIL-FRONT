@@ -26,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-reserva-laboratorio',
@@ -35,13 +36,14 @@ import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive'
     MatButtonModule,
     RouterLink,
     AppCualRolDirective,
+    MatProgressSpinnerModule
   ],
   templateUrl: './reserva-laboratorio.component.html',
   styleUrl: './reserva-laboratorio.component.css',
 })
 export class ReservaLaboratorioComponent {
   laboratoriosSelect: any[] = [];
-
+  loading = false;
   laboratorios: Laboratorio[] = [];
   solicitudesForm!: FormGroup;
   faUser = faUser;
@@ -95,7 +97,6 @@ export class ReservaLaboratorioComponent {
     //const horaFinal = this.solicitudesForm.get('horaFinal')?.value;
     const motivo = this.solicitudesForm.get('motivo')?.value;
     //const aprobacion = Number(this.solicitudesForm.get('aprobacion')?.value);
-
     const form = this.solicitudesForm.value;
     // Convertimos los campos datetime-local
     const dtInicio = new Date(form.horaInicio);
@@ -105,18 +106,23 @@ export class ReservaLaboratorioComponent {
     const fechaInicio = dtInicio.toISOString().split('T')[0] + 'T00:00:00';
     const fechaFinal = dtFinal.toISOString().split('T')[0] + 'T00:00:00';
 
+    this.loading = true; // Activar el spinner
+
     // Validaciones paso a paso con toastr
     if (!idLaboratorio) {
+      this.loading = false; // Desactivar el spinner
       this.toastr.warning('Debe seleccionar un laboratorio.', 'Atención');
       return;
     }
 
     if (!horaInicio) {
+      this.loading = false; // Desactivar el spinner
       this.toastr.warning('Debe seleccionar la hora de inicio.', 'Atención');
       return;
     }
 
     if (!horaFinal) {
+      this.loading = false; // Desactivar el spinner
       this.toastr.warning(
         'Debe seleccionar la hora de finalización.',
         'Atención'
@@ -125,12 +131,14 @@ export class ReservaLaboratorioComponent {
     }
 
     if (!motivo || motivo.trim() === '') {
+      this.loading = false; // Desactivar el spinner
       this.toastr.warning('Debe ingresar el motivo de la reserva.', 'Atención');
       return;
     }
 
     // Validar formulario completo
     if (this.solicitudesForm.invalid) {
+      this.loading = false; // Desactivar el spinner
       this.toastr.error(
         'El formulario tiene errores. Revise los campos.',
         'Error'
@@ -154,11 +162,13 @@ export class ReservaLaboratorioComponent {
     // Envío real al servicio
     this.laboratorioService.enviarSolicitud(solicitud).subscribe({
       next: () => {
+        this.loading = false; // Desactivar el spinner
         this.toastr.success('¡Solicitud enviada correctamente!', 'Éxito');
         this.solicitudesForm.reset();
         this.laboratoriosSelect = [];
       },
       error: (err) => {
+        this.loading = false; // Desactivar el spinner
         console.error(err);
         this.toastr.error(err.error, 'Error');
       },

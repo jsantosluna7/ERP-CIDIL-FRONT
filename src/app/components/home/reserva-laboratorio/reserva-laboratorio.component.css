@@ -1,3 +1,22 @@
+.btn {
+    background-color: #1825AA;
+    color: white;
+    width: 96%;
+    margin-bottom: 3rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+}
+
+.btn:hover {
+    background-color: #101A88;
+}
+
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
+}
 
 .location,.phone,.user,.envelope{
     display: flex;
@@ -14,10 +33,10 @@
 .form {
     
     border: none;
-    box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.207);
-    -moz-box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
     margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 35rem;
 }
 
