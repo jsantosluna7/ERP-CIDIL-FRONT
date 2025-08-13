@@ -1,53 +1,50 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, of } from "rxjs";
-import { Usuarios,RespuestaUsuarios } from "../../../../interfaces/usuarios.interface";
-import { HttpClient } from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import {
+  Usuarios,
+  RespuestaUsuarios,
+} from '../../../../interfaces/usuarios.interface';
+import { HttpClient } from '@angular/common/http';
 
+@Injectable({ providedIn: 'root' })
+export class UsuarioService {
+  private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_TODOS_USUARIOS']}`;
+  private apiUrlRol = `${process.env['API_URL']}${process.env['ENDPOINT_ROL']}`;
+  private apiUrlUsuario = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIO']}`;
 
-@Injectable({ providedIn: 'root'})
+  constructor(private http: HttpClient) {}
 
-export class UsuarioService{
+  //private usuarios$ = new BehaviorSubject<Usuarios[]>(this.apiUrl);
 
-   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIO']}`;
-   private apiUrlRol = `${process.env['API_URL']}${process.env['ENDPOINT_ROL']}`;
-    private apiUrlDesactivar = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIO']}`;
-
-     constructor(private http: HttpClient) {}
-
-    //private usuarios$ = new BehaviorSubject<Usuarios[]>(this.apiUrl);
-
-
-    obtenerUsuarios(): Observable<RespuestaUsuarios> {
+  obtenerUsuarios(): Observable<RespuestaUsuarios> {
     return this.http.get<RespuestaUsuarios>(this.apiUrl);
-   }
-  
-   obtenerRol(): Observable<RespuestaUsuarios>{
-    return this.http.get<RespuestaUsuarios>(this.apiUrlRol)
-   }
+  }
 
-   obtenerRolId(id:string): Observable<any>{
-    return this.http.get(`${this.apiUrlRol}/${id}`)
-   }
+  obtenerRol(): Observable<RespuestaUsuarios> {
+    return this.http.get<RespuestaUsuarios>(this.apiUrlRol);
+  }
 
-   cambiarRol(id: number, nuevoRol: Usuarios['idrol']): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`,{nuevoRol});
-   }
+  obtenerRolId(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrlRol}/${id}`);
+  }
 
-   desactivarUsuario(id: number, activo: boolean): Observable<void>{
-    return this.http.patch<void>(`${this.apiUrlDesactivar}/${id}`,null);
-   }
-  
-   actualizarUsuario(id: number, usuario: any): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${id}`, usuario);
-}
+  cambiarRol(id: number, nuevoRol: Usuarios['idrol']): Observable<any> {
+    return this.http.put(`${this.apiUrlUsuario}/${id}`, { nuevoRol });
+  }
+
+  desactivarUsuario(id: number, activo: boolean): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrlUsuario}/${id}`, null);
+  }
+
+  actualizarUsuario(id: number, usuario: any): Observable<any> {
+    return this.http.put(`${this.apiUrlUsuario}/${id}`, usuario);
+  }
 
   eliminarUsuario(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-}
+    return this.http.delete(`${this.apiUrlUsuario}/${id}`);
+  }
 
-
-
- /*eliminarUsuario(id: number): Observable<boolean> {
+  /*eliminarUsuario(id: number): Observable<boolean> {
   const index = this.apiUrl.findIndex(u => u.id === id);
   if (index !== 1) {
     this.usuarios.splice(index, 1);
@@ -57,9 +54,7 @@ export class UsuarioService{
   return of(false);
 }*/
 
-
-
- /* actualizarUsuario(usuarioActualizado: Usuarios) {
+  /* actualizarUsuario(usuarioActualizado: Usuarios) {
     this.usuarios = this.usuarios.map(u =>
       u.id === usuarioActualizado.id ? usuarioActualizado : u
     );
@@ -72,10 +67,4 @@ export class UsuarioService{
     );
     this.usuarios$.next(this.usuarios);
   }*/
-
-
-
-
-
-
 }

@@ -37,7 +37,7 @@ export class UsuarioDialogComponent implements OnInit {
 
   ngOnInit(): void {
   this.usuarioForm = this.fb.group({
-    id: [this.usuario.id],
+    id: [Number(this.usuario.sub)],
     idMatricula: [this.usuario.idMatricula, Validators.required],
     nombreUsuario: [this.usuario.nombreUsuario, Validators.required],
     apellidoUsuario: [this.usuario.apellidoUsuario, Validators.required],
@@ -64,7 +64,7 @@ export class UsuarioDialogComponent implements OnInit {
         fechaCreacion: this.usuario.fechaCreacion, // se mantiene
         fechaUltimaModificacion: new Date().toISOString() // se actualiza
       };
-      this.usuarioService.actualizarUsuario(this.usuario.id, datosActualizados).subscribe({
+      this.usuarioService.actualizarUsuario(Number(this.usuario.sub), datosActualizados).subscribe({
         next: () => {
           this.toastr.success('Usuario actualizado correctamente');
           this.dialogRef.close(true); // puedes usar esto para recargar la tabla

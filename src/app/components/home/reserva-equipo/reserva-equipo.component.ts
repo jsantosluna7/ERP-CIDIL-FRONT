@@ -74,7 +74,7 @@ export class ReservaEquipoComponent implements OnInit {
 
   this.equiposSeleccionados.forEach((equipo) => {
     const solicitud: ReservaEquipoNueva = {
-      idUsuario: this.usuarioLogueado.id,
+      idUsuario: Number(this.usuarioLogueado.sub),
       idInventario: equipo.id,
       fechaInicio,
       fechaFinal: fechaFin,

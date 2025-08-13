@@ -73,7 +73,7 @@ export class SolicitudReservaLaboratorioComponent {
             }).subscribe({
               next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
                 const solicitudes = solicitudesResp; //aquí accedes a las solicitudes reales
-                const usuarios = usuariosResp.datos;
+                const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
 
                 this.solicitudes = solicitudes.map((sol: Solicitud) => {
                   const usuario = usuarios.find((u) => u.id === sol.idUsuario);
@@ -107,7 +107,7 @@ export class SolicitudReservaLaboratorioComponent {
             }).subscribe({
               next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
                 const solicitudes = solicitudesResp.datos; 
-                const usuarios = usuariosResp.datos;
+                const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
 
                 this.solicitudes = solicitudes.map((sol: Solicitud) => {
                   const usuario = usuarios.find((u) => u.id === sol.idUsuario);
@@ -150,7 +150,7 @@ export class SolicitudReservaLaboratorioComponent {
       }).subscribe({
         next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
           const solicitudes = solicitudesResp.datos;
-          const usuarios = usuariosResp.datos;
+          const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
 
           this.solicitudes = solicitudes.map((sol: Solicitud) => {
             const usuario = usuarios.find((u) => u.id === sol.idUsuario);
@@ -198,7 +198,7 @@ export class SolicitudReservaLaboratorioComponent {
       motivo: solicitud.motivo,
       fechaSolicitud: solicitud.fechaSolicitud,
       idEstado: 1,
-      idUsuarioAprobador: this.usuarioLogueado.id,
+      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
     };
@@ -241,7 +241,7 @@ export class SolicitudReservaLaboratorioComponent {
       motivo: solicitud.motivo,
       fechaSolicitud: solicitud.fechaSolicitud,
       idEstado: 3, // Rechazado
-      idUsuarioAprobador: this.usuarioLogueado.id,
+      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
     };

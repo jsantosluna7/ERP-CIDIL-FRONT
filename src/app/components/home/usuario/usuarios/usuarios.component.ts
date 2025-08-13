@@ -94,7 +94,7 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
   const rolesValidos: Usuarios['idrol'][] = ['Estudiante', 'Administrador', 'Super Usuario'];
 
   if (nuevoRol && rolesValidos.includes(nuevoRol as Usuarios['idrol'])) {
-    this.usuarioService.cambiarRol(usuario.id, nuevoRol as Usuarios['idrol']).subscribe({
+    this.usuarioService.cambiarRol(Number(usuario.sub), nuevoRol as Usuarios['idrol']).subscribe({
       next: () => {
         this.toastr.success('Rol actualizado correctamente.');
         this.ngOnInit();
@@ -121,7 +121,7 @@ const dialogRef = this._dialog.open(PreguntaDialogComponent, {
     dialogRef.afterClosed().pipe(take(1)).subscribe((result) => {
       if(result){
          const nuevoEstado = !usuario.activado;
-         this.usuarioService.desactivarUsuario(usuario.id, nuevoEstado).subscribe({
+         this.usuarioService.desactivarUsuario(Number(usuario.sub), nuevoEstado).subscribe({
       next: () => {
         usuario.activado = nuevoEstado;
         this.toastr.success(
