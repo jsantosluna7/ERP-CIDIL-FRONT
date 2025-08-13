@@ -66,7 +66,9 @@ export class SolicitudReservaEquipoComponent {
         const equipos = equiposResp?.datos || equiposResp || [];
 
         this.solicitud = solicitudes.map((solicitud) => {
-          const usuario = usuarios.find((u: any) => u.id === solicitud.idUsuario);
+          const usuario = usuarios.find(
+            (u: any) => u.id === solicitud.idUsuario
+          );
           const equipo = equipos.find(
             (e: Carta) => e.id === solicitud.idInventario
           );
@@ -102,8 +104,10 @@ export class SolicitudReservaEquipoComponent {
       id: solicitud.id,
       idUsuario: solicitud.idUsuario,
       idInventario: solicitud.idInventario,
-      fechaInicio: solicitud.fechaInicio,
-      fechaFinal: solicitud.fechaFinal,
+      fechaInicio: this.utilitiesService.desformatearFecha(
+        solicitud.fechaInicio
+      ),
+      fechaFinal: this.utilitiesService.desformatearFecha(solicitud.fechaFinal),
       motivo: solicitud.motivo,
       cantidad: !isNaN(Number(solicitud.cantidad))
         ? Number(solicitud.cantidad)
@@ -143,10 +147,20 @@ export class SolicitudReservaEquipoComponent {
     }
 
     const body: ReservaEquipos = {
-      ...solicitud,
+      id: solicitud.id,
+      idUsuario: solicitud.idUsuario,
+      idInventario: solicitud.idInventario,
+      fechaInicio: this.utilitiesService.desformatearFecha(
+        solicitud.fechaInicio
+      ),
+      fechaFinal: this.utilitiesService.desformatearFecha(solicitud.fechaFinal),
+      motivo: solicitud.motivo,
+      cantidad: !isNaN(Number(solicitud.cantidad))
+        ? Number(solicitud.cantidad)
+        : 1,
+      fechaEntrega: new Date().toISOString(),
       idEstado: 3,
       idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-      fechaEntrega: new Date().toISOString(),
       comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
     };
 
