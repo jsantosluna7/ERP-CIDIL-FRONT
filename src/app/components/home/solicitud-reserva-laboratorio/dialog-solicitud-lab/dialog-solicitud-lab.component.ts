@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-date-horario-dialog',
+  selector: 'app-dialog-solicitud-lab',
   imports: [
     MatDialogModule,
     MatButtonModule,
@@ -20,15 +20,15 @@ import { MatInputModule } from '@angular/material/input';
     MatInputModule,
     MatIconModule,
   ],
-  templateUrl: './date-horario-dialog.component.html',
-  styleUrl: './date-horario-dialog.component.css',
+  templateUrl: './dialog-solicitud-lab.component.html',
+  styleUrl: './dialog-solicitud-lab.component.css',
 })
-export class DateHorarioDialogComponent {
+export class DialogSolicitudLabComponent {
   constructor(
-    public dialogRef: MatDialogRef<DateHorarioDialogComponent>,
+    public dialogRef: MatDialogRef<DialogSolicitudLabComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      info: any[];
+      comentario: string;
     }
   ) {}
   onOk() {

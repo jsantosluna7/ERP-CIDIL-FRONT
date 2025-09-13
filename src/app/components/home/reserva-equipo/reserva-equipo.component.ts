@@ -11,10 +11,13 @@ import {
 import { Carta } from '../../../interfaces/carta';
 import { CarritoService } from '../carrito/carrito.service';
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -63,8 +66,8 @@ export class ReservaEquipoComponent implements OnInit {
     private inventarioService: InventarioService
   ) {
     this.solicitudesForm = new FormGroup({
-      fechaInicio: new FormControl('', [Validators.required]),
-      fechaDevolucion: new FormControl('', [Validators.required]),
+      fechaInicio: new FormControl('', [this.horaValida()]),
+      fechaDevolucion: new FormControl('', [this.horaValida()]),
       Motivo: new FormControl('', [Validators.min(1)]),
     });
   }
@@ -172,5 +175,45 @@ export class ReservaEquipoComponent implements OnInit {
 
   ruta() {
     this.router.navigate(['/home/inventario']);
+  }
+
+  horaValida(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+
+      const fecha = new Date(control.value);
+      const dia = fecha.getDay(); // 0=Domingo, 6=Sábado
+      const hora = fecha.getHours();
+      const minutos = fecha.getMinutes();
+
+      // Domingo -> siempre inválido
+      if (dia === 0) {
+        return { horaInvalida: true };
+      }
+
+      let horaMax = 22; // por defecto Lunes-Viernes
+      let minutoMax = 0;
+
+      // Sábado -> hasta las 18:00
+      if (dia === 6) {
+        horaMax = 18;
+        minutoMax = 0;
+      }
+
+      // Validaciones
+      if (hora < 8) {
+        return { horaInvalida: true };
+      }
+
+      if (hora > horaMax) {
+        return { horaInvalida: true };
+      }
+
+      if (hora === horaMax && minutos > minutoMax) {
+        return { horaInvalida: true };
+      }
+
+      return null; // válido
+    };
   }
 }

@@ -15,6 +15,9 @@ import { ServicioDashboardService } from '../../../services/Dashboard/servicio-d
 import { PisosService } from '../../../services/Pisos/pisos.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { UtilitiesService } from '../../../services/Utilities/utilities.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogSolicitudLabComponent } from './dialog-solicitud-lab/dialog-solicitud-lab.component';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
@@ -48,7 +51,9 @@ export class SolicitudReservaLaboratorioComponent {
     private _datos: DatosService,
     private _dashboard: ServicioDashboardService,
     private _toastr: ToastrService,
-    private _piso: PisosService
+    private _piso: PisosService,
+    private _utilidades: UtilitiesService,
+    private _dialog: MatDialog
   ) {}
 
   usuarioLogueado: any;
@@ -120,11 +125,27 @@ export class SolicitudReservaLaboratorioComponent {
                   );
 
                   return {
-                    ...sol,
-                    nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+                    id: sol.id,
+                    idUsuario: sol.idUsuario,
+                    idLaboratorio: sol.idLaboratorio,
+                    horaInicio: sol.horaInicio,
+                    horaFinal: sol.horaFinal,
+                    idEstado: sol.idEstado,
+                    nombreUsuario:
+                      `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
+                      'Desconocido',
                     nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: sol.fechaInicio,
-                    fechaFinal: sol.fechaFinal,
+                    fechaInicio: this._utilidades.formatearFechaSolicitudes(
+                      sol.fechaInicio,
+                      sol.horaInicio
+                    ),
+                    fechaFinal: this._utilidades.formatearFechaSolicitudes(
+                      sol.fechaFinal,
+                      sol.horaFinal
+                    ),
+                    fechaSolicitud:
+                      this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
+                    motivo: sol.motivo,
                   };
                 });
               },
@@ -162,13 +183,29 @@ export class SolicitudReservaLaboratorioComponent {
           this.solicitudes = solicitudes.map((sol: Solicitud) => {
             const usuario = usuarios.find((u) => u.id === sol.idUsuario);
             const lab = laboratorios.find((l) => l.id === sol.idLaboratorio);
-
+            
             return {
-              ...sol,
-              nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+              id: sol.id,
+              idUsuario: sol.idUsuario,
+              idLaboratorio: sol.idLaboratorio,
+              horaInicio: sol.horaInicio,
+              horaFinal: sol.horaFinal,
+              idEstado: sol.idEstado,
+              nombreUsuario:
+                `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
+                'Desconocido',
               nombreLaboratorio: lab?.nombre || 'Desconocido',
-              fechaInicio: sol.fechaInicio,
-              fechaFinal: sol.fechaFinal,
+              fechaInicio: this._utilidades.formatearFechaSolicitudes(
+                sol.fechaInicio,
+                sol.horaInicio
+              ),
+              fechaFinal: this._utilidades.formatearFechaSolicitudes(
+                sol.fechaFinal,
+                sol.horaFinal
+              ),
+              fechaSolicitud:
+                this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
+              motivo: sol.motivo,
             };
           });
         },
@@ -231,7 +268,6 @@ export class SolicitudReservaLaboratorioComponent {
   }
 
   desaprobar(solicitud: Solicitud) {
-
     if (!solicitud) {
       console.error('Solicitud es undefined o null');
       return;
@@ -257,6 +293,8 @@ export class SolicitudReservaLaboratorioComponent {
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
     };
+
+    const dialogRef = this._dialog.open(DialogSolicitudLabComponent);
 
     this.reservaLaboratorioService.updateEstado(body).subscribe({
       next: () => {

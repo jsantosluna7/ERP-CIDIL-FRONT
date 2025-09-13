@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -27,6 +30,7 @@ import { Router, RouterLink } from '@angular/router';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-reserva-laboratorio',
@@ -36,7 +40,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     RouterLink,
     AppCualRolDirective,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './reserva-laboratorio.component.html',
   styleUrl: './reserva-laboratorio.component.css',
@@ -52,7 +56,7 @@ export class ReservaLaboratorioComponent {
   faEnvelope = faEnvelope;
   fahouse = faHome;
   faclock = faClock;
-  faDesc = faAudioDescription
+  faDesc = faAudioDescription;
   estado = faHourglass;
 
   constructor(
@@ -68,14 +72,13 @@ export class ReservaLaboratorioComponent {
   ngOnInit(): void {
     this.solicitudesForm = this.fb.group({
       idLaboratorio: ['', Validators.required],
-      horaInicio: ['', Validators.required],
-      horaFinal: ['', Validators.required],
+      horaInicio: ['', [this.horaValida()]],
+      horaFinal: ['', [this.horaValidaFinal()]],
       motivo: ['', Validators.required],
       //aprobacion: [null, Validators.required]
     });
 
     this._usuarios.user$.subscribe((user) => {
-
       this.usuarioLogueado = user;
     });
 
@@ -93,18 +96,14 @@ export class ReservaLaboratorioComponent {
     const idLaboratorio = Number(
       this.solicitudesForm.get('idLaboratorio')?.value
     );
-    //const horaInicio = this.solicitudesForm.get('horaInicio')?.value;
-    //const horaFinal = this.solicitudesForm.get('horaFinal')?.value;
     const motivo = this.solicitudesForm.get('motivo')?.value;
-    //const aprobacion = Number(this.solicitudesForm.get('aprobacion')?.value);
     const form = this.solicitudesForm.value;
-    // Convertimos los campos datetime-local
     const dtInicio = new Date(form.horaInicio);
-    const dtFinal = new Date(form.horaFinal);
+    // const dtFinal = new Date(form.horaFinal);
     const horaInicio = dtInicio.toTimeString().split(' ')[0]; // HH:mm:ss
-    const horaFinal = dtFinal.toTimeString().split(' ')[0];
+    const horaFinal = `${form.horaFinal}:00`;
     const fechaInicio = dtInicio.toISOString().split('T')[0] + 'T00:00:00';
-    const fechaFinal = dtFinal.toISOString().split('T')[0] + 'T00:00:00';
+    const fechaFinal = fechaInicio;
 
     this.loading = true; // Activar el spinner
 
@@ -183,5 +182,91 @@ export class ReservaLaboratorioComponent {
 
   ruta() {
     this.router.navigate(['/home/solicitud-laboratorio']);
+  }
+
+  horaValida(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+
+      const fecha = new Date(control.value);
+      const dia = fecha.getDay(); // 0=Domingo, 6=Sábado
+      const hora = fecha.getHours();
+      const minutos = fecha.getMinutes();
+
+      // Domingo -> siempre inválido
+      if (dia === 0) {
+        return { horaInvalida: true };
+      }
+
+      let horaMax = 22; // por defecto Lunes-Viernes
+      let minutoMax = 0;
+
+      // Sábado -> hasta las 18:00
+      if (dia === 6) {
+        horaMax = 18;
+        minutoMax = 0;
+      }
+
+      // Validaciones
+      if (hora < 8) {
+        return { horaInvalida: true };
+      }
+
+      if (hora > horaMax) {
+        return { horaInvalida: true };
+      }
+
+      if (hora === horaMax && minutos > minutoMax) {
+        return { horaInvalida: true };
+      }
+
+      return null; // válido
+    };
+  }
+
+  horaValidaFinal(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+
+      const [horaStr, minutoStr] = control.value.split(':');
+      const hora = parseInt(horaStr, 10);
+      const minutos = parseInt(minutoStr, 10);
+
+      if (isNaN(hora) || isNaN(minutos)) {
+        return { formatoInvalido: true };
+      }
+
+      const hoy = new Date();
+      const dia = hoy.getDay(); // 0=Domingo, 6=Sábado
+
+      // Domingo -> siempre inválido
+      if (dia === 0) {
+        return { horaInvalida: true };
+      }
+
+      let horaMax = 22; // por defecto Lunes-Viernes
+      let minutoMax = 0;
+
+      // Sábado -> hasta las 18:00
+      if (dia === 6) {
+        horaMax = 18;
+        minutoMax = 0;
+      }
+
+      // Validaciones
+      if (hora < 8) {
+        return { horaInvalida: true };
+      }
+
+      if (hora > horaMax) {
+        return { horaInvalida: true };
+      }
+
+      if (hora === horaMax && minutos > minutoMax) {
+        return { horaInvalida: true };
+      }
+
+      return null; // válido
+    };
   }
 }
