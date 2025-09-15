@@ -12,6 +12,9 @@ export class DatosService {
   private fechaDataSubject = new BehaviorSubject<any[]>([]);
   fechaData$ = this.fechaDataSubject.asObservable();
 
+  private comentarioSubject = new BehaviorSubject<any[]>([]);
+  comentario$ = this.comentarioSubject.asObservable();
+
   private timerDataSubject = new BehaviorSubject<any[]>([]);
   timerData$ = this.timerDataSubject.asObservable();
 
@@ -21,6 +24,9 @@ export class DatosService {
 
   obtenerFecha(fecha: any) {
     this.fechaDataSubject.next(fecha);
+  }
+  obtenerComentario(comentario: any) {
+    this.comentarioSubject.next(comentario);
   }
 
   timerFecha(timer: any) {
