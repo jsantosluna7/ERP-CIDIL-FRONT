@@ -161,7 +161,7 @@ export class CalendarioHomeComponent implements OnDestroy {
                     const end = `${fecha}T${e.horaFinal}`;
                     return {
                       id: `res-${e.id}`,
-                      title: lab.codigoDeLab,
+                      title: lab.nombre,
                       start,
                       end,
                       extendedProps: {
@@ -284,7 +284,7 @@ export class CalendarioHomeComponent implements OnDestroy {
                     const end = `${fecha}T${e.horaFinal}`;
                     return {
                       id: `res-${e.id}`,
-                      title: lab.codigoDeLab,
+                      title: lab.nombre,
                       start,
                       end,
                       extendedProps: {

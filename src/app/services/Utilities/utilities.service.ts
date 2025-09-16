@@ -90,19 +90,9 @@ export class UtilitiesService {
     return html.replace(/<li>\*(.*?)<\/li>/g, '<li class="asterisco">*$1</li>');
   }
 
-  formatearFechaSolicitudes(fecha: string, hora: string): string {
+  formatearFechaSolicitudes(fecha: string, hora: string): string | null {
     if (!fecha || !hora) return '';
     const date = new Date(`${fecha.split('T')[0]}T${hora}`);
-    const opciones: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    };
-    return new Intl.DateTimeFormat('es-ES', opciones)
-      .format(date)
-      .replace(',', '');
+    return this._datePipe.transform(date, 'dd/MM/yyyy hh:mm a');
   }
 }

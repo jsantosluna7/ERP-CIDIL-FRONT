@@ -35,6 +35,7 @@ export class EventDialogComponent {
       fin: string;
       horaInicio: string;
       horaFin: string;
+      solicitante: string;
     }
   ) {}
   onOk() {

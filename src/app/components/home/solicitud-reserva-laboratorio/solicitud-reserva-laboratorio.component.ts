@@ -138,11 +138,11 @@ export class SolicitudReservaLaboratorioComponent {
                     fechaInicio: this._utilidades.formatearFechaSolicitudes(
                       sol.fechaInicio,
                       sol.horaInicio
-                    ),
+                    ) || '',
                     fechaFinal: this._utilidades.formatearFechaSolicitudes(
                       sol.fechaFinal,
                       sol.horaFinal
-                    ),
+                    ) || '',
                     fechaSolicitud:
                       this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
                     motivo: sol.motivo,
@@ -198,11 +198,11 @@ export class SolicitudReservaLaboratorioComponent {
               fechaInicio: this._utilidades.formatearFechaSolicitudes(
                 sol.fechaInicio,
                 sol.horaInicio
-              ),
+              ) || '',
               fechaFinal: this._utilidades.formatearFechaSolicitudes(
                 sol.fechaFinal,
                 sol.horaFinal
-              ),
+              ) || '',
               fechaSolicitud:
                 this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
               motivo: sol.motivo,
@@ -237,10 +237,10 @@ export class SolicitudReservaLaboratorioComponent {
       idLaboratorio: solicitud.idLaboratorio,
       horaInicio: solicitud.horaInicio,
       horaFinal: solicitud.horaFinal,
-      fechaInicio: solicitud.fechaInicio,
-      fechaFinal: solicitud.fechaFinal,
+      fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
+      fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
       motivo: solicitud.motivo,
-      fechaSolicitud: solicitud.fechaSolicitud,
+      fechaSolicitud: this._utilidades.desformatearFecha(solicitud.fechaSolicitud),
       idEstado: 1,
       idUsuarioAprobador: Number(this.usuarioLogueado.sub),
       fechaAprobacion: new Date().toISOString(),
@@ -293,17 +293,15 @@ export class SolicitudReservaLaboratorioComponent {
                 idLaboratorio: solicitud.idLaboratorio,
                 horaInicio: solicitud.horaInicio,
                 horaFinal: solicitud.horaFinal,
-                fechaInicio: solicitud.fechaInicio,
-                fechaFinal: solicitud.fechaFinal,
+                fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
+                fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
                 motivo: solicitud.motivo,
-                fechaSolicitud: solicitud.fechaSolicitud,
+                fechaSolicitud: this._utilidades.desformatearFecha(solicitud.fechaSolicitud),
                 idEstado: 3, // Rechazado
                 idUsuarioAprobador: Number(this.usuarioLogueado.sub),
                 fechaAprobacion: new Date().toISOString(),
                 comentarioAprobacion: data.comentario,
               };
-
-              console.log(body);
               
               this.reservaLaboratorioService.updateEstado(body).subscribe({
                 next: () => {
