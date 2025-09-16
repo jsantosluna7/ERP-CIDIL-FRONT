@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <label for="inputEmail4" class="form-label">Hora de Inicio</label>
+      <label for="inputEmail4" class="form-label">Fecha del Evento</label>
       <div class="location">
         <fa-icon [icon]="faclock"></fa-icon>
         <input
@@ -71,18 +71,27 @@
           id="inputEmail4"
           placeholder="Laboratorio"
         />
+
+        @if (solicitudesForm.get('horaInicio')?.hasError('horaInvalida')) {
+        <div class="hora-error">Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM</div>
+        }
       </div>
 
-      <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
+      <label for="inputEmail4" class="form-label">Hora de Finalización</label>
       <div class="location">
         <fa-icon [icon]="faclock"></fa-icon>
         <input
-          type="datetime-local"
+          type="time"
           formControlName="horaFinal"
           class="form-control"
           id="inputEmail4"
           placeholder="Laboratorio"
+          min="08:00"
+          max="22:00"
         />
+        @if (solicitudesForm.get('horaFinal')?.hasError('horaInvalida')) {
+        <div class="hora-error">Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM</div>
+        }
       </div>
 
       <div class="mb-3">
@@ -123,7 +132,12 @@
       </div>
     </div> -->
 
-    <button type="button" class="btn" (click)="enviarSolicitud()" [disabled]="loading">
+    <button
+      type="button"
+      class="btn"
+      (click)="enviarSolicitud()"
+      [disabled]="loading"
+    >
       @if(loading){
       <mat-progress-spinner
         mode="indeterminate"

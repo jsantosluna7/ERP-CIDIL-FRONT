@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Agrega un comentario</h2>
+<mat-dialog-content class="data">
+  <form class="row g-3" [formGroup]="comentarioForm">
+    <mat-form-field class="full-width">
+      <mat-label>Haz un comentario</mat-label>
+      <textarea matInput placeholder="Aquí..." formControlName="comentario"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNo()">No</button>
+  <button
+    mat-button
+    [mat-dialog-close]="selection()"
+    (click)="comentario()"
+    cdkFocusInitial
+  >
+    Ok
+  </button>
+</mat-dialog-actions>

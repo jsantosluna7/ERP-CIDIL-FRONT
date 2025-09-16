@@ -24,6 +24,7 @@ import { UtilitiesService } from '../../../../../services/Utilities/utilities.se
 import { ServicioDashboardService } from '../../../../../services/Dashboard/servicio-dashboard.service';
 import { LaboratorioService } from '../../../../../services/Laboratorio/laboratorio.service';
 import { PisosService } from '../../../../../services/Pisos/pisos.service';
+import { UsuarioService } from '../../../usuario/usuarios/usuarios.service';
 
 @Component({
   selector: 'app-calendario',
@@ -51,7 +52,8 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
     private _lab: LaboratorioService,
     public dialog: MatDialog,
     private _utilities: UtilitiesService,
-    private _piso: PisosService
+    private _piso: PisosService,
+    private _usuario: UsuarioService
   ) {
     this.opcionesCalendario = {
       initialView: this.getResponsiveView(),
@@ -121,10 +123,11 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                       this.endpointEstado,
                       e.idEstado
                     ),
+                    usuario: this._usuario.obtenerUsuarioId(e.idUsuario),
                   }).pipe(
-                    map(({ lab, estado }) => ({
+                    map(({ lab, estado, usuario }) => ({
                       id: e.id,
-                      title: lab.codigoDeLab,
+                      title: lab.nombre,
                       start: e.fechaInicio,
                       end: e.fechaFinal,
                       extendedProps: {
@@ -132,6 +135,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                         motivo: e.motivo,
                         horaInicio: this._utilities.formatearHora(e.horaInicio),
                         horaFin: this._utilities.formatearHora(e.horaFinal),
+                        solicitante: `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`,
                       },
                     }))
                   );
@@ -159,7 +163,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
               },
             })
             .pipe(
-              map((res: any) => (Array.isArray(res) ? res : [])),
+              map((res: any) => (Array.isArray(res.datos) ? res : [])),
               catchError((err) => {
                 console.warn('Reservas error:', err?.error || err?.message);
                 return of([]); // 💡 Aquí resolvemos el error devolviendo un array vacío
@@ -174,10 +178,11 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                       this.endpointEstado,
                       e.idEstado
                     ),
+                    usuario: this._usuario.obtenerUsuarioId(e.idUsuario),
                   }).pipe(
-                    map(({ lab, estado }) => ({
+                    map(({ lab, estado, usuario }) => ({
                       id: e.id,
-                      title: lab.codigoDeLab,
+                      title: lab.nombre,
                       start: e.fechaInicio,
                       end: e.fechaFinal,
                       extendedProps: {
@@ -185,6 +190,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
                         motivo: e.motivo,
                         horaInicio: this._utilities.formatearHora(e.horaInicio),
                         horaFin: this._utilities.formatearHora(e.horaFinal),
+                        solicitante: `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`,
                       },
                     }))
                   );
@@ -219,6 +225,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
 
   handleEventClick(info: any): void {
     const evento = info.event;
+
     this.dialog.open(EventDialogComponent, {
       data: {
         lab: evento.title,
@@ -228,6 +235,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
         fin: this._utilities.formatearHorarioFecha(evento.endStr),
         horaInicio: evento.extendedProps.horaInicio,
         horaFin: evento.extendedProps.horaFin,
+        solicitante: evento.extendedProps.solicitante || 'N/A',
       },
     });
   }
@@ -248,6 +256,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
         fin: this._utilities.formatearHorarioFecha(evt.endStr),
         horaInicio: evt.extendedProps.horaInicio,
         horaFin: evt.extendedProps.horaFin,
+        solicitante: evt.extendedProps.solicitante || 'N/A',
       }));
 
       this.dialog.open(DateDialogComponent, {

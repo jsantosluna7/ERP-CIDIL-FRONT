@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { UsuarioService } from '../usuario/usuarios/usuarios.service';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, take } from 'rxjs';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { DatosService } from '../../../services/Datos/datos.service';
@@ -15,6 +15,9 @@ import { ServicioDashboardService } from '../../../services/Dashboard/servicio-d
 import { PisosService } from '../../../services/Pisos/pisos.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { UtilitiesService } from '../../../services/Utilities/utilities.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogSolicitudLabComponent } from './dialog-solicitud-lab/dialog-solicitud-lab.component';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
@@ -48,7 +51,9 @@ export class SolicitudReservaLaboratorioComponent {
     private _datos: DatosService,
     private _dashboard: ServicioDashboardService,
     private _toastr: ToastrService,
-    private _piso: PisosService
+    private _piso: PisosService,
+    private _utilidades: UtilitiesService,
+    private _dialog: MatDialog
   ) {}
 
   usuarioLogueado: any;
@@ -120,11 +125,27 @@ export class SolicitudReservaLaboratorioComponent {
                   );
 
                   return {
-                    ...sol,
-                    nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+                    id: sol.id,
+                    idUsuario: sol.idUsuario,
+                    idLaboratorio: sol.idLaboratorio,
+                    horaInicio: sol.horaInicio,
+                    horaFinal: sol.horaFinal,
+                    idEstado: sol.idEstado,
+                    nombreUsuario:
+                      `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
+                      'Desconocido',
                     nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: sol.fechaInicio,
-                    fechaFinal: sol.fechaFinal,
+                    fechaInicio: this._utilidades.formatearFechaSolicitudes(
+                      sol.fechaInicio,
+                      sol.horaInicio
+                    ) || '',
+                    fechaFinal: this._utilidades.formatearFechaSolicitudes(
+                      sol.fechaFinal,
+                      sol.horaFinal
+                    ) || '',
+                    fechaSolicitud:
+                      this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
+                    motivo: sol.motivo,
                   };
                 });
               },
@@ -164,11 +185,27 @@ export class SolicitudReservaLaboratorioComponent {
             const lab = laboratorios.find((l) => l.id === sol.idLaboratorio);
 
             return {
-              ...sol,
-              nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
+              id: sol.id,
+              idUsuario: sol.idUsuario,
+              idLaboratorio: sol.idLaboratorio,
+              horaInicio: sol.horaInicio,
+              horaFinal: sol.horaFinal,
+              idEstado: sol.idEstado,
+              nombreUsuario:
+                `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
+                'Desconocido',
               nombreLaboratorio: lab?.nombre || 'Desconocido',
-              fechaInicio: sol.fechaInicio,
-              fechaFinal: sol.fechaFinal,
+              fechaInicio: this._utilidades.formatearFechaSolicitudes(
+                sol.fechaInicio,
+                sol.horaInicio
+              ) || '',
+              fechaFinal: this._utilidades.formatearFechaSolicitudes(
+                sol.fechaFinal,
+                sol.horaFinal
+              ) || '',
+              fechaSolicitud:
+                this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
+              motivo: sol.motivo,
             };
           });
         },
@@ -200,12 +237,12 @@ export class SolicitudReservaLaboratorioComponent {
       idLaboratorio: solicitud.idLaboratorio,
       horaInicio: solicitud.horaInicio,
       horaFinal: solicitud.horaFinal,
-      fechaInicio: solicitud.fechaInicio,
-      fechaFinal: solicitud.fechaFinal,
+      fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
+      fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
       motivo: solicitud.motivo,
-      fechaSolicitud: solicitud.fechaSolicitud,
+      fechaSolicitud: this._utilidades.desformatearFecha(solicitud.fechaSolicitud),
       idEstado: 1,
-      idUsuarioAprobador: this.usuarioLogueado.id,
+      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
     };
@@ -231,7 +268,6 @@ export class SolicitudReservaLaboratorioComponent {
   }
 
   desaprobar(solicitud: Solicitud) {
-
     if (!solicitud) {
       console.error('Solicitud es undefined o null');
       return;
@@ -242,38 +278,62 @@ export class SolicitudReservaLaboratorioComponent {
       return;
     }
 
-    const body = {
-      id: solicitud.id,
-      idUsuario: solicitud.idUsuario,
-      idLaboratorio: solicitud.idLaboratorio,
-      horaInicio: solicitud.horaInicio,
-      horaFinal: solicitud.horaFinal,
-      fechaInicio: solicitud.fechaInicio,
-      fechaFinal: solicitud.fechaFinal,
-      motivo: solicitud.motivo,
-      fechaSolicitud: solicitud.fechaSolicitud,
-      idEstado: 3, // Rechazado
-      idUsuarioAprobador: this.usuarioLogueado.id,
-      fechaAprobacion: new Date().toISOString(),
-      comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
-    };
+    const dialogRef = this._dialog.open(DialogSolicitudLabComponent);
 
-    this.reservaLaboratorioService.updateEstado(body).subscribe({
-      next: () => {
-        // Quita del frontend la solicitud rechazada
-        this.toastr.info('Solicitud desaprobada correctamente', 'Información');
-        this.reservaLaboratorioService
-          .eliminarSolicitud(solicitud.id)
-          .subscribe(() => {
-            this.solicitudes = this.solicitudes.filter(
-              (s) => s.id !== solicitud.id
-            );
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((resultado) => {
+        if (resultado) {
+          this._datos.comentario$.pipe(take(1)).subscribe((data: any) => {
+            if (data) {
+              const body = {
+                id: solicitud.id,
+                idUsuario: solicitud.idUsuario,
+                idLaboratorio: solicitud.idLaboratorio,
+                horaInicio: solicitud.horaInicio,
+                horaFinal: solicitud.horaFinal,
+                fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
+                fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
+                motivo: solicitud.motivo,
+                fechaSolicitud: this._utilidades.desformatearFecha(solicitud.fechaSolicitud),
+                idEstado: 3, // Rechazado
+                idUsuarioAprobador: Number(this.usuarioLogueado.sub),
+                fechaAprobacion: new Date().toISOString(),
+                comentarioAprobacion: data.comentario,
+              };
+              
+              this.reservaLaboratorioService.updateEstado(body).subscribe({
+                next: () => {
+                  // Quita del frontend la solicitud rechazada
+                  this.toastr.info(
+                    'Solicitud desaprobada correctamente',
+                    'Información'
+                  );
+                  this.reservaLaboratorioService
+                    .eliminarSolicitud(solicitud.id)
+                    .subscribe(() => {
+                      this.solicitudes = this.solicitudes.filter(
+                        (s) => s.id !== solicitud.id
+                      );
+                    });
+                },
+                error: (err) => {
+                  console.error('Error al desaprobar solicitud:', err);
+                  this.toastr.error(
+                    'Error al desaprobar la solicitud',
+                    'Error'
+                  );
+                },
+              });
+            }
           });
-      },
-      error: (err) => {
-        console.error('Error al desaprobar solicitud:', err);
-        this.toastr.error('Error al desaprobar la solicitud', 'Error');
-      },
-    });
+        } else {
+          this._toastr.info(
+            'Se canceló la acción de desaprobar la solicitud',
+            'Información'
+          );
+        }
+      });
   }
 }

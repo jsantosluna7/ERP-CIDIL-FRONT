@@ -89,4 +89,10 @@ export class UtilitiesService {
     // Detecta "* ... ." y añade <br><br> después
     return html.replace(/<li>\*(.*?)<\/li>/g, '<li class="asterisco">*$1</li>');
   }
+
+  formatearFechaSolicitudes(fecha: string, hora: string): string | null {
+    if (!fecha || !hora) return '';
+    const date = new Date(`${fecha.split('T')[0]}T${hora}`);
+    return this._datePipe.transform(date, 'dd/MM/yyyy hh:mm a');
+  }
 }

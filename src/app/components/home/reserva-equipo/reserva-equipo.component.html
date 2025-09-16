@@ -57,6 +57,11 @@
           id="inputEmail4"
           placeholder="Laboratorio"
         />
+        @if (solicitudesForm.get('fechaInicio')?.hasError('horaInvalida')) {
+        <div class="hora-error">
+          Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM
+        </div>
+        }
       </div>
 
       <label for="inputEmail4" class="form-label">Hora de Finalizacion</label>
@@ -69,6 +74,11 @@
           id="inputEmail4"
           placeholder="Laboratorio"
         />
+        @if (solicitudesForm.get('fechaDevolucion')?.hasError('horaInvalida')) {
+        <div class="hora-error">
+          Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM
+        </div>
+        }
       </div>
 
       <div class="mb-3">

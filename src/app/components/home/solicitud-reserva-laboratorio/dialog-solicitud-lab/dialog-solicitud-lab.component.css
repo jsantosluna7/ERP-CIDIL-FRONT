@@ -1,0 +1,9 @@
+.data {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+.full-width{
+    width: 100%;
+}

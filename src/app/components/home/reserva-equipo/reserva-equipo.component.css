@@ -65,3 +65,58 @@ input {
 div a {
     text-decoration: none;
 }
+
+.hora-error {
+    color: red;
+    font-size: 10px;
+    padding-left: 10px;
+    transition: 1s ease-in-out all;
+    width: 200px;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .location {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .location input {
+        flex: 1;
+        padding-left: 30px;
+    }
+
+    .hora-error {
+        width: auto;
+        margin-left: 10px;
+    }
+
+    .location fa-icon,
+    .phone fa-icon,
+    .user fa-icon,
+    .envelope fa-icon {
+        top: 8px;
+    }
+}
+
+/* Para móviles */
+@media (max-width: 767px) {
+    .location {
+        flex-direction: column;
+    }
+
+    .location input {
+        width: 100%;
+    }
+
+    .hora-error {
+        font-size: 11px;
+        width: 100%;
+    }
+
+    .location fa-icon,
+    .phone fa-icon,
+    .user fa-icon,
+    .envelope fa-icon {
+        top: 8px;
+    }
+}

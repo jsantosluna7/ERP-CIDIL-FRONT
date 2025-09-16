@@ -43,6 +43,11 @@
   <div class="motivo-content">
     <p>{{ data.motivo }}</p>
   </div>
+
+  <p class="comentario">Realizado por:</p>
+  <div class="motivo-content">
+    <strong><p>{{ data.solicitante }}</p></strong>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="onOk()" cdkFocusInitial>Ok</button>

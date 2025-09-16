@@ -73,21 +73,40 @@ export class CalendarioHomeComponent implements OnDestroy {
       locales: [esLocale],
       locale: 'es',
       plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
+
+      // Horas por defecto (Lun-Vie)
+      slotMinTime: '08:00:00',
+      slotMaxTime: '23:00:00',
+
+      // Reglas de negocio para cada día
+      businessHours: [
+        {
+          daysOfWeek: [1, 2, 3, 4, 5], // Lunes-Viernes
+          startTime: '08:00',
+          endTime: '23:00',
+        },
+        {
+          daysOfWeek: [6], // Sábado
+          startTime: '08:00',
+          endTime: '19:00',
+        },
+      ],
+
       slotLabelFormat: {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true, // 👈 formato 12h
+        hour12: true,
       },
       eventTimeFormat: {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true, // 👈 eventos en 12h
+        hour12: true,
       },
-      // 🎯 Ajuste de tamaño:
       height: 'auto',
       contentHeight: 'auto',
       handleWindowResize: true,
       stickyFooterScrollbar: false,
+      timeZone: 'America/Santo_Domingo',
     };
 
     const isMobile = window.innerWidth < 600;
@@ -136,19 +155,24 @@ export class CalendarioHomeComponent implements OnDestroy {
                     e.idEstado
                   ),
                 }).pipe(
-                  map(({ lab, estado }) => ({
-                    id: `res-${e.id}`,
-                    title: lab.codigoDeLab,
-                    start: e.fechaInicio,
-                    end: e.fechaFinal,
-                    extendedProps: {
-                      tipo: 'reserva',
-                      estado: estado.estado1,
-                      motivo: e.motivo,
-                      horaInicio: this._utilities.formatearHora(e.horaInicio),
-                      horaFin: this._utilities.formatearHora(e.horaFinal),
-                    },
-                  }))
+                  map(({ lab, estado }) => {
+                    const fecha = e.fechaInicio.split('T')[0];
+                    const start = `${fecha}T${e.horaInicio}`;
+                    const end = `${fecha}T${e.horaFinal}`;
+                    return {
+                      id: `res-${e.id}`,
+                      title: lab.nombre,
+                      start,
+                      end,
+                      extendedProps: {
+                        tipo: 'reserva',
+                        estado: estado.estado1,
+                        motivo: e.motivo,
+                        horaInicio: this._utilities.formatearHora(e.horaInicio),
+                        horaFin: this._utilities.formatearHora(e.horaFinal),
+                      },
+                    };
+                  })
                 )
               );
 
@@ -226,12 +250,23 @@ export class CalendarioHomeComponent implements OnDestroy {
 
           const reservas$ = this._calendario
             .getReservas(this.endpointReservas, { params })
-            .pipe(map((res: any) => res.datos));
+            .pipe(
+              map((res: any) => (Array.isArray(res.datos) ? res.datos : [])),
+              catchError((err) => {
+                console.warn('Reservas error:', err?.error || err?.message);
+                return of([]);
+              })
+            );
 
-          const horarios$ = this._horario.getHorarioCalendario(
-            this.endpointHorario,
-            { params }
-          );
+          const horarios$ = this._horario
+            .getHorarioCalendario(this.endpointHorario, { params })
+            .pipe(
+              map((res: any) => (Array.isArray(res) ? res : [])),
+              catchError((err) => {
+                console.warn('Horarios error:', err?.error || err?.message);
+                return of([]);
+              })
+            );
 
           forkJoin({ reservas: reservas$, horarios: horarios$ }).subscribe({
             next: ({ reservas, horarios }) => {
@@ -243,19 +278,24 @@ export class CalendarioHomeComponent implements OnDestroy {
                     e.idEstado
                   ),
                 }).pipe(
-                  map(({ lab, estado }) => ({
-                    id: `res-${e.id}`,
-                    title: lab.codigoDeLab,
-                    start: e.fechaInicio,
-                    end: e.fechaFinal,
-                    extendedProps: {
-                      tipo: 'reserva',
-                      estado: estado.estado1,
-                      motivo: e.motivo,
-                      horaInicio: this._utilities.formatearHora(e.horaInicio),
-                      horaFin: this._utilities.formatearHora(e.horaFinal),
-                    },
-                  }))
+                  map(({ lab, estado }) => {
+                    const fecha = e.fechaInicio.split('T')[0];
+                    const start = `${fecha}T${e.horaInicio}`;
+                    const end = `${fecha}T${e.horaFinal}`;
+                    return {
+                      id: `res-${e.id}`,
+                      title: lab.nombre,
+                      start,
+                      end,
+                      extendedProps: {
+                        tipo: 'reserva',
+                        estado: estado.estado1,
+                        motivo: e.motivo,
+                        horaInicio: this._utilities.formatearHora(e.horaInicio),
+                        horaFin: this._utilities.formatearHora(e.horaFinal),
+                      },
+                    };
+                  })
                 )
               );
 
@@ -304,8 +344,8 @@ export class CalendarioHomeComponent implements OnDestroy {
                 .filter((obs: any): obs is Observable<any> => obs !== null);
 
               forkJoin([
-                forkJoin(reservasObservables) as Observable<any[]>,
-                forkJoin(horariosObservables) as Observable<any[]>,
+                this.forkJoinSalvo(reservasObservables) as Observable<any[]>,
+                this.forkJoinSalvo(horariosObservables) as Observable<any[]>,
               ]).subscribe(
                 ([eventosReservas, eventosHorarios]) => {
                   const eventos = [...eventosReservas, ...eventosHorarios];
@@ -463,35 +503,6 @@ export class CalendarioHomeComponent implements OnDestroy {
       this._toastr.info('No hay eventos en esta fecha.', 'Información');
     }
   }
-
-  // handleDateClick(arg: DateClickArg) {
-  //   const api = this.calendarComponent.getApi();
-  //   const eventos = api.getEvents();
-
-  //   const seleccionados = eventos.filter((evt) =>
-  //     evt.startStr.startsWith(arg.dateStr)
-  //   );
-  //   if (seleccionados.length) {
-  //     const detalles = seleccionados.map((evt: any) => ({
-  //       lab: evt.title,
-  //       estado: evt.extendedProps.estado,
-  //       motivo: evt.extendedProps.motivo,
-  //       inicio: this._utilities.formatearHorarioFecha(evt.startStr),
-  //       fin: this._utilities.formatearHorarioFecha(evt.endStr),
-  //       horaInicio: evt.extendedProps.horaInicio,
-  //       horaFin: evt.extendedProps.horaFin,
-  //     }));
-
-  //     this.dialog.open(DateDialogComponent, {
-  //       data: {
-  //         info: detalles,
-  //       },
-  //       width: '30rem',
-  //     });
-  //   } else {
-  //     this._toastr.info('No hay eventos en esta fecha.', 'Información');
-  //   }
-  // }
 
   cambiarPiso(index: number) {
     this.pisoSeleccionado = index;
