@@ -1,80 +1,136 @@
 <div class="container mt-4">
   <h2 class="mb-3">Solicitudes de Reserva de Laboratorio</h2>
 
- <div class="table-scroll">
-     @if (solicitudes.length > 0) {
-    <table mat-table [dataSource]="solicitudes" class="mat-elevation-z8 full-width-table tabla-letra-grande  ">
-
+  <div class="table-scroll">
+    @if (solicitudes.length > 0) {
+    <table
+      mat-table
+      [dataSource]="solicitudes"
+      class="mat-elevation-z8 full-width-table tabla-letra-grande"
+    >
       <!-- Usuario -->
       <ng-container matColumnDef="nombreUsuario">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Usuario</th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.nombreUsuario }}</td>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Usuario
+        </th>
+        <td mat-cell *matCellDef="let solicitud">
+          {{ solicitud.nombreUsuario }}
+        </td>
       </ng-container>
 
       <!-- Laboratorio -->
       <ng-container matColumnDef="nombreLaboratorio">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Laboratorio</th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.nombreLaboratorio }}</td>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Laboratorio
+        </th>
+        <td mat-cell *matCellDef="let solicitud">
+          {{ solicitud.nombreLaboratorio }}
+        </td>
       </ng-container>
 
       <!-- Hora de Inicio -->
       <ng-container matColumnDef="horaInicio">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Fecha de Inicio</th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.fechaInicio }}</td>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Fecha de Inicio
+        </th>
+        <td mat-cell *matCellDef="let solicitud">
+          {{ solicitud.fechaInicio }}
+        </td>
       </ng-container>
 
       <!-- Hora de Finalización -->
       <ng-container matColumnDef="horaFinal">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Fecha de Finalización</th>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Fecha de Finalización
+        </th>
         <td mat-cell *matCellDef="let solicitud">{{ solicitud.fechaFinal }}</td>
       </ng-container>
 
       <!-- Motivo -->
       <ng-container matColumnDef="motivo">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Motivo</th>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Motivo
+        </th>
         <td mat-cell *matCellDef="let solicitud">{{ solicitud.motivo }}</td>
       </ng-container>
 
       <!-- Fecha de Solicitud -->
       <ng-container matColumnDef="fechaSolicitud">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Fecha de Solicitud</th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.fechaSolicitud }}</td>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Fecha de Solicitud
+        </th>
+        <td mat-cell *matCellDef="let solicitud">
+          {{ solicitud.fechaSolicitud }}
+        </td>
       </ng-container>
 
       <!-- Estado -->
       <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Estado</th>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Estado
+        </th>
         <td mat-cell *matCellDef="let solicitud">
           {{
             solicitud.idEstado === 1
-              ? 'Aprobado'
+              ? "Aprobado"
               : solicitud.idEstado === 3
-              ? 'Rechazado'
-              : 'Pendiente'
+              ? "Rechazado"
+              : "Pendiente"
           }}
         </td>
       </ng-container>
 
       <!-- Acciones -->
       <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">Acciones</th>
+        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
+          Acciones
+        </th>
         <td mat-cell *matCellDef="let solicitud">
-          <button mat-raised-button color="primary" class="botones-green" (click)="aprobar(solicitud)">
-            Aprobar
+          <button
+            mat-raised-button
+            color="primary"
+            class="botones-green"
+            (click)="aprobar(solicitud)"
+            [disabled]="loading[solicitud.id]?.aprobar"
+          >
+            @if (loading[solicitud.id]?.aprobar) {
+            <mat-progress-spinner
+              mode="indeterminate"
+              diameter="30"
+              strokeWidth="3"
+              class="white-spinner"
+            ></mat-progress-spinner>
+            } @else {
+            <span>Aprobar</span>
+            }
           </button>
-          <button mat-raised-button color="warn" class="botones-red" (click)="desaprobar(solicitud)">
-            Negar
+          <button
+            mat-raised-button
+            color="warn"
+            class="botones-red"
+            (click)="desaprobar(solicitud)"
+            [disabled]="loading[solicitud.id]?.denegar"
+          >
+            @if (loading[solicitud.id]?.denegar) {
+            <mat-progress-spinner
+              mode="indeterminate"
+              diameter="30"
+              strokeWidth="3"
+              class="white-spinner"
+            ></mat-progress-spinner>
+            } @else {
+            <span>Negar</span>
+            }
           </button>
         </td>
       </ng-container>
 
       <!-- Filas -->
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-      <tr mat-row *matRowDef="let solicitud; columns: columnas;"></tr>
-
+      <tr mat-row *matRowDef="let solicitud; columns: columnas"></tr>
     </table>
-  } @else {
+    } @else {
     <div class="alert alert-info">No hay solicitudes disponibles.</div>
-  }
- </div>
+    }
+  </div>
 </div>

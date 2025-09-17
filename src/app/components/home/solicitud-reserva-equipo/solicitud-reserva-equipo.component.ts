@@ -13,6 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { UtilitiesService } from '../../../services/Utilities/utilities.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-solicitud-reserva-equipo',
@@ -22,12 +23,26 @@ import { UtilitiesService } from '../../../services/Utilities/utilities.service'
     MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './solicitud-reserva-equipo.component.html',
   styleUrl: './solicitud-reserva-equipo.component.css',
 })
 export class SolicitudReservaEquipoComponent {
   solicitud: ReservaEquipos[] = [];
+
+  loading: { [id: number]: { aprobar: boolean; denegar: boolean } } = {};
+
+  private setLoading(
+    id: number,
+    accion: 'aprobar' | 'denegar',
+    estado: boolean
+  ) {
+    if (!this.loading[id]) {
+      this.loading[id] = { aprobar: false, denegar: false };
+    }
+    this.loading[id][accion] = estado;
+  }
 
   usuarioLogueado: any;
 
@@ -118,6 +133,8 @@ export class SolicitudReservaEquipoComponent {
       comentarioAprobacion: 'Aprobado por el usuario logueado',
     };
 
+    this.setLoading(solicitud.id, 'aprobar', true);
+
     this.SolicitudEquipoService.updateEstado(body).subscribe({
       next: () => {
         solicitud.idEstado = 1;
@@ -127,6 +144,8 @@ export class SolicitudReservaEquipoComponent {
         );
         this.SolicitudEquipoService.eliminarSolicitud(solicitud.id).subscribe(
           () => {
+            this.setLoading(solicitud.id, 'aprobar', false);
+
             this.solicitud = this.solicitud.filter(
               (s) => s.id !== solicitud.id
             );
@@ -134,6 +153,8 @@ export class SolicitudReservaEquipoComponent {
         );
       },
       error: (error) => {
+        this.setLoading(solicitud.id, 'aprobar', false);
+
         console.error('Error al aprobar solicitud:', error);
         this.toastr.error('Error al aprobar la solicitud.', 'Error');
       },
@@ -164,6 +185,8 @@ export class SolicitudReservaEquipoComponent {
       comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
     };
 
+    this.setLoading(solicitud.id, 'denegar', true);
+
     this.SolicitudEquipoService.updateEstado(body).subscribe({
       next: () => {
         solicitud.idEstado = 3;
@@ -173,6 +196,8 @@ export class SolicitudReservaEquipoComponent {
         );
         this.SolicitudEquipoService.eliminarSolicitud(solicitud.id).subscribe(
           () => {
+            this.setLoading(solicitud.id, 'denegar', false);
+
             this.solicitud = this.solicitud.filter(
               (s) => s.id !== solicitud.id
             );
@@ -180,6 +205,8 @@ export class SolicitudReservaEquipoComponent {
         );
       },
       error: (error) => {
+        this.setLoading(solicitud.id, 'denegar', false);
+
         console.error('Error al desaprobar solicitud:', error);
         this.toastr.error('Error al desaprobar la solicitud.', 'Error');
       },

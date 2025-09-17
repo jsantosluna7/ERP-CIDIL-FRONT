@@ -1,3 +1,7 @@
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
+}
+
 .encabezado-azul {
   background-color: #101A88 !important;
   color: white !important;

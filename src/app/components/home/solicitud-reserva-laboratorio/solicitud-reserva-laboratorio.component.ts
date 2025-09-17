@@ -18,16 +18,36 @@ import { MatButtonModule } from '@angular/material/button';
 import { UtilitiesService } from '../../../services/Utilities/utilities.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogSolicitudLabComponent } from './dialog-solicitud-lab/dialog-solicitud-lab.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-solicitud-reserva-laboratorio',
-  imports: [CommonModule, ToastrModule, MatTableModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    ToastrModule,
+    MatTableModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
   styleUrl: './solicitud-reserva-laboratorio.component.css',
 })
 export class SolicitudReservaLaboratorioComponent {
   solicitudes: Solicitud[] = [];
   @Input() mostrarPiso?: boolean = false;
+
+  loading: { [id: number]: { aprobar: boolean; denegar: boolean } } = {};
+
+  private setLoading(
+    id: number,
+    accion: 'aprobar' | 'denegar',
+    estado: boolean
+  ) {
+    if (!this.loading[id]) {
+      this.loading[id] = { aprobar: false, denegar: false };
+    }
+    this.loading[id][accion] = estado;
+  }
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUD_RESERVA_ESPACIO_PISO']}`;
 
@@ -135,14 +155,16 @@ export class SolicitudReservaLaboratorioComponent {
                       `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
                       'Desconocido',
                     nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: this._utilidades.formatearFechaSolicitudes(
-                      sol.fechaInicio,
-                      sol.horaInicio
-                    ) || '',
-                    fechaFinal: this._utilidades.formatearFechaSolicitudes(
-                      sol.fechaFinal,
-                      sol.horaFinal
-                    ) || '',
+                    fechaInicio:
+                      this._utilidades.formatearFechaSolicitudes(
+                        sol.fechaInicio,
+                        sol.horaInicio
+                      ) || '',
+                    fechaFinal:
+                      this._utilidades.formatearFechaSolicitudes(
+                        sol.fechaFinal,
+                        sol.horaFinal
+                      ) || '',
                     fechaSolicitud:
                       this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
                     motivo: sol.motivo,
@@ -195,14 +217,16 @@ export class SolicitudReservaLaboratorioComponent {
                 `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
                 'Desconocido',
               nombreLaboratorio: lab?.nombre || 'Desconocido',
-              fechaInicio: this._utilidades.formatearFechaSolicitudes(
-                sol.fechaInicio,
-                sol.horaInicio
-              ) || '',
-              fechaFinal: this._utilidades.formatearFechaSolicitudes(
-                sol.fechaFinal,
-                sol.horaFinal
-              ) || '',
+              fechaInicio:
+                this._utilidades.formatearFechaSolicitudes(
+                  sol.fechaInicio,
+                  sol.horaInicio
+                ) || '',
+              fechaFinal:
+                this._utilidades.formatearFechaSolicitudes(
+                  sol.fechaFinal,
+                  sol.horaFinal
+                ) || '',
               fechaSolicitud:
                 this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
               motivo: sol.motivo,
@@ -240,12 +264,16 @@ export class SolicitudReservaLaboratorioComponent {
       fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
       fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
       motivo: solicitud.motivo,
-      fechaSolicitud: this._utilidades.desformatearFecha(solicitud.fechaSolicitud),
+      fechaSolicitud: this._utilidades.desformatearFecha(
+        solicitud.fechaSolicitud
+      ),
       idEstado: 1,
       idUsuarioAprobador: Number(this.usuarioLogueado.sub),
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
     };
+
+    this.setLoading(solicitud.id, 'aprobar', true);
 
     this.reservaLaboratorioService.updateEstado(body).subscribe({
       next: () => {
@@ -255,12 +283,14 @@ export class SolicitudReservaLaboratorioComponent {
         this.reservaLaboratorioService
           .eliminarSolicitud(solicitud.id)
           .subscribe(() => {
+            this.setLoading(solicitud.id, 'aprobar', false);
             this.solicitudes = this.solicitudes.filter(
               (s) => s.id !== solicitud.id
             );
           });
       },
       error: (err) => {
+        this.setLoading(solicitud.id, 'aprobar', false);
         console.error('Error al aprobar solicitud:', err);
         this.toastr.error('Error al aprobar la solicitud', 'Error');
       },
@@ -279,6 +309,7 @@ export class SolicitudReservaLaboratorioComponent {
     }
 
     const dialogRef = this._dialog.open(DialogSolicitudLabComponent);
+    this.setLoading(solicitud.id, 'denegar', true);
 
     dialogRef
       .afterClosed()
@@ -293,16 +324,22 @@ export class SolicitudReservaLaboratorioComponent {
                 idLaboratorio: solicitud.idLaboratorio,
                 horaInicio: solicitud.horaInicio,
                 horaFinal: solicitud.horaFinal,
-                fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
-                fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
+                fechaInicio: this._utilidades.desformatearFecha(
+                  solicitud.fechaInicio
+                ),
+                fechaFinal: this._utilidades.desformatearFecha(
+                  solicitud.fechaFinal
+                ),
                 motivo: solicitud.motivo,
-                fechaSolicitud: this._utilidades.desformatearFecha(solicitud.fechaSolicitud),
+                fechaSolicitud: this._utilidades.desformatearFecha(
+                  solicitud.fechaSolicitud
+                ),
                 idEstado: 3, // Rechazado
                 idUsuarioAprobador: Number(this.usuarioLogueado.sub),
                 fechaAprobacion: new Date().toISOString(),
                 comentarioAprobacion: data.comentario,
               };
-              
+
               this.reservaLaboratorioService.updateEstado(body).subscribe({
                 next: () => {
                   // Quita del frontend la solicitud rechazada
@@ -313,12 +350,14 @@ export class SolicitudReservaLaboratorioComponent {
                   this.reservaLaboratorioService
                     .eliminarSolicitud(solicitud.id)
                     .subscribe(() => {
+                      this.setLoading(solicitud.id, 'denegar', false);
                       this.solicitudes = this.solicitudes.filter(
                         (s) => s.id !== solicitud.id
                       );
                     });
                 },
                 error: (err) => {
+                  this.setLoading(solicitud.id, 'denegar', false);
                   console.error('Error al desaprobar solicitud:', err);
                   this.toastr.error(
                     'Error al desaprobar la solicitud',
@@ -329,6 +368,7 @@ export class SolicitudReservaLaboratorioComponent {
             }
           });
         } else {
+          this.setLoading(solicitud.id, 'denegar', false);
           this._toastr.info(
             'Se canceló la acción de desaprobar la solicitud',
             'Información'
