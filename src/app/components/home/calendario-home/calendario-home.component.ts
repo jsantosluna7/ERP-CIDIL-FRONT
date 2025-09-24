@@ -51,7 +51,7 @@ export class CalendarioHomeComponent implements OnDestroy {
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_PISO']}`;
   endpointHorario: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_TODOS']}`;
   endpointHorarioPisos: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_PISO']}`;
-  endpointReservas: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO']}`;
+  endpointReservas: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_TODO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
   endpointEstado: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADO']}`;
 
@@ -102,6 +102,7 @@ export class CalendarioHomeComponent implements OnDestroy {
         minute: '2-digit',
         hour12: true,
       },
+      slotEventOverlap: false,
       height: 'auto',
       contentHeight: 'auto',
       handleWindowResize: true,
@@ -251,7 +252,7 @@ export class CalendarioHomeComponent implements OnDestroy {
           const reservas$ = this._calendario
             .getReservas(this.endpointReservas, { params })
             .pipe(
-              map((res: any) => (Array.isArray(res.datos) ? res.datos : [])),
+              map((res: any) => (Array.isArray(res) ? res : [])),
               catchError((err) => {
                 console.warn('Reservas error:', err?.error || err?.message);
                 return of([]);

@@ -37,6 +37,7 @@ export class UsuariosService {
   cerrarSesion() {
     this.userSubject.next(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('tokenRegistro');
   }
 
   registro(endpoint: string, body: any): Observable<any> {

@@ -37,8 +37,13 @@ export class DatosService {
     const horasTotales = excelSerial * 24;
     const horas = Math.floor(horasTotales);
     const minutos = Math.round((horasTotales - horas) * 60);
-    const hh = horas.toString().padStart(2, '0');
-    const mm = minutos.toString().padStart(2, '0');
+
+    // Corrección: si minutos redondea a 60, subimos la hora
+    const horasFinal = minutos === 60 ? horas + 1 : horas;
+    const minutosFinal = minutos === 60 ? 0 : minutos;
+
+    const hh = horasFinal.toString().padStart(2, '0');
+    const mm = minutosFinal.toString().padStart(2, '0');
     return `${hh}:${mm}`;
   }
 

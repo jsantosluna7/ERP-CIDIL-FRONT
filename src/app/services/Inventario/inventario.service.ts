@@ -10,14 +10,13 @@ export class InventarioService {
   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO']}`;
   private apiUrlId = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_ID']}`;
   private apiUrltodos = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_TODOS']}`;
-  private apiUrlImpor = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_IMPORTAR']}`
+  private apiUrlImpor = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_IMPORTAR']}`;
 
   constructor(private http: HttpClient) {}
 
   obtenerCartaPorId(id: number): Observable<Carta> {
-  return this.http.get<Carta>(`${this.apiUrlId}${id}`);
-}
-
+    return this.http.get<Carta>(`${this.apiUrlId}${id}`);
+  }
 
   getCartas(pagina: number, tamanoPagina: number): Observable<any> {
     return this.http.get(
@@ -39,14 +38,13 @@ export class InventarioService {
 
   //Este apartado es para le exportacion del inventario
 
-   obtenerTodoElInventario() {
+  obtenerTodoElInventario() {
     return this.http.get<any[]>(`${this.apiUrltodos}`);
   }
 
   //Este apartado es para importar el inventario
 
-importarInventarioLote(equipos: any[]) {
-  return this.http.post(this.apiUrlImpor, equipos);  
-}
-
+  importarInventarioLote(equipos: any[]) {
+    return this.http.post(this.apiUrlImpor, equipos);
+  }
 }

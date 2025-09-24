@@ -41,7 +41,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
   private subs: Subscription[] = [];
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_PISO']}`;
-  endpointReservas: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO']}`;
+  endpointReservas: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_TODO']}`;
   endpointLab: string = `${process.env['API_URL']}${process.env['ENDPOINT_LABORATORIO_ID']}`;
   endpointEstado: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADO']}`;
 
@@ -163,7 +163,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
               },
             })
             .pipe(
-              map((res: any) => (Array.isArray(res.datos) ? res : [])),
+              map((res: any) => (Array.isArray(res) ? res : [])),
               catchError((err) => {
                 console.warn('Reservas error:', err?.error || err?.message);
                 return of([]); // 💡 Aquí resolvemos el error devolviendo un array vacío
@@ -171,7 +171,7 @@ export class CalendarioComponent implements OnDestroy, AfterViewInit {
             )
             .subscribe(
               (data: any) => {
-                const eventosObservables = data.datos.map((e: any) => {
+                const eventosObservables = data.map((e: any) => {
                   return forkJoin({
                     lab: this._lab.getLaboratorioPorId(e.idLaboratorio),
                     estado: this._calendario.getEstado(

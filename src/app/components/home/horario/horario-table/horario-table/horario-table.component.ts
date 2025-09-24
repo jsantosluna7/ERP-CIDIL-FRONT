@@ -147,6 +147,8 @@ export class HorarioTableComponent {
                 });
 
                 if (datos) {
+                  console.log(datos);
+                  
                   const observables = datos.map((data) =>
                     this.obtenerIdLab(data.AULA).pipe(
                       map((id) => ({
