@@ -11,16 +11,20 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { MqttModule } from 'ngx-mqtt';
 import { MQTT_SERVICE_OPTIONS } from './tools/mqtt-options';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { UiSwitchModule } from 'ngx-ui-switch';
 import * as echarts from 'echarts/core';
 import { provideEchartsCore } from 'ngx-echarts';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { tokenInterceptor } from './interceptors/token.interceptor';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    {
+      provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true
+    },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
     provideAnimations(),
