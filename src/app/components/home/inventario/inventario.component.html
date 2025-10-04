@@ -21,7 +21,7 @@
 
   <mat-form-field appearance="outline" class="field">
     <mat-label>Filtrar</mat-label>
-    <input type="text" matInput (input)="applyFilter($event)" placeholder="Buscar..." />
+    <input type="text" matInput [formControl]="busquedaControl" placeholder="Buscar en Inventario..." />
     <mat-hint class="hint"></mat-hint>
   </mat-form-field>
 

@@ -19,13 +19,13 @@ import { MatCardModule } from '@angular/material/card';
 import { CartaCarrito } from '../carrito/cartaCarrito.interface';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
-import { forkJoin, map } from 'rxjs';
+import { debounceTime, distinctUntilChanged, forkJoin, map } from 'rxjs';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActualizarcartaComponent } from './actualizarcarta/actualizarcarta.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 
@@ -44,11 +44,12 @@ import * as XLSX from 'xlsx';
     MatProgressSpinnerModule,
     AppCualRolDirective,
     FormsModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.css',
 })
-export class InventarioComponent implements OnInit, AfterViewInit {
+export class InventarioComponent implements OnInit {
   loading: boolean = true;
 
   pageSize = 20;
@@ -59,6 +60,8 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   cartasConLaboratorio: any[] = [];
   cartasFiltradas: Carta[] = [];
   laboratorios: Laboratorio[] = [];
+
+  busquedaControl = new FormControl('');
 
   /* ---------- Paginacion ------------ */
 
@@ -83,6 +86,48 @@ export class InventarioComponent implements OnInit, AfterViewInit {
         this.laboratorios = labs;
         this.cargarCartas();
       });
+
+    //Busqueda en vivo con el backend
+    this.busquedaControl.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((valor: any) => {
+        if (valor && valor.trim() !== '') {
+          this.busquedaEnBackend(valor.trim());
+        } else {
+          this.cargarCartas();
+        }
+      });
+  }
+
+  busquedaEnBackend(nombre: string): void {
+    this.loading = true;
+    this.inventarioService.buscarInventario(nombre).subscribe({
+      next: (resultados: any) => {
+        //mapeamos los datos con la info del lab
+        let datosFiltrados = resultados.filter((data: any) => data.disponible);
+
+        this.cartasConLaboratorio = datosFiltrados.map((data: any) => {
+          const lab = this.laboratorios.find(
+            (l) => l.id === data.idLaboratorio
+          );
+          return {
+            id: data.id,
+            nombre: lab ? lab.codigoDeLab : 'Sin Laboratorio',
+            nombreData: data.nombre,
+            cantidad: data.cantidad,
+            disponible: data.disponible,
+            imagen: data.imagenEquipo,
+          };
+        });
+
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.toastr.error(err.error.error || '', 'Error en la búsqueda');
+        console.error('Error en búsqueda:', err.error.error);
+      },
+    });
   }
 
   cargarCartas(): void {
@@ -93,32 +138,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (d: any) => {
           let datosFiltrados = d.datos.filter((data: any) => data.disponible);
-
-          // Aplica filtro si hay texto escrito
-          if (this.textoFiltro) {
-            const filtro = this.textoFiltro.toLowerCase();
-
-            datosFiltrados = datosFiltrados.filter((data: any) => {
-              const lab = this.laboratorios.find(
-                (l) => l.id === data.idLaboratorio
-              );
-              const nombreLab = lab
-                ? lab.codigoDeLab.toLowerCase()
-                : 'sin laboratorio';
-
-              const dataStr = (
-                data.nombre +
-                ' ' +
-                nombreLab +
-                ' ' +
-                data.cantidad +
-                ' ' +
-                (data.disponible ? 'disponible' : 'no disponible')
-              ).toLowerCase();
-
-              return dataStr.includes(filtro);
-            });
-          }
 
           //  Mapear los datos con información del laboratorio
           this.cartasConLaboratorio = datosFiltrados.map((data: any) => {
@@ -184,27 +203,6 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
     // Limpia el input después
     carta.cantidadSeleccionada = null;
-  }
-
-  applyFilter(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.textoFiltro = input.value.trim().toLowerCase();
-    this.paginaActual = 1; // Opcional: volver a la primera página
-    this.cargarCartas();
-  }
-
-  /* applyFilter(event: Event) {
-  const filterValue = (event.target as HTMLInputElement).value;
-  this.dataSource.filter = filterValue.trim().toLowerCase();
-  }*/
-
-  ngAfterViewInit() {
-    //this.dataSource.paginator = this.paginator
-    //this.paginator.page.subscribe((event: PageEvent) => {
-    //this.paginaActual = event.pageIndex + 1;
-    // this.pageSize = event.pageSize;
-    //this.cargarCartas();
-    //});
   }
 
   onPageChange(event: PageEvent): void {

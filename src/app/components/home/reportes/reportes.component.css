@@ -11,6 +11,10 @@
   
 }
 
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
+}
+
 .form {
     
     border: none;

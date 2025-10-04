@@ -3,14 +3,18 @@
   color: white !important;
 }
 
+.white-spinner ::ng-deep circle {
+    stroke: white !important;
+}
+
 .botones-red{
-    background-color: #CC3333 !important;
+    background-color: #28A745 !important;
     color: white !important;
 }
 
 .botones-green{
-    background-color: green !important;
-    color:white !important;
+    background-color: #007ACC !important;
+    color: white !important;
 }
 
 .tabla-letra-grande {

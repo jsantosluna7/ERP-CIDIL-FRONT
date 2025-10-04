@@ -11,6 +11,7 @@ export class InventarioService {
   private apiUrlId = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_ID']}`;
   private apiUrltodos = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_TODOS']}`;
   private apiUrlImpor = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_EQUIPO_IMPORTAR']}`;
+  private apiUrlBuscar = `${process.env['API_URL']}${process.env['ENDPOINT_INVENTARIO_BUSQUEDA']}`;
 
   constructor(private http: HttpClient) {}
 
@@ -46,5 +47,9 @@ export class InventarioService {
 
   importarInventarioLote(equipos: any[]) {
     return this.http.post(this.apiUrlImpor, equipos);
+  }
+
+  buscarInventario(nombre: string): Observable<any> {
+    return this.http.get(`${this.apiUrlBuscar}?nombre=${nombre}`);
   }
 }

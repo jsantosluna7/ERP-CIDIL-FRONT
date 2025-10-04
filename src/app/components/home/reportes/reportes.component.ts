@@ -30,6 +30,7 @@ import { ReporteFalla } from '../../../interfaces/reporteFalla.interface';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-reportes',
@@ -42,13 +43,14 @@ import { MatSelectModule } from '@angular/material/select';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatProgressSpinner
   ],
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.css',
 })
 export class ReportesComponent {
   laboratoriosSelect: any[] = [];
-
+  loading = false;
   laboratorios: Laboratorio[] = [];
   solicitudesForm!: FormGroup;
   faUser = faUser;
@@ -92,6 +94,7 @@ export class ReportesComponent {
   }
 
   enviarReporte(): void {
+    this.loading = true;
     const idLaboratorio = Number(
       this.solicitudesForm.get('idLaboratorio')?.value
     );
@@ -99,6 +102,7 @@ export class ReportesComponent {
     const descripcion = this.solicitudesForm.get('descripcion')?.value;
 
     if (!idLaboratorio && (!lugar || lugar.trim() === '')) {
+      this.loading = false;
       this.toastr.warning(
         'Debe seleccionar un laboratorio o indicar un lugar.',
         'Atención'
@@ -107,6 +111,7 @@ export class ReportesComponent {
     }
 
     if (!descripcion || descripcion.trim() === '') {
+      this.loading = false;
       this.toastr.warning(
         'Debe ingresar la descripción de la falla.',
         'Atención'
@@ -114,22 +119,23 @@ export class ReportesComponent {
       return;
     }
 
-    const nombreSolicitante = `${this.usuarioLogueado.nombreUsuario} ${this.usuarioLogueado.apellidoUsuario}`;
-
     const reporte: ReporteFalla = {
-      idLaboratorio: idLaboratorio || null,
+      idUsuario: Number(this.usuarioLogueado.sub),
       lugar: lugar || null,
       descripcion: descripcion,
-      nombreSolicitante: nombreSolicitante,
-      idEstado: 1,
+      estado: 1,
     };
+
+    console.log(reporte);
 
     this.reporteFallaService.crearReporte(reporte).subscribe({
       next: () => {
+        this.loading = false;
         this.toastr.success('¡Reporte enviado correctamente!', 'Éxito');
         this.solicitudesForm.reset();
       },
       error: (err) => {
+        this.loading = false;
         console.error(err);
         this.toastr.error('Error al enviar el reporte', 'Error');
       },
