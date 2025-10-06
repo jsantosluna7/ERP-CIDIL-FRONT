@@ -27,7 +27,7 @@ export class ReporteFallaService{
   }
 */
 
-actualizarReporte(id: number, dto: { IdReporte: number; IdEstado: number }): Observable<ReporteFalla> {
+actualizarReporte(id: number, dto: { IdReporte: number; estado: number }): Observable<ReporteFalla> {
   return this.http.put<ReporteFalla>(`${this.apiUrl}/${id}`, dto);
 }
 

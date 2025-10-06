@@ -17,6 +17,25 @@
     color: white !important;
 }
 
+.pill{
+    padding: 6px 15px;
+    border-radius: 15px;
+    color: white;
+    font-weight: bold;
+}
+
+.pill-verde{
+    background-color: #28A745;
+}
+
+.pill-naranja{
+    background-color: #FFC107;
+}
+
+.pill-rojo{
+    background-color: #DC3545;
+}
+
 .tabla-letra-grande {
   font-size: 40px; /* Puedes ajustar este valor a tu gusto */
 }

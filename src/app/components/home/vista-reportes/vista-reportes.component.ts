@@ -8,6 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
 import { Laboratorio } from '../../../interfaces/laboratorio.interface';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { UtilitiesService } from '../../../services/Utilities/utilities.service';
+import { forkJoin } from 'rxjs';
+import { UsuarioService } from '../usuario/usuarios/usuarios.service';
 
 @Component({
   selector: 'app-vista-reportes',
@@ -19,15 +22,15 @@ export class VistaReportesComponent {
   reportes: ReporteFalla[] = [];
   laboratorios: Laboratorio[] = [];
 
-  loading: { [id: number]: { aprobar: boolean; denegar: boolean } } = {};
+  loading: { [id: number]: { recibido: boolean; solucionar: boolean } } = {};
 
   private setLoading(
     id: number,
-    accion: 'aprobar' | 'denegar',
+    accion: 'recibido' | 'solucionar',
     estado: boolean
   ) {
     if (!this.loading[id]) {
-      this.loading[id] = { aprobar: false, denegar: false };
+      this.loading[id] = { recibido: false, solucionar: false };
     }
     this.loading[id][accion] = estado;
   }
@@ -36,6 +39,7 @@ export class VistaReportesComponent {
     'nombreUsuario',
     'descripcion',
     'lugar',
+    'fechaCreacion',
     'estado',
     'acciones',
   ];
@@ -43,13 +47,29 @@ export class VistaReportesComponent {
   constructor(
     private reporteService: ReporteFallaService,
     private toastr: ToastrService,
-    private laboratorioService: LaboratorioService
+    private laboratorioService: LaboratorioService,
+    private _utilities: UtilitiesService,
+    private _usuarios: UsuarioService
   ) {}
 
   ngOnInit(): void {
-    this.reporteService.getReportes().subscribe({
-      next: (reportes) => {
-        this.reportes = reportes;
+    forkJoin({
+      reporteTodo: this.reporteService.getReportes(),
+      usuariosTodo: this._usuarios.obtenerUsuarios(),
+    }).subscribe({
+      next: ({ reporteTodo, usuariosTodo }) => {
+        const usr = Array.isArray(usuariosTodo) ? usuariosTodo : [];
+        this.reportes = reporteTodo.map((r: any) => {
+          const usuario = usr.find((u) => u.id === r.idUsuario);
+          return {
+            ...r,
+            nombreUsuario: usuario
+              ? `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`
+              : 'Desconocido',
+            fechaCreacion:
+              this._utilities.formatearFecha(r.fechaCreacion) || undefined,
+          };
+        });
       },
     });
 
@@ -73,34 +93,40 @@ export class VistaReportesComponent {
   }
 
   recepcionReporte(reporte: ReporteFalla) {
-    const dto = { IdReporte: reporte.idReporte!, IdEstado: 3 };
+    const dto = { IdReporte: reporte.idReporte!, estado: 2 };
+    this.setLoading(reporte.idReporte!, 'recibido', true);
+
     this.reporteService.actualizarReporte(reporte.idReporte!, dto).subscribe({
       next: () => {
-        reporte.estado = 3; // Actualiza localmente
+        reporte.estado = 2; // Actualiza localmente
+        this.setLoading(reporte.idReporte!, 'recibido', false);
         this.reportes = this.reportes.filter(
           (r) => r.idReporte !== reporte.idReporte
         );
-        this.toastr.success('Reporte cerrado', 'Éxito');
+        this.toastr.success('Reporte recibido', 'Éxito');
       },
       error: (err) => {
-        this.toastr.error('Error al cerrar el reporte', 'Error');
-        console.error('Error cerrar:', err);
+        this.setLoading(reporte.idReporte!, 'recibido', false);
+        this.toastr.error('Error al recibir el reporte', 'Error');
+        console.error('Error recibir:', err);
       },
     });
   }
 
   solucionReporte(reporte: ReporteFalla) {
-    const dto = { IdReporte: reporte.idReporte!, IdEstado: 1 };
+    const dto = { IdReporte: reporte.idReporte!, estado: 3 };
+    this.setLoading(reporte.idReporte!, 'solucionar', true);
 
     this.reporteService.actualizarReporte(reporte.idReporte!, dto).subscribe({
       next: () => {
-        reporte.estado = 1; // Actualiza localmente
-
-        this.toastr.success('Reporte reabierto', 'Éxito');
+        reporte.estado = 3; // Actualiza localmente
+        this.setLoading(reporte.idReporte!, 'solucionar', false);
+        this.toastr.success('Reporte solucionado', 'Éxito');
       },
       error: (err) => {
-        this.toastr.error('Error al reabrir el reporte', 'Error');
-        console.error('Error reabrir:', err);
+        this.setLoading(reporte.idReporte!, 'solucionar', false);
+        this.toastr.error('Error al solucionar el reporte', 'Error');
+        console.error('Error solucionar:', err);
       },
     });
   }
