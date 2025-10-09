@@ -31,6 +31,7 @@ import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service
 import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
+import { number } from 'echarts/core';
 
 @Component({
   selector: 'app-reserva-laboratorio',
@@ -72,6 +73,7 @@ export class ReservaLaboratorioComponent {
   ngOnInit(): void {
     this.solicitudesForm = this.fb.group({
       idLaboratorio: ['', Validators.required],
+      personasCantidad: ['', Validators.required],
       horaInicio: ['', [this.horaValida()]],
       horaFinal: ['', [this.horaValidaFinal()]],
       motivo: ['', Validators.required],
@@ -96,6 +98,7 @@ export class ReservaLaboratorioComponent {
     const idLaboratorio = Number(
       this.solicitudesForm.get('idLaboratorio')?.value
     );
+    const personasCantidad = this.solicitudesForm.get('personasCantidad')?.value;
     const motivo = this.solicitudesForm.get('motivo')?.value;
     const form = this.solicitudesForm.value;
     const dtInicio = new Date(form.horaInicio);
@@ -111,6 +114,12 @@ export class ReservaLaboratorioComponent {
     if (!idLaboratorio) {
       this.loading = false; // Desactivar el spinner
       this.toastr.warning('Debe seleccionar un laboratorio.', 'Atención');
+      return;
+    }
+
+    if (!personasCantidad || Number(personasCantidad) <= 0) {
+      this.loading = false; // Desactivar el spinner
+      this.toastr.warning('Debe ingresar la cantidad de personas.', 'Atención');
       return;
     }
 
@@ -150,6 +159,7 @@ export class ReservaLaboratorioComponent {
     const solicitud = {
       idUsuario: Number(this.usuarioLogueado.sub),
       idLaboratorio: Number(idLaboratorio),
+      personasCantidad: Number(personasCantidad),
       horaInicio: horaInicio,
       horaFinal: horaFinal,
       fechaInicio: fechaInicio, // Mismo valor que horaInicio

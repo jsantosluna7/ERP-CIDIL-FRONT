@@ -70,6 +70,7 @@ export class VistaReportesComponent {
               this._utilities.formatearFecha(r.fechaCreacion) || undefined,
           };
         });
+        console.log(this.reportes);
       },
     });
 
@@ -81,15 +82,40 @@ export class VistaReportesComponent {
   }
 
   cargarReportes() {
-    this.reporteService.getReportes().subscribe({
-      next: (data) => {
-        this.reportes = data; // Ajusta según lo que devuelva tu API
-      },
-      error: (err) => {
-        this.toastr.error('Error al cargar los reportes', 'Error');
-        console.error(err);
+        forkJoin({
+      reporteTodo: this.reporteService.getReportes(),
+      usuariosTodo: this._usuarios.obtenerUsuarios(),
+    }).subscribe({
+      next: ({ reporteTodo, usuariosTodo }) => {
+        const usr = Array.isArray(usuariosTodo) ? usuariosTodo : [];
+        this.reportes = reporteTodo.map((r: any) => {
+          const usuario = usr.find((u) => u.id === r.idUsuario);
+          return {
+            ...r,
+            nombreUsuario: usuario
+              ? `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`
+              : 'Desconocido',
+            fechaCreacion:
+              this._utilities.formatearFecha(r.fechaCreacion) || undefined,
+          };
+        });
       },
     });
+
+    this.laboratorioService.getLaboratorios().subscribe({
+      next: (labs) => {
+        this.laboratorios = labs;
+      },
+    });
+    // this.reporteService.getReportes().subscribe({
+    //   next: (data) => {
+    //     this.reportes = data; // Ajusta según lo que devuelva tu API
+    //   },
+    //   error: (err) => {
+    //     this.toastr.error('Error al cargar los reportes', 'Error');
+    //     console.error(err);
+    //   },
+    // });
   }
 
   recepcionReporte(reporte: ReporteFalla) {
@@ -100,9 +126,9 @@ export class VistaReportesComponent {
       next: () => {
         reporte.estado = 2; // Actualiza localmente
         this.setLoading(reporte.idReporte!, 'recibido', false);
-        this.reportes = this.reportes.filter(
-          (r) => r.idReporte !== reporte.idReporte
-        );
+        // this.reportes = this.reportes.filter(
+        //   (r) => r.idReporte !== reporte.idReporte
+        // );
         this.toastr.success('Reporte recibido', 'Éxito');
       },
       error: (err) => {

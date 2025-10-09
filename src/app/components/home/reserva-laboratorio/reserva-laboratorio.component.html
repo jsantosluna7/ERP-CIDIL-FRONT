@@ -61,6 +61,20 @@
         </div>
       </div>
 
+      <label for="personasCantidad" class="form-label"
+        >Cantidad de Personas</label
+      >
+      <div class="location">
+        <fa-icon [icon]="faUser"></fa-icon>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="personasCantidad"
+          id="personasCantidad"
+          placeholder="Cantidad de personas presentes en el evento..."
+        />
+      </div>
+
       <label for="inputEmail4" class="form-label">Fecha del Evento</label>
       <div class="location">
         <fa-icon [icon]="faclock"></fa-icon>
@@ -73,7 +87,9 @@
         />
 
         @if (solicitudesForm.get('horaInicio')?.hasError('horaInvalida')) {
-        <div class="hora-error">Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM</div>
+        <div class="hora-error">
+          Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM
+        </div>
         }
       </div>
 
@@ -90,7 +106,9 @@
           max="22:00"
         />
         @if (solicitudesForm.get('horaFinal')?.hasError('horaInvalida')) {
-        <div class="hora-error">Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM</div>
+        <div class="hora-error">
+          Solo se permiten horas entre 8:00 AM y 10:00 PM, Sábados 6:00 PM
+        </div>
         }
       </div>
 

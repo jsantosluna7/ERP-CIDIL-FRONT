@@ -1,39 +1,56 @@
 .encabezado-azul {
-  background-color: #101A88 !important;
+  background-color: #101a88 !important;
   color: white !important;
 }
 
 .white-spinner ::ng-deep circle {
-    stroke: white !important;
+  stroke: white !important;
 }
 
-.botones-red{
-    background-color: #28A745 !important;
-    color: white !important;
+.botones-red {
+  background-color: #28a745 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 10px 35px !important;
+  border-radius: 30px !important;
+  border: none !important;
 }
 
-.botones-green{
-    background-color: #007ACC !important;
-    color: white !important;
+.botones-green {
+  background-color: #007acc !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 10px 35px !important;
+  border-radius: 30px !important;
+  border: none !important;
 }
 
-.pill{
-    padding: 6px 15px;
-    border-radius: 15px;
-    color: white;
-    font-weight: bold;
+.disabled {
+  background-color: grey !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 10px 35px !important;
+  border-radius: 30px !important;
+  border: none !important;
 }
 
-.pill-verde{
-    background-color: #28A745;
+.pill {
+  padding: 6px 15px;
+  border-radius: 15px;
+  color: white;
+  font-weight: bold;
 }
 
-.pill-naranja{
-    background-color: #FFC107;
+.pill-verde {
+  background-color: #28a745;
 }
 
-.pill-rojo{
-    background-color: #DC3545;
+.pill-naranja {
+  background-color: #ffc107;
+}
+
+.pill-rojo {
+  background-color: #dc3545;
 }
 
 .tabla-letra-grande {
@@ -43,196 +60,194 @@
 /*Prueba para la tabla*/
 
 .table-container {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 /* ========== ESTRUCTURA GENERAL ========== */
 .body-h-table {
-    margin-top: 2rem;
-    padding: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
 }
 
 .nav {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .nav h1 {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 
 .botones {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .table-container {
-    overflow-x: auto;
-    margin-top: 1.5rem;
+  overflow-x: auto;
+  margin-top: 1.5rem;
 }
 
 .field {
-    background-color: #FAF9FD !important;
-    margin-bottom: 1rem;
-    width: 100%;
+  background-color: #faf9fd !important;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
 /* ========== PAGINADOR Y CONTROL DE ENTRADA ========== */
 .entrada-pagina {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .entrada-pagina p {
-    font-size: 0.9rem;
-    margin: 0;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 .entrada-pagina input {
-    width: 4rem;
-    font-size: 0.9rem;
-    padding: 0.2rem;
-    border-radius: 0.4rem;
-    text-align: center;
+  width: 4rem;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+  border-radius: 0.4rem;
+  text-align: center;
 }
 
 /* ========== BOTÓN DE BORRADO ========== */
 .delete-button {
-    background-color: #CC3333 !important;
-    color: white !important;
+  background-color: #cc3333 !important;
+  color: white !important;
 }
 
 .delete-button:hover {
-    background-color: #cc3333f6 !important;
+  background-color: #cc3333f6 !important;
 }
 
 /* ========== SPINNER CENTER ========== */
 .spinner-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }
 
 .table-container {
-    position: relative;
-    margin-top: 1.5rem;
+  position: relative;
+  margin-top: 1.5rem;
 }
 
 table {
-    width: 100%;
-    min-width: 800px;
-    /* fuerza scroll horizontal si la pantalla es muy angosta */
+  width: 100%;
+  min-width: 800px;
+  /* fuerza scroll horizontal si la pantalla es muy angosta */
 }
 
 .mat-table {
-    overflow-x: auto;
-    display: block;
+  overflow-x: auto;
+  display: block;
 }
 
 .table-scroll {
-    overflow-x: auto;
-    width: 100%;
+  overflow-x: auto;
+  width: 100%;
 }
 
 .table-scroll table {
-    width: 100%;
-    min-width: 800px;
+  width: 100%;
+  min-width: 800px;
 }
-
 
 @media screen and (max-width: 767px) {
-    .mat-table {
-        overflow-x: auto;
-        display: block;
-    }
+  .mat-table {
+    overflow-x: auto;
+    display: block;
+  }
 
-    table {
-        min-width: 800px;
-    }
+  table {
+    min-width: 800px;
+  }
 
-    .body-h-table,
-    .field,
-    .entrada-pagina,
-    .nav {
-        overflow: visible !important;
-    }
+  .body-h-table,
+  .field,
+  .entrada-pagina,
+  .nav {
+    overflow: visible !important;
+  }
 }
-
 
 /* ========== MEDIA QUERIES ========== */
 
 /* Tablets y arriba (>=768px) */
 @media screen and (min-width: 768px) {
-    .nav {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
+  .nav {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .botones {
-        flex-direction: row;
-        gap: 1rem;
-    }
+  .botones {
+    flex-direction: row;
+    gap: 1rem;
+  }
 
-    .field {
-        max-width: 400px;
-    }
+  .field {
+    max-width: 400px;
+  }
 
-    .entrada-pagina {
-        position: absolute;
-        bottom: 1rem;
-        left: 2rem;
-    }
+  .entrada-pagina {
+    position: absolute;
+    bottom: 1rem;
+    left: 2rem;
+  }
 }
 
 /* Teléfonos grandes (>=480px y <768px) */
 @media screen and (min-width: 480px) and (max-width: 767px) {
-    .nav h1 {
-        font-size: 1.3rem;
-    }
+  .nav h1 {
+    font-size: 1.3rem;
+  }
 
-    .entrada-pagina {
-        justify-content: flex-start;
-    }
+  .entrada-pagina {
+    justify-content: flex-start;
+  }
 }
 
 /* Teléfonos pequeños (<480px) */
 @media screen and (max-width: 479px) {
-    .nav h1 {
-        font-size: 1.2rem;
-        text-align: center;
-    }
+  .nav h1 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
 
-    .botones {
-        flex-direction: column;
-        width: 100%;
-    }
+  .botones {
+    flex-direction: column;
+    width: 100%;
+  }
 
-    .botones button {
-        width: 100%;
-    }
+  .botones button {
+    width: 100%;
+  }
 
-    .entrada-pagina {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .entrada-pagina {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .entrada-pagina input {
-        width: 100%;
-    }
+  .entrada-pagina input {
+    width: 100%;
+  }
 
-    table {
-        font-size: 0.8rem;
-    }
+  table {
+    font-size: 0.8rem;
+  }
 
-    th.mat-header-cell,
-    td.mat-cell {
-        padding: 0.3rem;
-    }
+  th.mat-header-cell,
+  td.mat-cell {
+    padding: 0.3rem;
+  }
 }

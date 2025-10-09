@@ -1,7 +1,7 @@
 import { Component, Input, input } from '@angular/core';
 import { Solicitud } from '../../../interfaces/solicitud-reserva-espacio.interface';
 import { SolicitudReservaService } from '../../../services/reserva-laboratorio/reserva-laboratorio.service';
-import { error } from 'console';
+import { Console, error } from 'console';
 import { CommonModule } from '@angular/common';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { UsuarioService } from '../usuario/usuarios/usuarios.service';
@@ -58,6 +58,7 @@ export class SolicitudReservaLaboratorioComponent {
     'horaFinal',
     'motivo',
     'fechaSolicitud',
+    'personasCantidad',
     'estado',
     'acciones',
   ];
