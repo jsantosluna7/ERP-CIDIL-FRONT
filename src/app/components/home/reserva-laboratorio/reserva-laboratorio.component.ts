@@ -179,7 +179,7 @@ export class ReservaLaboratorioComponent {
       error: (err) => {
         this.loading = false; // Desactivar el spinner
         console.error(err);
-        this.toastr.error(err.error, 'Error');
+        this.toastr.error(err.error.error, 'Error');
       },
     });
   }
