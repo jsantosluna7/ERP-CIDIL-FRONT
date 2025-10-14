@@ -89,6 +89,14 @@ input{
 
 /*Prueba */
 
+
+.filtrado{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 .table-container {
     overflow-x: auto;
 }
@@ -122,8 +130,8 @@ input{
 
 .field {
     background-color: #FAF9FD !important;
-    margin-bottom: 1rem;
     width: 100%;
+    margin-right: 1rem;
 }
 
 /* ========== PAGINADOR Y CONTROL DE ENTRADA ========== */

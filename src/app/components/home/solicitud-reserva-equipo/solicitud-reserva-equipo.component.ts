@@ -5,7 +5,7 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { InventarioService } from '../../../services/Inventario/inventario.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, take } from 'rxjs';
 import { UsuarioService } from '../usuario/usuarios/usuarios.service';
 import { Carta } from '../../../interfaces/carta';
 import { Usuarios } from '../../../interfaces/usuarios.interface';
@@ -14,6 +14,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { UtilitiesService } from '../../../services/Utilities/utilities.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogSolicitudEquipComponent } from './dialog-solicitud-equip/dialog-solicitud-equip.component';
+import { DatosService } from '../../../services/Datos/datos.service';
 
 @Component({
   selector: 'app-solicitud-reserva-equipo',
@@ -62,7 +65,9 @@ export class SolicitudReservaEquipoComponent {
     private usuariosService: UsuariosService,
     private inventarioService: InventarioService,
     private usuarios: UsuarioService,
-    private utilitiesService: UtilitiesService
+    private utilitiesService: UtilitiesService,
+    private _dialog: MatDialog,
+    private _datos: DatosService
   ) {}
 
   ngOnInit(): void {
@@ -167,49 +172,72 @@ export class SolicitudReservaEquipoComponent {
       return;
     }
 
-    const body: ReservaEquipos = {
-      id: solicitud.id,
-      idUsuario: solicitud.idUsuario,
-      idInventario: solicitud.idInventario,
-      fechaInicio: this.utilitiesService.desformatearFecha(
-        solicitud.fechaInicio
-      ),
-      fechaFinal: this.utilitiesService.desformatearFecha(solicitud.fechaFinal),
-      motivo: solicitud.motivo,
-      cantidad: !isNaN(Number(solicitud.cantidad))
-        ? Number(solicitud.cantidad)
-        : 1,
-      fechaEntrega: new Date().toISOString(),
-      idEstado: 3,
-      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-      comentarioAprobacion: 'Solicitud rechazada por el usuario logueado',
-    };
-
+    const dialogRef = this._dialog.open(DialogSolicitudEquipComponent);
     this.setLoading(solicitud.id, 'denegar', true);
 
-    this.SolicitudEquipoService.updateEstado(body).subscribe({
-      next: () => {
-        solicitud.idEstado = 3;
-        this.toastr.success(
-          `Solicitud del equipo "${solicitud.nombreEquipo}" rechazada.`,
-          'Desaprobada'
-        );
-        this.SolicitudEquipoService.eliminarSolicitud(solicitud.id).subscribe(
-          () => {
-            this.setLoading(solicitud.id, 'denegar', false);
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((resultado) => {
+        if (resultado) {
+          this._datos.comentario$.pipe(take(1)).subscribe((data: any) => {
+            if (data) {
+              const body: ReservaEquipos = {
+                id: solicitud.id,
+                idUsuario: solicitud.idUsuario,
+                idInventario: solicitud.idInventario,
+                fechaInicio: this.utilitiesService.desformatearFecha(
+                  solicitud.fechaInicio
+                ),
+                fechaFinal: this.utilitiesService.desformatearFecha(
+                  solicitud.fechaFinal
+                ),
+                motivo: solicitud.motivo,
+                cantidad: !isNaN(Number(solicitud.cantidad))
+                  ? Number(solicitud.cantidad)
+                  : 1,
+                fechaEntrega: new Date().toISOString(),
+                idEstado: 3,
+                idUsuarioAprobador: Number(this.usuarioLogueado.sub),
+                comentarioAprobacion: data.comentario,
+              };
 
-            this.solicitud = this.solicitud.filter(
-              (s) => s.id !== solicitud.id
-            );
-          }
-        );
-      },
-      error: (error) => {
-        this.setLoading(solicitud.id, 'denegar', false);
+              this.SolicitudEquipoService.updateEstado(body).subscribe({
+                next: () => {
+                  solicitud.idEstado = 3;
+                  this.toastr.success(
+                    `Solicitud del equipo "${solicitud.nombreEquipo}" rechazada.`,
+                    'Desaprobada'
+                  );
+                  this.SolicitudEquipoService.eliminarSolicitud(
+                    solicitud.id
+                  ).subscribe(() => {
+                    this.setLoading(solicitud.id, 'denegar', false);
 
-        console.error('Error al desaprobar solicitud:', error);
-        this.toastr.error('Error al desaprobar la solicitud.', 'Error');
-      },
-    });
+                    this.solicitud = this.solicitud.filter(
+                      (s) => s.id !== solicitud.id
+                    );
+                  });
+                },
+                error: (error) => {
+                  this.setLoading(solicitud.id, 'denegar', false);
+
+                  console.error('Error al desaprobar solicitud:', error);
+                  this.toastr.error(
+                    'Error al desaprobar la solicitud.',
+                    'Error'
+                  );
+                },
+              });
+            }
+          });
+        } else {
+          this.setLoading(solicitud.id, 'denegar', false);
+          this.toastr.info(
+            'Se canceló la acción de desaprobar la solicitud',
+            'Información'
+          );
+        }
+      });
   }
 }

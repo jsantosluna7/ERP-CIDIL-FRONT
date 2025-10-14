@@ -16,6 +16,20 @@ export class UsuarioService {
 
   //private usuarios$ = new BehaviorSubject<Usuarios[]>(this.apiUrl);
 
+    getUsuarios(
+    endpoint: string,
+    pagina: number = 1,
+    tamanoPagina: number = 20
+  ): Observable<any> {
+    return this.http.get(
+      `${endpoint}?pagina=${pagina}&tamanoPagina=${tamanoPagina}`
+    );
+  }
+
+  buscarUsuarios(endpoint: string, termino: string, filtro:string): Observable<any> {
+    return this.http.get(`${endpoint}?termino=${termino}&filtro=${filtro}`);
+  }
+
   obtenerUsuarios(): Observable<RespuestaUsuarios> {
     return this.http.get<RespuestaUsuarios>(this.apiUrl);
   }

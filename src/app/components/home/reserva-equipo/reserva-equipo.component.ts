@@ -129,36 +129,37 @@ export class ReservaEquipoComponent implements OnInit {
           this.loading = false; // Desactivar el spinner
           this.toastr.success(`Solicitud para ${equipo.nombreData} enviada.`);
 
-          this.inventarioService.obtenerCartaPorId(equipo.id).subscribe({
-            next: (cartaCompleta) => {
-              const cantidadRestante =
-                (equipo.cantidad || 0) - (equipo.cantidadSeleccionada || 0);
+          //Agreglar la actualizacion de la cantidad.
+          // this.inventarioService.obtenerCartaPorId(equipo.id).subscribe({
+          //   next: (cartaCompleta) => {
+          //     const cantidadRestante =
+          //       (equipo.cantidad || 0) - (equipo.cantidadSeleccionada || 0);
 
-              const equipoActualizado: Carta = {
-                ...cartaCompleta,
-                cantidad: cantidadRestante,
-                disponible: cantidadRestante > 0,
-              };
-              this.inventarioService
-                .actualizarCarta(equipo.id, equipoActualizado)
-                .subscribe({
-                  next: () => {
-                    this.loading = false; // Desactivar el spinner
-                    this.toastr.success('Equipo actualizado correctamente');
-                  },
-                  error: () => {
-                    this.loading = false; // Desactivar el spinner
-                    this.toastr.error('Error al actualizar el inventario');
-                  },
-                });
-            },
-            error: () => {
-              this.loading = false; // Desactivar el spinner
-              this.toastr.error(
-                'No se pudo obtener la información completa del equipo'
-              );
-            },
-          });
+          //     const equipoActualizado: Carta = {
+          //       ...cartaCompleta,
+          //       cantidad: cantidadRestante,
+          //       disponible: cantidadRestante > 0,
+          //     };
+          //     this.inventarioService
+          //       .actualizarCarta(equipo.id, equipoActualizado)
+          //       .subscribe({
+          //         next: () => {
+          //           this.loading = false; // Desactivar el spinner
+          //           this.toastr.success('Equipo actualizado correctamente');
+          //         },
+          //         error: () => {
+          //           this.loading = false; // Desactivar el spinner
+          //           this.toastr.error('Error al actualizar el inventario');
+          //         },
+          //       });
+          //   },
+          //   error: () => {
+          //     this.loading = false; // Desactivar el spinner
+          //     this.toastr.error(
+          //       'No se pudo obtener la información completa del equipo'
+          //     );
+          //   },
+          // });
         },
         error: (err) => {
           this.loading = false; // Desactivar el spinner
