@@ -9,6 +9,7 @@ import {
   faPeopleGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { CalendarioComponent } from '../all-widget/calendario/calendario.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-body',
@@ -36,7 +37,7 @@ export class DashboardBodyComponent implements OnInit {
   endpointReservaEspacios: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_RESERVA_ESPACIO']}`;
   endpointUsuarios: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_USUARIOS']}`;
 
-  constructor(private _dashboardService: DashboardService) {}
+  constructor(private _dashboardService: DashboardService, private _router: Router) {}
 
   ngOnInit(): void {
     this._dashboardService
@@ -62,5 +63,17 @@ export class DashboardBodyComponent implements OnInit {
           this.cantidadUsuarios = data.totalUsuarios;
         },
       });
+  }
+
+  openEspacios(){
+    this._router.navigate(['/home/solicitud-laboratorio']);
+  }
+
+  openEquipos(){
+    this._router.navigate(['/home/solicitud-equipo']);
+  }
+
+  openUsuarios(){
+    this._router.navigate(['/home/usuarios/listado-usuarios']);
   }
 }

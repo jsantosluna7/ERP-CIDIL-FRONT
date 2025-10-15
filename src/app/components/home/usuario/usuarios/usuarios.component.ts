@@ -60,7 +60,7 @@ import { TitleCasePipe } from '@angular/common';
     MatProgressSpinnerModule,
     MatChipsModule,
     ReactiveFormsModule,
-    TitleCasePipe
+    TitleCasePipe,
   ],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
@@ -139,11 +139,27 @@ export class UsuariosComponent implements OnInit {
     this.loading = true;
 
     this.usuarioService
-      .buscarUsuarios(this.endpointBusqueda, nombre, this.filtroSeleccionado.value ?? 'nombre')
+      .buscarUsuarios(
+        this.endpointBusqueda,
+        nombre,
+        this.filtroSeleccionado.value ?? 'nombre'
+      )
       .subscribe({
         next: (resultados: any) => {
-           // ← ya puedes mapear aquí si quieres
+          const ELEMENT_DATA = resultados.map((data: any) => ({
+            id: data.id,
+            nombreUsuario: data.nombreUsuario,
+            apellidoUsuario: data.apellidoUsuario,
+            idMatricula: data.idMatricula,
+            telefono: data.telefono,
+            correoInstitucional: data.correoInstitucional,
+            direccion: data.direccion,
+            idRol: data.idRol,
+          }));
+          this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
           this.loading = false;
+          this.secondLoading = false;
+          this.noData = ELEMENT_DATA.length === 0;
         },
         error: (err) => {
           this.loading = false;
@@ -177,6 +193,8 @@ export class UsuariosComponent implements OnInit {
   }
 
   cargarTabla() {
+    this.loading = true;
+
     this.usuarioService
       .getUsuarios(this.endpoint, this.pageIndex + 1, this.pageSize)
       .subscribe({

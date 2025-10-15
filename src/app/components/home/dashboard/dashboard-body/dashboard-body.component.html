@@ -9,7 +9,7 @@
     </div>
 
     <ul class="box-info">
-      <li>
+      <li (click)="openEspacios()">
         <fa-icon
           [icon]="faCalendar"
           size="xl"
@@ -20,7 +20,7 @@
           <p>Espacios (Pendientes)</p>
         </span>
       </li>
-      <li>
+      <li (click)="openEquipos()">
         <fa-icon
           [icon]="faElectronics"
           size="xl"
@@ -31,7 +31,7 @@
           <p>Equipos (Pendientes)</p>
         </span>
       </li>
-      <li>
+      <li (click)="openUsuarios()">
         <fa-icon [icon]="faGroup" size="xl" class="bx bxs-group"></fa-icon>
         <span class="text">
           <h3>{{cantidadUsuarios}}</h3>

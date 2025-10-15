@@ -1,29 +1,29 @@
 <div class="body">
   @if (loading) {
-  <div class="spinner-container">
-    <mat-spinner mode="indeterminate"></mat-spinner>
-  </div>
-  } @if (!loading) { @if(noData){
-  <p>No hay datos!</p>
-  }@else {
+  <mat-spinner
+    diameter="40"
+    strokeWidth="5"
+    class="mx-auto d-block my-4"
+  ></mat-spinner>
+  }
   <div class="tables">
     <div class="table-container">
       <div class="filtrado">
         <!-- Campo de Filtro -->
         <mat-form-field appearance="outline" class="field">
-          <mat-label>Buscar por {{ filtroSeleccionado.value| titlecase }}</mat-label>
-          <input
-            matInput
-            [formControl]="termino"
-            placeholder="Buscar..."
-          />
+          <mat-label
+            >Buscar por {{ filtroSeleccionado.value | titlecase }}</mat-label
+          >
+          <input matInput [formControl]="termino" placeholder="Buscar..." />
         </mat-form-field>
 
         <mat-chip-listbox
           [formControl]="filtroSeleccionado"
           aria-label="Filtros de Búsqueda"
           [ariaOrientation]="'horizontal'"
-          (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'nombre')"
+          (selectionChange)="
+            cambiarFiltro(filtroSeleccionado.value ?? 'nombre')
+          "
         >
           @for (filtro of filtros; track filtro) {
           <mat-chip-option [value]="filtro.value">{{
@@ -33,6 +33,9 @@
         </mat-chip-listbox>
       </div>
 
+      @if (!loading) { @if(noData){
+      <p>No hay datos!</p>
+      }@else {
       <div class="table-scroll">
         <!-- Tabla de Usuarios -->
         <table
@@ -169,7 +172,7 @@
           (change)="updatePageSize($event)"
         />
       </div>
+      }}
     </div>
   </div>
-  } }
 </div>
