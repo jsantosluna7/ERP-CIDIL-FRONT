@@ -49,6 +49,10 @@ body {
   overflow-x: hidden;
 }
 
+.click-li{
+  cursor: pointer;
+}
+
 
 /* SIDEBAR */
 #sidebar {
