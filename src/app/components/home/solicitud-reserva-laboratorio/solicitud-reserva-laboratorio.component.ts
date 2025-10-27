@@ -152,6 +152,7 @@ export class SolicitudReservaLaboratorioComponent {
                     horaInicio: sol.horaInicio,
                     horaFinal: sol.horaFinal,
                     idEstado: sol.idEstado,
+                    personasCantidad: sol.personasCantidad,
                     nombreUsuario:
                       `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
                       'Desconocido',
@@ -214,6 +215,7 @@ export class SolicitudReservaLaboratorioComponent {
               horaInicio: sol.horaInicio,
               horaFinal: sol.horaFinal,
               idEstado: sol.idEstado,
+              personasCantidad: sol.personasCantidad,
               nombreUsuario:
                 `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
                 'Desconocido',
@@ -272,6 +274,7 @@ export class SolicitudReservaLaboratorioComponent {
       idUsuarioAprobador: Number(this.usuarioLogueado.sub),
       fechaAprobacion: new Date().toISOString(),
       comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
+      personasCantidad: solicitud.personasCantidad,
     };
 
     this.setLoading(solicitud.id, 'aprobar', true);
@@ -325,6 +328,7 @@ export class SolicitudReservaLaboratorioComponent {
                 idLaboratorio: solicitud.idLaboratorio,
                 horaInicio: solicitud.horaInicio,
                 horaFinal: solicitud.horaFinal,
+                personasCantidad: solicitud.personasCantidad,
                 fechaInicio: this._utilidades.desformatearFecha(
                   solicitud.fechaInicio
                 ),

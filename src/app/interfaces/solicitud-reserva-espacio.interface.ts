@@ -9,7 +9,7 @@ export interface Solicitud {
   motivo: string;
   fechaSolicitud: string;
   idEstado: number;
-
+  personasCantidad: number;
   nombreUsuario?: string;
   nombreLaboratorio?: string;
 }

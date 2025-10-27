@@ -120,7 +120,6 @@ body {
 mat-tab-group {
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .calendar-container {
