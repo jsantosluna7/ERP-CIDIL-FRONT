@@ -31,6 +31,13 @@ import { EventDialogComponent } from '../dashboard/all-widget/calendario/event-d
 import { EventHorarioDialogComponent } from '../horario/calendar/event-horario-dialog/event-horario-dialog/event-horario-dialog.component';
 import { DateDialogHomeComponent } from '../calendario-home/date-dialog-home/date-dialog-home.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-calendario-tv',
@@ -39,7 +46,15 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     FullCalendarModule,
     MatTabsModule,
     MatProgressSpinnerModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
   ],
   templateUrl: './calendario-tv.component.html',
   styleUrl: './calendario-tv.component.css',
@@ -54,8 +69,28 @@ export class CalendarioTvComponent implements OnDestroy, AfterViewInit {
 
   pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
   mostrarComponente = true;
+  panelOpen = false;
+
 
   loading: any;
+
+  private colorMap = new Map<number, string>();
+  private colorIndex = 0;
+
+private colores = [
+  '#4A148C', '#EF6C00', '#455A64', '#1B5E20', '#C62828',
+  '#283593', '#5E35B1', '#E65100', '#43A047', '#F44336',
+  '#1565C0', '#8E24AA', '#4E342E', '#7E57C2', '#CE93D8',
+  '#37474F', '#3F51B5', '#B71C1C', '#E53935', '#009688',
+  '#512DA8', '#558B2F', '#6A1B9A', '#5D4037', '#880E4F',
+  '#546E7A', '#1E88E5', '#AD1457', '#00796B', '#BF360C',
+  '#607D8B', '#E91E63', '#3949AB', '#2E7D32', '#00897B',
+  '#D81B60', '#D84315', '#795548', '#3E2723', '#C2185B',
+  '#D32F2F', '#FB8C00', '#004D40', '#E53935', '#7E57C2',
+  '#263238', '#43A047', '#6A1B9A', '#8E24AA', '#004D40'
+];
+
+
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_PISO']}`;
   endpointHorario: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_TODOS']}`;
@@ -161,6 +196,18 @@ export class CalendarioTvComponent implements OnDestroy, AfterViewInit {
     };
   }
 
+  private obtenerColorHorario(id: number): string {
+    if (this.colorMap.has(id)) {
+      return this.colorMap.get(id)!;
+    }
+
+    const color = this.colores[this.colorIndex % this.colores.length];
+    this.colorMap.set(id, color);
+    this.colorIndex++;
+
+    return color;
+  }
+
   ngAfterViewInit() {
     // Espera a que Angular pinte y el layout esté listo
     setTimeout(() => {
@@ -215,20 +262,7 @@ export class CalendarioTvComponent implements OnDestroy, AfterViewInit {
                     lab: this._lab.getLaboratorioPorId(e.idLaboratorio),
                   }).pipe(
                     map(({ lab }) => {
-                      const colores = [
-                        '#4CAF50', // verde
-                        '#2196F3', // azul
-                        '#FFC107', // amarillo
-                        '#E91E63', // rosado
-                        '#9C27B0', // morado
-                        '#FF5722', // naranja
-                        '#00BCD4', // cyan
-                        '#8BC34A', // lima
-                      ];
-
-                      // Asigna color aleatorio
-                      const colorAleatorio =
-                        colores[Math.floor(Math.random() * colores.length)];
+                      const colorAleatorio = this.obtenerColorHorario(e.id);
 
                       return {
                         id: `hor-${e.id}`,
@@ -321,20 +355,7 @@ export class CalendarioTvComponent implements OnDestroy, AfterViewInit {
                     lab: this._lab.getLaboratorioPorId(e.idLaboratorio),
                   }).pipe(
                     map(({ lab }) => {
-                      const colores = [
-                        '#4CAF50', // verde
-                        '#2196F3', // azul
-                        '#FFC107', // amarillo
-                        '#E91E63', // rosado
-                        '#9C27B0', // morado
-                        '#FF5722', // naranja
-                        '#00BCD4', // cyan
-                        '#8BC34A', // lima
-                      ];
-
-                      // Asigna color aleatorio
-                      const colorAleatorio =
-                        colores[Math.floor(Math.random() * colores.length)];
+                      const colorAleatorio = this.obtenerColorHorario(e.id);
 
                       return {
                         id: `hor-${e.id}`,
