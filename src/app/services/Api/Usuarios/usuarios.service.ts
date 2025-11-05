@@ -136,4 +136,23 @@ export class UsuariosService {
       return false;
     }
   }
+
+  isAuthenticatedOtp(): boolean {
+    const tokenOtp = localStorage.getItem('tokenRegistro');
+    if (!tokenOtp) return false;
+
+    try {
+      const tokenDecodificado: JwtPayload = jwtDecode<JwtPayload>(tokenOtp);
+
+      //verificar si ya el token expiro
+      if (tokenDecodificado.exp && Date.now() >= tokenDecodificado.exp * 1000) {
+        this.cerrarSesion();
+        return false;
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

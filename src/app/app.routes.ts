@@ -7,6 +7,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/AuthGuard/auth-guard.service';
 import { NoAuthGuard } from './guards/NoAuthGuard/no-auth-guard.service';
 import { RoleGuard } from './guards/RoleGuard/role-guard.service';
+import { AuthGuardOtp } from './guards/AuthGuardOtp/auth-guard-otp.service';
 
 export const routes: Routes = [
   /**
@@ -56,7 +57,7 @@ export const routes: Routes = [
           import(
             './components/inicio-sesion/verificacion-otp/verificacion-otp.component'
           ).then((m) => m.VerificacionOtpComponent),
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuardOtp],
       },
       {
         path: 'tv',
