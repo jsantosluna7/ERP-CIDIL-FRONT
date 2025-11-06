@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -38,6 +39,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute } from '@angular/router';
+import { number } from 'echarts/core';
 
 @Component({
   selector: 'app-calendario-tv',
@@ -59,7 +62,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './calendario-tv.component.html',
   styleUrl: './calendario-tv.component.css',
 })
-export class CalendarioTvComponent implements OnDestroy, AfterViewInit {
+export class CalendarioTvComponent implements OnDestroy, AfterViewInit, OnInit {
   @ViewChild('calendarHost', { static: true })
   host!: ElementRef<HTMLDivElement>;
   @ViewChild('fc') calendarComponent!: FullCalendarComponent;
@@ -68,29 +71,67 @@ export class CalendarioTvComponent implements OnDestroy, AfterViewInit {
   private subs: Subscription[] = [];
 
   pisoSeleccionado: number = 0; // 0 = 1er piso, 1 = 2do piso...
+  pisoTabs: number = 0;
   mostrarComponente = true;
   panelOpen = false;
-
 
   loading: any;
 
   private colorMap = new Map<number, string>();
   private colorIndex = 0;
 
-private colores = [
-  '#4A148C', '#EF6C00', '#455A64', '#1B5E20', '#C62828',
-  '#283593', '#5E35B1', '#E65100', '#43A047', '#F44336',
-  '#1565C0', '#8E24AA', '#4E342E', '#7E57C2', '#CE93D8',
-  '#37474F', '#3F51B5', '#B71C1C', '#E53935', '#009688',
-  '#512DA8', '#558B2F', '#6A1B9A', '#5D4037', '#880E4F',
-  '#546E7A', '#1E88E5', '#AD1457', '#00796B', '#BF360C',
-  '#607D8B', '#E91E63', '#3949AB', '#2E7D32', '#00897B',
-  '#D81B60', '#D84315', '#795548', '#3E2723', '#C2185B',
-  '#D32F2F', '#FB8C00', '#004D40', '#E53935', '#7E57C2',
-  '#263238', '#43A047', '#6A1B9A', '#8E24AA', '#004D40'
-];
-
-
+  private colores = [
+    '#4A148C',
+    '#EF6C00',
+    '#455A64',
+    '#1B5E20',
+    '#C62828',
+    '#283593',
+    '#5E35B1',
+    '#E65100',
+    '#43A047',
+    '#F44336',
+    '#1565C0',
+    '#8E24AA',
+    '#4E342E',
+    '#7E57C2',
+    '#CE93D8',
+    '#37474F',
+    '#3F51B5',
+    '#B71C1C',
+    '#E53935',
+    '#009688',
+    '#512DA8',
+    '#558B2F',
+    '#6A1B9A',
+    '#5D4037',
+    '#880E4F',
+    '#546E7A',
+    '#1E88E5',
+    '#AD1457',
+    '#00796B',
+    '#BF360C',
+    '#607D8B',
+    '#E91E63',
+    '#3949AB',
+    '#2E7D32',
+    '#00897B',
+    '#D81B60',
+    '#D84315',
+    '#795548',
+    '#3E2723',
+    '#C2185B',
+    '#D32F2F',
+    '#FB8C00',
+    '#004D40',
+    '#E53935',
+    '#7E57C2',
+    '#263238',
+    '#43A047',
+    '#6A1B9A',
+    '#8E24AA',
+    '#004D40',
+  ];
 
   endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO_PISO']}`;
   endpointHorario: string = `${process.env['API_URL']}${process.env['ENDPOINT_HORARIO_TODOS']}`;
@@ -101,14 +142,13 @@ private colores = [
 
   constructor(
     private _toastr: ToastrService,
-    private _calendario: CalendarioService,
-    private _dashboard: ServicioDashboardService,
     private _lab: LaboratorioService,
     private _horario: HorarioService,
     public dialog: MatDialog,
     private _utilities: UtilitiesService,
     private _piso: PisosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private _route: ActivatedRoute
   ) {
     // Detecta si hoy es sábado
     const hoy = new Date();
@@ -206,6 +246,16 @@ private colores = [
     this.colorIndex++;
 
     return color;
+  }
+
+  ngOnInit(): void {
+    const pisoParam = this._route.snapshot.queryParamMap.get('piso');
+
+    if (pisoParam) {
+      const pisoNum = Number(pisoParam);
+      this.pisoTabs = pisoNum - 1;
+      this.cambiarPiso(pisoNum - 1);
+    }
   }
 
   ngAfterViewInit() {

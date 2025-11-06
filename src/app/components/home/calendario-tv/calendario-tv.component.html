@@ -24,6 +24,7 @@
         class="vertical-tabs"
         mat-stretch-tabs="false"
         (selectedIndexChange)="cambiarPiso($event)"
+        [selectedIndex]="pisoTabs"
       >
         <mat-tab label="1er Piso"></mat-tab>
         <mat-tab label="2do Piso"></mat-tab>
