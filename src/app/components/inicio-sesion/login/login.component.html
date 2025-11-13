@@ -5,6 +5,7 @@
         <h1 class="">Bienvenido <strong>de vuelta!</strong></h1>
         <p>Inicia sesión en tu cuenta.</p>
       </div>
+
       <div class="login-form">
         <form [formGroup]="loginForm">
           <div class="mb-3">
@@ -21,7 +22,7 @@
               />
             </div>
           </div>
-          <!-- Input para la contraseña -->
+
           <div class="mb-3">
             <label for="contrasena" class="form-label">Contraseña</label>
             <div class="lock">
@@ -35,27 +36,32 @@
               />
             </div>
           </div>
+
           <button class="btn" (click)="login()">
             @if(loading){
-            <mat-progress-spinner
-              mode="indeterminate"
-              diameter="30"
-              strokeWidth="3"
-              class="white-spinner"
-            >
-            </mat-progress-spinner>
-
-            } @if(!loading){ Iniciar Sesión }
+              <mat-progress-spinner
+                mode="indeterminate"
+                diameter="30"
+                strokeWidth="3"
+                class="white-spinner">
+              </mat-progress-spinner>
+            }
+            @if(!loading){ Iniciar Sesión }
           </button>
         </form>
       </div>
+
       <div class="login-forgot">
-        <a routerLink="/recuperar-contrasena">¿Olvidaste tu contraseña?</a>
+        <!-- 🔹 CAMBIO: agregamos el prefijo /auth -->
+        <a routerLink="/auth/recuperar-contrasena">¿Olvidaste tu contraseña?</a>
       </div>
     </div>
   </div>
+
   <div class="second-box">
     <img src="/assets/logo-ieesl.png" alt="" />
-    <button class="button" routerLink="/registrar">Registrate</button>
+    <!-- 🔹 CAMBIO: agregamos el prefijo /auth -->
+    <button class="button" routerLink="/auth/registrar">Registrate</button>
   </div>
 </div>
+

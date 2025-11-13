@@ -1,0 +1,23 @@
+<section class="publicar-container">
+  <h2>📝 Publicar un anuncio</h2>
+
+  <form (ngSubmit)="publicar()">
+    <label>Título</label>
+    <input type="text" [(ngModel)]="titulo" name="titulo" required />
+
+    <label>Descripción</label>
+    <textarea [(ngModel)]="descripcion" name="descripcion" required></textarea>
+
+    <label>Imagen</label>
+    <input type="file" (change)="onFileSelected($event)" />
+
+    <label>Es pasantía?</label>
+    <input type="checkbox" [(ngModel)]="esPasantia" name="esPasantia" />
+
+    <label>Fecha publicación</label>
+    <input type="date" [(ngModel)]="fechaPublicacion" name="fechaPublicacion" />
+
+    <button type="submit">{{cargando ? 'Publicando...' : 'Publicar'}}</button>
+  </form>
+</section>
+

@@ -19,6 +19,11 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { tokenInterceptor } from './interceptors/token.interceptor';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { HttpClient } from '@angular/common/http';
+import { PublicarAnuncioComponent } from './publicar-anuncio/publicar-anuncio.component';
+import { FormsModule } from '@angular/forms';
+
+
 
 export const appConfig: ApplicationConfig = {
   providers: [

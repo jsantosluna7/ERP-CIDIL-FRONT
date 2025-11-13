@@ -1,0 +1,182 @@
+/* === BASE GENERAL Y PALETA === */
+body {
+  background-color: #f0f2f5; /* Fondo blanco-gris suave */
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Base para activar el scroll y el sticky */
+.principal-content {
+    min-height: 150vh; 
+    padding: 30px;
+}
+
+/* Ajuste de colores primarios/secundarios */
+.text-primary, .btn-primary, .btn-outline-primary {
+    color: #007bff !important; /* Azul */
+    border-color: #007bff !important;
+}
+
+.bg-primary {
+    background-color: #007bff !important; /* Azul para el header del modal */
+}
+
+/* === SIDEBAR (Centro CIDIL - Columna Fija) === */
+.sidebar-cidil {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+    top: 30px; /* Separación del borde superior para el sticky */
+    height: fit-content;
+    text-align: center;
+}
+
+.sticky-top {
+    position: sticky; /* Habilitar el comportamiento fijo */
+}
+
+.sidebar-cidil img {
+    border-radius: 12px;
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+}
+
+.sidebar-cidil h4 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.btn-info { /* Usando info (azul claro) para el dashboard */
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+    font-weight: 600;
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* === CONTENIDO PRINCIPAL (ANUNCIOS) === */
+.contenido-anuncios h2 {
+    font-size: 2rem;
+    padding-bottom: 10px;
+    margin-top: 5px;
+}
+
+/* === TARJETAS DE ANUNCIOS === */
+.anuncio-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.anuncio-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f7f9fc;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 25px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.card-header h4 {
+    color: #222;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+/* Imagen de anuncio */
+.card-body img {
+    border-radius: 8px;
+    max-height: 350px;
+    height: auto;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid #e0e0e0;
+}
+
+/* Badge Pasantía (Verde) */
+.badge-pasantia {
+    background-color: #28a745 !important;
+    font-size: 0.8rem;
+    padding: 0.4em 0.7em;
+    border-radius: 50px;
+}
+
+/* Botones de Acción (General) */
+.card-body button.btn {
+    min-width: unset;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    font-weight: 500;
+}
+
+/* Botón Editar (Amarillo) */
+.btn-outline-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: #333;
+}
+
+/* Botón Postular/CV (Azul Primario) */
+.btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+}
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Botón Enviar Curriculum (Verde Éxito) */
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+}
+
+/* === Comentarios y Curriculums === */
+.card-body .bg-light {
+    background-color: #f8f9fa !important;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.card-body hr {
+    margin: 1.5rem 0;
+}
+
+.list-group-item {
+    font-size: 0.9rem;
+}
+
+.small-date {
+    font-size: 0.75rem;
+}
+
+/* Modal Header (Azul) */
+.modal-header.bg-primary {
+    border-top-left-radius: calc(0.5rem - 1px);
+    border-top-right-radius: calc(0.5rem - 1px);
+}
+
+
+

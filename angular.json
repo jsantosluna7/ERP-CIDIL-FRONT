@@ -33,6 +33,7 @@
               {
                 "glob": "**/*",
                 "input": "public"
+               
               }
             ],
             "styles": [
@@ -44,8 +45,7 @@
               "node_modules/@n8n/chat/dist/style.css"
             ],
             "scripts": [
-              "node_modules/@popperjs/core/dist/umd/popper.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js"
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           },
           "configurations": {
@@ -96,9 +96,11 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
+              
               {
                 "glob": "**/*",
                 "input": "public"
+                
               }
             ],
             "styles": [
