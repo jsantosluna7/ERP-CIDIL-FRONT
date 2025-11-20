@@ -1,406 +1,361 @@
-<div class="container-fluid py-4">
-  <div class="row">
-    <div class="col-md-3 d-flex flex-column align-items-center text-center border-end">
-      <img
-        src="assets/cidil-fachada.jpg"
-        alt="Fachada del CIDIL"
-        class="img-fluid rounded shadow-sm mb-3"
-        style="max-height: 250px;"
-      />
-      <h4 class="fw-bold">Centro CIDIL</h4>
-      <p class="text-muted px-3">
-        El CIDIL es un centro de investigación y desarrollo que impulsa la innovación,
-        pasantías y proyectos de impacto comunitario. Aquí puedes conocer nuestras
-        actividades, convocatorias y oportunidades de participación.
-      </p>
+<header class="top-bar">
+    <div class="left-section">
+        <a class="navbar-brand titulo-pagina text-white" href="#">
+            Centro CIDIL
+        </a>
 
-      <button
-        *ngIf="puedeVerDashboard()"
-        type="button"
-        class="btn btn-info btn-sm mt-3"
-        (click)="navigateToDashboard()"
-      >
-        📊 Ir al Dashboard
-      </button>
+        <div class="d-flex align-items-center">
+            <a class="nav-link nav-btn active me-3">
+                <span class="me-1"></span> Anuncios
+            </a>
+            <a class="nav-link nav-btn" (click)="navigateToDashboard()" *ngIf="puedeVerDashboard()">
+                <span class="me-1"></span> Dashboard
+            </a>
+        </div>
     </div>
 
-    <div class="col-md-9">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold">Anuncios</h2>
-
-        <div *ngIf="!estaAutenticado; else usuarioLogueado">
-          <button type="button" class="btn btn-primary" (click)="navegarLogin()">
-            🔐 Iniciar sesión
-          </button>
-        </div>
-
-        <ng-template #usuarioLogueado>
-          <div class="d-flex align-items-center gap-2">
-            <span class="fw-semibold">👋 Bienvenido {{ nombreUsuarioLogueado }}</span>
-            <span class="badge bg-secondary">{{ rolActual }}</span>
-            <button
-              type="button"
-              class="btn btn-outline-danger btn-sm"
-              (click)="cerrarSesion()"
-            >
-              Cerrar sesión
+    <div class="right-section">
+        <ng-container *ngIf="!estaAutenticado">
+            <button class="btn btn-sm btn-iniciar-sesion" (click)="navegarLogin()">
+                 Iniciar sesión
             </button>
-          </div>
-        </ng-template>
-      </div>
+        </ng-container>
 
-      <div *ngIf="puedePublicar()" class="mb-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary" (click)="abrirModalPublicar()">
-          ➕ Publicar nuevo anuncio
-        </button>
-      </div>
+        <ng-container *ngIf="estaAutenticado">
+            <div class="d-flex align-items-center gap-2">
+                <div class="text-end d-none d-md-block" style="line-height: 1.1;">
+                    <p class="mb-0 fw-bold" style="font-size: 14px; color: white;"> Bienvenido {{ nombreUsuarioLogueado }}</p>
+                    <small class="text-muted fst-italic" style="color: #c0c0c0 !important; font-size: 11px;">{{ rolActual | titlecase }}</small>
+                </div>
 
-      <div *ngIf="anuncios && anuncios.length > 0; else sinAnuncios">
-        <div class="row">
-          <div
-            class="col-md-12 mb-4"
-            *ngFor="let anuncio of anuncios; trackBy: trackById"
-          >
-            <div class="card shadow-lg border-0">
-              <div
-                class="card-header bg-white d-flex justify-content-between align-items-center"
-              >
-                <h4 class="mb-0 fw-bold d-flex align-items-center">
-                  {{ anuncio.titulo }}
-                  <span
-                    *ngIf="anuncio.esPasantia"
-                    class="badge bg-success ms-2"
-                    >Pasantía</span
-                  >
-                </h4>
-                <small class="text-muted d-flex flex-column text-end">
-                    <span>Publicado por <strong>{{ anuncio.nombreUsuarioPublicador }}</strong></span>
-                    <span>{{ anuncio.fechaPublicacion | date : "mediumDate" }}</span>
-                </small>
-              </div>
-
-              <div class="card-body">
-                <div
-                  *ngIf="anuncio.urlImagenes && anuncio.urlImagenes.length > 0"
-                  class="mb-3 text-center"
+                <button
+                    type="button"
+                    class="cerrar-sesion-btn"
+                    (click)="cerrarSesion()"
                 >
-                  <img
-                    [src]="anuncio.urlImagenes[0]"
-                    alt="Imagen del anuncio"
-                    class="img-fluid rounded"
-                    style="max-height: 400px; object-fit: cover;"
-                  />
-                </div>
-
-                <p class="card-text">{{ anuncio.descripcion }}</p>
-                <hr />
-
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                  <div class="d-flex gap-3">
-                    <button
-                      class="btn btn-outline-danger btn-sm"
-                      [disabled]="
-                        !puedeComentarYDarLike() || procesandoLike[anuncio.id]
-                      "
-                      (click)="darLike(anuncio)"
-                    >
-                      ❤️ {{ anuncio.likes }} Likes
-                    </button>
-
-                    <button
-                      *ngIf="puedeSubirCurriculo()"
-                      class="btn btn-outline-info btn-sm"
-                      (click)="toggleCurriculoForm(anuncio.id)"
-                    >
-                      <span *ngIf="!curriculoOpen[anuncio.id]"
-                        >📄 Postular / Subir CV</span
-                      >
-                      <span *ngIf="curriculoOpen[anuncio.id]"
-                        >❌ Cerrar Formulario</span
-                      >
-                    </button>
-
-                    <button
-                      *ngIf="puedeVerCurriculos() && anuncio.curriculos.length > 0"
-                      class="btn btn-outline-dark btn-sm"
-                      data-bs-toggle="collapse"
-                      [attr.data-bs-target]="'#curriculos-' + anuncio.id"
-                    >
-                      📦 Ver Curriculums ({{ anuncio.curriculos.length }})
-                    </button>
-                  </div>
-
-                  <div *ngIf="puedeEditar()">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-warning me-2"
-                      (click)="editarAnuncio(anuncio)"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-danger"
-                      (click)="eliminarAnuncio(anuncio)"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-
-                <div *ngIf="curriculoOpen[anuncio.id]" class="card card-body bg-light mt-3">
-                  <h6 class="fw-bold">Postular a esta oferta</h6>
-
-                  <div
-                    *ngIf="mensajeErrorCurriculo[anuncio.id]"
-                    class="alert alert-danger p-2"
-                    role="alert"
-                  >
-                    {{ mensajeErrorCurriculo[anuncio.id] }}
-                  </div>
-                  <div
-                    *ngIf="mensajeExitoCurriculo[anuncio.id]"
-                    class="alert alert-success p-2"
-                    role="alert"
-                  >
-                    {{ mensajeExitoCurriculo[anuncio.id] }}
-                  </div>
-
-                  <div *ngIf="esExterno">
-                    <input
-                      type="text"
-                      class="form-control form-control-sm mb-2"
-                      placeholder="Tu Nombre Completo"
-                      [(ngModel)]="nombreExterno[anuncio.id]"
-                      name="nombreExterno-{{ anuncio.id }}"
-                      required
-                    />
-                    <input
-                      type="email"
-                      class="form-control form-control-sm mb-2"
-                      placeholder="Tu Correo Electrónico"
-                      [(ngModel)]="correoExterno[anuncio.id]"
-                      name="correoExterno-{{ anuncio.id }}"
-                      required
-                    />
-                  </div>
-
-                  <input
-                    type="file"
-                    class="form-control form-control-sm mb-2"
-                    (change)="manejarCurriculo($event, anuncio.id)"
-                    accept=".pdf,.doc,.docx"
-                    required
-                  />
-
-                  <button
-                    class="btn btn-sm btn-success"
-                    (click)="subirCurriculo(anuncio)"
-                    [disabled]="esCurriculoInvalido(anuncio.id)"
-                  >
-                    📤 Enviar Curriculum
-                  </button>
-                </div>
-
-                <div [id]="'curriculos-' + anuncio.id" class="collapse mt-3">
-                  <div class="card card-body">
-                    <h6 class="fw-bold">
-                      Curriculums Recibidos ({{ anuncio.curriculos.length }})
-                    </h6>
-                    <ul class="list-group list-group-flush">
-                      <li
-                        class="list-group-item d-flex justify-content-between align-items-center p-2"
-                        *ngFor="let c of anuncio.curriculos; trackBy: trackById"
-                      >
-                        <span>
-                          <i class="bi bi-file-earmark-person-fill me-2"></i>
-                          {{ c.nombre }} ({{ c.email }})
-                        </span>
-                        <div>
-                          <button
-                            class="btn btn-sm btn-outline-primary me-2"
-                            (click)="verCurriculo(c)"
-                          >
-                            👁️ Ver
-                          </button>
-                          <button
-                            class="btn btn-sm btn-outline-secondary me-2"
-                            (click)="descargarCurriculo(c)"
-                          >
-                            ⬇️ Descargar
-                          </button>
-                          <button
-                            class="btn btn-sm btn-outline-danger"
-                            (click)="eliminarCurriculo(c)"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="mt-4">
-                  <h6 class="fw-bold">
-                    Comentarios ({{ anuncio.comentarios.length }})
-                  </h6>
-
-                  <div class="mb-3" *ngIf="puedeComentarYDarLike()">
-                    <div class="input-group input-group-sm">
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Escribe un comentario..."
-                        [(ngModel)]="nuevoComentario[anuncio.id]"
-                        name="comentario-{{ anuncio.id }}"
-                      />
-                      <button
-                        class="btn btn-outline-secondary"
-                        type="button"
-                        (click)="publicarComentario(anuncio)"
-                      >
-                        Comentar
-                      </button>
-                    </div>
-                  </div>
-
-                  <div
-                    class="small text-muted"
-                    *ngIf="anuncio.comentarios.length > 0"
-                  >
-                    <div
-                      *ngFor="let c of anuncio.comentarios; trackBy: trackById"
-                      class="p-2 border-bottom"
-                    >
-                      <span class="fw-semibold text-dark">{{ c.nombreUsuario }}:</span>
-                      {{ c.texto }}
-                      <small class="ms-2 float-end">{{ c.fecha | date : "short" }}</small>
-                    </div>
-                  </div>
-                  <div
-                    *ngIf="anuncio.comentarios.length === 0"
-                    class="text-center small text-muted"
-                  >
-                    Sé el primero en comentar.
-                  </div>
-                </div>
-              </div>
+                    Cerrar sesión
+                </button>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <ng-template #sinAnuncios>
-        <div class="alert alert-info text-center mt-4">
-          No hay anuncios disponibles por el momento.
-        </div>
-      </ng-template>
+        </ng-container>
     </div>
-  </div>
+</header>
+
+---
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="sidebar-cidil sticky-top">
+                <img
+                    src="assets/cidil-fachada.jpg"
+                    alt="Fachada del CIDIL"
+                    class="img-fluid rounded shadow-sm mb-3"
+                    style="max-height: 250px;"
+                />
+                <h4 class="fw-bold">Centro CIDIL</h4>
+                <p class="text-muted px-3">
+                    El CIDIL es un centro de investigación y desarrollo que impulsa la innovación,
+                    pasantías y proyectos de impacto comunitario.
+                </p>
+
+               
+            </div>
+        </div>
+
+        <div class="col-md-9">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                 <h2 class="fw-bold">Anuncios</h2>
+
+                 <div *ngIf="puedePublicar()">
+                    <button type="button" class="btn btn-primary btn-publicar" (click)="abrirModalPublicar()">
+                        ➕ Publicar nuevo anuncio
+                    </button>
+                 </div>
+            </div>
+
+            <div *ngIf="anuncios && anuncios.length > 0; else sinAnuncios">
+                <div class="row">
+                    <div
+                        class="col-md-12 mb-4 anuncio-card"
+                        *ngFor="let anuncio of anuncios; trackBy: trackById"
+                    >
+                        <div class="card border-0">
+                            
+                            <div
+                                class="card-header bg-white d-flex justify-content-between align-items-start p-3"
+                            >
+                                <div class="d-flex flex-column">
+                                    <h4 class="mb-1 fw-bold d-flex align-items-center">
+                                        {{ anuncio.titulo }}
+                                        <span
+                                            *ngIf="anuncio.esPasantia"
+                                            class="badge bg-success ms-2"
+                                            >Pasantía</span
+                                        >
+                                    </h4>
+                                    
+                                    <p class="card-text text-muted mb-2">{{ anuncio.descripcion }}</p>
+
+                                    <small class="text-muted d-flex flex-column text-start">
+                                        <span>Publicado por <strong>{{ anuncio.nombreUsuarioPublicador }}</strong></span>
+                                        <span>{{ anuncio.fechaPublicacion | date : "mediumDate" }}</span>
+                                    </small>
+                                </div>
+                                
+                                <div *ngIf="puedeEditar()" class="d-flex gap-2 ms-3">
+                                    <button
+                                        type="button"
+                                        class="btn-sm btn-editar-solido"
+                                        (click)="editarAnuncio(anuncio)"
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn-sm btn-eliminar-solido"
+                                        (click)="eliminarAnuncio(anuncio)"
+                                    >
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body pt-3">
+                                <div
+                                    *ngIf="anuncio.urlImagenes && anuncio.urlImagenes.length > 0; else noImage"
+                                    class="mb-3 text-center"
+                                >
+                                    <img
+                                        [src]="anuncio.urlImagenes[0]"
+                                        alt="Imagen del anuncio"
+                                        class="img-fluid rounded"
+                                        style="max-height: 400px; object-fit: cover;"
+                                    />
+                                </div>
+                                <ng-template #noImage>
+                                    <div class="mb-3 text-center">
+                                        <img
+                                            src="https://via.placeholder.com/600x400.png?text=Sin+Imagen+Adjunta"
+                                            alt="Sin imagen"
+                                            class="img-fluid rounded"
+                                            style="max-height: 400px; object-fit: cover;"
+                                        />
+                                    </div>
+                                </ng-template>
+
+                                <hr />
+
+                                <div class="d-flex justify-content-start align-items-center mt-3 gap-3">
+                                    <button
+                                        class="btn btn-outline-danger btn-sm"
+                                        [disabled]="!puedeComentarYDarLike() || procesandoLike[anuncio.id]"
+                                        (click)="darLike(anuncio)"
+                                    >
+                                        ❤️ {{ anuncio.likes }} Likes
+                                    </button>
+
+                                    <button
+                                        *ngIf="puedeSubirCurriculo()"
+                                        class="btn btn-outline-info btn-sm"
+                                        (click)="toggleCurriculoForm(anuncio.id)"
+                                    >
+                                        <span *ngIf="!curriculoOpen[anuncio.id]">📄 Postular / Subir CV</span>
+                                        <span *ngIf="curriculoOpen[anuncio.id]">❌ Cerrar Formulario</span>
+                                    </button>
+
+                                    <button
+                                        *ngIf="puedeVerCurriculos() && anuncio.curriculos.length > 0"
+                                        class="btn btn-outline-dark btn-sm"
+                                        data-bs-toggle="collapse"
+                                        [attr.data-bs-target]="'#curriculos-' + anuncio.id"
+                                    >
+                                        📦 Ver Curriculums ({{ anuncio.curriculos.length }})
+                                    </button>
+                                </div>
+
+                                <div *ngIf="curriculoOpen[anuncio.id]" class="card card-body bg-light mt-3">
+                                    <h6 class="fw-bold">Postular a esta oferta</h6>
+                                    <div *ngIf="esExterno">
+                                        <input
+                                            type="text"
+                                            class="form-control form-control-sm mb-2"
+                                            placeholder="Tu Nombre Completo"
+                                            [(ngModel)]="nombreExterno[anuncio.id]"
+                                            name="nombreExterno-{{ anuncio.id }}"
+                                            required
+                                        />
+                                        <input
+                                            type="email"
+                                            class="form-control form-control-sm mb-2"
+                                            placeholder="Tu Correo Electrónico"
+                                            [(ngModel)]="correoExterno[anuncio.id]"
+                                            name="correoExterno-{{ anuncio.id }}"
+                                            required
+                                        />
+                                    </div>
+
+                                    <input
+                                        type="file"
+                                        class="form-control form-control-sm mb-2"
+                                        (change)="manejarCurriculo($event, anuncio.id)"
+                                        accept=".pdf,.doc,.docx"
+                                        required
+                                    />
+
+                                    <button
+                                        class="btn btn-sm btn-success"
+                                        (click)="subirCurriculo(anuncio)"
+                                        [disabled]="esCurriculoInvalido(anuncio.id)"
+                                    >
+                                        📤 Enviar Curriculum
+                                    </button>
+                                </div>
+                                
+                                <div [id]="'curriculos-' + anuncio.id" class="collapse mt-3">
+                                    <div class="card card-body">
+                                        <h6 class="fw-bold">
+                                            Curriculums Recibidos ({{ anuncio.curriculos.length }})
+                                        </h6>
+                                        <ul class="list-group list-group-flush">
+                                            <li
+                                                class="list-group-item d-flex justify-content-between align-items-center p-2"
+                                                *ngFor="let c of anuncio.curriculos; trackBy: trackById"
+                                            >
+                                                </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <h6 class="fw-bold">
+                                        Comentarios ({{ anuncio.comentarios.length }})
+                                    </h6>
+                                    <div class="mb-3" *ngIf="puedeComentarYDarLike()">
+                                        <div class="input-group input-group-sm">
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                placeholder="Escribe un comentario..."
+                                                [(ngModel)]="nuevoComentario[anuncio.id]"
+                                                name="comentario-{{ anuncio.id }}"
+                                            />
+                                            <button
+                                                class="btn btn-outline-secondary"
+                                                type="button"
+                                                (click)="publicarComentario(anuncio)"
+                                            >
+                                                Comentar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #sinAnuncios>
+                <div class="alert alert-info text-center mt-4">
+                    No hay anuncios disponibles por el momento.
+                </div>
+            </ng-template>
+        </div>
+    </div>
 </div>
 
 <div
-  class="modal fade"
-  id="modalPublicar"
-  tabindex="-1"
-  aria-labelledby="modalPublicarLabel"
-  aria-hidden="true"
+    class="modal fade"
+    id="modalPublicar"
+    tabindex="-1"
+    aria-labelledby="modalPublicarLabel"
+    aria-hidden="true"
 >
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalPublicarLabel">
-          {{ esModoEdicion ? "Editar Anuncio" : "Publicar Nuevo Anuncio" }}
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModalPublicar()"
-          aria-label="Close"
-        ></button>
-      </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPublicarLabel">
+                    {{ esModoEdicion ? "Editar Anuncio" : "Publicar Nuevo Anuncio" }}
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    (click)="cerrarModalPublicar()"
+                    aria-label="Close"
+                ></button>
+            </div>
 
-      <div class="modal-body">
-        <div *ngIf="mensajeErrorPublicar" class="alert alert-danger" role="alert">
-          {{ mensajeErrorPublicar }}
+            <div class="modal-body">
+                <form (ngSubmit)="publicarAnuncio()">
+                    <div class="mb-3">
+                        <label for="tituloAnuncio" class="form-label fw-semibold">Título</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="tituloAnuncio"
+                            [(ngModel)]="nuevoAnuncioTexto"
+                            name="tituloAnuncio"
+                            required
+                        />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcionAnuncio" class="form-label fw-semibold">Descripción</label>
+                        <textarea
+                            class="form-control"
+                            id="descripcionAnuncio"
+                            [(ngModel)]="nuevoAnuncioDescripcion"
+                            name="descripcionAnuncio"
+                            rows="4"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="esPasantia"
+                            [(ngModel)]="nuevoAnuncioEsPasantia"
+                            name="esPasantia"
+                        />
+                        <label class="form-check-label fw-semibold" for="esPasantia">Marcar como Pasantía</label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="imagenAnuncio" class="form-label fw-semibold">Imagen</label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="imagenAnuncio"
+                            name="imagenAnuncio"
+                            (change)="manejarImagen($event)"
+                            accept="image/*"
+                        />
+                        <small class="text-muted">Adjuntar una imagen relevante para el anuncio (opcional).</small>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            (click)="cerrarModalPublicar()"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            [disabled]="
+                                !nuevoAnuncioTexto || !nuevoAnuncioTexto.trim() || !nuevoAnuncioDescripcion || !nuevoAnuncioDescripcion.trim()
+                            "
+                        >
+                            {{ esModoEdicion ? "Guardar Cambios" : "Publicar" }}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div *ngIf="mensajeExitoPublicar" class="alert alert-success" role="alert">
-          {{ mensajeExitoPublicar }}
-        </div>
-
-        <form (ngSubmit)="publicarAnuncio()">
-          <div class="mb-3">
-            <label for="tituloAnuncio" class="form-label fw-semibold">Título</label>
-            <input
-              type="text"
-              class="form-control"
-              id="tituloAnuncio"
-              [(ngModel)]="nuevoAnuncioTexto"
-              name="tituloAnuncio"
-              required
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="descripcionAnuncio" class="form-label fw-semibold"
-              >Descripción</label
-            >
-            <textarea
-              class="form-control"
-              id="descripcionAnuncio"
-              rows="3"
-              [(ngModel)]="nuevoAnuncioDescripcion"
-              name="descripcionAnuncio"
-              required
-            ></textarea>
-          </div>
-
-          <div class="form-check mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              id="esPasantia"
-              [(ngModel)]="nuevoAnuncioEsPasantia"
-              name="esPasantia"
-            />
-            <label class="form-check-label" for="esPasantia">
-              Marcar como <strong>Oportunidad de Pasantía</strong>
-            </label>
-          </div>
-
-          <div class="mb-3">
-            <label for="fileInput" class="form-label fw-semibold">Imágenes (Opcional)</label>
-            <input
-              class="form-control"
-              type="file"
-              id="fileInput"
-              (change)="manejarImagen($event)"
-              multiple
-              accept="image/*"
-            />
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-4">
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              (click)="cerrarModalPublicar()"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="
-                !nuevoAnuncioTexto.trim() || !nuevoAnuncioDescripcion.trim()
-              "
-            >
-              {{ esModoEdicion ? "Guardar Cambios" : "Publicar" }}
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
-  </div>
 </div>

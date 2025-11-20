@@ -69,7 +69,7 @@ export class HomeComponent implements OnInit {
   esEstudiante = false;
   esExterno = false;
   esPersonalCidil = false;
-  nombreUsuario= '';
+  nombreUsuario= '';
 
   usuarioActual: any = null;
   // Propiedad para el saludo personalizado
@@ -703,4 +703,4 @@ export class HomeComponent implements OnInit {
 
     return false;
   }
-}
+} 
