@@ -109,7 +109,7 @@ export class HomeComponent implements OnInit {
     private likeService: LikeService,
     private anuncioService: AnuncioService,
     private comentarioService: ComentarioService,
-    private router: Router
+    public router: Router
   ) {}
 
   // =========================== CICLO DE VIDA ===========================

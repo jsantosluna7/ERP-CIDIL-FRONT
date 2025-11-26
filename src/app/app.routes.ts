@@ -12,7 +12,7 @@ import { RoleGuard } from './guards/RoleGuard/role-guard.service';
 
 export const routes: Routes = [
     // ----------------------------------------------------
-    //  RUTAS PÚBLICAS EXTERNAS (VISITANTES)
+    //  RUTAS PÚBLICAS EXTERNAS (VISITANTES)
     // ----------------------------------------------------
     {
         path: '',
@@ -25,6 +25,17 @@ export const routes: Routes = [
             import('./components/home/home.component').then((m) => m.HomeComponent),
         title: 'Anuncios Públicos | ERP CIDIL',
     },
+
+    // 🌟 NUEVA RUTA PÚBLICA PARA SOBRE CIDIL
+    {
+        path: 'sobre-cidil',
+        loadComponent: () =>
+            import('./pages/sobre-cidil/sobre-cidil.component').then(
+                (m) => m.SobreCidilComponent
+            ),
+        title: 'Sobre CIDIL | ERP CIDIL',
+    },
+
     {
         path: 'error-acceso',
         loadComponent: () =>
@@ -33,7 +44,7 @@ export const routes: Routes = [
             ),
         title: 'Acceso Denegado',
     },
-    
+
     // Acceso directo a /login (redirige a /auth/login)
     { 
         path: 'login', 
@@ -67,7 +78,6 @@ export const routes: Routes = [
                 loadComponent: () => import('./components/inicio-sesion/recuperar-contrasena/recuperar-contrasena.component').then((m) => m.RecuperarContrasenaComponent),
                 title: 'Recuperar Contraseña | ERP CIDIL',
             },
-            // Las siguientes rutas requieren AuthGuard o AuthGuardOtp para asegurar el contexto
             {
                 path: 'verificacion-otp',
                 loadComponent: () => import('./components/inicio-sesion/verificacion-otp/verificacion-otp.component').then((m) => m.VerificacionOtpComponent),
@@ -93,7 +103,7 @@ export const routes: Routes = [
                 (m) => m.RedireccionComponent
             ),
         title: 'Redirección | ERP CIDIL',
-        canActivate: [AuthGuard], // Asegura que solo usuarios autenticados pasen por aquí
+        canActivate: [AuthGuard],
     },
 
     // ----------------------------------------------------
@@ -105,19 +115,16 @@ export const routes: Routes = [
             import('./components/home/layout/layout.component').then((m) => m.LayoutComponent),
         canActivate: [AuthGuard],
         children: [
-            // 🔁 La ruta base /home ahora redirige al componente intermedio
-            { path: '', redirectTo: '/redireccion', pathMatch: 'full' }, 
+            { path: '', redirectTo: '/redireccion', pathMatch: 'full' },
 
-            // 👑 DASHBOARD DE GESTIÓN: ACCESO SOLO PARA ROLES 1 Y 2 (Revertido)
             {
                 path: 'dashboard',
                 loadComponent: () =>
                     import('./components/home/dashboard/dashboard.component').then((m) => m.DashboardComponent),
                 canActivate: [RoleGuard],
-                data: { roles: [1, 2] }, 
+                data: { roles: [1, 2] },
             },
 
-            // 🎓 CALENDARIO: VISTA PRINCIPAL PARA PROFESORES/ESTUDIANTES
             {
                 path: 'calendario',
                 loadComponent: () =>
@@ -126,14 +133,11 @@ export const routes: Routes = [
                 data: { roles: [1, 3, 4] },
             },
 
-            // 📋 INVENTARIO: RUTA COMÚN DE INICIO (Debe ser el destino de RedireccionComponent)
             {
                 path: 'inventario',
                 loadComponent: () => import('./components/home/inventario/inventario.component').then((m) => m.InventarioComponent),
-                // No tiene RoleGuard en data, asumiendo que es accesible para todos o que el guardia es general.
             },
             
-            // --- Resto de Rutas (Mantenidas sin cambios) ---
             {
                 path: 'reserva-laboratorio',
                 loadComponent: () => import('./components/home/reserva-laboratorio/reserva-laboratorio.component').then((m) => m.ReservaLaboratorioComponent),
@@ -171,7 +175,7 @@ export const routes: Routes = [
     },
 
     // ----------------------------------------------------
-    //  RUTA COMODÍN (404)
+    //  RUTA COMODÍN (404)
     // ----------------------------------------------------
     { path: '**', redirectTo: 'anuncio' },
 ];

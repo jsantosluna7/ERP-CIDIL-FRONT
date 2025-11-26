@@ -1,0 +1,199 @@
+/* ================================================================= */
+/* 1. VARIABLES GLOBALES Y TIPOGRAFÍA */
+/* ================================================================= */
+:root {
+    --color-ipl-primary: #004d99; /* Azul Loyola */
+    --color-ipl-secondary: #D9002C; /* Rojo Loyola */
+    --color-ipl-accent: #FFD700; /* Dorado */
+    --color-ipl-bg-light: #f0f4f7;
+}
+
+/* IMPORTANTE: Añadimos padding al body para que el contenido no quede debajo de la barra fija */
+body {
+    /* Usar una fuente moderna y legible (ej. Google Fonts: Roboto, Lato) */
+    font-family: 'Lato', sans-serif; 
+    color: #333;
+    background-color: white;
+    padding-top: 60px; /* Espacio para la barra fija de 60px */
+}
+
+/* Aplicar el color primario a la clase de utilidad de Bootstrap */
+.bg-primary {
+    background-color: var(--color-ipl-primary) !important;
+}
+
+.text-primary {
+    color: var(--color-ipl-primary) !important;
+}
+
+/* ================================================================= */
+/* 2. BARRA DE NAVEGACIÓN (NAVBAR) - ESTILOS CRÍTICOS Y VISIBILIDAD */
+/* ================================================================= */
+
+.top-bar {
+    position: fixed; /* CRÍTICO: Mantiene la barra en la parte superior */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: var(--color-ipl-primary); /* CRÍTICO: Fondo corporativo */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* NOTA: Eliminamos el padding-top de .container.my-5 porque ahora lo maneja el body */
+.container.my-5 {
+    /* Mantenemos el margen del componente pero sin forzar un padding superior tan grande */
+    margin-top: 1rem !important;
+}
+
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.right-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-brand.titulo-pagina {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-right: 20px;
+}
+
+/* Estilos de los enlaces de la barra superior */
+.nav-link.nav-btn {
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.2s ease-in-out, background-color 0.2s;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.nav-link.nav-btn:hover,
+.nav-link.nav-btn.active {
+    color: var(--color-ipl-accent); /* Dorado al pasar el mouse */
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.btn-iniciar-sesion {
+    background-color: var(--color-ipl-accent); 
+    color: var(--color-ipl-primary);
+    font-weight: bold;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.btn-iniciar-sesion:hover {
+    background-color: #ffcc00; /* Dorado más oscuro */
+}
+
+.cerrar-sesion-btn {
+    background: var(--color-ipl-secondary);
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.cerrar-sesion-btn:hover {
+    background-color: #a3001f; /* Rojo más oscuro */
+}
+
+
+/* ================================================================= */
+/* 2. BARRA DE NAVEGACIÓN (NAVBAR) - ESTILOS GENERALES (PROVISTOS POR TI) */
+/* ================================================================= */
+
+/* Estilo para la barra de utilidad superior (Horario) */
+.bg-dark {
+    background-color: #212529 !important; /* Mantenemos un tono oscuro para contraste */
+}
+
+/* Navbar principal */
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-link:hover {
+    color: var(--color-ipl-accent) !important;
+}
+
+
+/* ================================================================= */
+/* 3. SECCIONES DE CONTENIDO (sobre-cidil.component.html) */
+/* ================================================================= */
+
+/* Sección Hero: Asegurar un buen contraste del texto */
+.cidil-hero {
+    /* La imagen de fondo debe ser darkeada para que el texto blanco resalte */
+    background-color: var(--color-ipl-primary); /* Fallback */
+    padding-top: 8rem !important;
+    padding-bottom: 8rem !important;
+    border: 4px solid var(--color-ipl-secondary) !important; /* Borde rojo */
+    /* Aseguramos que la imagen de fondo no se vea sobre-expuesta, como en tu captura */
+    background-blend-mode: multiply; 
+}
+
+/* Títulos principales */
+h1, h2, h3, h4 {
+    color: var(--color-ipl-primary);
+}
+
+/* Sección de Pilares (I+D+i) */
+.cidil-pilares .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cidil-pilares .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+    border-top: 3px solid var(--color-ipl-secondary) !important;
+}
+
+/* Laboratorios Adicionales: Usamos un borde del color primario */
+.cidil-adicional {
+    border-left: 5px solid var(--color-ipl-primary) !important;
+    background-color: var(--color-ipl-bg-light) !important;
+}
+
+/* Botón CTA (Llamada a la Acción) */
+.cidil-cta .btn-light {
+    color: var(--color-ipl-primary) !important;
+    transition: background-color 0.3s ease;
+}
+
+.cidil-cta .btn-light:hover {
+    background-color: var(--color-ipl-accent) !important;
+}
+
+
+/* ================================================================= */
+/* 4. PIE DE PÁGINA (FOOTER) - NO PRESENTE EN ESTE COMPONENTE, PERO DECORATIVO */
+/* ================================================================= */
+
+footer {
+    background-color: #1a1a1a !important; /* Un negro más suave */
+    border-top: 5px solid var(--color-ipl-secondary);
+}
+
+footer .text-primary {
+    color: var(--color-ipl-accent) !important; /* Usamos el dorado para resaltar títulos del footer */
+}
+
+footer a:hover {
+    color: var(--color-ipl-secondary) !important;
+}

@@ -68,21 +68,34 @@ body {
   background-color: #123975;
 }
 
-/* === SIDEBAR === */
-.sidebar-cidil {
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  position: sticky;
-  top: 90px;
-  text-align: center;
+/* === CARRUSEL PRINCIPAL (Banner Superior) === */
+.banner-container {
+    height: 440px; /* 🔹 Nueva altura */
+    overflow: hidden;
+    border-radius: 12px;
+    margin-top: 12px; /* 🔹 Subir ligeramente */
+}
+
+/* Asegura que la imagen dentro del banner se adapte */
+.banner-container .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 🔹 Cubrir pero sin estirar raro */
+    object-position: center;
+}
+
+/* Opcional: Estilo para la leyenda del carrusel principal */
+#carruselPrincipal .carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 10px;
+    bottom: 20px;
 }
 
 /* =================== TARJETAS DE ANUNCIOS =================== */
 .anuncio-card {
-  max-width: 850px;
-  margin: 0 auto;
+  max-width: 900px; 
+  margin: 0 auto; 
 }
 
 .card {
@@ -106,26 +119,35 @@ body {
   padding: 18px 20px;
 }
 
-/* === CONTENEDOR DE IMAGEN (MISMO TAMAÑO SIEMPRE) === */
+/* === CONTENEDOR DE IMAGEN (ANUNCIO DINÁMICO) === */
 .img-container {
-  width: 100%;
-  height: 380px;                     /* TAMAÑO ÚNICO PARA TODAS LAS TARJETAS */
-  overflow: hidden;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 100%;
+    height: 380px; 
+    overflow: hidden;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
 }
 
-.img-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;               /* MUESTRA TODA LA IMAGEN SIN RECORTAR */
-  object-position: center;
+/* Estilos para las imágenes dentro de los anuncios */
+.carousel-inner .carousel-item img,
+.img-container > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
-/* === CURRÍCULOS Y COMENTARIOS === */
+.no-image-placeholder {
+    height: 100px; 
+    background-color: #eee;
+    border: 1px dashed #ccc;
+    color: #999;
+}
+
+/* === BOTONES Y FORMULARIOS === */
 .btn-sm {
   padding: 6px 12px;
   font-size: 0.8rem;
@@ -133,10 +155,10 @@ body {
   border-radius: 6px;
 }
 
-/* Botones personalizado */
+/* Botones personalizados */
 .btn-editar-solido {
   background-color: #066caf;
-  color: #343a40;
+  color: white;
 }
 .btn-editar-solido:hover {
   background-color: #0400e0;
@@ -169,15 +191,12 @@ body {
     text-align: center;
   }
 
-  .sidebar-cidil {
-      position: static;
-  }
-
   .anuncio-card {
     max-width: 100%;
   }
 
+  .banner-container,
   .img-container {
-    height: 300px;
+    height: 250px; 
   }
 }
