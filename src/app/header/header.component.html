@@ -1,0 +1,96 @@
+<header class="top-bar navbar navbar-expand-lg">
+    <div class="container-fluid">
+
+        <!-- Logo -->
+        <a class="navbar-brand titulo-pagina d-flex align-items-center" [routerLink]="['/anuncio']">
+           <img src="assets/logo-ieesl.png" alt="Logo ERP CIDIL" style="height: 32px;" class="me-2">
+
+            Centro CIDIL
+        </a>
+
+        <!-- Botón móvil -->
+        <button 
+            class="navbar-toggler text-white" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <!-- Sección izquierda -->
+            <ul class="navbar-nav left-section me-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link nav-btn" 
+                       [routerLink]="['/anuncio']" 
+                       routerLinkActive="active">Anuncios</a>
+                </li>
+
+                <li class="nav-item" *ngIf="authService.isAuthenticated() && puedeVerDashboard()">
+                    <a class="nav-link nav-btn" (click)="navigateToDashboard()">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-btn" 
+                       [routerLink]="['/sobre-cidil']" 
+                       routerLinkActive="active">Sobre CIDIL</a>
+                </li>
+
+            </ul>
+
+            <!-- Sección derecha (usuario / login) -->
+            <div class="right-section">
+
+                <!-- NO logueado -->
+                <ng-container *ngIf="!authService.isAuthenticated()">
+                    <button class="cerrar-sesion-btn" (click)="navegarLogin()">
+                        Iniciar Sesión
+                    </button>
+                </ng-container>
+
+                <!-- Logueado -->
+                <ng-container *ngIf="authService.isAuthenticated()">
+                    <div class="dropdown">
+
+                        <button 
+                            class="cerrar-sesion-btn dropdown-toggle d-flex align-items-center" 
+                            id="dropdownMenuButton"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.4rem;"></i>
+
+                            <span class="d-none d-sm-block text-start">
+                                <span class="fw-bold">Bienvenido {{ nombreUsuarioLogueado }}</span><br>
+                                <small class="text-light fst-italic">{{ rolActual | titlecase }}</small>
+                            </span>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end" [attr.aria-labelledby]="'dropdownMenuButton'">
+                            <li><a class="dropdown-item" [routerLink]="['/home/perfil']"><i class="bi bi-person"></i> Mi Perfil</a></li>
+                            <li *ngIf="puedeVerDashboard()">
+                                <a class="dropdown-item" (click)="navigateToDashboard()"><i class="bi bi-speedometer2"></i> Ir a Dashboard</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" (click)="cerrarSesion()">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </ng-container>
+
+            </div>
+        </div>
+    </div>
+</header>
