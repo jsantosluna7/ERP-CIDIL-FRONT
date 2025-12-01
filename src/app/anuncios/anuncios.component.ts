@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,12 +22,13 @@ interface Comentario {
   fecha?: string;
 }
 
-interface Curriculum {
+export interface Curriculum {
   id: number;
   nombre: string;
   email: string;
   archivoUrl: string;
   anuncioId?: number;
+  fechaPostulacion?: string;
 }
 
 interface Anuncio {
@@ -39,10 +39,13 @@ interface Anuncio {
   likes: number;
   comentarios: Comentario[];
   esPasantia: boolean;
+  esCarrusel: boolean; // 🎯 PROPIEDAD PARA EL CARRUSEL
   fechaPublicacion: string | Date;
   usuarioDioLike: boolean;
   curriculos: Curriculum[];
-  expandido?: boolean;
+  expandido?: boolean; // Se mantiene para la lista interna de CVs
+  // ✅ CORRECCIÓN: Nueva propiedad para controlar la expansión de la tarjeta
+  expandedContent?: boolean;
   nombreUsuarioPublicador?: string;
 }
 
@@ -57,6 +60,10 @@ interface Anuncio {
 export class AnunciosComponent implements OnInit {
   anuncios: Anuncio[] = [];
   cargando = true;
+
+  anunciosFiltrados: Anuncio[] = [];
+
+  anunciosCarrusel: Anuncio[] = [];
 
   // --- Variables de Rol/Permisos ---
   rolActual = '';
@@ -73,13 +80,16 @@ export class AnunciosComponent implements OnInit {
   nuevoAnuncioTexto = '';
   nuevoAnuncioDescripcion = '';
   nuevoAnuncioEsPasantia = false;
+  nuevoAnuncioEsCarrusel = false; // 🎯 PROPIEDAD para el modal
   nuevasImagenes: File[] = [];
   imagenesPreview: string[] = [];
   mensajeExitoPublicar: string | null = null;
   mensajeErrorPublicar: string | null = null;
 
   // --- Variables de Interacción (Likes/Comentarios/CV) ---
+
   todosCurriculos: Curriculum[] = [];
+
   curriculos: Record<number, File | null> = {};
   nombreExterno: Record<number, string> = {};
   correoExterno: Record<number, string> = {};
@@ -88,7 +98,6 @@ export class AnunciosComponent implements OnInit {
   curriculoOpen: Record<number, boolean> = {};
   nuevoComentario: Record<number, string> = {};
   procesandoLike: Record<number, boolean> = {};
-  carpetaExpandida = false;
 
   private readonly baseUrl = 'http://localhost:5006/api';
   public readonly imagenBaseUrl = 'http://localhost:5006/';
@@ -102,11 +111,26 @@ export class AnunciosComponent implements OnInit {
     public router: Router
   ) {}
 
+  /**
+   * ✅ CORRECCIÓN: Se renombra el getter para que no coincida con el nombre
+   * de una plantilla (<ng-template #sinAnuncios>) y evitar el error
+   * 'boolean is not assignable to TemplateRef'.
+   * Este getter devuelve un BOOLEAN (si hay anuncios).
+   */
+  get hayAnunciosParaMostrar(): boolean {
+    // Si la lista de anuncios filtrados tiene elementos, es TRUE.
+    return this.anunciosFiltrados.length > 0;
+  }
+
   // =========================== CICLO DE VIDA ===========================
   async ngOnInit(): Promise<void> {
     this.calcularRoles();
     await this.cargarAnuncios();
-    if (this.puedeVerCurriculos()) await this.cargarTodosCurriculos();
+    // 🎯 Al iniciar, solo mostramos los anuncios que NO son de carrusel por defecto.
+    this.anunciosFiltrados = this.anuncios.filter(a => a.esCarrusel === false);
+    if (this.puedeVerCurriculos()) {
+      await this.cargarTodosCurriculos();
+    }
   }
 
   // =========================== LÓGICA DE ROLES Y PERMISOS ===========================
@@ -143,6 +167,7 @@ export class AnunciosComponent implements OnInit {
     return this.puedePublicar();
   }
 
+  // Función para mostrar la CARPETA de CVs
   puedeVerCurriculos(): boolean {
     return this.esSuperUsuario || this.esAdmin || this.esPersonalCidil;
   }
@@ -166,12 +191,9 @@ export class AnunciosComponent implements OnInit {
     try {
       const data: any[] = await lastValueFrom(this.anuncioService.obtenerTodos());
 
-      // Asegurarse de que imagenBaseUrl termine con '/'
       const baseUrl = this.imagenBaseUrl.endsWith('/') ? this.imagenBaseUrl : `${this.imagenBaseUrl}/`;
 
-      // Mapear anuncios y construir urlImagenes correctamente
       this.anuncios = (data ?? []).map((a) => {
-        // a.imagenUrl puede llegar como string con separador ';' o null/undefined
         const raw = a.imagenUrl ?? '';
         const urls = raw
           .toString()
@@ -180,7 +202,6 @@ export class AnunciosComponent implements OnInit {
           .filter((u: string) => u && u.length > 0)
           .map((u: string) => {
             if (u.startsWith('http')) return u;
-            // eliminar slashes iniciales si los tiene y concatenar base
             const rutaLimpia = u.replace(/^\/+/, '');
             return `${baseUrl}${rutaLimpia}`;
           });
@@ -194,23 +215,66 @@ export class AnunciosComponent implements OnInit {
           likes: 0,
           comentarios: [],
           esPasantia: a.esPasantia ?? false,
+          esCarrusel: a.esCarrusel ?? false, // Mapear la nueva propiedad
           fechaPublicacion: a.fechaPublicacion ?? '',
           usuarioDioLike: false,
-          curriculos: [],
+          curriculos: a.curriculos ?? [],
           expandido: false,
+          expandedContent: false, // Inicializar la nueva propiedad
         } as Anuncio;
       });
 
-      // Cargar likes y comentarios (y curriculos si aplica)
+      // Cargar likes y comentarios (y curriculos específicos del anuncio si aplica)
       for (const anuncio of this.anuncios) {
         await Promise.all([this.cargarComentarios(anuncio), this.cargarLikes(anuncio)]);
-        if (this.puedeVerCurriculos()) await this.cargarCurriculos(anuncio);
+        if (this.puedeVerCurriculos()) await this.cargarCurriculosPorAnuncio(anuncio);
       }
+
+      // 🎯 MODIFICACIÓN: Filtrar para el carrusel (solo anuncios marcados y con imágenes).
+      this.anunciosCarrusel = this.anuncios.filter(a => a.esCarrusel === true && a.urlImagenes.length > 0);
+
+      // 🎯 Inicializar anunciosFiltrados para mostrar SÓLO los que NO son carrusel
+      this.anunciosFiltrados = this.anuncios.filter(a => a.esCarrusel === false);
+
     } catch (err) {
       console.error('Error al cargar anuncios:', err);
       this.anuncios = [];
+      this.anunciosFiltrados = [];
+      this.anunciosCarrusel = [];
     } finally {
       this.cargando = false;
+    }
+  }
+
+  /**
+   * Filtra la lista de anuncios mostrada según la categoría seleccionada en las tarjetas.
+   * La lista principal solo debe incluir anuncios que NO sean de carrusel.
+   * @param categoria El nombre de la categoría ('Pasantía', 'Investigación', 'Evento', 'General').
+   */
+  filtrarPor(categoria: string): void {
+    console.log(`Filtro seleccionado: ${categoria}`);
+
+    // 🎯 1. Obtener la lista base: SÓLO anuncios que NO son de carrusel.
+    const baseList = this.anuncios.filter(a => a.esCarrusel === false);
+
+    switch (categoria) {
+      case 'Pasantía':
+        this.anunciosFiltrados = baseList.filter(a => a.esPasantia === true);
+        break;
+      case 'Investigación':
+        // Asume que la descripción o el título debe contener esta palabra
+        this.anunciosFiltrados = baseList.filter(a => a.descripcion.toLowerCase().includes('investigación') || a.titulo.toLowerCase().includes('investigación'));
+        break;
+      case 'Evento':
+        this.anunciosFiltrados = baseList.filter(a => a.descripcion.toLowerCase().includes('evento') || a.titulo.toLowerCase().includes('evento'));
+        break;
+      case 'General':
+        // Muestra todos los que no son carrusel
+        this.anunciosFiltrados = baseList;
+        break;
+      default:
+        this.anunciosFiltrados = baseList;
+        break;
     }
   }
 
@@ -218,15 +282,18 @@ export class AnunciosComponent implements OnInit {
     this.nuevoAnuncioTexto = '';
     this.nuevoAnuncioDescripcion = '';
     this.nuevoAnuncioEsPasantia = false;
+    this.nuevoAnuncioEsCarrusel = false; // 🎯 Reiniciar
     this.nuevasImagenes = [];
     this.imagenesPreview = [];
     this.mensajeExitoPublicar = null;
     this.mensajeErrorPublicar = null;
     this.anuncioAEditar = null;
     this.esModoEdicion = false;
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    const fileInput = document.getElementById('fileInputModal') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
   }
+
+  // --- Lógica de Modales y CRUD de Anuncios ---
 
   abrirModalPublicar(): void {
     this.reiniciarFormularioAnuncio();
@@ -245,6 +312,7 @@ export class AnunciosComponent implements OnInit {
         modal.hide();
       }
     }
+    this.reiniciarFormularioAnuncio(); // Asegurar reinicio al cerrar
   }
 
   manejarImagen(event: Event): void {
@@ -274,6 +342,7 @@ export class AnunciosComponent implements OnInit {
     this.nuevoAnuncioTexto = anuncio.titulo;
     this.nuevoAnuncioDescripcion = anuncio.descripcion;
     this.nuevoAnuncioEsPasantia = !!anuncio.esPasantia;
+    this.nuevoAnuncioEsCarrusel = !!anuncio.esCarrusel; // Cargar valor para edición
 
     const modalElement = document.getElementById('modalPublicar');
     if (modalElement) {
@@ -296,6 +365,7 @@ export class AnunciosComponent implements OnInit {
     formData.append('Titulo', this.nuevoAnuncioTexto.trim());
     formData.append('Descripcion', this.nuevoAnuncioDescripcion.trim());
     formData.append('EsPasantia', String(this.nuevoAnuncioEsPasantia));
+    formData.append('EsCarrusel', String(this.nuevoAnuncioEsCarrusel)); // AÑADIR AL FORMDATA
     this.nuevasImagenes.forEach((img) => formData.append('Imagenes', img, img.name));
 
     this.mensajeErrorPublicar = null;
@@ -342,7 +412,8 @@ export class AnunciosComponent implements OnInit {
     });
   }
 
-  // =========================== COMENTARIOS ===========================
+  // --- Lógica de Comentarios y Likes ---
+
   async cargarComentarios(anuncio: Anuncio): Promise<void> {
     try {
       const response: any = await lastValueFrom(this.comentarioService.obtenerPorAnuncio(anuncio.id));
@@ -381,28 +452,16 @@ export class AnunciosComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error al publicar comentario (detalle):', err);
-
-        if (err?.status === 401) {
-          console.warn('No autenticado. Por favor inicia sesión.');
-          return;
-        }
-        if (err?.status === 403) {
-          console.warn('No tienes permisos para comentar. Debes ser Profesor o Estudiante.');
-          return;
-        }
-
         const msg = (err?.error?.error || err?.message || '').toString();
-        if (msg.toLowerCase().includes('usuario no autenticado') || msg.toLowerCase().includes('id no encontrado')) {
-          console.warn('Debes iniciar sesión con una cuenta de Profesor o Estudiante para comentar.');
+        if (msg.toLowerCase().includes('usuario no autenticado') || msg.toLowerCase().includes('id no encontrado') || err?.status === 401 || err?.status === 403) {
+          console.warn('No tienes permisos para comentar. Debes ser Profesor o Estudiante y estar autenticado.');
           return;
         }
-
         console.warn('Error al enviar el comentario. Intenta nuevamente.');
       },
     });
   }
 
-  // =========================== LIKES ===========================
   async cargarLikes(anuncio: Anuncio): Promise<void> {
     try {
       const res: any = await lastValueFrom(this.likeService.contarLikes(anuncio.id));
@@ -428,32 +487,62 @@ export class AnunciosComponent implements OnInit {
     });
   }
 
-  // =========================== CURRÍCULOS ===========================
-  async cargarCurriculos(anuncio: Anuncio): Promise<void> {
+  // =========================== LÓGICA DE CURRÍCULOS (CORREGIDA) ===========================
+
+  /**
+   * Carga la lista global de currículos para mostrar en el panel lateral (solo para roles con permiso).
+   */
+  async cargarTodosCurriculos(): Promise<void> {
+    if (!this.puedeVerCurriculos()) {
+      this.todosCurriculos = [];
+      return;
+    }
+
     try {
+      // 1. Obtener todos los CVs del backend
       const data = await lastValueFrom(this.http.get<Curriculum[]>(`${this.baseUrl}/Curriculum`, { headers: this.getHeaders() }));
       const baseUrl = this.imagenBaseUrl.endsWith('/') ? this.imagenBaseUrl : `${this.imagenBaseUrl}/`;
 
-      anuncio.curriculos =
-        data
-          ?.filter((c) => c.anuncioId === anuncio.id)
-          .map((c) => ({
-            ...c,
-            archivoUrl: `${baseUrl}${c.archivoUrl.replace(/^\/+/, '')}`,
-          })) ?? [];
-    } catch {
-      anuncio.curriculos = [];
+      // 2. Mapear los datos y construir la URL del archivo
+      this.todosCurriculos = (data ?? [])
+        .map((c: any) => ({
+          id: c.id,
+          nombre: c.nombre,
+          email: c.email,
+          archivoUrl: `${baseUrl}${c.archivoUrl.replace(/^\/+/, '')}`,
+          anuncioId: c.anuncioId,
+          fechaPostulacion: c.fechaSubida,
+        }))
+        .sort((a, b) => new Date(b.fechaPostulacion!).getTime() - new Date(a.fechaPostulacion!).getTime()); // Ordenar por fecha
+
+    } catch (error) {
+      console.error('Error al cargar todos los currículos:', error);
+      this.todosCurriculos = [];
     }
   }
 
-  async cargarTodosCurriculos(): Promise<void> {
-    try {
-      const data = await lastValueFrom(this.http.get<Curriculum[]>(`${this.baseUrl}/Curriculum`, { headers: this.getHeaders() }));
-      const baseUrl = this.imagenBaseUrl.endsWith('/') ? this.imagenBaseUrl : `${this.imagenBaseUrl}/`;
+  /**
+   * Carga los currículos asociados a un anuncio específico (Solo visible para roles con permiso).
+   * @param anuncio El anuncio para el cual se cargan los currículos.
+   */
+  async cargarCurriculosPorAnuncio(anuncio: Anuncio): Promise<void> {
+    if (!this.puedeVerCurriculos()) return;
 
-      this.todosCurriculos = data?.map((c) => ({ ...c, archivoUrl: `${baseUrl}${c.archivoUrl.replace(/^\/+/, '')}` })) ?? [];
-    } catch {
-      this.todosCurriculos = [];
+    try {
+      // Reutiliza la lista global o cárgala si es necesario, y luego filtra por el ID del anuncio
+      if (this.todosCurriculos.length === 0) {
+        await this.cargarTodosCurriculos();
+      }
+
+      // El archivoUrl ya está completo en todosCurriculos, solo filtramos
+      anuncio.curriculos =
+        this.todosCurriculos
+          .filter((c: Curriculum) => c.anuncioId === anuncio.id) // Aquí SÍ debe filtrar por anuncioId
+          .map((c) => ({ ...c })) ?? []; // Solo copiamos, la URL ya está mapeada.
+
+    } catch (error) {
+      console.error('Error al cargar currículos para anuncio', anuncio.id, error);
+      anuncio.curriculos = [];
     }
   }
 
@@ -471,39 +560,59 @@ export class AnunciosComponent implements OnInit {
   }
 
   async subirCurriculo(anuncio: Anuncio): Promise<void> {
-    if (!this.curriculos[anuncio.id]) return;
-
-    const formData = new FormData();
-    formData.append('Archivo', this.curriculos[anuncio.id]!);
-
-    if (this.esExterno) {
-      const nombre = this.nombreExterno[anuncio.id]?.trim();
-      const correo = this.correoExterno[anuncio.id]?.trim();
-      if (!nombre || !correo) {
-        this.mensajeErrorCurriculo[anuncio.id] = 'Nombre y correo son obligatorios.';
-        return;
-      }
-      formData.append('Nombre', nombre);
-      formData.append('Email', correo);
+    if (this.esCurriculoInvalido(anuncio.id)) {
+      this.mensajeErrorCurriculo[anuncio.id] = 'Debe seleccionar un archivo y completar los campos de nombre/correo si es externo.';
+      return;
     }
 
+    const formData = new FormData();
+    // Usamos el operador de aserción no nula '!' aquí porque la validación esCurriculoInvalido nos garantiza que el archivo existe.
+    formData.append('Archivo', this.curriculos[anuncio.id]!);
     formData.append('AnuncioId', String(anuncio.id));
 
+    // INICIO DE LA CORRECCIÓN: Asegurar que el nombre y correo se envíen para todos los roles
+    let nombrePostulante: string;
+    let emailPostulante: string;
+
+    if (this.esExterno) {
+      // Para externos: usa los campos del formulario
+      nombrePostulante = this.nombreExterno[anuncio.id]!;
+      emailPostulante = this.correoExterno[anuncio.id]!;
+    } else {
+      // Para autenticados (Estudiante/Profesor): usa los datos del AuthService.
+      emailPostulante = this.authService.getEmail() ?? 'no_email@example.com';
+
+      // ✅ CORRECCIÓN CLAVE: Usar getUserName() para obtener el nombre real.
+      nombrePostulante = this.authService.getUserName() ?? 'Usuario Autenticado';
+    }
+
+    formData.append('Nombre', nombrePostulante);
+    formData.append('Email', emailPostulante);
+
+
     try {
+      // Si el usuario es externo, no enviamos el header de autenticación.
       const opciones: any = this.esExterno ? {} : { headers: this.getHeaders() };
       const res: any = await lastValueFrom(this.http.post(`${this.baseUrl}/Curriculum`, formData, opciones));
 
       this.mensajeExitoCurriculo[anuncio.id] = res?.mensaje ?? 'Currículum subido ✅';
       this.mensajeErrorCurriculo[anuncio.id] = null;
-      await this.cargarCurriculos(anuncio);
+
+      if (this.puedeVerCurriculos()) {
+        // Recargar ambas listas para que se vean los cambios
+        await this.cargarTodosCurriculos();
+        await this.cargarCurriculosPorAnuncio(anuncio);
+      }
 
       this.curriculos[anuncio.id] = null;
       this.nombreExterno[anuncio.id] = '';
       this.correoExterno[anuncio.id] = '';
+
       setTimeout(() => {
         this.toggleCurriculoForm(anuncio.id);
         this.mensajeExitoCurriculo[anuncio.id] = null;
       }, 3000);
+
     } catch (err: any) {
       console.error('Error al subir currículum:', err);
       this.mensajeErrorCurriculo[anuncio.id] = err?.error?.error ?? 'Error al subir currículum.';
@@ -511,34 +620,48 @@ export class AnunciosComponent implements OnInit {
     }
   }
 
-  verCurriculo(c: Curriculum): void {
-    if (c?.archivoUrl) window.open(c.archivoUrl, '_blank');
-  }
-
   descargarCurriculo(c: Curriculum): void {
     if (!c?.archivoUrl) return;
-    // Descargar usando un enlace temporal para forzar la descarga
-    const link = document.createElement('a');
-    link.href = c.archivoUrl;
-    // Si el archivo proviene del backend con CORS y Content-disposition, puede requerir otra estrategia.
-    link.setAttribute('target', '_blank');
-    // Nombre de archivo sugerido
-    link.download = c.nombre ?? 'curriculum.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.open(c.archivoUrl, '_blank');
   }
 
-  eliminarCurriculo(c: Curriculum): void {
-    if (!confirm('¿Deseas eliminar este currículum?')) return;
+  /**
+   * Elimina un currículum desde la vista de un anuncio específico.
+   * @param c El objeto Curriculum a eliminar.
+   * @param anuncio El anuncio al que pertenece.
+   */
+  eliminarCurriculo(c: Curriculum, anuncio: Anuncio): void {
+    if (!this.puedeVerCurriculos()) return;
+    if (!confirm(`¿Deseas eliminar el currículum de ${c.nombre}?`)) return;
+
     this.http.delete(`${this.baseUrl}/Curriculum/${c.id}`, { headers: this.getHeaders() }).subscribe({
       next: async () => {
-        this.todosCurriculos = this.todosCurriculos.filter((x) => x.id !== c.id);
-        this.anuncios.forEach((a) => {
-          a.curriculos = a.curriculos.filter((x) => x.id !== c.id);
-        });
+        // Eliminar del anuncio
+        anuncio.curriculos = anuncio.curriculos.filter((x) => x.id !== c.id);
+        // Recargar la lista global para que se elimine de la carpeta lateral
+        await this.cargarTodosCurriculos();
       },
-      error: (err) => console.error(err),
+      error: (err) => console.error('Error al eliminar currículum:', err),
+    });
+  }
+
+  /**
+   * ✅ NUEVA FUNCIÓN para eliminar un currículum desde la carpeta lateral global.
+   * @param c El objeto Curriculum a eliminar.
+   */
+  eliminarCurriculoGlobal(c: Curriculum): void {
+    if (!this.puedeVerCurriculos()) return;
+    if (!confirm(`¿Deseas eliminar el currículum de ${c.nombre} de la carpeta global?`)) return;
+
+    this.http.delete(`${this.baseUrl}/Curriculum/${c.id}`, { headers: this.getHeaders() }).subscribe({
+      next: async () => {
+        // Eliminar de la lista global
+        this.todosCurriculos = this.todosCurriculos.filter((x) => x.id !== c.id);
+
+        // Recargar todos los anuncios para actualizar las listas internas de CV
+        await this.cargarAnuncios();
+      },
+      error: (err) => console.error('Error al eliminar currículum global:', err),
     });
   }
 
@@ -554,11 +677,28 @@ export class AnunciosComponent implements OnInit {
     if (this.esExterno) {
       const nombre = this.nombreExterno?.[anuncioId]?.trim();
       const correo = this.correoExterno?.[anuncioId]?.trim();
-      if (!nombre || !correo) {
+      const esCorreoValido = correo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+      if (!nombre || !esCorreoValido) {
+        return true;
+      }
+    }
+
+    // Para usuarios autenticados (Profesor/Estudiante)
+    if (!this.esExterno) {
+      if (!this.authService.getEmail() || !this.authService.getUserName()) {
+        // Esto solo debería pasar si los datos del usuario no están disponibles al momento de postular
+        console.warn('Falta correo o nombre para usuario autenticado. Revisar token.');
         return true;
       }
     }
 
     return false;
+  }
+
+  /**
+   * Cambia el estado 'expandido' del anuncio para mostrar u ocultar la lista de CVs en la UI.
+   */
+  toggleCurriculos(anuncio: Anuncio): void {
+    anuncio.expandido = !anuncio.expandido;
   }
 }
