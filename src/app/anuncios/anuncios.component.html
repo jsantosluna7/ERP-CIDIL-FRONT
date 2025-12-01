@@ -58,13 +58,11 @@
     <ng-template #noCarrusel>
         <div class="mb-4 rounded shadow-lg custom-carousel-height-lg d-flex align-items-center justify-content-center bg-light main-carousel-wrapper">
             <div class="text-center text-muted">
-                <img src="URL_DE_TU_IMAGEN_DEL_INSTITUTO_LOYOLA" alt="Logo Instituto Politécnico Loyola" style="max-height: 150px; opacity: 0.7;" class="mb-3"/>
+               
                 <h5>¡Bienvenido!</h5>
                 <p>No hay anuncios destacados en el carrusel.</p>
 
-                <button *ngIf="puedePublicar()" class="btn btn-primary mt-2" (click)="abrirModalPublicar()">
-                    ➕ Publicar primer anuncio
-                </button>
+                
             </div>
         </div>
     </ng-template>
@@ -86,7 +84,7 @@
                         <i class="bi bi-chevron-down"></i> </span>
                 </div>
 
-                <div class="collapse" id="curriculumCollapse">
+                 <div class="collapse" id="curriculumCollapse">
                     <div class="card-body p-2" style="max-height: 500px; overflow-y: auto;">
                         <div *ngIf="todosCurriculos && todosCurriculos.length > 0; else sinCV">
                             <ul class="list-group list-group-flush">
@@ -104,10 +102,11 @@
                                             data-bs-toggle="dropdown" 
                                             data-bs-display="static" 
                                             aria-expanded="false" 
-                                            title="Opciones">
+                                            title="Opciones"
+                                            (click)="inicializarDropdownDinamico($event)">
                                             <span style="font-size: 1.2rem;">&hellip;</span> 
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
+                                        <ul class="dropdown-menu dropdown-menu-end" style="position: absolute !important; inset: auto 0px 0px auto !important; transform: translate3d(-10px, -50px, 0px) !important;">
                                             <li>
                                                 <a class="dropdown-item" [href]="cv.archivoUrl" target="_blank">⬇️ Descargar CV</a>
                                             </li>
@@ -217,10 +216,11 @@
                                                 <strong>{{ cv.nombre }}</strong> - <small>{{ cv.email }}</small>
                                             </div>
                                             <div class="dropdown">
-                                                <button class="btn btn-sm btn-light p-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="Opciones">
+                                                <button class="btn btn-sm btn-light p-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="Opciones"
+                                                    (click)="inicializarDropdownDinamico($event)">
                                                     <span style="font-size: 1.2rem;">&hellip;</span> 
                                                 </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                <ul class="dropdown-menu dropdown-menu-end" style="position: absolute !important; inset: auto 0px 0px auto !important; transform: translate3d(-10px, -50px, 0px) !important;">
                                                     <li>
                                                         <a class="dropdown-item" [href]="cv.archivoUrl" target="_blank">⬇️ Descargar CV</a>
                                                     </li>

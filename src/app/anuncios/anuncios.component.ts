@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef } from '@angular/core'; // Agregamos AfterViewInit y ElementRef
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -8,6 +8,9 @@ import {
 } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+// Importa la clase Dropdown de Bootstrap (asegúrate de que 'bootstrap' esté instalado)
+import { Dropdown } from 'bootstrap'; 
+
 // 🎯 Importaciones de Servicios (Asegúrate de que las rutas sean correctas)
 import { LikeService } from '../likes.service';
 import { AnuncioService } from '../anuncios.service';
@@ -57,7 +60,7 @@ interface Anuncio {
   templateUrl: './anuncios.component.html',
   styleUrls: ['./anuncios.component.css'],
 })
-export class AnunciosComponent implements OnInit {
+export class AnunciosComponent implements OnInit, AfterViewInit { // Implementamos AfterViewInit
   anuncios: Anuncio[] = [];
   cargando = true;
 
@@ -108,7 +111,8 @@ export class AnunciosComponent implements OnInit {
     private likeService: LikeService,
     private anuncioService: AnuncioService,
     private comentarioService: ComentarioService,
-    public router: Router
+    public router: Router,
+    private elementRef: ElementRef // Inyectamos ElementRef
   ) {}
 
   /**
@@ -132,6 +136,41 @@ export class AnunciosComponent implements OnInit {
       await this.cargarTodosCurriculos();
     }
   }
+
+  // 🔥 NUEVO: Método llamado después de que la vista se ha inicializado
+  ngAfterViewInit(): void {
+      this.inicializarDropdownEstatico();
+  }
+
+  // =========================== INICIALIZACIÓN DE DROPDOWNS BOOTSTRAP ===========================
+
+  /**
+   * Inicializa el dropdown estático de la "Carpeta de Currículos" después de que se cargue la vista.
+   * Nota: Este no se genera con *ngFor, pero se inicializa aquí por si es necesario.
+   */
+  inicializarDropdownEstatico(): void {
+      const dropdownEl = this.elementRef.nativeElement.querySelector('#curriculumCollapse .dropdown button[data-bs-toggle="dropdown"]');
+      if (dropdownEl) {
+          // Inicializa el dropdown estático si existe
+          new Dropdown(dropdownEl);
+      }
+  }
+
+  /**
+   * Inicializa manualmente el Dropdown de Bootstrap cuando se hace clic en un botón.
+   * Esto soluciona el problema de los elementos generados dinámicamente con *ngFor.
+   * @param event El evento de click para obtener el elemento del botón.
+   */
+  inicializarDropdownDinamico(event: Event): void {
+      const button = event.currentTarget as HTMLElement;
+      if (button) {
+          // Inicializa y luego llama a toggle() para abrirlo
+          const dropdownInstance = new Dropdown(button);
+          // Opcionalmente, puedes forzar el toggle aquí si el data-bs-toggle='dropdown' no lo hace:
+          // dropdownInstance.toggle();
+      }
+  }
+  // ==========================================================================================
 
   // =========================== LÓGICA DE ROLES Y PERMISOS ===========================
   calcularRoles(): void {
@@ -227,7 +266,7 @@ export class AnunciosComponent implements OnInit {
       // Cargar likes y comentarios (y curriculos específicos del anuncio si aplica)
       for (const anuncio of this.anuncios) {
         await Promise.all([this.cargarComentarios(anuncio), this.cargarLikes(anuncio)]);
-        if (this.puedeVerCurriculos()) await this.cargarCurriculosPorAnuncio(anuncio);
+        // Ya no cargamos curriculosPorAnuncio aquí, lo haremos a partir de la lista global
       }
 
       // 🎯 MODIFICACIÓN: Filtrar para el carrusel (solo anuncios marcados y con imágenes).
@@ -235,6 +274,13 @@ export class AnunciosComponent implements OnInit {
 
       // 🎯 Inicializar anunciosFiltrados para mostrar SÓLO los que NO son carrusel
       this.anunciosFiltrados = this.anuncios.filter(a => a.esCarrusel === false);
+
+      // Si el usuario puede ver currículos, cargar la lista global y luego actualizar los anuncios
+      if (this.puedeVerCurriculos()) {
+        await this.cargarTodosCurriculos();
+        this.anuncios.forEach(anuncio => this.actualizarCurriculosEnAnuncio(anuncio));
+      }
+
 
     } catch (err) {
       console.error('Error al cargar anuncios:', err);
@@ -509,6 +555,7 @@ export class AnunciosComponent implements OnInit {
           id: c.id,
           nombre: c.nombre,
           email: c.email,
+          // ✅ CORRECCIÓN: Construir la URL completa para la descarga
           archivoUrl: `${baseUrl}${c.archivoUrl.replace(/^\/+/, '')}`,
           anuncioId: c.anuncioId,
           fechaPostulacion: c.fechaSubida,
@@ -522,28 +569,18 @@ export class AnunciosComponent implements OnInit {
   }
 
   /**
-   * Carga los currículos asociados a un anuncio específico (Solo visible para roles con permiso).
-   * @param anuncio El anuncio para el cual se cargan los currículos.
+   * Actualiza la propiedad `curriculos` de un anuncio a partir de la lista global.
+   * Se usa para actualizar la vista después de cargar o eliminar un CV.
+   * @param anuncio El anuncio a actualizar.
    */
-  async cargarCurriculosPorAnuncio(anuncio: Anuncio): Promise<void> {
+  actualizarCurriculosEnAnuncio(anuncio: Anuncio): void {
     if (!this.puedeVerCurriculos()) return;
 
-    try {
-      // Reutiliza la lista global o cárgala si es necesario, y luego filtra por el ID del anuncio
-      if (this.todosCurriculos.length === 0) {
-        await this.cargarTodosCurriculos();
-      }
-
-      // El archivoUrl ya está completo en todosCurriculos, solo filtramos
-      anuncio.curriculos =
-        this.todosCurriculos
-          .filter((c: Curriculum) => c.anuncioId === anuncio.id) // Aquí SÍ debe filtrar por anuncioId
-          .map((c) => ({ ...c })) ?? []; // Solo copiamos, la URL ya está mapeada.
-
-    } catch (error) {
-      console.error('Error al cargar currículos para anuncio', anuncio.id, error);
-      anuncio.curriculos = [];
-    }
+    // Reutiliza la lista global, y luego filtra por el ID del anuncio
+    anuncio.curriculos =
+      this.todosCurriculos
+        .filter((c: Curriculum) => c.anuncioId === anuncio.id) // Aquí SÍ debe filtrar por anuncioId
+        .map((c) => ({ ...c })) ?? []; // Copia para no modificar el objeto de la lista global
   }
 
   manejarCurriculo(event: Event, anuncioId: number): void {
@@ -576,8 +613,8 @@ export class AnunciosComponent implements OnInit {
 
     if (this.esExterno) {
       // Para externos: usa los campos del formulario
-      nombrePostulante = this.nombreExterno[anuncio.id]!;
-      emailPostulante = this.correoExterno[anuncio.id]!;
+      nombrePostulante = this.nombreExterno[anuncio.id] ?? '';
+      emailPostulante = this.correoExterno[anuncio.id] ?? '';
     } else {
       // Para autenticados (Estudiante/Profesor): usa los datos del AuthService.
       emailPostulante = this.authService.getEmail() ?? 'no_email@example.com';
@@ -586,9 +623,14 @@ export class AnunciosComponent implements OnInit {
       nombrePostulante = this.authService.getUserName() ?? 'Usuario Autenticado';
     }
 
+    // Doble verificación (debería estar cubierto por esCurriculoInvalido)
+    if (!nombrePostulante.trim() || !emailPostulante.trim()) {
+      this.mensajeErrorCurriculo[anuncio.id] = 'Falta el nombre o correo del postulante.';
+      return;
+    }
+
     formData.append('Nombre', nombrePostulante);
     formData.append('Email', emailPostulante);
-
 
     try {
       // Si el usuario es externo, no enviamos el header de autenticación.
@@ -601,7 +643,7 @@ export class AnunciosComponent implements OnInit {
       if (this.puedeVerCurriculos()) {
         // Recargar ambas listas para que se vean los cambios
         await this.cargarTodosCurriculos();
-        await this.cargarCurriculosPorAnuncio(anuncio);
+        this.actualizarCurriculosEnAnuncio(anuncio); // Usar la función de actualización
       }
 
       this.curriculos[anuncio.id] = null;
@@ -636,7 +678,7 @@ export class AnunciosComponent implements OnInit {
 
     this.http.delete(`${this.baseUrl}/Curriculum/${c.id}`, { headers: this.getHeaders() }).subscribe({
       next: async () => {
-        // Eliminar del anuncio
+        // ✅ CORRECCIÓN: Actualizar la lista interna del anuncio
         anuncio.curriculos = anuncio.curriculos.filter((x) => x.id !== c.id);
         // Recargar la lista global para que se elimine de la carpeta lateral
         await this.cargarTodosCurriculos();
@@ -646,7 +688,7 @@ export class AnunciosComponent implements OnInit {
   }
 
   /**
-   * ✅ NUEVA FUNCIÓN para eliminar un currículum desde la carpeta lateral global.
+   * ✅ FUNCIÓN para eliminar un currículum desde la carpeta lateral global.
    * @param c El objeto Curriculum a eliminar.
    */
   eliminarCurriculoGlobal(c: Curriculum): void {
@@ -655,10 +697,11 @@ export class AnunciosComponent implements OnInit {
 
     this.http.delete(`${this.baseUrl}/Curriculum/${c.id}`, { headers: this.getHeaders() }).subscribe({
       next: async () => {
-        // Eliminar de la lista global
+        // ✅ CORRECCIÓN: Eliminar de la lista global
         this.todosCurriculos = this.todosCurriculos.filter((x) => x.id !== c.id);
 
         // Recargar todos los anuncios para actualizar las listas internas de CV
+        // (Llamamos a cargarAnuncios para asegurar la consistencia total)
         await this.cargarAnuncios();
       },
       error: (err) => console.error('Error al eliminar currículum global:', err),
@@ -671,15 +714,16 @@ export class AnunciosComponent implements OnInit {
 
   esCurriculoInvalido(anuncioId: number): boolean {
     if (!this.curriculos || !this.curriculos[anuncioId]) {
-      return true;
+      return true; // No hay archivo adjunto
     }
 
     if (this.esExterno) {
       const nombre = this.nombreExterno?.[anuncioId]?.trim();
       const correo = this.correoExterno?.[anuncioId]?.trim();
+      // Validación básica de correo
       const esCorreoValido = correo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
       if (!nombre || !esCorreoValido) {
-        return true;
+        return true; // Faltan nombre o correo válidos para externo
       }
     }
 
