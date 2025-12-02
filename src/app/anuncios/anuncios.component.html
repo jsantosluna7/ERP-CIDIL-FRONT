@@ -58,11 +58,8 @@
     <ng-template #noCarrusel>
         <div class="mb-4 rounded shadow-lg custom-carousel-height-lg d-flex align-items-center justify-content-center bg-light main-carousel-wrapper">
             <div class="text-center text-muted">
-               
                 <h5>¡Bienvenido!</h5>
                 <p>No hay anuncios destacados en el carrusel.</p>
-
-                
             </div>
         </div>
     </ng-template>
@@ -79,12 +76,13 @@
                     aria-controls="curriculumCollapse"
                     style="cursor: pointer;"
                 >
-                    📁 Carpeta de Currículos
+                    📁 Carpeta de Currículums
                     <span class="ms-auto">
-                        <i class="bi bi-chevron-down"></i> </span>
+                        <i class="bi bi-chevron-down"></i>
+                    </span>
                 </div>
 
-                 <div class="collapse" id="curriculumCollapse">
+                <div class="collapse" id="curriculumCollapse">
                     <div class="card-body p-2" style="max-height: 500px; overflow-y: auto;">
                         <div *ngIf="todosCurriculos && todosCurriculos.length > 0; else sinCV">
                             <ul class="list-group list-group-flush">
@@ -128,6 +126,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="fw-bold">Anuncios</h2>
@@ -139,10 +138,11 @@
             </div>
 
             <div *ngIf="anunciosFiltrados && anunciosFiltrados.length > 0; else sinAnuncios">
-                <div class="row">
-                    <div class="col-sm-12 col-md-6 anuncio-card" *ngFor="let anuncio of anunciosFiltrados; trackBy: trackById">
+                <!-- CAMBIO IMPORTANTE: Agregado g-4 para espaciado entre columnas y mb-4 en cada card -->
+                <div class="row g-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4 mb-4 anuncio-card" *ngFor="let anuncio of anunciosFiltrados; trackBy: trackById">
                         
-                        <div class="card border-0 shadow-lg d-flex flex-column h-100"> 
+                        <div class="card border-0 shadow-lg h-100 d-flex flex-column">
 
                             <div *ngIf="puedeEditar()" class="position-absolute top-0 end-0 d-flex gap-1 p-2" style="z-index: 5;">
                                 <button class="btn btn-warning btn-sm p-1" (click)="editarAnuncio(anuncio); $event.stopPropagation()" title="Editar">✏️</button>
@@ -160,9 +160,10 @@
                                 </small>
                             </div>
                             
+                            <!-- CAMBIO: Contenedor de imagen con altura fija para uniformidad -->
                             <div class="img-container-instagram">
                                 <div *ngIf="anuncio.urlImagenes && anuncio.urlImagenes.length > 0; else noImageCard">
-                                    <img [src]="anuncio.urlImagenes[0]" class="d-block w-100 h-100" [alt]="anuncio.titulo + ' imagen 1'" />
+                                    <img [src]="anuncio.urlImagenes[0]" class="d-block w-100 h-100" [alt]="anuncio.titulo + ' imagen 1'" style="object-fit: cover;" />
                                 </div>
                                 <ng-template #noImageCard>
                                     <div class="no-image-placeholder d-flex align-items-center justify-content-center w-100 h-100 bg-light">
@@ -171,6 +172,7 @@
                                 </ng-template>
                             </div>
 
+                            <!-- CAMBIO: Agregada clase card-body-content para mejor espaciado -->
                             <div class="card-body-content">
                                 
                                 <p class="card-text small text-muted mb-2" 
@@ -183,7 +185,8 @@
                                     {{ anuncio.expandedContent ? '▲ Ocultar detalles' : '▼ Ver más detalles' }}
                                 </button>
 
-                                <div class="d-flex gap-2 align-items-center mt-auto"> 
+                                <!-- CAMBIO: mt-3 para más espacio arriba de los botones -->
+                                <div class="d-flex gap-2 align-items-center mt-3"> 
                                     <button class="btn btn-outline-danger btn-sm flex-fill" [disabled]="procesandoLike[anuncio.id] || !puedeComentarYDarLike()" (click)="darLike(anuncio); $event.stopPropagation()">
                                         <span [class.text-danger]="anuncio.usuarioDioLike">❤️</span> {{ anuncio.likes }}
                                     </button>
@@ -192,7 +195,7 @@
                                         *ngIf="anuncio.esPasantia && puedeSubirCurriculo()"
                                         class="btn btn-outline-info btn-sm flex-fill"
                                         (click)="toggleCurriculoForm(anuncio.id); $event.stopPropagation()">
-                                        <span *ngIf="!curriculoOpen[anuncio.id]">📄 Postular</span>
+                                        <span *ngIf="!curriculoOpen[anuncio.id]"> Postular</span>
                                         <span *ngIf="curriculoOpen[anuncio.id]">❌ Cerrar Postulación</span>
                                     </button>
                                 </div>

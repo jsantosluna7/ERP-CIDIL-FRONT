@@ -3,8 +3,7 @@
 
         <!-- Logo -->
         <a class="navbar-brand titulo-pagina d-flex align-items-center" [routerLink]="['/anuncio']">
-           <img src="assets/logo-ieesl.png" alt="Logo ERP CIDIL" style="height: 32px;" class="me-2">
-
+            <img src="assets/logo-ieesl.png" alt="Logo ERP CIDIL" style="height: 32px;" class="me-2">
             Centro CIDIL
         </a>
 
@@ -14,59 +13,55 @@
             type="button" 
             data-bs-toggle="collapse" 
             data-bs-target="#navbarNav"
-            aria-controls="navbarNav" 
-            aria-expanded="false" 
+            aria-controls="navbarNav"
+            aria-expanded="false"
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Links -->
+        <!-- Contenido del menú -->
         <div class="collapse navbar-collapse" id="navbarNav">
 
-            <!-- Sección izquierda -->
-            <ul class="navbar-nav left-section me-auto">
+            <!-- Lado izquierdo -->
+            <ul class="navbar-nav me-auto left-section">
 
                 <li class="nav-item">
-                    <a class="nav-link nav-btn" 
-                       [routerLink]="['/anuncio']" 
-                       routerLinkActive="active">Anuncios</a>
+                    <a class="nav-link nav-btn" routerLink="/anuncio" routerLinkActive="active">Anuncios</a>
                 </li>
 
                 <li class="nav-item" *ngIf="authService.isAuthenticated() && puedeVerDashboard()">
-                    <a class="nav-link nav-btn" (click)="navigateToDashboard()">
-                        Dashboard
-                    </a>
+                    <a class="nav-link nav-btn" (click)="navigateToDashboard()">Dashboard</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link nav-btn" 
-                       [routerLink]="['/sobre-cidil']" 
-                       routerLinkActive="active">Sobre CIDIL</a>
+                    <a class="nav-link nav-btn" routerLink="/sobre-cidil" routerLinkActive="active">
+                        Sobre CIDIL
+                    </a>
                 </li>
 
             </ul>
 
-            <!-- Sección derecha (usuario / login) -->
+            <!-- Lado derecho -->
             <div class="right-section">
 
-                <!-- NO logueado -->
+                <!-- Usuario NO logueado -->
                 <ng-container *ngIf="!authService.isAuthenticated()">
-                    <button class="cerrar-sesion-btn" (click)="navegarLogin()">
+                    <button class="btn-login-modern" (click)="navegarLogin()">
                         Iniciar Sesión
                     </button>
                 </ng-container>
 
-                <!-- Logueado -->
+                <!-- Usuario LOGUEADO -->
                 <ng-container *ngIf="authService.isAuthenticated()">
                     <div class="dropdown">
-
+                        
                         <button 
-                            class="cerrar-sesion-btn dropdown-toggle d-flex align-items-center" 
+                            class="user-dropdown-btn dropdown-toggle d-flex align-items-center"
                             id="dropdownMenuButton"
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
 
-                            <i class="bi bi-person-circle me-2" style="font-size: 1.4rem;"></i>
+                            <i class="bi bi-person-circle me-2 icon-user"></i>
 
                             <span class="d-none d-sm-block text-start">
                                 <span class="fw-bold">Bienvenido {{ nombreUsuarioLogueado }}</span><br>
@@ -74,18 +69,30 @@
                             </span>
                         </button>
 
-                        <ul class="dropdown-menu dropdown-menu-end" [attr.aria-labelledby]="'dropdownMenuButton'">
-                            <li><a class="dropdown-item" [routerLink]="['/home/perfil']"><i class="bi bi-person"></i> Mi Perfil</a></li>
-                            <li *ngIf="puedeVerDashboard()">
-                                <a class="dropdown-item" (click)="navigateToDashboard()"><i class="bi bi-speedometer2"></i> Ir a Dashboard</a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
+                        <!-- Dropdown -->
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+
                             <li>
-                                <a class="dropdown-item text-danger" (click)="cerrarSesion()">
-                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                                    Cerrar Sesión
+                                <a class="dropdown-item" routerLink="/home/perfil">
+                                    <i class="bi bi-person me-2"></i> Mi Perfil
                                 </a>
                             </li>
+
+                            <li *ngIf="puedeVerDashboard()">
+                                <a class="dropdown-item" (click)="navigateToDashboard()">
+                                    <i class="bi bi-speedometer2 me-2"></i> Ir a Dashboard
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <!-- 🔴 Cerrar sesión -->
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" (click)="cerrarSesion()">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </ng-container>

@@ -14,17 +14,18 @@ import { createChat } from '@n8n/chat';
 })
 export class AppComponent implements AfterViewInit {
   
-  mostrarHeader = true;
+  mostrarHeader: boolean = false; // Valor inicial a falso por seguridad
 
-  // Rutas donde NO debe aparecer el header
-  private rutasOcultas = [
-    '/auth/login',
-    '/auth/registrar',
-    '/auth/recuperar-contrasena',
-    '/auth/verificacion-otp',
-    '/auth/cambiar-contrasena',
-    '/login', // por si entran directo
-    '/home/dashboard', // si también quieres ocultarlo aquí
+  /**
+   * ✅ LISTA BLANCA: Rutas donde el Header DEBE aparecer.
+   * Esto anula la necesidad de listar todas las rutas internas y de autenticación.
+   * Usamos 'anuncio' y 'sobre-cidil' como rutas base.
+   */
+  private rutasVisibles: string[] = [
+    '/anuncio',
+    '/sobre-cidil',
+    // Si la ruta principal ('/') también debe mostrar el header:
+    // '/',
   ];
 
   urlLia: string =
@@ -39,8 +40,9 @@ export class AppComponent implements AfterViewInit {
   }
 
   verificarRuta(url: string) {
-    // Revisa si la ruta actual está en la lista de rutas ocultas
-    this.mostrarHeader = !this.rutasOcultas.includes(url);
+    // Verifica si la URL actual comienza con alguna de las rutas visibles.
+    // Esto cubre rutas como /anuncio/id o /sobre-cidil?param=x
+    this.mostrarHeader = this.rutasVisibles.some(ruta => url.startsWith(ruta));
   }
 
   ngAfterViewInit(): void {

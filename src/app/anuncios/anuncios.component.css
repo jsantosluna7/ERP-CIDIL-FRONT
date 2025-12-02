@@ -126,11 +126,22 @@ body {
 
 /* =================== TARJETAS DE ANUNCIOS (UNIFORMIDAD) =================== */
 
-.anuncio-card {
-    /* El .col-* ya maneja el ancho. */
-    max-width: 100%; 
+/* === AJUSTES PARA LOS ANUNCIOS - ESPACIADO Y ORDEN === */
+
+/* Contenedor principal de los anuncios */
+.row {
+    --bs-gutter-x: 2rem; /* Espacio horizontal entre columnas */
+    --bs-gutter-y: 2rem; /* Espacio vertical entre filas */
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
 }
 
+/* Tarjetas de anuncios - MEJOR ESPACIADO */
+.anuncio-card {
+    margin-bottom: 2rem; /* Espacio adicional entre tarjetas */
+}
+
+/* Ajustes específicos para las tarjetas */
 .card {
     border-radius: 14px;
     border: none;
@@ -138,6 +149,7 @@ body {
     background: white;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: 0.2s;
+    height: 100%; /* Asegura que todas las tarjetas tengan la misma altura */
 }
 
 .card:hover {
@@ -149,6 +161,40 @@ body {
     background-color: #fcfcfc;
     border-bottom: 1px solid #e5e5e5;
     padding: 18px 20px;
+}
+
+/* Contenido de la tarjeta mejor distribuido */
+.card-body-content {
+    padding: 1.25rem; /* Más espacio interno */
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Espacio uniforme entre elementos */
+    flex-grow: 1;
+}
+
+/* Contenedor de imagen con altura fija para uniformidad */
+.img-container-instagram {
+    height: 200px; /* Altura fija */
+    overflow: hidden;
+    position: relative;
+    background-color: #f8f9fa;
+}
+
+.img-container-instagram img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.img-container-instagram:hover img {
+    transform: scale(1.03);
+}
+
+/* Espaciado específico para botones */
+.card-body-content .d-flex.gap-2 {
+    gap: 0.75rem !important;
+    margin-top: 0.5rem;
 }
 
 /* === REGLAS PARA ALTURA UNIFORME EN TARJETAS NO EXPANDIDAS === */
@@ -196,6 +242,36 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
+}
+
+/* Contenido expandido con mejor espaciado */
+.expanded-content {
+    padding: 1.25rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajuste para la sección de currículum en modo expandido */
+.expanded-content .card.card-body {
+    margin-top: 1rem;
+    padding: 1rem;
+}
+
+/* Mejor distribución de los botones de acción en la tarjeta */
+.position-absolute.top-0.end-0 {
+    padding: 0.75rem !important;
 }
 
 /* === BOTONES Y FORMULARIOS === */
@@ -253,6 +329,24 @@ body {
     .anuncio-card .card[class*="h-100"] {
         min-height: 380px; /* Altura de referencia menor en móvil */
     }
+    
+    /* Mejor espaciado en móviles */
+    .row {
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1.5rem;
+    }
+    
+    .anuncio-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .img-container-instagram {
+        height: 180px;
+    }
+    
+    .card-body-content {
+        padding: 1rem;
+    }
 
     /* Ocupar todo el ancho en móviles */
     .main-carousel-wrapper,
@@ -268,4 +362,31 @@ body {
         padding: 12px;
         text-align: center;
     }
+}
+
+/* Ajustes para pantallas grandes */
+@media (min-width: 1200px) {
+    .row {
+        --bs-gutter-x: 2.5rem;
+        --bs-gutter-y: 2.5rem;
+    }
+}
+
+/* Mantener altura uniforme en todas las tarjetas */
+.anuncio-card .card {
+    display: flex;
+    flex-direction: column;
+}
+
+.anuncio-card .card .card-body-content {
+    flex-grow: 1;
+}
+
+/* Mejorar el espaciado de los elementos dentro del modal */
+.modal-body form > * {
+    margin-bottom: 1rem;
+}
+
+.modal-body form > *:last-child {
+    margin-bottom: 0;
 }
