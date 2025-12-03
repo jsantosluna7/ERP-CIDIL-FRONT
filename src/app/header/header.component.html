@@ -29,6 +29,7 @@
                     <a class="nav-link nav-btn" routerLink="/anuncio" routerLinkActive="active">Anuncios</a>
                 </li>
 
+                <!-- AHORA TODOS LOS LOGUEADOS PUEDEN VERLO -->
                 <li class="nav-item" *ngIf="authService.isAuthenticated() && puedeVerDashboard()">
                     <a class="nav-link nav-btn" (click)="navigateToDashboard()">Dashboard</a>
                 </li>
@@ -72,17 +73,8 @@
                         <!-- Dropdown -->
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
 
-                            <li>
-                                <a class="dropdown-item" routerLink="/home/perfil">
-                                    <i class="bi bi-person me-2"></i> Mi Perfil
-                                </a>
-                            </li>
+                       
 
-                            <li *ngIf="puedeVerDashboard()">
-                                <a class="dropdown-item" (click)="navigateToDashboard()">
-                                    <i class="bi bi-speedometer2 me-2"></i> Ir a Dashboard
-                                </a>
-                            </li>
 
                             <li><hr class="dropdown-divider"></li>
 

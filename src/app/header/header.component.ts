@@ -1,63 +1,148 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common'; // TitleCasePipe importado
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
-  selector: 'app-header', 
+  selector: 'app-header',
   standalone: true,
   imports: [
-    CommonModule, 
-    TitleCasePipe,     // 👈 Correcto: Importado para usar | titlecase
-    RouterModule       
+    CommonModule,
+    TitleCasePipe,
+    RouterModule
   ],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css' 
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  
+
   nombreUsuarioLogueado: string | null = null;
-  rolActual: string | null = null;
-  
-  constructor(public authService: AuthService, private router: Router) {}
-  
+  rolActual: string = 'EXTERNO';
+
+  // Flags de rol
+  esSuperUsuario = false;
+  esAdmin = false;
+  esProfesor = false;
+  esEstudiante = false;
+  esPersonalCidil = false;
+  esExterno = true;
+
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
+
   ngOnInit(): void {
     this.cargarDatosUsuario();
-    // Es recomendable si tu servicio maneja cambios de estado en tiempo real
-    // Ejemplo: this.authService.authChanged$.subscribe(() => this.cargarDatosUsuario());
   }
 
   cargarDatosUsuario(): void {
-    if (this.authService.isAuthenticated()) {
-      // ✅ FUNCIONARÁ AHORA: Llamando al método recién agregado
-      this.nombreUsuarioLogueado = this.authService.getUserName();
-      this.rolActual = this.authService.getRole();
-    } else {
+    if (!this.authService.isAuthenticated()) {
+      this.resetFlags();
       this.nombreUsuarioLogueado = null;
-      this.rolActual = null;
+      this.rolActual = 'EXTERNO';
+      return;
     }
+
+    // Nombre mostrado
+    this.nombreUsuarioLogueado =
+      (this.authService.getUserName && this.authService.getUserName()) ||
+      (this.authService.getEmail && this.authService.getEmail()) ||
+      'Usuario';
+
+    // Rol
+    const rolRaw = (this.authService.getRole && this.authService.getRole())?.toString().toUpperCase() ?? 'EXTERNO';
+    this.rolActual = rolRaw;
+
+    this.esSuperUsuario   = rolRaw === 'SUPERUSUARIO' || rolRaw === '1';
+    this.esAdmin          = rolRaw === 'ADMINISTRADOR' || rolRaw === '2';
+    this.esProfesor       = rolRaw === 'PROFESOR' || rolRaw === '3';
+    this.esEstudiante     = rolRaw === 'ESTUDIANTE' || rolRaw === '4';
+    this.esPersonalCidil  = rolRaw === 'PERSONALCIDIL' || rolRaw === '5';
+
+    this.esExterno = !(
+      this.esSuperUsuario ||
+      this.esAdmin ||
+      this.esProfesor ||
+      this.esEstudiante ||
+      this.esPersonalCidil
+    );
   }
 
-  // --- MÉTODOS DE NAVEGACIÓN Y PERMISOS ---
-  
-  puedeVerDashboard(): boolean {
-    const rol = this.authService.getRole();
-    if (!rol) return false;
-    // Roles 1 (SuperUser) y 2 (Admin)
-    return rol === '1' || rol === '2'; 
+  resetFlags(): void {
+    this.esSuperUsuario = false;
+    this.esAdmin = false;
+    this.esProfesor = false;
+    this.esEstudiante = false;
+    this.esPersonalCidil = false;
+    this.esExterno = true;
   }
-  
+
+  // Permisos
+  puedeVerDashboard(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  puedePublicar(): boolean {
+    return this.esSuperUsuario || this.esAdmin || this.esPersonalCidil;
+  }
+
+  puedeEditar(): boolean {
+    return this.puedePublicar();
+  }
+
+  puedeVerCurriculos(): boolean {
+    return this.esSuperUsuario || this.esAdmin || this.esPersonalCidil;
+  }
+
+  puedeSubirCurriculo(): boolean {
+    return this.esProfesor || this.esEstudiante || this.esExterno;
+  }
+
+  puedeComentarYDarLike(): boolean {
+    return this.esProfesor || this.esEstudiante;
+  }
+
+  // Navegación
   navigateToDashboard(): void {
-    this.router.navigate(['/home/dashboard']);
+    if (!this.authService.isAuthenticated()) {
+      console.warn('Intento de acceder al dashboard sin estar logueado.');
+      return;
+    }
+
+    const rol = (this.authService.getRole && this.authService.getRole())?.toString().toUpperCase() ?? '';
+
+    let targetRoute = '/home/dashboard';
+
+    if (rol === 'PROFESOR' || rol === '3' || rol === 'ESTUDIANTE' || rol === '4') {
+      targetRoute = '/home/calendario';
+    }
+
+    this.router.navigate([targetRoute]).catch(err => {
+      console.error('Error navegando al dashboard desde Header:', err);
+    });
   }
 
   navegarLogin(): void {
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/auth/login']).catch(err => {
+      console.error('Error navegando a login:', err);
+    });
   }
-  
+
   cerrarSesion(): void {
-    this.authService.logout();
-    this.cargarDatosUsuario(); 
-    this.router.navigate(['/anuncio']);
+    if (this.authService.logout) {
+      this.authService.logout();
+    } else {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+
+    this.resetFlags();
+    this.nombreUsuarioLogueado = null;
+    this.rolActual = 'EXTERNO';
+
+    this.router.navigate(['/anuncio']).catch(err => {
+      console.error('Error al navegar luego de logout:', err);
+    });
   }
 }
