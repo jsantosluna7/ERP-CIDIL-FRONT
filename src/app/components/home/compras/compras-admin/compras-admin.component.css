@@ -1,0 +1,229 @@
+.general {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.general button {
+    padding: 2rem;
+}
+
+.caja-total {
+    margin-top: 2rem;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-left: 7px solid #3B82F6;
+}
+
+.caja-data {
+    padding: 1.5rem;
+}
+
+.caja-emoji {
+    align-self: center;
+    margin-right: 1.5rem;
+}
+
+.titulo p {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 10px;
+}
+
+.cantidad h2 {
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.filtrado {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 2rem 1rem;
+}
+
+.filtrado mat-form-field {
+    margin-right: 1rem;
+}
+
+.orden-data {
+    display: flex;
+    flex-direction: column;
+}
+
+.ordenes {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.ordenes fa-icon {
+    margin-right: .3rem;
+}
+
+.orden-too {
+    padding: 2rem 2rem 1.5rem 2rem;
+    transition: background 0.2s ease;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+}
+
+.orden-too-2 {
+    padding: 2rem 2rem 1.5rem 2rem;
+    transition: background 0.2s ease;
+    border-radius: 25px;
+}
+
+.orden-too:hover, .orden-too-2:hover {
+    background-color: #f6f8fa;
+}
+
+.ordenes-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.follow-chip {
+    background-color: #FFEDD5;
+    color: #c2410c;
+    padding: 0.5rem 1rem;
+    border-radius: 28px;
+    font-weight: bold;
+
+}
+
+.ordenes-title h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.ordenes-data {
+    margin-bottom: 1rem;
+}
+
+.ordenes-data h4 {
+    margin: 0;
+    padding: 0;
+    margin-bottom: .5rem;
+    font-size: 1.2rem;
+    color: #374151;
+}
+
+.ordenes-data fa-icon,
+.ordenes-data span {
+    color: #828B97;
+}
+
+.ordenes-data .data {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.ordenes-comentario {
+    background-color: #EFF6FF;
+    padding: 0.9rem 0.7rem;
+    border-radius: 12px;
+}
+
+.ordenes-comentario fa-icon,
+.ordenes-comentario span {
+    color: #828B97;
+}
+
+hr {
+    margin: 0;
+}
+
+.ordenes-expandibles {
+    background: #f3f4f6;
+    padding: 1.5rem 1rem;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+.items-title{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.items-title h4{
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.item{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    margin-top: 1rem;
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+    border: rgb(214, 214, 214) 0.5px solid;
+}
+
+.item-top{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.top-titulo{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.item-id{
+    color: #828B97;
+}
+
+.item-top-titulo{
+    font-weight: bold;
+}
+
+.item-top-2-titulo{
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.item-fecha span{
+    font-size: 0.9rem;
+}
+
+.info-pildora{
+    background-color: #DCFCE7;
+    color: #16A34A;
+    font-weight: 500;
+    padding: 0.3rem 0.5rem;
+    border-radius: 18px;
+}
+
+.item-comentario{
+    background-color: #F9FAFB;
+    padding: 1rem;
+    border-radius: 10px;
+    color: #818181;
+}
+
+.hr-item{
+    margin: 1rem 0;
+}
+
+.edit-button{
+    z-index: 9999;
+}

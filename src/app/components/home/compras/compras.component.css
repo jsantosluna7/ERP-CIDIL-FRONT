@@ -1,0 +1,17 @@
+.body-h-table {
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.botones {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}

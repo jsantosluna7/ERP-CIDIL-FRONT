@@ -274,6 +274,15 @@ export const routes: Routes = [
         canActivate: [RoleGuard],
         data: { roles: [1, 2, 3] },
       },
+      {
+        path: 'compras',
+        loadComponent: () =>
+          import(
+            './components/home/compras/compras.component'
+          ).then((m) => m.ComprasComponent),
+        canActivate: [RoleGuard],
+        data: { roles: [1, 2] },
+      },
     ],
   },
 

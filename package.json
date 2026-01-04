@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
     "@fortawesome/angular-fontawesome": "^1.0.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fullcalendar/angular": "^6.1.17",
     "@fullcalendar/core": "^6.1.17",
