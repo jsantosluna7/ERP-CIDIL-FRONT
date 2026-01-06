@@ -5,7 +5,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faFile } from '@fortawesome/free-regular-svg-icons';
 import { ComprasService } from '../../../../services/Api/compras.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
@@ -17,13 +16,22 @@ import {
   faAngleDown,
   faAngleRight,
   faBox,
+  faBoxesPacking,
   faBoxOpen,
   faBuilding,
   faCalendar,
+  faCartShopping,
+  faCircleCheck,
+  faCircleXmark,
   faClipboard,
+  faClipboardCheck,
+  faFile,
+  faMagnifyingGlass,
   faMessage,
+  faTruck,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
+import { ActualizarEstatusComponent } from './actualizar-estatus/actualizar-estatus.component';
 
 @Component({
   selector: 'app-compras-admin',
@@ -43,7 +51,15 @@ import {
 })
 export class ComprasAdminComponent {
   file = faFile;
+  lupa = faMagnifyingGlass;
+  clipCheck = faClipboardCheck;
+  cartShopping = faCartShopping;
+  camion = faTruck;
   boxOpen = faBoxOpen;
+  boxPacking = faBoxesPacking;
+  circleCheck = faCircleCheck;
+  circleXmark = faCircleXmark;
+
   calendar = faCalendar;
   upload = faUpload;
   box = faBox;
@@ -143,7 +159,13 @@ export class ComprasAdminComponent {
     this.expanded = !this.expanded;
   }
 
-  open(){
-    console.log("open");
+  actualizarItem(id: number) {
+    const dialogRef = this.dialog.open(ActualizarEstatusComponent, {
+      data: { id: id }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed');
+    });
   }
 }

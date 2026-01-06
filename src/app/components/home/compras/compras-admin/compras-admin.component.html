@@ -57,7 +57,7 @@
         style="color: black"
       ></fa-icon>
       <h3>ORD-2024-001</h3>
-      <div class="follow-chip">
+      <div class="follow-chip secondary">
         <fa-icon [icon]="box" size="sm"></fa-icon>
         <span>Recepción Parcial</span>
       </div>
@@ -104,7 +104,7 @@
               <span class="item-id">#001</span>
               <span class="item-top-titulo">Silla Ergonomica</span>
             </div>
-            <span class="info-pildora">✅ Recibido</span>
+            <span class="info-pildora success">✅ Recibido</span>
           </div>
           <div class="top-2">
             <span class="item-top-2-titulo">5 / 5 recibido</span>
@@ -120,13 +120,13 @@
         </div>
         <!-- @if () {
                   <hr class="hr-item" />
-        <button mat-raised-button color="secondary" (click)="open()" class="edit-button">
+        <button mat-raised-button color="secondary" (click)="actualizarItem(1)">
           <mat-icon>edit</mat-icon>
           Actualizar estatus de recepción
         </button>
         } -->
         <hr class="hr-item" />
-        <button mat-raised-button color="secondary" (click)="open()" class="edit-button">
+        <button mat-raised-button color="secondary" (click)="actualizarItem(1)">
           <mat-icon>edit</mat-icon>
           Actualizar estatus de recepción
         </button>
