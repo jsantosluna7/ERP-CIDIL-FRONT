@@ -61,6 +61,11 @@
         <fa-icon [icon]="box" size="sm"></fa-icon>
         <span>Recepción Parcial</span>
       </div>
+      <div class="editar-orden">
+        <button mat-icon-button (click)="editarOrden($event, 1)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
     </div>
     <div class="ordenes-data">
       <h4>Office Supplies Q4</h4>

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ComprasFileDialogComponent } from '../compras-file-dialog/compras-file-dialog.component';
 import { debounceTime, distinctUntilChanged, take } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ComprasService } from '../../../../services/Api/compras.service';
@@ -32,19 +32,20 @@ import {
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { ActualizarEstatusComponent } from './actualizar-estatus/actualizar-estatus.component';
+import { ActualizarEstatusCompraComponent } from './actualizar-estatus-compra/actualizar-estatus-compra.component';
 
 @Component({
   selector: 'app-compras-admin',
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatButton,
     MatIcon,
     FontAwesomeModule,
     MatFormFieldModule,
     MatChipsModule,
     MatInputModule,
     MatExpansionModule,
+    MatButtonModule,
   ],
   templateUrl: './compras-admin.component.html',
   styleUrl: './compras-admin.component.css',
@@ -72,7 +73,7 @@ export class ComprasAdminComponent {
   cantidadOrdenes: number = 0;
   filtroSeleccionado = new FormControl('id');
   termino = new FormControl('');
-  expanded = true;
+  expanded = false;
 
   filtros = [
     { label: 'ID', value: 'id' },
@@ -161,11 +162,24 @@ export class ComprasAdminComponent {
 
   actualizarItem(id: number) {
     const dialogRef = this.dialog.open(ActualizarEstatusComponent, {
-      data: { id: id }
+      data: { id: id },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
+      console.log('El dialogo se cerró');
+    });
+  }
+
+  editarOrden(event: MouseEvent, id: number) {
+    event.stopPropagation();
+    // Lógica para editar la orden
+
+    const dialogRef = this.dialog.open(ActualizarEstatusCompraComponent, {
+      data: { id: id },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('El dialogo se cerró');
     });
   }
 }

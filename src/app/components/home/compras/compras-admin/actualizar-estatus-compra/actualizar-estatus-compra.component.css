@@ -1,0 +1,12 @@
+.formulario {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+}
+
+.total {
+    width: 100%;
+    margin-bottom: 1rem;
+
+}
