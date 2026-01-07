@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { ComprasFileDialogComponent } from '../compras-file-dialog/compras-file-dialog.component';
-import { debounceTime, distinctUntilChanged, take } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  switchMap,
+  take,
+} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -33,6 +40,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ActualizarEstatusComponent } from './actualizar-estatus/actualizar-estatus.component';
 import { ActualizarEstatusCompraComponent } from './actualizar-estatus-compra/actualizar-estatus-compra.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-compras-admin',
@@ -80,9 +88,17 @@ export class ComprasAdminComponent {
     { label: 'Nombre', value: 'nombre' },
   ];
 
-  urlCantidadOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_ORDENES']}`;
+  ordenes: any[] = [];
 
-  constructor(private dialog: MatDialog, private _compras: ComprasService) {}
+  urlCantidadOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_ORDENES']}`;
+  urlOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_ORDENES']}`;
+  urlEstadosTimeline: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADOS_TIMELINE']}`;
+
+  constructor(
+    private dialog: MatDialog,
+    private _compras: ComprasService,
+    private _toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     //Busqueda en vivo con el backend
@@ -104,6 +120,37 @@ export class ComprasAdminComponent {
         console.error('Error al obtener la cantidad de órdenes:', err);
       },
     });
+
+    this._compras
+      .obtenerOrdenes(this.urlOrdenes)
+      .pipe(
+        switchMap((ordenes: any[]) =>
+          forkJoin(
+            ordenes.map((orden) =>
+              this._compras
+                .obtenerEstadosTimelinePorId(
+                  this.urlEstadosTimeline,
+                  orden.estadoTimelineId
+                )
+                .pipe(
+                  map((timeline) => ({
+                    ...orden,
+                    timeline,
+                  }))
+                )
+            )
+          )
+        )
+      )
+      .subscribe({
+        next: (resultado) => {
+          console.log(resultado);
+        },
+        error: (err) => {
+          this._toastr.error('No se pudieron cargar las órdenes.', 'Error');
+          console.error('Error al obtener las órdenes:', err);
+        },
+      });
   }
 
   cambiarFiltro(filtro: string): void {

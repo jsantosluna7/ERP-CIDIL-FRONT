@@ -9,6 +9,14 @@ import { ImportarPdfRespuesta } from '../../interfaces/importarPdfRespuesta';
 export class ComprasService {
   constructor(private http: HttpClient) {}
 
+  obtenerOrdenes(url: string): Observable<any[]> {
+    return this.http.get<any[]>(url);
+  }
+
+  obtenerEstadosTimelinePorId(url: string, id: number): Observable<any> {
+    return this.http.get<any>(`${url}?id=${id}`);
+  }
+
   importarPdf(
     url: string,
     file: File,
