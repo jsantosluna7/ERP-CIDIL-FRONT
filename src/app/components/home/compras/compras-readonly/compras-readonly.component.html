@@ -1,1 +1,92 @@
-<p>compras-readonly works!</p>
+<!-- Campo de introduccion y boton de importar -->
+<div class="general">
+  <div class="introduccion">
+    <h2>Mis Ordenes</h2>
+    <p>Realice un seguimiento de las órdenes de compra de su departamento</p>
+  </div>
+</div>
+
+<!-- Caja de total de órdenes -->
+<div class="caja-total">
+  <div class="caja-data">
+    <div class="titulo">
+      <p>Total de Pedidos</p>
+    </div>
+    <div class="cantidad">
+      <h2>{{ cantidadOrdenes }}</h2>
+    </div>
+  </div>
+  <div class="caja-emoji">
+    <fa-icon [icon]="file" size="3x" style="color: #1825aa"></fa-icon>
+  </div>
+</div>
+
+<!-- Filtros de búsqueda -->
+<div class="filtrado">
+  <!-- Campo de Filtro -->
+  <mat-form-field appearance="fill">
+    <mat-label>Buscar por {{ filtroSeleccionado.value | titlecase }}</mat-label>
+    <input matInput [formControl]="termino" placeholder="Buscar..." />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-chip-listbox
+    [formControl]="filtroSeleccionado"
+    aria-label="Filtros de Búsqueda"
+    [ariaOrientation]="'horizontal'"
+    (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'nombre')"
+  >
+    @for (filtro of filtros; track filtro) {
+    <mat-chip-option [value]="filtro.value">{{ filtro.label }}</mat-chip-option>
+    }
+  </mat-chip-listbox>
+</div>
+
+<!-- Caja de órdenes -->
+<div class="ordenes" (click)="ordenes(1)">
+  <div class="orden-too">
+    <div class="ordenes-title">
+      <h3>ORD-2024-001</h3>
+      <div class="follow-chip secondary">
+        <fa-icon [icon]="box" size="sm"></fa-icon>
+        <span>Recepción Parcial</span>
+      </div>
+    </div>
+    <div class="ordenes-data">
+      <h4>Office Supplies Q4</h4>
+      <div class="data">
+        <div class="solicitado">
+          <fa-icon [icon]="calendar" size="sm"></fa-icon>
+          <span>Solicitado: 2024-11-01</span>
+        </div>
+        <div class="cantidad">
+          <fa-icon [icon]="box" size="sm"></fa-icon>
+          <span>3 items • 1 recibido</span>
+        </div>
+      </div>
+    </div>
+    <div class="barra-progreso">
+      <div class="labels">
+        <span>Progreso</span>
+        <span>33%</span>
+      </div>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Example 20px high"
+        aria-valuenow="25"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="height: 20px"
+      >
+        <div class="progress-bar" style="width: 25%"></div>
+      </div>
+    </div>
+    <div class="boton-info">
+      <div class="a-info">
+        <span>Ver detalles y seguimiento</span>
+        <fa-icon [icon]="arrowRight" size="sm"></fa-icon>
+      </div>
+    </div>
+  </div>
+</div>

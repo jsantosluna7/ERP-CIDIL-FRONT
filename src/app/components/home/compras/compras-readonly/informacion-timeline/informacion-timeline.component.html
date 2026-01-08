@@ -1,0 +1,20 @@
+<mat-dialog-content>
+  <form class="formulario">
+    <mat-form-field class="total">
+      <mat-label>Cantidad Recibida</mat-label>
+      <input matInput placeholder="Ej. 10" />
+    </mat-form-field>
+
+    <mat-form-field class="total">
+      <mat-label>Comentarios</mat-label>
+      <textarea matInput #message maxlength="256" placeholder="Ej. El item presenta..."></textarea>
+      <mat-hint align="end">{{message.value.length}} / 256</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button (click)="onNoCancelar()">Cancelar</button>
+  <button mat-raised-button [mat-dialog-close]="onSiActualizar()" cdkFocusInitial>
+    Ok
+  </button>
+</mat-dialog-actions>

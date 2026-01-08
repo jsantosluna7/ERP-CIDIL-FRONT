@@ -1,0 +1,204 @@
+.general {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.general button {
+  padding: 2rem;
+}
+
+.caja-total {
+  margin-top: 2rem;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-left: 7px solid #1825AA;
+}
+
+.caja-data {
+  padding: 1.5rem;
+}
+
+.caja-emoji {
+  align-self: center;
+  margin-right: 1.5rem;
+}
+
+.titulo p {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 10px;
+}
+
+.cantidad h2 {
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+}
+
+.filtrado {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 2rem 1rem;
+}
+
+.filtrado mat-form-field {
+  margin-right: 1rem;
+}
+
+.orden-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.ordenes {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 25px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  box-shadow: 1px 15px 38px -32px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 1px 15px 38px -32px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 1px 15px 38px -32px rgba(0, 0, 0, 0.75);
+}
+
+.ordenes fa-icon {
+  margin-right: 0.3rem;
+}
+
+.orden-too {
+  padding: 2rem 2rem 1.5rem 2rem;
+  transition: background 0.2s ease;
+  border-radius: 25px;
+}
+
+.orden-too:hover {
+  background-color: #f6f8fa;
+}
+
+.ordenes-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.follow-chip {
+  padding: 0.5rem 1rem;
+  border-radius: 28px;
+  font-weight: bold;
+}
+
+.ordenes-title h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.editar-orden {
+  margin-left: auto;
+  z-index: 1000;
+}
+
+.ordenes-data {
+  margin-bottom: 1rem;
+}
+
+.ordenes-data h4 {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #374151;
+  font-weight: lighter;
+}
+
+.ordenes-data fa-icon,
+.ordenes-data span {
+  color: #828b97;
+}
+
+.ordenes-data .data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+hr {
+  margin: 0;
+}
+
+.labels{
+  color: #828b97;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+
+.progress-bar{
+    background-color: #1825AA;
+}
+
+.boton-info{
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    color: #1825AA;
+}
+
+.a-info{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.secondary {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.warning {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.primary {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.info {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.purple {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.orange {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.cancelado {
+  background: #fee2e2;
+  color: #dc2626;
+}
