@@ -214,6 +214,21 @@ fa-icon {
     background-color: #c2410c;
 }
 
+.hide-scroll {
+  overflow-y: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE y Edge viejo */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Edge, Safari */
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 /* COLORES */
 
 .secondary {
