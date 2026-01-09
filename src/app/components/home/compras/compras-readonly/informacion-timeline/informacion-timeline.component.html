@@ -1,20 +1,132 @@
-<mat-dialog-content>
-  <form class="formulario">
-    <mat-form-field class="total">
-      <mat-label>Cantidad Recibida</mat-label>
-      <input matInput placeholder="Ej. 10" />
-    </mat-form-field>
+<mat-dialog-content class="formulario">
+  <div class="orden-info-top">
+    <div class="orden-title">
+      <span class="orden-id">ORD-2024-001</span>
+      <span>Office Supplies Q4</span>
+    </div>
+    <div class="close-btn">
+      <button mat-icon-button (click)="onNoCancelar()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <hr />
+  <div class="orden-info-bottom">
+    <div class="bottom-title">
+      <fa-icon [icon]="clipCheck" size="sm"></fa-icon>
+      <span>Información de las ordenes</span>
+    </div>
+    <div class="bottom-title-1">
+      <div class="part-1">
+        <div class="status">
+          <span>Status:</span>
+          <div class="follow-chip secondary">
+            <fa-icon [icon]="box" size="sm"></fa-icon>
+            <span>Recepción Parcial</span>
+          </div>
+        </div>
+        <span>Subido: <strong>2024-11-02</strong></span>
+      </div>
+      <div class="part-2">
+        <span class="solicitado">Solicitado: <strong>2024-11-01</strong></span>
+        <span>Total Items: <strong>3</strong></span>
+      </div>
+    </div>
+    <hr />
+    <div class="orden-info-bottom-comentario">
+      <div class="comentario-title">
+        <fa-icon [icon]="mensaje" size="sm"></fa-icon>
+        <span>Comentario:</span>
+      </div>
+      <span>Urgent - needed for new employees</span>
+    </div>
+  </div>
+  <div class="orden-info">
+    <div class="orden-info-title">
+      <fa-icon [icon]="boxPacking" size="sm"></fa-icon>
+      <span>Items (3)</span>
+    </div>
 
-    <mat-form-field class="total">
-      <mat-label>Comentarios</mat-label>
-      <textarea matInput #message maxlength="256" placeholder="Ej. El item presenta..."></textarea>
-      <mat-hint align="end">{{message.value.length}} / 256</mat-hint>
-    </mat-form-field>
-  </form>
+    <div class="orden-title-middle">
+      <div class="items-data">
+        <div class="item">
+          <div class="item-top">
+            <div class="top-1">
+              <div class="top-titulo">
+                <span class="item-id">#001</span>
+                <span class="item-top-titulo">Silla Ergonomica</span>
+              </div>
+              <div class="info-pildora secondary">
+                <fa-icon [icon]="box" size="sm"></fa-icon>
+                <span>Recepción Parcial</span>
+              </div>
+            </div>
+            <div class="top-2">
+              <span class="item-top-2-titulo">5 / 5 recibido</span>
+              <div class="item-fecha">
+                <fa-icon [icon]="calendar" size="sm"></fa-icon>
+                <span>2024-11-05</span>
+              </div>
+            </div>
+          </div>
+          <div class="item-comentario">
+            <fa-icon [icon]="mensaje" size="sm"></fa-icon>
+            <span>Urgent - needed for new employees</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="orden-timeline-sin-linea">
+      <div class="timeline-title">
+        <fa-icon [icon]="calendar" size="sm"></fa-icon>
+        <span>Orden Timeline</span>
+      </div>
+      <div class="timeline">
+        <div class="timeline-icon">
+          <div class="iconos secondary">
+            <fa-icon [icon]="calendar"></fa-icon>
+          </div>
+          <div class="linea"></div>
+        </div>
+        <div class="texto">
+          <span class="texto-orden">Orden Requerida</span>
+          <div class="timeline-fecha">
+            <fa-icon [icon]="calendar"></fa-icon>
+            <span>2024-11-10</span>
+          </div>
+        </div>
+      </div>
+            <div class="timeline">
+        <div class="timeline-icon">
+          <div class="iconos secondary">
+            <fa-icon [icon]="calendar"></fa-icon>
+          </div>
+          <div class="linea"></div>
+        </div>
+        <div class="texto">
+          <span class="texto-orden">Orden Requerida</span>
+          <div class="timeline-fecha">
+            <fa-icon [icon]="calendar"></fa-icon>
+            <span>2024-11-10</span>
+          </div>
+        </div>
+      </div>
+            <div class="timeline">
+        <div class="timeline-icon">
+          <div class="iconos secondary">
+            <fa-icon [icon]="calendar"></fa-icon>
+          </div>
+          <!-- <div class="linea"></div> -->
+        </div>
+        <div class="texto">
+          <span class="texto-orden">Orden Requerida</span>
+          <div class="timeline-fecha">
+            <fa-icon [icon]="calendar"></fa-icon>
+            <span>2024-11-10</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-raised-button (click)="onNoCancelar()">Cancelar</button>
-  <button mat-raised-button [mat-dialog-close]="onSiActualizar()" cdkFocusInitial>
-    Ok
-  </button>
-</mat-dialog-actions>
