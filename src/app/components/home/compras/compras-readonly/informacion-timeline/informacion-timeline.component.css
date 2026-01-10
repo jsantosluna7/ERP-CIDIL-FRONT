@@ -104,6 +104,10 @@ fa-icon {
   border: rgb(214, 214, 214) 0.5px solid;
 }
 
+.items-data{
+  margin-bottom: 1rem;
+}
+
 .item-top {
   display: flex;
   flex-direction: row;
@@ -135,10 +139,13 @@ fa-icon {
   font-size: 0.9rem;
 }
 
-.info-pildora {
-  font-weight: 500;
-  padding: 0.3rem 0.5rem;
-  border-radius: 18px;
+.pildora {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  width: fit-content;
 }
 
 .item-comentario {
