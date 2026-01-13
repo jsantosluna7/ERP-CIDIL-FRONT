@@ -5,6 +5,7 @@ import {
   distinctUntilChanged,
   forkJoin,
   map,
+  of,
   switchMap,
   take,
 } from 'rxjs';
@@ -41,6 +42,48 @@ import {
 import { ActualizarEstatusComponent } from './actualizar-estatus/actualizar-estatus.component';
 import { ActualizarEstatusCompraComponent } from './actualizar-estatus-compra/actualizar-estatus-compra.component';
 import { ToastrService } from 'ngx-toastr';
+import { UtilitiesService } from '../../../../services/Utilities/utilities.service';
+
+export interface OrdenSolicitud {
+  id: number;
+  codigo: string;
+  nombre: string;
+  comentario: string;
+  solicitadoPor: string;
+  creadoPor: number;
+  departamento: string | null;
+  unidadNegocio: string;
+  estadoTimelineId: number;
+  itemsCount: number;
+  fechaSolicitud: string; // YYYY-MM-DD
+  fechaSubida: string; // YYYY-MM-DD
+  actualizadoEn: string; // ISO datetime
+  timeline: Timeline;
+  items: ItemOrden[];
+}
+
+export interface ItemOrden {
+  id: number;
+  ordenId: number;
+  numeroLista: string;
+  nombre: string;
+  cantidad: number;
+  cantidadRecibida: number;
+  comentario: string | null;
+  estadoTimelineId: number;
+  actualizadoEn: string;
+  estadosTimeline: Timeline;
+  fechaActualizacion: string;
+}
+
+export interface Timeline {
+  id: number;
+  activo: boolean;
+  codigo: string;
+  color: string;
+  icono: string;
+  nombre: string;
+}
 
 @Component({
   selector: 'app-compras-admin',
@@ -59,6 +102,38 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './compras-admin.component.css',
 })
 export class ComprasAdminComponent {
+  ordenes: OrdenSolicitud[] = [];
+
+  cantidadOrdenes: number = 0;
+  filtroSeleccionado = new FormControl('id');
+  termino = new FormControl('');
+  expandedOrderId: number | null = null;
+
+  filtros = [
+    { label: 'ID', value: 'id' },
+    { label: 'Nombre', value: 'nombre' },
+  ];
+
+  iconMap: Record<string, any> = {
+    file: faFile,
+    lupa: faMagnifyingGlass,
+    clipCheck: faClipboardCheck,
+    cartShopping: faCartShopping,
+    camion: faTruck,
+    boxOpen: faBoxOpen,
+    boxPacking: faBoxesPacking,
+    circleCheck: faCircleCheck,
+    circleXmark: faCircleXmark,
+    calendar: faCalendar,
+    upload: faUpload,
+    box: faBox,
+    dep: faBuilding,
+    mensaje: faMessage,
+    angelRight: faAngleRight,
+    angelDown: faAngleDown,
+    clip: faClipboard,
+  };
+
   file = faFile;
   lupa = faMagnifyingGlass;
   clipCheck = faClipboardCheck;
@@ -78,26 +153,15 @@ export class ComprasAdminComponent {
   angelDown = faAngleDown;
   clip = faClipboard;
 
-  cantidadOrdenes: number = 0;
-  filtroSeleccionado = new FormControl('id');
-  termino = new FormControl('');
-  expanded = false;
-
-  filtros = [
-    { label: 'ID', value: 'id' },
-    { label: 'Nombre', value: 'nombre' },
-  ];
-
-  ordenes: any[] = [];
-
   urlCantidadOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_ORDENES']}`;
   urlOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_ORDENES']}`;
-  urlEstadosTimeline: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADOS_TIMELINE']}`;
+  urlEstadosTimeline: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADOS_TIMELINE_ID']}`;
 
   constructor(
     private dialog: MatDialog,
     private _compras: ComprasService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
+    private _utilidades: UtilitiesService
   ) {}
 
   ngOnInit(): void {
@@ -112,6 +176,77 @@ export class ComprasAdminComponent {
         }
       });
 
+    this.cargarCantidadCompras();
+    this.cargarCompras();
+  }
+
+  cargarCompras(): void {
+    this._compras
+      .obtenerOrdenes(this.urlOrdenes)
+      .pipe(
+        switchMap((ordenes: OrdenSolicitud[]) =>
+          forkJoin(
+            ordenes.map((orden) =>
+              forkJoin({
+                timeline: this._compras.obtenerEstadosTimelinePorId(
+                  this.urlEstadosTimeline,
+                  orden.estadoTimelineId
+                ),
+                items: this._compras.obtenerItemsOrden(orden.id).pipe(
+                  switchMap((items: ItemOrden[]) => {
+                    // � si no hay items
+                    if (!items || items.length === 0) {
+                      return of([]);
+                    }
+
+                    return forkJoin(
+                      items.map((item) =>
+                        this._compras
+                          .obtenerEstadosTimelinePorId(
+                            this.urlEstadosTimeline,
+                            item.estadoTimelineId
+                          )
+                          .pipe(
+                            map((estadosTimeline) => ({
+                              ...item,
+                              estadosTimeline,
+                              fechaActualizacion: new Date(
+                                item.actualizadoEn
+                              ).toLocaleDateString('es-DO', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              }),
+                            }))
+                          )
+                      )
+                    );
+                  })
+                ),
+              }).pipe(
+                map(({ timeline, items }) => ({
+                  ...orden,
+                  timeline,
+                  items,
+                }))
+              )
+            )
+          )
+        )
+      )
+      .subscribe({
+        next: (resultado) => {
+          console.log(resultado);
+          this.ordenes = resultado;
+        },
+        error: (err) => {
+          this._toastr.error('No se pudieron cargar las órdenes.', 'Error');
+          console.error('Error al obtener las órdenes:', err);
+        },
+      });
+  }
+
+  cargarCantidadCompras(): void {
     this._compras.cantidadOrdenes(this.urlCantidadOrdenes).subscribe({
       next: (cantidad) => {
         this.cantidadOrdenes = cantidad;
@@ -120,37 +255,6 @@ export class ComprasAdminComponent {
         console.error('Error al obtener la cantidad de órdenes:', err);
       },
     });
-
-    this._compras
-      .obtenerOrdenes(this.urlOrdenes)
-      .pipe(
-        switchMap((ordenes: any[]) =>
-          forkJoin(
-            ordenes.map((orden) =>
-              this._compras
-                .obtenerEstadosTimelinePorId(
-                  this.urlEstadosTimeline,
-                  orden.estadoTimelineId
-                )
-                .pipe(
-                  map((timeline) => ({
-                    ...orden,
-                    timeline,
-                  }))
-                )
-            )
-          )
-        )
-      )
-      .subscribe({
-        next: (resultado) => {
-          console.log(resultado);
-        },
-        error: (err) => {
-          this._toastr.error('No se pudieron cargar las órdenes.', 'Error');
-          console.error('Error al obtener las órdenes:', err);
-        },
-      });
   }
 
   cambiarFiltro(filtro: string): void {
@@ -203,8 +307,8 @@ export class ComprasAdminComponent {
       .subscribe((result) => {});
   }
 
-  toggle() {
-    this.expanded = !this.expanded;
+  toggle(id: number) {
+    this.expandedOrderId = this.expandedOrderId === id ? null : id;
   }
 
   actualizarItem(id: number) {

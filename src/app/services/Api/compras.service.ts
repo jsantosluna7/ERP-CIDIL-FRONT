@@ -7,14 +7,37 @@ import { ImportarPdfRespuesta } from '../../interfaces/importarPdfRespuesta';
   providedIn: 'root',
 })
 export class ComprasService {
+  urlPrincipal: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESPECIALIZADO']}`;
+  urlPrincipalItems: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESPECIALIZADO_ITEMS']}`;
+  urlItemsOrden: string = `${process.env['ENDPOINT_ESPECIALIZADO_ITEMS_ORDEN']}`;
+  urlActualizarOrden: string = `${process.env['ENDPOINT_ACTUALIZAR_ESTADO_ORDEN']}`;
+  urlActualizarItem: string = `${process.env['ENDPOINT_ACTUALIZAR_RECEPCION']}`;
+
   constructor(private http: HttpClient) {}
 
   obtenerOrdenes(url: string): Observable<any[]> {
     return this.http.get<any[]>(url);
   }
 
+  obtenerEstadosTimeline(url: string): Observable<any[]> {
+    return this.http.get<any[]>(url);
+  }
+
   obtenerEstadosTimelinePorId(url: string, id: number): Observable<any> {
     return this.http.get<any>(`${url}?id=${id}`);
+  }
+
+  obtenerItemsOrden(id: number): Observable<any> {
+    return this.http.get(`${this.urlPrincipal}${id}${this.urlItemsOrden}`);
+  }
+
+  actualizarEstadoOrden(id: number, body: any): Observable<any> {
+    return this.http.post(`${this.urlPrincipal}${id}${this.urlActualizarOrden}`, body);
+  }
+
+  actualizarEstadoItem(id:number, body: any): Observable<any> {
+    console.log(`${this.urlPrincipalItems}${id}${this.urlActualizarItem}`)
+    return this.http.post(`${this.urlPrincipalItems}${id}${this.urlActualizarItem}`, body);
   }
 
   importarPdf(

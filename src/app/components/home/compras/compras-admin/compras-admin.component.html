@@ -48,52 +48,56 @@
 </div>
 
 <!-- Caja de órdenes -->
+@for (orden of ordenes; track orden.id) {
 <div class="ordenes">
-  <div [className]="expanded ? 'orden-too' : 'orden-too-2'" (click)="toggle()">
+  <div
+    [className]="expandedOrderId ? 'orden-too' : 'orden-too-2'"
+    (click)="toggle(orden.id)"
+  >
     <div class="ordenes-title">
       <fa-icon
-        [icon]="expanded ? angelDown : angelRight"
+        [icon]="expandedOrderId ? angelDown : angelRight"
         size="xl"
         style="color: black"
       ></fa-icon>
-      <h3>ORD-2024-001</h3>
-      <div class="follow-chip secondary">
-        <fa-icon [icon]="box" size="sm"></fa-icon>
-        <span>Recepción Parcial</span>
+      <h3>{{ orden.codigo }}</h3>
+      <div class="follow-chip" [ngClass]="orden.timeline.color">
+        <fa-icon [icon]="iconMap[orden.timeline.icono]" size="sm"></fa-icon>
+        <span>{{ orden.timeline.nombre }}</span>
       </div>
       <div class="editar-orden">
-        <button mat-icon-button (click)="editarOrden($event, 1)">
+        <button mat-icon-button (click)="editarOrden($event, orden.id)">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
     </div>
     <div class="ordenes-data">
-      <h4>Office Supplies Q4</h4>
+      <h4>{{ orden.nombre }}</h4>
       <div class="data">
         <div class="solicitado">
           <fa-icon [icon]="calendar" size="sm"></fa-icon>
-          <span>Solicitado: 2024-11-01</span>
+          <span>Solicitado: {{ orden.fechaSolicitud }}</span>
         </div>
         <div class="subido">
           <fa-icon [icon]="upload" size="sm"></fa-icon>
-          <span>Subido: 2024-11-02</span>
+          <span>Subido: {{ orden.fechaSubida }}</span>
         </div>
         <div class="cantidad">
           <fa-icon [icon]="box" size="sm"></fa-icon>
-          <span>3 items</span>
+          <span>{{ orden.itemsCount }} items</span>
         </div>
         <div class="dep">
           <fa-icon [icon]="dep" size="sm"></fa-icon>
-          <span>Operaciones</span>
+          <span>{{ orden.departamento ?? "Compras" }}</span>
         </div>
       </div>
     </div>
     <div class="ordenes-comentario">
       <fa-icon [icon]="mensaje" size="sm"></fa-icon>
-      <span>Urgent - needed for new employees</span>
+      <span>{{ orden.comentario }}</span>
     </div>
   </div>
-  @if (expanded) {
+  @if (expandedOrderId === orden.id) {
   <hr />
 
   <div class="ordenes-expandibles">
@@ -102,29 +106,30 @@
       <h4>Items de la Orden</h4>
     </div>
     <div class="items-data">
+      @for (item of orden.items; track item.id) {
       <div class="item">
         <div class="item-top">
           <div class="top-1">
             <div class="top-titulo">
-              <span class="item-id">#001</span>
-              <span class="item-top-titulo">Silla Ergonomica</span>
+              <span class="item-id">#{{item.numeroLista}}</span>
+              <span class="item-top-titulo">{{item.nombre}}</span>
             </div>
-            <div class="pildora success">
-              <fa-icon [icon]="clipCheck" size="sm"></fa-icon>
-              <span>Recibido</span>
+            <div class="pildora" [ngClass]="item.estadosTimeline.color">
+              <fa-icon [icon]="iconMap[item.estadosTimeline.icono]" size="sm"></fa-icon>
+              <span>{{item.estadosTimeline.nombre}}</span>
             </div>
           </div>
           <div class="top-2">
-            <span class="item-top-2-titulo">5 / 5 recibido</span>
+            <span class="item-top-2-titulo">{{item.cantidadRecibida}} / {{item.cantidad}} recibido</span>
             <div class="item-fecha">
               <fa-icon [icon]="calendar" size="sm"></fa-icon>
-              <span>2024-11-05</span>
+              <span>{{item.fechaActualizacion}}</span>
             </div>
           </div>
         </div>
         <div class="item-comentario">
           <fa-icon [icon]="mensaje" size="sm"></fa-icon>
-          <span>Urgent - needed for new employees</span>
+          <span>{{item.comentario}}</span>
         </div>
         <!-- @if () {
                   <hr class="hr-item" />
@@ -134,12 +139,14 @@
         </button>
         } -->
         <hr class="hr-item" />
-        <button mat-raised-button color="secondary" (click)="actualizarItem(1)">
+        <button mat-raised-button color="secondary" (click)="actualizarItem(item.id)">
           <mat-icon>edit</mat-icon>
           Actualizar estatus de recepción
         </button>
       </div>
+      }
     </div>
   </div>
   }
 </div>
+}
