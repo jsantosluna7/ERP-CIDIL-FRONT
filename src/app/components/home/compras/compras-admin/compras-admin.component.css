@@ -234,6 +234,15 @@ hr {
   margin: 1rem 0;
 }
 
+.spinner{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin: 1.5rem 0;
+}
+
 .secondary {
   background: #ffedd5;
   color: #c2410c;

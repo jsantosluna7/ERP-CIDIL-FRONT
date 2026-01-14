@@ -19,18 +19,6 @@ export class ComprasService {
     return this.http.get<any[]>(url);
   }
 
-  obtenerEstadosTimeline(url: string): Observable<any[]> {
-    return this.http.get<any[]>(url);
-  }
-
-  obtenerEstadosTimelinePorId(url: string, id: number): Observable<any> {
-    return this.http.get<any>(`${url}?id=${id}`);
-  }
-
-  obtenerItemsOrden(id: number): Observable<any> {
-    return this.http.get(`${this.urlPrincipal}${id}${this.urlItemsOrden}`);
-  }
-
   actualizarEstadoOrden(id: number, body: any): Observable<any> {
     return this.http.post(`${this.urlPrincipal}${id}${this.urlActualizarOrden}`, body);
   }
@@ -50,9 +38,5 @@ export class ComprasService {
     formData.append('idUsuario', idUsuario.toString());
 
     return this.http.post<ImportarPdfRespuesta>(url, formData);
-  }
-
-  cantidadOrdenes(url: string): Observable<number> {
-    return this.http.get<number>(url);
   }
 }

@@ -52,7 +52,7 @@
 <div class="ordenes">
   <div
     [className]="expandedOrderId ? 'orden-too' : 'orden-too-2'"
-    (click)="toggle(orden.id)"
+    (click)="toggle(orden.id, orden)"
   >
     <div class="ordenes-title">
       <fa-icon
@@ -100,6 +100,12 @@
   @if (expandedOrderId === orden.id) {
   <hr />
 
+  @if (orden.loadingItems) {
+  <div class="spinner">
+    <mat-spinner diameter="30"></mat-spinner>
+    <span>Cargando items...</span>
+  </div>
+  } @if (!orden.loadingItems && orden.items?.length) {
   <div class="ordenes-expandibles">
     <div class="items-title">
       <fa-icon [icon]="clip" size="lg"></fa-icon>
@@ -111,42 +117,58 @@
         <div class="item-top">
           <div class="top-1">
             <div class="top-titulo">
-              <span class="item-id">#{{item.numeroLista}}</span>
-              <span class="item-top-titulo">{{item.nombre}}</span>
+              <span class="item-id">#{{ item.numeroLista }}</span>
+              <span class="item-top-titulo">{{ item.nombre }}</span>
             </div>
             <div class="pildora" [ngClass]="item.estadosTimeline.color">
-              <fa-icon [icon]="iconMap[item.estadosTimeline.icono]" size="sm"></fa-icon>
-              <span>{{item.estadosTimeline.nombre}}</span>
+              <fa-icon
+                [icon]="iconMap[item.estadosTimeline.icono]"
+                size="sm"
+              ></fa-icon>
+              <span>{{ item.estadosTimeline.nombre }}</span>
             </div>
           </div>
           <div class="top-2">
-            <span class="item-top-2-titulo">{{item.cantidadRecibida}} / {{item.cantidad}} recibido</span>
+            <span class="item-top-2-titulo"
+              >{{ item.cantidadRecibida }} / {{ item.cantidad }} recibido</span
+            >
             <div class="item-fecha">
               <fa-icon [icon]="calendar" size="sm"></fa-icon>
-              <span>{{item.fechaActualizacion}}</span>
+              <span>{{ item.fechaActualizacion }}</span>
             </div>
           </div>
         </div>
         <div class="item-comentario">
           <fa-icon [icon]="mensaje" size="sm"></fa-icon>
-          <span>{{item.comentario}}</span>
+          <span>{{ item.comentario }}</span>
         </div>
-        <!-- @if () {
-                  <hr class="hr-item" />
-        <button mat-raised-button color="secondary" (click)="actualizarItem(1)">
+        @if (item.estadoTimelineId != 7) {
+        <hr class="hr-item" />
+        <button
+          mat-raised-button
+          color="secondary"
+          (click)="actualizarItem(item.id)"
+        >
           <mat-icon>edit</mat-icon>
           Actualizar estatus de recepción
         </button>
-        } -->
-        <hr class="hr-item" />
+        }
+        <!-- <hr class="hr-item" />
         <button mat-raised-button color="secondary" (click)="actualizarItem(item.id)">
           <mat-icon>edit</mat-icon>
           Actualizar estatus de recepción
-        </button>
+        </button> -->
       </div>
       }
     </div>
   </div>
+  } 
+
+  @if (!orden.loadingItems && orden.items?.length === 0) {
+    <p>No hay items para esta orden.</p>
   }
+
+}
 </div>
+
 }

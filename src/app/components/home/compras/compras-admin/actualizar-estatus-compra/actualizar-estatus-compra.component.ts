@@ -19,6 +19,8 @@ import { Timeline } from '../compras-admin.component';
 import { map, switchMap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../../../services/Api/Usuarios/usuarios.service';
+import { CantidadOrdenesCacheService } from '../../../../../core/CantidadOrdenesCache/cantidad-ordenes-cache.service';
+import { EstadosTimelineCacheService } from '../../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
 
 export interface Ordenes {
   id: number;
@@ -53,7 +55,8 @@ export class ActualizarEstatusCompraComponent {
   constructor(
     private _compras: ComprasService,
     private _toastr: ToastrService,
-    private _usuarios: UsuariosService
+    private _usuarios: UsuariosService,
+    private _estadosTimeline: EstadosTimelineCacheService
   ) {}
 
   ngOnInit(): void {
@@ -65,7 +68,7 @@ export class ActualizarEstatusCompraComponent {
   }
 
   obtenerEstadoTimeline() {
-    this._compras.obtenerEstadosTimeline(this.urlEstadosTimeline).subscribe({
+    this._estadosTimeline.obtenerTodos(this.urlEstadosTimeline).subscribe({
       next: (data: Timeline[]) => {
         this.timelines = data;
       },
@@ -91,10 +94,11 @@ export class ActualizarEstatusCompraComponent {
 
     this._compras.actualizarEstadoOrden(this.id(), cambios).subscribe({
       next: (act) => {
-        this._toastr.success("La orden se actualizó con éxito", "Éxito")
-      }, error: (err) => {
-        this._toastr.error(err)
-      }
+        this._toastr.success('La orden se actualizó con éxito', 'Éxito');
+      },
+      error: (err) => {
+        this._toastr.error(err);
+      },
     });
 
     this.dialogRef.close(cambios);

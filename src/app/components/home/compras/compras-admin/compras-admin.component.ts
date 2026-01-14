@@ -40,9 +40,15 @@ import {
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { ActualizarEstatusComponent } from './actualizar-estatus/actualizar-estatus.component';
-import { ActualizarEstatusCompraComponent } from './actualizar-estatus-compra/actualizar-estatus-compra.component';
+import {
+  ActualizarEstatusCompraComponent,
+  Ordenes,
+} from './actualizar-estatus-compra/actualizar-estatus-compra.component';
 import { ToastrService } from 'ngx-toastr';
-import { UtilitiesService } from '../../../../services/Utilities/utilities.service';
+import { CantidadOrdenesCacheService } from '../../../../core/CantidadOrdenesCache/cantidad-ordenes-cache.service';
+import { EstadosTimelineCacheService } from '../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ItemsOrdenCacheService } from '../../../../core/ItemsOrdenCache/items-orden-cache.service';
 
 export interface OrdenSolicitud {
   id: number;
@@ -59,7 +65,9 @@ export interface OrdenSolicitud {
   fechaSubida: string; // YYYY-MM-DD
   actualizadoEn: string; // ISO datetime
   timeline: Timeline;
-  items: ItemOrden[];
+  items?: ItemOrden[];
+  loadingItems?: boolean;
+  itemsLoaded?: boolean;
 }
 
 export interface ItemOrden {
@@ -97,12 +105,14 @@ export interface Timeline {
     MatInputModule,
     MatExpansionModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './compras-admin.component.html',
   styleUrl: './compras-admin.component.css',
 })
 export class ComprasAdminComponent {
   ordenes: OrdenSolicitud[] = [];
+  items: ItemOrden[] = [];
 
   cantidadOrdenes: number = 0;
   filtroSeleccionado = new FormControl('id');
@@ -161,7 +171,9 @@ export class ComprasAdminComponent {
     private dialog: MatDialog,
     private _compras: ComprasService,
     private _toastr: ToastrService,
-    private _utilidades: UtilitiesService
+    private _cantidadOrdenes: CantidadOrdenesCacheService,
+    private _estadosTimeline: EstadosTimelineCacheService,
+    private _itemsOrden: ItemsOrdenCacheService
   ) {}
 
   ngOnInit(): void {
@@ -188,46 +200,14 @@ export class ComprasAdminComponent {
           forkJoin(
             ordenes.map((orden) =>
               forkJoin({
-                timeline: this._compras.obtenerEstadosTimelinePorId(
+                timeline: this._estadosTimeline.obtenerPorId(
                   this.urlEstadosTimeline,
                   orden.estadoTimelineId
                 ),
-                items: this._compras.obtenerItemsOrden(orden.id).pipe(
-                  switchMap((items: ItemOrden[]) => {
-                    // � si no hay items
-                    if (!items || items.length === 0) {
-                      return of([]);
-                    }
-
-                    return forkJoin(
-                      items.map((item) =>
-                        this._compras
-                          .obtenerEstadosTimelinePorId(
-                            this.urlEstadosTimeline,
-                            item.estadoTimelineId
-                          )
-                          .pipe(
-                            map((estadosTimeline) => ({
-                              ...item,
-                              estadosTimeline,
-                              fechaActualizacion: new Date(
-                                item.actualizadoEn
-                              ).toLocaleDateString('es-DO', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              }),
-                            }))
-                          )
-                      )
-                    );
-                  })
-                ),
               }).pipe(
-                map(({ timeline, items }) => ({
+                map(({ timeline }) => ({
                   ...orden,
                   timeline,
-                  items,
                 }))
               )
             )
@@ -247,7 +227,7 @@ export class ComprasAdminComponent {
   }
 
   cargarCantidadCompras(): void {
-    this._compras.cantidadOrdenes(this.urlCantidadOrdenes).subscribe({
+    this._cantidadOrdenes.obtenerCantidad(this.urlCantidadOrdenes).subscribe({
       next: (cantidad) => {
         this.cantidadOrdenes = cantidad;
       },
@@ -304,11 +284,58 @@ export class ComprasAdminComponent {
     dialogRef
       .afterClosed()
       .pipe(take(1))
-      .subscribe((result) => {});
+      .subscribe((result) => {
+        if (result === 'success') {
+          this.cargarCantidadCompras();
+          this.cargarCompras();
+        }
+      });
   }
 
-  toggle(id: number) {
+  toggle(id: number, orden: OrdenSolicitud) {
     this.expandedOrderId = this.expandedOrderId === id ? null : id;
+
+    if (orden.itemsLoaded) return;
+
+    orden.loadingItems = true;
+
+    this._itemsOrden
+      .obtenerItemsOrdenCached(orden.id)
+      .pipe(
+        switchMap((items: ItemOrden[]) =>
+          forkJoin(
+            items.map((item) =>
+              this._estadosTimeline
+                .obtenerPorId(this.urlEstadosTimeline, item.estadoTimelineId)
+                .pipe(
+                  map((estadosTimeline) => ({
+                    ...item,
+                    estadosTimeline,
+                    fechaActualizacion: new Date(
+                      item.actualizadoEn
+                    ).toLocaleDateString('es-DO', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    }),
+                  }))
+                )
+            )
+          )
+        )
+      )
+      .subscribe({
+        next: (resultado) => {
+          orden.items = resultado;
+          orden.itemsLoaded = true;
+          orden.loadingItems = false;
+        },
+        error: (err) => {
+          orden.loadingItems = false;
+          this._toastr.error('No se pudieron cargar las órdenes.', 'Error');
+          console.error('Error al obtener las órdenes:', err);
+        },
+      });
   }
 
   actualizarItem(id: number) {
@@ -317,7 +344,10 @@ export class ComprasAdminComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('El dialogo se cerró');
+      if (result?.ordenId) {
+        this._itemsOrden.clearItemsOrdenCache(result.ordenId);
+        this.recargarOrden(result.ordenId);
+      }
     });
   }
 
@@ -330,7 +360,37 @@ export class ComprasAdminComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('El dialogo se cerró');
+      if (result) {
+        this.cargarCompras();
+      }
     });
+  }
+
+  private recargarOrden(ordenId: number) {
+    this._compras
+      .obtenerOrdenes(this.urlOrdenes)
+      .pipe(
+        map((ordenes) => ordenes.find((o) => o.id === ordenId)),
+        switchMap((orden) =>
+          forkJoin({
+            timeline: this._estadosTimeline.obtenerPorId(
+              this.urlEstadosTimeline,
+              orden!.estadoTimelineId
+            ),
+            items: this._itemsOrden.obtenerItemsOrdenCached(orden!.id),
+          })
+        )
+      )
+      .subscribe(({ timeline, items }) => {
+        const index = this.ordenes.findIndex((o) => o.id === ordenId);
+        if (index !== -1) {
+          this.ordenes[index] = {
+            ...this.ordenes[index],
+            timeline,
+            items,
+            itemsLoaded: true,
+          };
+        }
+      });
   }
 }

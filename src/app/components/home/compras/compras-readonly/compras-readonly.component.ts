@@ -32,7 +32,11 @@ import {
 import { ComprasService } from '../../../../services/Api/compras.service';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { InformacionTimelineComponent, OrdenesInfo } from './informacion-timeline/informacion-timeline.component';
+import {
+  InformacionTimelineComponent,
+  OrdenesInfo,
+} from './informacion-timeline/informacion-timeline.component';
+import { CantidadOrdenesCacheService } from '../../../../core/CantidadOrdenesCache/cantidad-ordenes-cache.service';
 
 @Component({
   selector: 'app-compras-readonly',
@@ -86,7 +90,8 @@ export class ComprasReadonlyComponent {
   constructor(
     private dialog: MatDialog,
     private _compras: ComprasService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
+    private _cantidadOrdenes: CantidadOrdenesCacheService
   ) {}
 
   ngOnInit(): void {
@@ -101,12 +106,12 @@ export class ComprasReadonlyComponent {
         }
       });
 
-    this._compras.cantidadOrdenes(this.urlCantidadOrdenes).subscribe({
+    this._cantidadOrdenes.obtenerCantidad(this.urlCantidadOrdenes).subscribe({
       next: (cantidad) => {
         this.cantidadOrdenes = cantidad;
       },
       error: (err) => {
-        console.error('Error al obtener la cantidad de órdenes:', err);
+        this._toastr.error('Error al obtener la cantidad de órdenes:', err);
       },
     });
   }

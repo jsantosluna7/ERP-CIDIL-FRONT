@@ -35,7 +35,10 @@ export interface OrdenesItems {
   styleUrl: './actualizar-estatus.component.css',
 })
 export class ActualizarEstatusComponent {
-  cantidadRecibida = new FormControl<number | null>(null, [Validators.required, Validators.pattern('^[0-9]+$')]);
+  cantidadRecibida = new FormControl<number | null>(null, [
+    Validators.required,
+    Validators.pattern('^[0-9]+$'),
+  ]);
   comentario = new FormControl<any | ''>('');
   usuarioLogueado: any;
 
@@ -60,23 +63,36 @@ export class ActualizarEstatusComponent {
   }
 
   onSiActualizar(): void {
-        if (!this.cantidadRecibida.valid) {
-      this._toastr.error('Debes agregar la cantidad recibida del producto.', 'Error');
+    var comentario;
+
+    if (!this.cantidadRecibida.valid) {
+      this._toastr.error(
+        'Debes agregar la cantidad recibida del producto.',
+        'Error'
+      );
       return;
+    }
+
+    if (this.comentario.value == '') {
+      comentario = null;
+    } else {
+      comentario = this.comentario.value;
     }
 
     const cambios = {
       cantidadRecibida: this.cantidadRecibida.value,
-      comentario: this.comentario.value,
-      usuarioId: Number(this.usuarioLogueado.sub)
+      comentario: comentario,
+      usuarioId: Number(this.usuarioLogueado.sub),
     };
 
     this._compras.actualizarEstadoItem(this.id(), cambios).subscribe({
       next: (act) => {
-        this._toastr.success("El item se actualizó con éxito", "Éxito")
-      }, error: (err) => {
-        this._toastr.error(err)
-      }
+        this._toastr.success('El item se actualizó con éxito', 'Éxito');
+      },
+      error: (err) => {
+        console.log(err);
+        this._toastr.error(err.error);
+      },
     });
 
     this.dialogRef.close(cambios);
