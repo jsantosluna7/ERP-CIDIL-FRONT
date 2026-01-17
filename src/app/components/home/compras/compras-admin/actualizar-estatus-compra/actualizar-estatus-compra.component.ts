@@ -21,6 +21,8 @@ import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../../../services/Api/Usuarios/usuarios.service';
 import { CantidadOrdenesCacheService } from '../../../../../core/CantidadOrdenesCache/cantidad-ordenes-cache.service';
 import { EstadosTimelineCacheService } from '../../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
+import { faL } from '@fortawesome/free-solid-svg-icons';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface Ordenes {
   id: number;
@@ -36,6 +38,7 @@ export interface Ordenes {
     MatDialogModule,
     MatSelectModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './actualizar-estatus-compra.component.html',
   styleUrl: './actualizar-estatus-compra.component.css',
@@ -51,6 +54,7 @@ export class ActualizarEstatusCompraComponent {
   readonly data = inject<Ordenes>(MAT_DIALOG_DATA);
   readonly id = model(this.data.id);
   timelines: Timeline[] = [];
+  loading = false;
 
   constructor(
     private _compras: ComprasService,
@@ -81,6 +85,8 @@ export class ActualizarEstatusCompraComponent {
   }
 
   onSiActualizar(): void {
+    this.loading = true;
+    
     if (!this.estadoId.valid) {
       this._toastr.error('Debes agregar el cambio en estado.', 'error');
       return;
@@ -94,9 +100,11 @@ export class ActualizarEstatusCompraComponent {
 
     this._compras.actualizarEstadoOrden(this.id(), cambios).subscribe({
       next: (act) => {
+        this.loading = false;
         this._toastr.success('La orden se actualizó con éxito', 'Éxito');
       },
       error: (err) => {
+        this.loading = false;
         this._toastr.error(err);
       },
     });

@@ -92,6 +92,19 @@ font-size: 2rem;
     display: none;
 }
 
+.spinner{
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    margin: 5rem 1rem;
+}
+
+.spinner span{
+    margin-top: 1rem;
+}
+
 /* .list-section{
     display: none;
     text-align: left;

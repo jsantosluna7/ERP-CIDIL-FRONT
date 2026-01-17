@@ -10,7 +10,6 @@ import { ComprasFileDialogContentComponent } from '../compras-file-dialog-conten
 })
 export class ComprasFileDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<ComprasFileDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { nombre: string }
+    public dialogRef: MatDialogRef<ComprasFileDialogComponent>
   ) {}
 }

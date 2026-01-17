@@ -19,13 +19,26 @@ export class ComprasService {
     return this.http.get<any[]>(url);
   }
 
-  actualizarEstadoOrden(id: number, body: any): Observable<any> {
-    return this.http.post(`${this.urlPrincipal}${id}${this.urlActualizarOrden}`, body);
+  buscarOrdenes(
+    url: string,
+    termino: string,
+    filtro: string
+  ): Observable<any[]> {
+    return this.http.get<any[]>(`${url}?termino=${termino}&filtro=${filtro}`);
   }
 
-  actualizarEstadoItem(id:number, body: any): Observable<any> {
-    console.log(`${this.urlPrincipalItems}${id}${this.urlActualizarItem}`)
-    return this.http.post(`${this.urlPrincipalItems}${id}${this.urlActualizarItem}`, body);
+  actualizarEstadoOrden(id: number, body: any): Observable<any> {
+    return this.http.post(
+      `${this.urlPrincipal}${id}${this.urlActualizarOrden}`,
+      body
+    );
+  }
+
+  actualizarEstadoItem(id: number, body: any): Observable<any> {
+    return this.http.post(
+      `${this.urlPrincipalItems}${id}${this.urlActualizarItem}`,
+      body
+    );
   }
 
   importarPdf(
@@ -35,7 +48,7 @@ export class ComprasService {
   ): Observable<ImportarPdfRespuesta> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('idUsuario', idUsuario.toString());
+    formData.append('usuarioId', idUsuario.toString());
 
     return this.http.post<ImportarPdfRespuesta>(url, formData);
   }

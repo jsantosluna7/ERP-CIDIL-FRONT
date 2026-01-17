@@ -234,7 +234,7 @@ hr {
   margin: 1rem 0;
 }
 
-.spinner{
+.spinner, .spinner-ordenes{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -243,6 +243,11 @@ hr {
   margin: 1.5rem 0;
 }
 
+.spinner-ordenes{
+  margin-top: 15rem;
+}
+
+/* COLORES PILLS */
 .secondary {
   background: #ffedd5;
   color: #c2410c;
@@ -278,7 +283,7 @@ hr {
   color: #16a34a;
 }
 
-.cancelado {
+.danger {
   background: #fee2e2;
   color: #dc2626;
 }

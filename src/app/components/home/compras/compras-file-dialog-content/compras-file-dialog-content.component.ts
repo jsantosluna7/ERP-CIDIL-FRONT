@@ -1,26 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { FilesService } from '../../../../services/Files/files.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ComprasService } from '../../../../services/Api/compras.service';
 import { UsuariosService } from '../../../../services/Api/Usuarios/usuarios.service';
 import { ToastrService } from 'ngx-toastr';
+import { ComprasFileDialogComponent } from '../compras-file-dialog/compras-file-dialog.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-compras-file-dialog-content',
-  imports: [MatIconModule],
+  imports: [MatIconModule, MatProgressSpinnerModule],
   templateUrl: './compras-file-dialog-content.component.html',
   styleUrl: './compras-file-dialog-content.component.css',
 })
 export class ComprasFileDialogContentComponent {
   fileOptions: any = {};
   usuarioLogueado: any;
+  loading = false;
+
+  dialogPadre = inject(MatDialogRef<ComprasFileDialogComponent>);
 
   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_IMPORTAR_PDF']}`;
 
   constructor(
     private _compras: ComprasService,
-    private dialog: MatDialog,
     private _usuarios: UsuariosService,
     private _toastr: ToastrService
   ) {}
@@ -91,32 +95,38 @@ export class ComprasFileDialogContentComponent {
   }
 
   typeValidation(type: any): boolean {
-    var validTypes = [
-      'application/vnd.ms-excel', // .xls
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-      'text/csv', // .csv
-    ];
+    const validTypes = ['application/pdf'];
     return validTypes.includes(type);
   }
 
   private dataProcess(file: File) {
+    this.loading = true;
     const fileName = file.name.toLowerCase();
     if (fileName.endsWith('.pdf')) {
       //logica para archivos .pdf
-      this._compras.importarPdf(this.apiUrl, file, Number(this.usuarioLogueado.sub)).subscribe({
-        next: (response) => {
-          console.log('Importación exitosa:', response);
-          this._toastr.success('PDF importado correctamente', 'Éxito');
-        },
-        error: (error) => {
-          console.error('Error al importar PDF:', error);
-          this._toastr.error('Error al importar el PDF', 'Error');
-        },
-      });
+      this._compras
+        .importarPdf(this.apiUrl, file, Number(this.usuarioLogueado.sub))
+        .subscribe({
+          next: (response) => {
+            console.log(response)
+            this._toastr.success('PDF importado correctamente', 'Éxito');
+            this.dialogPadre.close({
+              success: true,
+              data: response,
+            });
+            this.loading = false;
+          },
+          error: (error) => {
+            this._toastr.error('Error al importar el PDF', 'Error');
+            this.dialogPadre.close();
+            this.loading = false;
+          },
+        });
     } else {
       console.error('Formato de archivo no soportado');
       this._toastr.error('Formato de archivo no soportado', 'Error');
+      this.dialogPadre.close();
+      this.loading = false;
     }
-    this.dialog.closeAll();
   }
 }

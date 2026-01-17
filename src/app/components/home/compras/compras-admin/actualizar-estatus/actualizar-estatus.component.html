@@ -2,7 +2,13 @@
   <form class="formulario">
     <mat-form-field class="total">
       <mat-label>Cantidad Recibida</mat-label>
-      <input matInput type="number" inputmode="numeric" placeholder="Ej. 10" [formControl]="cantidadRecibida" />
+      <input
+        matInput
+        type="number"
+        inputmode="numeric"
+        placeholder="Ej. 10"
+        [formControl]="cantidadRecibida"
+      />
     </mat-form-field>
 
     <mat-form-field class="total">
@@ -28,6 +34,12 @@
     (click)="onSiActualizar()"
     cdkFocusInitial
   >
-    Ok
+    @if (loading) {
+    <div class="spinner">
+      <mat-spinner diameter="24"></mat-spinner>
+    </div>
+    }@else {
+      OK
+    }
   </button>
 </mat-dialog-actions>

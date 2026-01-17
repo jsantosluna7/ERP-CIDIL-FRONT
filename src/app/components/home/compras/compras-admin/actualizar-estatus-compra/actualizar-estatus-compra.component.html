@@ -32,6 +32,12 @@
     (click)="onSiActualizar()"
     cdkFocusInitial
   >
-    Ok
+      @if (loading) {
+    <div class="spinner">
+      <mat-spinner diameter="24"></mat-spinner>
+    </div>
+    }@else {
+      OK
+    }
   </button>
 </mat-dialog-actions>

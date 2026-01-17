@@ -17,7 +17,7 @@ export class ItemsOrdenCacheService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerItemsOrdenCached(ordenId: number): Observable<ItemOrden[]> {
+  obtenerPorId(ordenId: number): Observable<ItemOrden[]> {
     if (!this.cache.has(ordenId)) {
       const req$ = this.http
         .get<ItemOrden[]>(`${this.urlPrincipal}${ordenId}${this.urlItemsOrden}`)
@@ -28,7 +28,7 @@ export class ItemsOrdenCacheService {
     return this.cache.get(ordenId)!;
   }
 
-  clearItemsOrdenCache(ordenId: number) {
+  limpiarCache(ordenId: number) {
     this.cache.delete(ordenId);
   }
 }

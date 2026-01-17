@@ -5,9 +5,17 @@
     <p>Gestiona los pedidos y entregas en todos los departamentos</p>
   </div>
 
-  <button mat-raised-button color="secondary" (click)="openDialog()">
+  <button
+    mat-raised-button
+    color="secondary"
+    (click)="openDialog()"
+    [disabled]="loadingUpload"
+  >
+    @if(loadingUpload){
+    <mat-spinner diameter="18"></mat-spinner>
+    } @if(!loadingUpload){
     <mat-icon>upload</mat-icon>
-    Importar Compras (PDF)
+    } Importar Compras (PDF)
   </button>
 </div>
 
@@ -39,7 +47,7 @@
     [formControl]="filtroSeleccionado"
     aria-label="Filtros de Búsqueda"
     [ariaOrientation]="'horizontal'"
-    (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'nombre')"
+    (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'codigo')"
   >
     @for (filtro of filtros; track filtro) {
     <mat-chip-option [value]="filtro.value">{{ filtro.label }}</mat-chip-option>
@@ -48,7 +56,13 @@
 </div>
 
 <!-- Caja de órdenes -->
-@for (orden of ordenes; track orden.id) {
+
+@if (loadingOrdenes) {
+<div class="spinner-ordenes">
+  <mat-spinner diameter="40"></mat-spinner>
+  <span>Cargando órdenes...</span>
+</div>
+} @else { @for (orden of ordenes; track orden.id) {
 <div class="ordenes">
   <div
     [className]="expandedOrderId ? 'orden-too' : 'orden-too-2'"
@@ -62,8 +76,12 @@
       ></fa-icon>
       <h3>{{ orden.codigo }}</h3>
       <div class="follow-chip" [ngClass]="orden.timeline.color">
+        @if (updatingItemId === orden.id) {
+        <mat-spinner diameter="14"></mat-spinner>
+        } @else {
         <fa-icon [icon]="iconMap[orden.timeline.icono]" size="sm"></fa-icon>
         <span>{{ orden.timeline.nombre }}</span>
+        }
       </div>
       <div class="editar-orden">
         <button mat-icon-button (click)="editarOrden($event, orden.id)">
@@ -112,7 +130,8 @@
       <h4>Items de la Orden</h4>
     </div>
     <div class="items-data">
-      @for (item of orden.items; track item.id) {
+      @if (orden.itemsLoaded && orden.items) { @for (item of orden.items; track
+      item.id) {
       <div class="item">
         <div class="item-top">
           <div class="top-1">
@@ -142,15 +161,19 @@
           <fa-icon [icon]="mensaje" size="sm"></fa-icon>
           <span>{{ item.comentario }}</span>
         </div>
-        @if (item.estadoTimelineId != 7) {
+        @if (item.estadoTimelineId != 7 && orden.estadoTimelineId >= 5 && orden.estadoTimelineId != 9 && orden.estadoTimelineId != 8) {
         <hr class="hr-item" />
         <button
           mat-raised-button
           color="secondary"
-          (click)="actualizarItem(item.id)"
+          [disabled]="updatingItemId === item.id"
+          (click)="actualizarItem(item.id, orden.id)"
         >
+          @if (updatingItemId === item.id) {
+          <mat-spinner diameter="16"></mat-spinner>
+          } @else {
           <mat-icon>edit</mat-icon>
-          Actualizar estatus de recepción
+          } Actualizar estatus de recepción
         </button>
         }
         <!-- <hr class="hr-item" />
@@ -159,16 +182,11 @@
           Actualizar estatus de recepción
         </button> -->
       </div>
-      }
+      } }
     </div>
   </div>
-  } 
-
-  @if (!orden.loadingItems && orden.items?.length === 0) {
-    <p>No hay items para esta orden.</p>
-  }
-
-}
+  } @if (!orden.loadingItems && orden.items?.length === 0) {
+  <p>No hay items para esta orden.</p>
+  } }
 </div>
-
-}
+} }

@@ -16,9 +16,12 @@ import { MatInputModule } from '@angular/material/input';
 import { ComprasService } from '../../../../../services/Api/compras.service';
 import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../../../services/Api/Usuarios/usuarios.service';
+import { number } from 'echarts/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface OrdenesItems {
   id: number;
+  ordenId: number;
 }
 
 @Component({
@@ -30,6 +33,7 @@ export interface OrdenesItems {
     MatButtonModule,
     MatDialogModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './actualizar-estatus.component.html',
   styleUrl: './actualizar-estatus.component.css',
@@ -41,10 +45,12 @@ export class ActualizarEstatusComponent {
   ]);
   comentario = new FormControl<any | ''>('');
   usuarioLogueado: any;
+  loading = false;
 
   readonly dialogRef = inject(MatDialogRef<ActualizarEstatusComponent>);
   readonly data = inject<OrdenesItems>(MAT_DIALOG_DATA);
   readonly id = model(this.data.id);
+  readonly ordenId = model(this.data.ordenId);
 
   constructor(
     private _compras: ComprasService,
@@ -63,6 +69,7 @@ export class ActualizarEstatusComponent {
   }
 
   onSiActualizar(): void {
+    this.loading = true;
     var comentario;
 
     if (!this.cantidadRecibida.valid) {
@@ -85,16 +92,25 @@ export class ActualizarEstatusComponent {
       usuarioId: Number(this.usuarioLogueado.sub),
     };
 
+    const cambiosRespuesta = {
+      cantidadRecibida: this.cantidadRecibida.value,
+      comentario: comentario,
+      usuarioId: Number(this.usuarioLogueado.sub),
+      ordenId: this.ordenId()
+    };
+    
+
     this._compras.actualizarEstadoItem(this.id(), cambios).subscribe({
       next: (act) => {
+        this.loading = false;
         this._toastr.success('El item se actualizó con éxito', 'Éxito');
       },
       error: (err) => {
-        console.log(err);
+        this.loading = false;
         this._toastr.error(err.error);
       },
     });
 
-    this.dialogRef.close(cambios);
+    this.dialogRef.close(cambiosRespuesta);
   }
 }

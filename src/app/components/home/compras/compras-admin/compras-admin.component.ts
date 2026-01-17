@@ -111,19 +111,23 @@ export interface Timeline {
   styleUrl: './compras-admin.component.css',
 })
 export class ComprasAdminComponent {
+  // DATA
   ordenes: OrdenSolicitud[] = [];
   items: ItemOrden[] = [];
 
+  // VARIABLES
   cantidadOrdenes: number = 0;
-  filtroSeleccionado = new FormControl('id');
+  filtroSeleccionado = new FormControl('codigo');
   termino = new FormControl('');
   expandedOrderId: number | null = null;
 
+  // ITEMS DE FILTRADO
   filtros = [
-    { label: 'ID', value: 'id' },
+    { label: 'Código', value: 'codigo' },
     { label: 'Nombre', value: 'nombre' },
   ];
 
+  // MAPA DE ICONOS
   iconMap: Record<string, any> = {
     file: faFile,
     lupa: faMagnifyingGlass,
@@ -144,6 +148,7 @@ export class ComprasAdminComponent {
     clip: faClipboard,
   };
 
+  // ICONOS PILLS
   file = faFile;
   lupa = faMagnifyingGlass;
   clipCheck = faClipboardCheck;
@@ -154,6 +159,7 @@ export class ComprasAdminComponent {
   circleCheck = faCircleCheck;
   circleXmark = faCircleXmark;
 
+  // ICONOS REGULARES
   calendar = faCalendar;
   upload = faUpload;
   box = faBox;
@@ -163,9 +169,17 @@ export class ComprasAdminComponent {
   angelDown = faAngleDown;
   clip = faClipboard;
 
+  // VARIABLES URL
   urlCantidadOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_CANTIDAD_ORDENES']}`;
   urlOrdenes: string = `${process.env['API_URL']}${process.env['ENDPOINT_ORDENES']}`;
   urlEstadosTimeline: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADOS_TIMELINE_ID']}`;
+  urlBusqueda: string = `${process.env['API_URL']}${process.env['ENDPOINT_BUSCAR_ORDENES']}`;
+
+  // VARIABLES LOADING
+  loadingOrdenes = false; // cargar lista principal
+  loadingUpload = false; // subir PDF
+  updatingOrdenId: number | null = null;
+  updatingItemId: number | null = null;
 
   constructor(
     private dialog: MatDialog,
@@ -193,6 +207,8 @@ export class ComprasAdminComponent {
   }
 
   cargarCompras(): void {
+    this.loadingOrdenes = true;
+
     this._compras
       .obtenerOrdenes(this.urlOrdenes)
       .pipe(
@@ -216,12 +232,12 @@ export class ComprasAdminComponent {
       )
       .subscribe({
         next: (resultado) => {
-          console.log(resultado);
           this.ordenes = resultado;
+          this.loadingOrdenes = false;
         },
         error: (err) => {
+          this.loadingOrdenes = false;
           this._toastr.error('No se pudieron cargar las órdenes.', 'Error');
-          console.error('Error al obtener las órdenes:', err);
         },
       });
   }
@@ -246,36 +262,21 @@ export class ComprasAdminComponent {
   }
 
   busquedaEnBackend(nombre: string): void {
-    // this.loading = true;
-    // this.usuarioService
-    //   .buscarUsuarios(
-    //     this.endpointBusqueda,
-    //     nombre,
-    //     this.filtroSeleccionado.value ?? 'nombre'
-    //   )
-    //   .subscribe({
-    //     next: (resultados: any) => {
-    //       const ELEMENT_DATA = resultados.map((data: any) => ({
-    //         id: data.id,
-    //         nombreUsuario: data.nombreUsuario,
-    //         apellidoUsuario: data.apellidoUsuario,
-    //         idMatricula: data.idMatricula,
-    //         telefono: data.telefono,
-    //         correoInstitucional: data.correoInstitucional,
-    //         direccion: data.direccion,
-    //         idRol: data.idRol,
-    //       }));
-    //       this.dataSource = new MatTableDataSource<any>(ELEMENT_DATA);
-    //       this.loading = false;
-    //       this.secondLoading = false;
-    //       this.noData = ELEMENT_DATA.length === 0;
-    //     },
-    //     error: (err) => {
-    //       this.loading = false;
-    //       this._toastr.error(err.error.error || '', 'Error en la búsqueda');
-    //       console.error('Error en búsqueda:', err.error.error);
-    //     },
-    //   });
+    this.loadingOrdenes = true;
+    this._compras.buscarOrdenes(
+        this.urlBusqueda,
+        nombre,
+        this.filtroSeleccionado.value ?? 'codigo'
+      )
+      .subscribe({
+        next: (resultados: any) => {
+          this.loadingOrdenes = false;
+        },
+        error: (err) => {
+          this.loadingOrdenes = false;
+          this._toastr.error(err.error.error || '', 'Error en la búsqueda');
+        },
+      });
   }
 
   openDialog(): void {
@@ -285,9 +286,18 @@ export class ComprasAdminComponent {
       .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {
-        if (result === 'success') {
-          this.cargarCantidadCompras();
-          this.cargarCompras();
+        console.log(result);
+        if (result?.success === true) {
+          this.loadingUpload = true;
+
+          forkJoin([
+            this._cantidadOrdenes.obtenerCantidad(this.urlCantidadOrdenes),
+            this._compras.obtenerOrdenes(this.urlOrdenes),
+          ]).subscribe(() => {
+            this.loadingUpload = false;
+            this.cargarCantidadCompras();
+            this.cargarCompras();
+          });
         }
       });
   }
@@ -300,7 +310,7 @@ export class ComprasAdminComponent {
     orden.loadingItems = true;
 
     this._itemsOrden
-      .obtenerItemsOrdenCached(orden.id)
+      .obtenerPorId(orden.id)
       .pipe(
         switchMap((items: ItemOrden[]) =>
           forkJoin(
@@ -338,14 +348,16 @@ export class ComprasAdminComponent {
       });
   }
 
-  actualizarItem(id: number) {
+  actualizarItem(id: number, ordenId: number) {
+    this.updatingItemId = id;
     const dialogRef = this.dialog.open(ActualizarEstatusComponent, {
-      data: { id: id },
+      data: { id, ordenId },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      this.updatingItemId = null;
       if (result?.ordenId) {
-        this._itemsOrden.clearItemsOrdenCache(result.ordenId);
+        this._itemsOrden.limpiarCache(result.ordenId);
         this.recargarOrden(result.ordenId);
       }
     });
@@ -353,13 +365,15 @@ export class ComprasAdminComponent {
 
   editarOrden(event: MouseEvent, id: number) {
     event.stopPropagation();
-    // Lógica para editar la orden
+    this.updatingOrdenId = id;
 
     const dialogRef = this.dialog.open(ActualizarEstatusCompraComponent, {
-      data: { id: id },
+      data: { id },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      this.updatingOrdenId = null;
+      this.expandedOrderId = null;
       if (result) {
         this.cargarCompras();
       }
@@ -377,7 +391,34 @@ export class ComprasAdminComponent {
               this.urlEstadosTimeline,
               orden!.estadoTimelineId
             ),
-            items: this._itemsOrden.obtenerItemsOrdenCached(orden!.id),
+            items: this._itemsOrden.obtenerPorId(orden!.id).pipe(
+              switchMap((items) =>
+                items.length
+                  ? forkJoin(
+                      items.map((item) =>
+                        this._estadosTimeline
+                          .obtenerPorId(
+                            this.urlEstadosTimeline,
+                            item.estadoTimelineId
+                          )
+                          .pipe(
+                            map((estadosTimeline) => ({
+                              ...item,
+                              estadosTimeline,
+                              fechaActualizacion: new Date(
+                                item.actualizadoEn
+                              ).toLocaleDateString('es-DO', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              }),
+                            }))
+                          )
+                      )
+                    )
+                  : of([])
+              )
+            ),
           })
         )
       )
@@ -389,6 +430,7 @@ export class ComprasAdminComponent {
             timeline,
             items,
             itemsLoaded: true,
+            loadingItems: false,
           };
         }
       });
