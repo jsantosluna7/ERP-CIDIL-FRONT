@@ -34,59 +34,63 @@
     [formControl]="filtroSeleccionado"
     aria-label="Filtros de Búsqueda"
     [ariaOrientation]="'horizontal'"
-    (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'nombre')"
+    (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'codigo')"
   >
     @for (filtro of filtros; track filtro) {
-    <mat-chip-option [value]="filtro.value">{{ filtro.label }}</mat-chip-option>
+      <mat-chip-option [value]="filtro.value">{{
+        filtro.label
+      }}</mat-chip-option>
     }
   </mat-chip-listbox>
 </div>
 
 <!-- Caja de órdenes -->
-<div class="ordenes" (click)="ordenes(1)">
-  <div class="orden-too">
-    <div class="ordenes-title">
-      <h3>ORD-2024-001</h3>
-      <div class="follow-chip secondary">
-        <fa-icon [icon]="box" size="sm"></fa-icon>
-        <span>Recepción Parcial</span>
-      </div>
-    </div>
-    <div class="ordenes-data">
-      <h4>Office Supplies Q4</h4>
-      <div class="data">
-        <div class="solicitado">
-          <fa-icon [icon]="calendar" size="sm"></fa-icon>
-          <span>Solicitado: 2024-11-01</span>
-        </div>
-        <div class="cantidad">
-          <fa-icon [icon]="box" size="sm"></fa-icon>
-          <span>3 items • 1 recibido</span>
+@for (orden of ordenes; track orden.id) {
+  <div class="ordenes" (click)="obtenerOrdenes(orden.id)">
+    <div class="orden-too">
+      <div class="ordenes-title">
+        <h3>{{orden.codigo}}</h3>
+        <div class="follow-chip" [ngClass]="orden.timeline.color">
+          <fa-icon [icon]="iconMap[orden.timeline.icono]" size="sm"></fa-icon>
+          <span>{{orden.timeline.nombre}}</span>
         </div>
       </div>
-    </div>
-    <div class="barra-progreso">
-      <div class="labels">
-        <span>Progreso</span>
-        <span>33%</span>
+      <div class="ordenes-data">
+        <h4>{{orden.nombre}}</h4>
+        <div class="data">
+          <div class="solicitado">
+            <fa-icon [icon]="calendar" size="sm"></fa-icon>
+            <span>Solicitado: {{orden.fechaSolicitud}}</span>
+          </div>
+          <div class="cantidad">
+            <fa-icon [icon]="box" size="sm"></fa-icon>
+            <span>{{orden.itemsCount}} items • {{orden.itemsRecibidos}} recibido</span>
+          </div>
+        </div>
       </div>
-      <div
-        class="progress"
-        role="progressbar"
-        aria-label="Example 20px high"
-        aria-valuenow="25"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        style="height: 20px"
-      >
-        <div class="progress-bar" style="width: 25%"></div>
+      <div class="barra-progreso">
+        <div class="labels">
+          <span>Progreso</span>
+          <span>{{calcularPorcentaje(orden)}}%</span>
+        </div>
+        <div
+          class="progress"
+          role="progressbar"
+          aria-label="Progreso de recepción"
+          [attr.aria-valuenow]="calcularPorcentaje(orden)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="height: 20px"
+        >
+          <div class="progress-bar" style="width: 25%"></div>
+        </div>
       </div>
-    </div>
-    <div class="boton-info">
-      <div class="a-info">
-        <span>Ver detalles y seguimiento</span>
-        <fa-icon [icon]="arrowRight" size="sm"></fa-icon>
+      <div class="boton-info">
+        <div class="a-info">
+          <span>Ver detalles y seguimiento</span>
+          <fa-icon [icon]="arrowRight" size="sm"></fa-icon>
+        </div>
       </div>
     </div>
   </div>
-</div>
+}

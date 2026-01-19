@@ -61,6 +61,7 @@ export interface OrdenSolicitud {
   unidadNegocio: string;
   estadoTimelineId: number;
   itemsCount: number;
+  itemsRecibidos: number;
   fechaSolicitud: string; // YYYY-MM-DD
   fechaSubida: string; // YYYY-MM-DD
   actualizadoEn: string; // ISO datetime
@@ -187,7 +188,7 @@ export class ComprasAdminComponent {
     private _toastr: ToastrService,
     private _cantidadOrdenes: CantidadOrdenesCacheService,
     private _estadosTimeline: EstadosTimelineCacheService,
-    private _itemsOrden: ItemsOrdenCacheService
+    private _itemsOrden: ItemsOrdenCacheService,
   ) {}
 
   ngOnInit(): void {
@@ -196,9 +197,9 @@ export class ComprasAdminComponent {
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((valor: any) => {
         if (valor && valor.trim() !== '') {
-          // this.busquedaEnBackend(valor.trim());
+          this.busquedaEnBackend(valor.trim());
         } else {
-          // this.cargarTabla();
+          this.cargarCompras();
         }
       });
 
@@ -218,17 +219,17 @@ export class ComprasAdminComponent {
               forkJoin({
                 timeline: this._estadosTimeline.obtenerPorId(
                   this.urlEstadosTimeline,
-                  orden.estadoTimelineId
+                  orden.estadoTimelineId,
                 ),
               }).pipe(
                 map(({ timeline }) => ({
                   ...orden,
                   timeline,
-                }))
-              )
-            )
-          )
-        )
+                })),
+              ),
+            ),
+          ),
+        ),
       )
       .subscribe({
         next: (resultado) => {
@@ -257,24 +258,45 @@ export class ComprasAdminComponent {
     this.filtroSeleccionado.setValue(filtro);
     if (this.termino.value?.trim()) {
       // Refrescar búsqueda con el nuevo filtro activo
-      // this.busquedaEnBackend(this.termino.value.trim());
+      this.busquedaEnBackend(this.termino.value.trim());
     }
   }
 
   busquedaEnBackend(nombre: string): void {
     this.loadingOrdenes = true;
-    this._compras.buscarOrdenes(
+    this._compras
+      .buscarOrdenes(
         this.urlBusqueda,
         nombre,
-        this.filtroSeleccionado.value ?? 'codigo'
+        this.filtroSeleccionado.value ?? 'codigo',
+      )
+      .pipe(
+        switchMap((ordenes: OrdenSolicitud[]) =>
+          forkJoin(
+            ordenes.map((orden) =>
+              forkJoin({
+                timeline: this._estadosTimeline.obtenerPorId(
+                  this.urlEstadosTimeline,
+                  orden.estadoTimelineId,
+                ),
+              }).pipe(
+                map(({ timeline }) => ({
+                  ...orden,
+                  timeline,
+                })),
+              ),
+            ),
+          ),
+        ),
       )
       .subscribe({
-        next: (resultados: any) => {
+        next: (resultado) => {
+          this.ordenes = resultado;
           this.loadingOrdenes = false;
         },
         error: (err) => {
           this.loadingOrdenes = false;
-          this._toastr.error(err.error.error || '', 'Error en la búsqueda');
+          this._toastr.error('No se pudieron cargar las órdenes.', 'Error');
         },
       });
   }
@@ -322,17 +344,17 @@ export class ComprasAdminComponent {
                     ...item,
                     estadosTimeline,
                     fechaActualizacion: new Date(
-                      item.actualizadoEn
+                      item.actualizadoEn,
                     ).toLocaleDateString('es-DO', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
                     }),
-                  }))
-                )
-            )
-          )
-        )
+                  })),
+                ),
+            ),
+          ),
+        ),
       )
       .subscribe({
         next: (resultado) => {
@@ -389,7 +411,7 @@ export class ComprasAdminComponent {
           forkJoin({
             timeline: this._estadosTimeline.obtenerPorId(
               this.urlEstadosTimeline,
-              orden!.estadoTimelineId
+              orden!.estadoTimelineId,
             ),
             items: this._itemsOrden.obtenerPorId(orden!.id).pipe(
               switchMap((items) =>
@@ -399,28 +421,28 @@ export class ComprasAdminComponent {
                         this._estadosTimeline
                           .obtenerPorId(
                             this.urlEstadosTimeline,
-                            item.estadoTimelineId
+                            item.estadoTimelineId,
                           )
                           .pipe(
                             map((estadosTimeline) => ({
                               ...item,
                               estadosTimeline,
                               fechaActualizacion: new Date(
-                                item.actualizadoEn
+                                item.actualizadoEn,
                               ).toLocaleDateString('es-DO', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric',
                               }),
-                            }))
-                          )
-                      )
+                            })),
+                          ),
+                      ),
                     )
-                  : of([])
-              )
+                  : of([]),
+              ),
             ),
-          })
-        )
+          }),
+        ),
       )
       .subscribe(({ timeline, items }) => {
         const index = this.ordenes.findIndex((o) => o.id === ordenId);
