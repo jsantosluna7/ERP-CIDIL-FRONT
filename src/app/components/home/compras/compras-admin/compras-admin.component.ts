@@ -49,50 +49,7 @@ import { CantidadOrdenesCacheService } from '../../../../core/CantidadOrdenesCac
 import { EstadosTimelineCacheService } from '../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ItemsOrdenCacheService } from '../../../../core/ItemsOrdenCache/items-orden-cache.service';
-
-export interface OrdenSolicitud {
-  id: number;
-  codigo: string;
-  nombre: string;
-  comentario: string;
-  solicitadoPor: string;
-  creadoPor: number;
-  departamento: string | null;
-  unidadNegocio: string;
-  estadoTimelineId: number;
-  itemsCount: number;
-  itemsRecibidos: number;
-  fechaSolicitud: string; // YYYY-MM-DD
-  fechaSubida: string; // YYYY-MM-DD
-  actualizadoEn: string; // ISO datetime
-  timeline: Timeline;
-  items?: ItemOrden[];
-  loadingItems?: boolean;
-  itemsLoaded?: boolean;
-}
-
-export interface ItemOrden {
-  id: number;
-  ordenId: number;
-  numeroLista: string;
-  nombre: string;
-  cantidad: number;
-  cantidadRecibida: number;
-  comentario: string | null;
-  estadoTimelineId: number;
-  actualizadoEn: string;
-  estadosTimeline: Timeline;
-  fechaActualizacion: string;
-}
-
-export interface Timeline {
-  id: number;
-  activo: boolean;
-  codigo: string;
-  color: string;
-  icono: string;
-  nombre: string;
-}
+import { ItemOrden, OrdenSolicitud } from '../../../../interfaces/compras';
 
 @Component({
   selector: 'app-compras-admin',
@@ -370,10 +327,10 @@ export class ComprasAdminComponent {
       });
   }
 
-  actualizarItem(id: number, ordenId: number) {
+  actualizarItem(id: number, ordenId: number, item: ItemOrden) {
     this.updatingItemId = id;
     const dialogRef = this.dialog.open(ActualizarEstatusComponent, {
-      data: { id, ordenId },
+      data: { id, ordenId, item },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

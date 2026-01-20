@@ -39,18 +39,15 @@ import {
   switchMap,
 } from 'rxjs';
 import {
-  InformacionTimelineComponent,
-  OrdenesInfo,
+  InformacionTimelineComponent
 } from './informacion-timeline/informacion-timeline.component';
 import { CantidadOrdenesCacheService } from '../../../../core/CantidadOrdenesCache/cantidad-ordenes-cache.service';
-import {
-  ItemOrden,
-  OrdenSolicitud,
-} from '../compras-admin/compras-admin.component';
 import { EstadosTimelineCacheService } from '../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
 import { ItemsOrdenCacheService } from '../../../../core/ItemsOrdenCache/items-orden-cache.service';
 import { Ordenes } from '../compras-admin/actualizar-estatus-compra/actualizar-estatus-compra.component';
 import { OrdenesItems } from '../compras-admin/actualizar-estatus/actualizar-estatus.component';
+import { ItemOrden, OrdenSolicitud } from '../../../../interfaces/compras';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-compras-readonly',
@@ -64,6 +61,7 @@ import { OrdenesItems } from '../compras-admin/actualizar-estatus/actualizar-est
     MatInputModule,
     MatExpansionModule,
     MatButtonModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './compras-readonly.component.html',
   styleUrl: './compras-readonly.component.css',
@@ -136,9 +134,6 @@ export class ComprasReadonlyComponent {
 
   // VARIABLES LOADING
   loadingOrdenes = false; // cargar lista principal
-  loadingUpload = false; // subir PDF
-  updatingOrdenId: number | null = null;
-  updatingItemId: number | null = null;
 
   constructor(
     private dialog: MatDialog,
@@ -212,9 +207,9 @@ export class ComprasReadonlyComponent {
     });
   }
 
-  obtenerOrdenes(id: number) {
+  obtenerOrdenes(orden: OrdenSolicitud) {
     const dialogRef = this.dialog.open(InformacionTimelineComponent, {
-      data: { id: id },
+      data: { orden },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

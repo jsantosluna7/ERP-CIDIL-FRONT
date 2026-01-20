@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, shareReplay } from 'rxjs';
-import { ItemOrden } from '../../components/home/compras/compras-admin/compras-admin.component';
+import { ItemOrden } from '../../interfaces/compras';
 
 @Injectable({
   providedIn: 'root',

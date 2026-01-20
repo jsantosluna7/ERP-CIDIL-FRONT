@@ -1,4 +1,8 @@
 <mat-dialog-content>
+  <div class="info-item">
+    <span class="info-nombre">{{item().nombre}}</span>
+    <span class="info-cantidad">{{item().cantidadRecibida}} / {{item().cantidad}} recibido</span>
+  </div>
   <form class="formulario">
     <mat-form-field class="total">
       <mat-label>Cantidad Recibida</mat-label>
@@ -35,10 +39,10 @@
     cdkFocusInitial
   >
     @if (loading) {
-    <div class="spinner">
-      <mat-spinner diameter="24"></mat-spinner>
-    </div>
-    }@else {
+      <div class="spinner">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    } @else {
       OK
     }
   </button>

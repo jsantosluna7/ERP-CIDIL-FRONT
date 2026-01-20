@@ -15,7 +15,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ComprasService } from '../../../../../services/Api/compras.service';
-import { Timeline } from '../compras-admin.component';
 import { map, switchMap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../../../services/Api/Usuarios/usuarios.service';
@@ -23,6 +22,7 @@ import { CantidadOrdenesCacheService } from '../../../../../core/CantidadOrdenes
 import { EstadosTimelineCacheService } from '../../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Timeline } from '../../../../../interfaces/compras';
 
 export interface Ordenes {
   id: number;

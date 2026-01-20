@@ -30,7 +30,7 @@
     </div>
   </div>
   <div class="caja-emoji">
-    <fa-icon [icon]="file" size="3x" style="color: #3b82f6"></fa-icon>
+    <fa-icon [icon]="file" size="3x" style="color: #1825aa"></fa-icon>
   </div>
 </div>
 
@@ -167,7 +167,7 @@
           mat-raised-button
           color="secondary"
           [disabled]="updatingItemId === item.id"
-          (click)="actualizarItem(item.id, orden.id)"
+          (click)="actualizarItem(item.id, orden.id, item)"
         >
           @if (updatingItemId === item.id) {
           <mat-spinner diameter="16"></mat-spinner>

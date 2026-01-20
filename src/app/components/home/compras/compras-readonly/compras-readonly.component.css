@@ -15,8 +15,10 @@
   flex-direction: row;
   justify-content: space-between;
   border-radius: 25px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-left: 7px solid #1825AA;
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-left: 7px solid #1825aa;
 }
 
 .caja-data {
@@ -135,7 +137,7 @@ hr {
   margin: 0;
 }
 
-.labels{
+.labels {
   color: #828b97;
   font-size: 0.85rem;
   display: flex;
@@ -144,28 +146,41 @@ hr {
   margin-bottom: 0.2rem;
 }
 
-.progress-bar{
-    background-color: #1825AA;
+.boton-info {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  color: #1825aa;
 }
 
-.boton-info{
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5rem;
-    color: #1825AA;
+.a-info {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
-.a-info{
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    justify-content: center;
-    align-items: center;
+.spinner-ordenes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin: 1.5rem 0;
+}
+
+.spinner-ordenes {
+  margin-top: 15rem;
 }
 
 .secondary {
   background: #ffedd5;
   color: #c2410c;
+}
+
+.secondary-progress {
+  background: #c2410c;
 }
 
 .warning {
@@ -198,7 +213,15 @@ hr {
   color: #16a34a;
 }
 
-.cancelado {
+.success-progress {
+  background: #16a34a;
+}
+
+.danger {
   background: #fee2e2;
   color: #dc2626;
+}
+
+.danger-progress {
+  background: #dc2626;
 }

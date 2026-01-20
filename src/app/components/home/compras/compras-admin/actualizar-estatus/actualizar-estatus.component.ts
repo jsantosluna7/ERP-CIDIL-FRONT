@@ -16,12 +16,13 @@ import { MatInputModule } from '@angular/material/input';
 import { ComprasService } from '../../../../../services/Api/compras.service';
 import { ToastrService } from 'ngx-toastr';
 import { UsuariosService } from '../../../../../services/Api/Usuarios/usuarios.service';
-import { number } from 'echarts/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ItemOrden } from '../../../../../interfaces/compras';
 
 export interface OrdenesItems {
   id: number;
   ordenId: number;
+  item: ItemOrden
 }
 
 @Component({
@@ -51,6 +52,7 @@ export class ActualizarEstatusComponent {
   readonly data = inject<OrdenesItems>(MAT_DIALOG_DATA);
   readonly id = model(this.data.id);
   readonly ordenId = model(this.data.ordenId);
+  readonly item = model(this.data.item);
 
   constructor(
     private _compras: ComprasService,

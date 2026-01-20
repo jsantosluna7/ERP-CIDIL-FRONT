@@ -45,52 +45,70 @@
 </div>
 
 <!-- Caja de órdenes -->
-@for (orden of ordenes; track orden.id) {
-  <div class="ordenes" (click)="obtenerOrdenes(orden.id)">
-    <div class="orden-too">
-      <div class="ordenes-title">
-        <h3>{{orden.codigo}}</h3>
-        <div class="follow-chip" [ngClass]="orden.timeline.color">
-          <fa-icon [icon]="iconMap[orden.timeline.icono]" size="sm"></fa-icon>
-          <span>{{orden.timeline.nombre}}</span>
-        </div>
-      </div>
-      <div class="ordenes-data">
-        <h4>{{orden.nombre}}</h4>
-        <div class="data">
-          <div class="solicitado">
-            <fa-icon [icon]="calendar" size="sm"></fa-icon>
-            <span>Solicitado: {{orden.fechaSolicitud}}</span>
-          </div>
-          <div class="cantidad">
-            <fa-icon [icon]="box" size="sm"></fa-icon>
-            <span>{{orden.itemsCount}} items • {{orden.itemsRecibidos}} recibido</span>
+@if (loadingOrdenes) {
+  <div class="spinner-ordenes">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Cargando órdenes...</span>
+  </div>
+} @else {
+  @for (orden of ordenes; track orden.id) {
+    <div class="ordenes" (click)="obtenerOrdenes(orden)">
+      <div class="orden-too">
+        <div class="ordenes-title">
+          <h3>{{ orden.codigo }}</h3>
+          <div class="follow-chip" [ngClass]="orden.timeline.color">
+            <fa-icon [icon]="iconMap[orden.timeline.icono]" size="sm"></fa-icon>
+            <span>{{ orden.timeline.nombre }}</span>
           </div>
         </div>
-      </div>
-      <div class="barra-progreso">
-        <div class="labels">
-          <span>Progreso</span>
-          <span>{{calcularPorcentaje(orden)}}%</span>
+        <div class="ordenes-data">
+          <h4>{{ orden.nombre }}</h4>
+          <div class="data">
+            <div class="solicitado">
+              <fa-icon [icon]="calendar" size="sm"></fa-icon>
+              <span>Solicitado: {{ orden.fechaSolicitud }}</span>
+            </div>
+            <div class="cantidad">
+              <fa-icon [icon]="box" size="sm"></fa-icon>
+              <span
+                >{{ orden.itemsCount }} items •
+                {{ orden.itemsRecibidos }} recibido</span
+              >
+            </div>
+          </div>
         </div>
-        <div
-          class="progress"
-          role="progressbar"
-          aria-label="Progreso de recepción"
-          [attr.aria-valuenow]="calcularPorcentaje(orden)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          style="height: 20px"
-        >
-          <div class="progress-bar" style="width: 25%"></div>
+        <div class="barra-progreso">
+          <div class="labels">
+            <span>Progreso</span>
+            <span>{{ calcularPorcentaje(orden) }}%</span>
+          </div>
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Progreso de recepción"
+            [attr.aria-valuenow]="calcularPorcentaje(orden)"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="height: 20px"
+          >
+            <div
+              class="progress-bar"
+              [ngClass]="{
+                'success-progress': calcularPorcentaje(orden) === 100,
+                'secondary-progress': calcularPorcentaje(orden) > 20 && calcularPorcentaje(orden) < 100,
+                'danger-progress': calcularPorcentaje(orden) > 0 && calcularPorcentaje(orden) < 20,
+              }"
+              [style.width.%]="calcularPorcentaje(orden)"
+            ></div>
+          </div>
         </div>
-      </div>
-      <div class="boton-info">
-        <div class="a-info">
-          <span>Ver detalles y seguimiento</span>
-          <fa-icon [icon]="arrowRight" size="sm"></fa-icon>
+        <div class="boton-info">
+          <div class="a-info">
+            <span>Ver detalles y seguimiento</span>
+            <fa-icon [icon]="arrowRight" size="sm"></fa-icon>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 }
