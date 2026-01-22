@@ -18,9 +18,10 @@ import { ComprasReadonlyComponent } from "./compras-readonly/compras-readonly.co
 export class ComprasComponent {
   modoVista = signal<'admin' | 'readonly'>('admin');
   usuarioLogueado: any;
+  usuarioRol: number = 0;
 
-  ROLES_ADMIN = [1, 2, 3];
-  ROL_LECTURA = 4;
+  ROLES_ADMIN = [1, 5];
+  ROL_LECTURA = 2;
 
   constructor(
     private dialog: MatDialog,
@@ -30,9 +31,10 @@ export class ComprasComponent {
   ) {
     this._usuarios.user$.subscribe((user) => {
       this.usuarioLogueado = user;
+      this.usuarioRol = Number(user.idRol);
     });
 
-    const rol = Number(this.usuarioLogueado.sub);
+    const rol = Number(this.usuarioLogueado.idRol);
 
     // Si es rol lectura, forzar vista readonly
     if (rol === this.ROL_LECTURA) {

@@ -1,28 +1,34 @@
-<div class="nav">
-  <h1>Compras</h1>
-  <div class="botones">
-    <div *appCualRol="[1, 2, 3]">
-      <button mat-raised-button color="secondary" (click)="cambiarModo()">
-        {{
-          modoVista() === "admin"
-            ? "Ver solo lectura"
-            : "Volver a administración"
-        }}
-      </button>
+@if ([1, 5].includes(usuarioRol)) {
+  <div class="nav">
+    <h1>Compras</h1>
+    <div class="botones">
+      <div *appCualRol="[1, 5]">
+        <button mat-raised-button color="secondary" (click)="cambiarModo()">
+          {{
+            modoVista() === "admin"
+              ? "Ver solo lectura"
+              : "Volver a administración"
+          }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- VISTA ADMIN -->
-@if (modoVista() === 'admin') {
-<ng-container *appCualRol="[1, 2, 3]">
-  <app-compras-admin></app-compras-admin>
-</ng-container>
-}
+  <!-- VISTA ADMIN -->
+  @if (modoVista() === "admin") {
+    <ng-container *appCualRol="[1, 5]">
+      <app-compras-admin></app-compras-admin>
+    </ng-container>
+  }
 
-<!-- VISTA SOLO LECTURA -->
-@if (modoVista() === 'readonly') {
-<ng-container>
-  <app-compras-readonly></app-compras-readonly>
-</ng-container>
+  <!-- VISTA SOLO LECTURA -->
+  @if (modoVista() === "readonly") {
+    <ng-container>
+      <app-compras-readonly></app-compras-readonly>
+    </ng-container>
+  }
+} @else {
+  <ng-container>
+    <app-compras-readonly></app-compras-readonly>
+  </ng-container>
 }

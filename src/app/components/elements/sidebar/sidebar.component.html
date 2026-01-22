@@ -80,7 +80,7 @@
               >Usuarios</a
             >
           </li>
-           <li class="nav-item-sd" *appCualRol="[1, 2 , 3]">
+          <li class="nav-item-sd" *appCualRol="[1, 2, 3]">
             <a routerLink="/home/reportes" class="nav-link-sd dropdown-link"
               >Reportes</a
             >
@@ -156,6 +156,19 @@
             <a routerLink="/home/crear-equipo" class="nav-link-sd dropdown-link"
               >Crear Equipos</a
             >
+          </li>
+        </ul>
+      </li>
+
+      <!-- COMPRAS -->
+      <li class="nav-item-sd" *appCualRol="[1, 2, 5]">
+        <a routerLink="/home/compras" class="nav-link-sd">
+          <fa-icon class="icon" [icon]="camion" size="lg"></fa-icon>
+          <span class="nav-label-sd">Compras</span>
+        </a>
+        <ul class="dropdown-menu-sd">
+          <li class="nav-item-sd">
+            <a class="nav-link-sd dropdown-title-sd">Compras</a>
           </li>
         </ul>
       </li>

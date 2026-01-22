@@ -28,6 +28,7 @@ import {
   faMicrochip,
   faShop,
   faToolbox,
+  faTruck,
   faUser,
   faWarehouse,
 } from '@fortawesome/free-solid-svg-icons';
@@ -77,13 +78,14 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   inventario = faWarehouse;
   config = faGear;
   bars = faBars;
+  camion = faTruck;
 
   constructor(
     private elRef: ElementRef,
     private _usuarios: UsuariosService,
     private _router: Router,
     private dialog: MatDialog,
-    private usuarioService: UsuariosService
+    private usuarioService: UsuariosService,
   ) {}
 
   usuarioLogueado!: any;
@@ -124,7 +126,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     const toggleDropdown = (
       dropdown: HTMLElement,
       menu: HTMLElement,
-      isOpen: boolean
+      isOpen: boolean,
     ): void => {
       dropdown.classList.toggle('open', isOpen);
       if (isOpen) {
@@ -140,11 +142,11 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
     const closeAllDropdowns = (): void => {
       const openDropdowns = this.elRef.nativeElement.querySelectorAll(
-        '.dropdown-container-sd.open'
+        '.dropdown-container-sd.open',
       );
       openDropdowns.forEach((openDropdown: Element) => {
         const menu = openDropdown.querySelector(
-          '.dropdown-menu-sd'
+          '.dropdown-menu-sd',
         ) as HTMLElement;
         if (menu) {
           toggleDropdown(openDropdown as HTMLElement, menu, false);
@@ -153,13 +155,13 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     };
 
     const dropdownToggles = this.elRef.nativeElement.querySelectorAll(
-      '.dropdown-toggle-sd'
+      '.dropdown-toggle-sd',
     );
     dropdownToggles.forEach((dropdownToggle: Element) => {
       dropdownToggle.addEventListener('click', (e: Event) => {
         e.preventDefault();
         const dropdown = dropdownToggle.closest(
-          '.dropdown-container-sd'
+          '.dropdown-container-sd',
         ) as HTMLElement;
         const menu = dropdown.querySelector('.dropdown-menu-sd') as HTMLElement;
         const isOpen = dropdown.classList.contains('open');
@@ -169,13 +171,13 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     });
 
     const sidebarButtons = this.elRef.nativeElement.querySelectorAll(
-      '.sidebar-toggler-sd, .sidebar-menu-button'
+      '.sidebar-toggler-sd, .sidebar-menu-button',
     );
     sidebarButtons.forEach((button: Element) => {
       button.addEventListener('click', () => {
         closeAllDropdowns();
         const sidebar = this.elRef.nativeElement.querySelector(
-          '.sidebar'
+          '.sidebar',
         ) as HTMLElement;
         sidebar?.classList.toggle('collapsed');
 
@@ -188,7 +190,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
     // Collapse on small screens
     const sidebar = this.elRef.nativeElement.querySelector(
-      '.sidebar'
+      '.sidebar',
     ) as HTMLElement;
     if (window.innerWidth <= 1024 && sidebar) {
       sidebar.classList.add('collapsed');
