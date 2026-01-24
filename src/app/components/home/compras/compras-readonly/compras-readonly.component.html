@@ -75,6 +75,10 @@
                 {{ orden.itemsRecibidos }} recibido</span
               >
             </div>
+            <div class="departamento">
+              <fa-icon [icon]="dep" size="sm"></fa-icon>
+              <span>{{ orden.departamento }}</span>
+            </div>
           </div>
         </div>
         <div class="barra-progreso">
@@ -95,8 +99,12 @@
               class="progress-bar"
               [ngClass]="{
                 'success-progress': calcularPorcentaje(orden) === 100,
-                'secondary-progress': calcularPorcentaje(orden) > 20 && calcularPorcentaje(orden) < 100,
-                'danger-progress': calcularPorcentaje(orden) > 0 && calcularPorcentaje(orden) < 20,
+                'secondary-progress':
+                  calcularPorcentaje(orden) > 20 &&
+                  calcularPorcentaje(orden) < 100,
+                'danger-progress':
+                  calcularPorcentaje(orden) > 0 &&
+                  calcularPorcentaje(orden) < 20,
               }"
               [style.width.%]="calcularPorcentaje(orden)"
             ></div>

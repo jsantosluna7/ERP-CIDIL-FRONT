@@ -342,12 +342,12 @@ export class ComprasAdminComponent {
     });
   }
 
-  editarOrden(event: MouseEvent, id: number) {
+  editarOrden(event: MouseEvent, id: number, orden: OrdenSolicitud) {
     event.stopPropagation();
     this.updatingOrdenId = id;
 
     const dialogRef = this.dialog.open(ActualizarEstatusCompraComponent, {
-      data: { id },
+      data: { id, orden },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

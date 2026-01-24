@@ -10,3 +10,26 @@
     margin-bottom: 1rem;
 
 }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.info-orden{
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.info-codigo{
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.info-nombre{
+  margin-bottom: 1rem;
+  margin-left: 0.3rem;
+  font-weight: 400;
+}

@@ -22,10 +22,11 @@ import { CantidadOrdenesCacheService } from '../../../../../core/CantidadOrdenes
 import { EstadosTimelineCacheService } from '../../../../../core/EstadosTimelineCache/estados-timeline-cache.service';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Timeline } from '../../../../../interfaces/compras';
+import { OrdenSolicitud, Timeline } from '../../../../../interfaces/compras';
 
 export interface Ordenes {
   id: number;
+  orden: OrdenSolicitud;
 }
 
 @Component({
@@ -38,7 +39,7 @@ export interface Ordenes {
     MatDialogModule,
     MatSelectModule,
     ReactiveFormsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './actualizar-estatus-compra.component.html',
   styleUrl: './actualizar-estatus-compra.component.css',
@@ -47,20 +48,28 @@ export class ActualizarEstatusCompraComponent {
   urlEstadosTimeline: string = `${process.env['API_URL']}${process.env['ENDPOINT_ESTADOS_TIMELINE']}`;
 
   estadoId = new FormControl<any | ''>('', Validators.required);
-  evento = new FormControl<any | ''>('');
+  evento = new FormControl<any | ''>(null);
+  departamento = new FormControl<any | ''>(null);
 
   usuarioLogueado: any;
   readonly dialogRef = inject(MatDialogRef<ActualizarEstatusCompraComponent>);
   readonly data = inject<Ordenes>(MAT_DIALOG_DATA);
   readonly id = model(this.data.id);
+  readonly orden = model(this.data.orden);
+
   timelines: Timeline[] = [];
   loading = false;
+
+  departamentos: any[] = [
+    { id: 1, departamento: 'Compras' },
+    { id: 2, departamento: 'Almacén' },
+  ];
 
   constructor(
     private _compras: ComprasService,
     private _toastr: ToastrService,
     private _usuarios: UsuariosService,
-    private _estadosTimeline: EstadosTimelineCacheService
+    private _estadosTimeline: EstadosTimelineCacheService,
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +95,7 @@ export class ActualizarEstatusCompraComponent {
 
   onSiActualizar(): void {
     this.loading = true;
-    
+
     if (!this.estadoId.valid) {
       this._toastr.error('Debes agregar el cambio en estado.', 'error');
       return;
@@ -94,6 +103,7 @@ export class ActualizarEstatusCompraComponent {
 
     const cambios = {
       estadoTimelineId: this.estadoId.value,
+      departamento: this.departamento.value,
       evento: this.evento.value,
       usuarioId: Number(this.usuarioLogueado.sub),
     };
