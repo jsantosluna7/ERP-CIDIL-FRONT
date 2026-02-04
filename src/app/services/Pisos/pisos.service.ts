@@ -2,10 +2,15 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 
 export interface LaboratoriosPorPiso {
-  1: string[]; // 1er piso
+  1: string[];
   2: string[];
   3: string[];
-  4: string[]; // todo
+  4: string[];
+}
+
+export interface CalendarioState {
+  fecha: Date;
+  vista: string;
 }
 
 @Injectable({
@@ -31,11 +36,10 @@ export class PisosService {
         '3C',
         '3D',
       ],
-    }
+    },
   );
   laboratoriosPorPiso$ = this.laboratoriosPorPisoSubject.asObservable();
 
-  // 👇 tabList se actualiza en base al piso actual
   private pisoSubject = new BehaviorSubject<number>(1);
   piso$ = this.pisoSubject.asObservable();
 
@@ -57,10 +61,14 @@ export class PisosService {
   private tabListCalendarioSubject = new BehaviorSubject<string[]>([]);
   tabListCalendario$ = this.tabListCalendarioSubject.asObservable();
 
+  private calendarioStateSubject = new BehaviorSubject<CalendarioState | null>(
+    null,
+  );
+  calendarioState$ = this.calendarioStateSubject.asObservable();
+
   constructor() {
     this.cargarDesdeLocalStorage();
 
-    // Cuando cambie el piso o los laboratorios, actualiza tabList
     combineLatest([this.pisoSubject, this.laboratoriosPorPiso$]).subscribe(
       ([piso, data]: any) => {
         const list =
@@ -68,7 +76,7 @@ export class PisosService {
             ? [...data[1], ...data[2], ...data[3]]
             : [...(data[piso] ?? [])];
         this.tabListSubject.next(list);
-      }
+      },
     );
 
     combineLatest([this.pisoMqttSubject, this.laboratoriosPorPiso$]).subscribe(
@@ -78,18 +86,19 @@ export class PisosService {
             ? [...data[1], ...data[2], ...data[3]]
             : [...(data[piso] ?? [])];
         this.tabListMqttSubject.next(list);
-      }
+      },
     );
-    
-    combineLatest([this.pisoCalendarioSubject, this.laboratoriosPorPiso$]).subscribe(
-      ([piso, data]: any) => {
-        const list =
-          piso === 4
-            ? [...data[1], ...data[2], ...data[3]]
-            : [...(data[piso] ?? [])];
-        this.tabListCalendarioSubject.next(list);
-      }
-    );
+
+    combineLatest([
+      this.pisoCalendarioSubject,
+      this.laboratoriosPorPiso$,
+    ]).subscribe(([piso, data]: any) => {
+      const list =
+        piso === 4
+          ? [...data[1], ...data[2], ...data[3]]
+          : [...(data[piso] ?? [])];
+      this.tabListCalendarioSubject.next(list);
+    });
   }
 
   setPiso(piso: number) {
@@ -108,13 +117,24 @@ export class PisosService {
     this.pisoMqttSubject.next(piso);
   }
 
+  setCalendarioState(state: CalendarioState) {
+    this.calendarioStateSubject.next(state);
+  }
+
+  getCalendarioState(): CalendarioState | null {
+    return this.calendarioStateSubject.value;
+  }
+
+  clearCalendarioState() {
+    this.calendarioStateSubject.next(null);
+  }
+
   agregarLaboratorio(nombre: string, piso: number) {
     const actual = this.laboratoriosPorPisoSubject.value;
     const nuevos: any = { ...actual };
 
     nuevos[piso] = [...nuevos[piso], nombre];
 
-    // Si es piso distinto a 4, también lo agregamos al "todo"
     if (piso !== 4 && !nuevos[4].includes(nombre)) {
       nuevos[4] = [...nuevos[4], nombre];
     }
@@ -128,7 +148,7 @@ export class PisosService {
     const nuevos: any = { ...actual };
 
     nuevos[piso] = nuevos[piso].filter((lab: any) => lab !== nombre);
-    nuevos[4] = nuevos[4].filter((lab: any) => lab !== nombre); // Siempre lo quitamos de "todo"
+    nuevos[4] = nuevos[4].filter((lab: any) => lab !== nombre);
 
     this.laboratoriosPorPisoSubject.next(nuevos);
     this.guardarEnLocalStorage(nuevos);

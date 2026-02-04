@@ -1,24 +1,137 @@
-.calendario-container {
-  width: 100%;
-  height: auto;
+/* Loading overlay */
+:host ::ng-deep .fc {
   position: relative;
-  overflow: hidden; /* evita scroll extra */
 }
 
-::ng-deep .fc {
-  width: 100% !important;
-  overflow: hidden !important;
+:host ::ng-deep .fc.fc-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-::ng-deep .fc-view {
-  height: auto !important;
-  overflow: hidden !important;
+/* Eventos personalizados - Vista mes */
+:host ::ng-deep .fc-event-custom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  font-size: 0.85em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-::ng-deep .fc-scroller {
-  overflow: hidden !important;
+:host ::ng-deep .fc-event-time {
+  font-weight: 600;
+  font-size: 0.9em;
 }
 
-::ng-deep .fc-daygrid-body {
-  overflow: hidden !important;
+:host ::ng-deep .fc-event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Eventos personalizados - Vista semana/día */
+:host ::ng-deep .fc-event-custom-detailed {
+  padding: 4px 6px;
+  font-size: 0.9em;
+}
+
+:host ::ng-deep .fc-event-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85em;
+  margin-top: 2px;
+}
+
+:host ::ng-deep .fc-event-estado {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Colores por estado */
+:host ::ng-deep .evento-pendiente {
+  opacity: 0.85;
+}
+
+:host ::ng-deep .evento-aprobado {
+  opacity: 1;
+}
+
+:host ::ng-deep .evento-rechazado {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+:host ::ng-deep .evento-cancelado {
+  opacity: 0.6;
+}
+
+/* Popover de "more" */
+:host ::ng-deep .fc-popover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  border-radius: 8px;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  :host ::ng-deep .fc-event-custom {
+    font-size: 0.75em;
+  }
+
+  :host ::ng-deep .fc-toolbar-title {
+    font-size: 1.2em !important;
+  }
+}
+
+.calendario-container {
+  position: relative;
+  min-height: 400px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  gap: 12px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

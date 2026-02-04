@@ -34,7 +34,7 @@ export class UsuarioService {
     return this.http.get<RespuestaUsuarios>(this.apiUrl);
   }
 
-  obtenerUsuarioId(id: string): Observable<any> {
+  obtenerUsuarioId(id: number): Observable<any> {
     return this.http.get(`${this.apiUrlUsuario}/${id}`);
   }
 

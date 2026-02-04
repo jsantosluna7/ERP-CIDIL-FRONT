@@ -41,21 +41,12 @@ export class DashboardComponent {
 
   cambiarPiso(index: number) {
     this.pisoSeleccionado = index;
+    const pisoNumero = index + 1;
 
-    switch (index) {
-      case 0:
-        this._piso.setPiso(1);
-        break;
-      case 1:
-        this._piso.setPiso(2);
-        break;
-      case 2:
-        this._piso.setPiso(3);
-        break;
-      case 3:
-        this._piso.setPiso(4);
-        break;
-    }
+    this._piso.setPiso(pisoNumero);
+    this._piso.setPisoCalendario(pisoNumero);
+    this._piso.setPisoHorario(pisoNumero);
+    this._piso.setPisoMqtt(pisoNumero);
 
     this.mostrarComponente = false;
     setTimeout(() => (this.mostrarComponente = true), 0);
