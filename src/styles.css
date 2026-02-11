@@ -7,7 +7,7 @@
 }
 
 * {
-  font-family: 'helvetica neue', sans-serif;
+  font-family: "helvetica neue", sans-serif;
 }
 
 /* .sidebar.close ~ .home{
@@ -16,13 +16,13 @@
 } */
 
 body {
-  background-color: #ECF1F2;
+  background-color: #ecf1f2;
 }
 
 .body .home {
   transition: margin-left 0.4s ease;
   padding: 20px;
-  background-color: #ECF1F2;
+  background-color: #ecf1f2;
   /* Esto agrega espacio interno al contenido */
 }
 
@@ -45,7 +45,6 @@ body {
     padding: 16px;
   }
 }
-
 
 html,
 body {
@@ -81,11 +80,11 @@ body {
 .fc .fc-daygrid-day-number,
 .fc .fc-col-header-cell-cushion {
   text-decoration: none;
-  color: #1825AA;
+  color: #1825aa;
 }
 
 .fc .fc-scrollgrid,
-.fc .fc-scrollgrid-section>td {
+.fc .fc-scrollgrid-section > td {
   border-radius: 20px;
 }
 

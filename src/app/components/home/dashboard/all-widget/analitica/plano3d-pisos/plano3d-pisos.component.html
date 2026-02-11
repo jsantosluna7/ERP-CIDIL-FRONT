@@ -1,0 +1,140 @@
+<!-- floor-plan-3d.component.html -->
+<div class="floor-plan-container">
+  <!-- Canvas Container -->
+  <div #canvasContainer class="canvas-container"></div>
+
+  <!-- HUD Overlay -->
+  <div class="hud">
+    <!-- Help Button -->
+    <div class="help-btn" (click)="toggleInstructions()">❓</div>
+
+    <!-- Header -->
+    <div class="header">
+      <h1>� Plano 3D Isométrico</h1>
+      <p>Edificio de Laboratorios - Piso 1</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-section">
+        <span class="control-label">Vista</span>
+        <div class="control-buttons">
+          <button class="control-btn" (click)="setView('iso')">Isométrica</button>
+          <button class="control-btn" (click)="setView('top')">Superior</button>
+          <button class="control-btn" (click)="setView('front')">Frontal</button>
+          <button class="control-btn" (click)="setView('side')">Lateral</button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <span class="control-label">Visualización</span>
+        <div class="control-buttons">
+          <button class="control-btn" [class.active]="showWalls" (click)="toggleWalls()">Paredes</button>
+          <button class="control-btn" [class.active]="showSensors" (click)="toggleSensors()">Sensores</button>
+          <button class="control-btn" [class.active]="showLabels" (click)="toggleLabels()">Etiquetas</button>
+          <button class="control-btn" [class.active]="showHeatmap" (click)="toggleHeatmap()">Heatmap</button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <span class="control-label">Acción</span>
+        <div class="control-buttons">
+          <button class="control-btn" (click)="resetCamera()" style="grid-column: span 2;">� Reiniciar Vista</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel" [class.active]="showInfoPanel">
+      <div class="info-header">
+        <div class="info-title">{{ selectedRoom?.name || 'Selecciona un espacio' }}</div>
+        <div class="info-close" (click)="closeInfo()">×</div>
+      </div>
+      <div class="sensor-grid" *ngIf="selectedRoom">
+        <!-- Temperatura -->
+        <div class="sensor-item" 
+             *ngIf="selectedRoom.sensors.temp !== undefined"
+             [class.alert]="selectedRoom.error && selectedRoom.sensors.temp && selectedRoom.sensors.temp > 25">
+          <div class="sensor-icon">�️</div>
+          <div class="sensor-label">Temperatura</div>
+          <div class="sensor-value" 
+               [class.alert]="selectedRoom.error && selectedRoom.sensors.temp && selectedRoom.sensors.temp > 25">
+            {{ selectedRoom.sensors.temp }}°C
+          </div>
+        </div>
+
+        <!-- Humedad -->
+        <div class="sensor-item" *ngIf="selectedRoom.sensors.humidity !== undefined">
+          <div class="sensor-icon">�</div>
+          <div class="sensor-label">Humedad</div>
+          <div class="sensor-value">{{ selectedRoom.sensors.humidity }}%</div>
+        </div>
+
+        <!-- Luminosidad -->
+        <div class="sensor-item" *ngIf="selectedRoom.sensors.light !== undefined">
+          <div class="sensor-icon">�</div>
+          <div class="sensor-label">Luminosidad</div>
+          <div class="sensor-value">{{ selectedRoom.sensors.light }} lux</div>
+        </div>
+
+        <!-- Ruido -->
+        <div class="sensor-item" 
+             *ngIf="selectedRoom.sensors.noise !== undefined"
+             [class.alert]="selectedRoom.sensors.noise === null">
+          <div class="sensor-icon">�</div>
+          <div class="sensor-label">Ruido</div>
+          <div class="sensor-value" [class.alert]="selectedRoom.sensors.noise === null">
+            {{ selectedRoom.sensors.noise !== null ? selectedRoom.sensors.noise + ' dB' : 'ERROR' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-title">Leyenda de Espacios</div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #3b82f6;"></div>
+        <span>Laboratorios</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #84cc16;"></div>
+        <span>�‍� Salón Profesores</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #14b8a6;"></div>
+        <span>�️ Oficina Monitores</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #8b5cf6;"></div>
+        <span>� Salón Altice</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #f59e0b;"></div>
+        <span>☕ Cafetería</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #ec4899;"></div>
+        <span>� Sala Reuniones</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #ef4444;"></div>
+        <span>⚠️ Alerta</span>
+      </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div class="modal-overlay" [class.show]="showInstructions" (click)="toggleInstructions()"></div>
+    <div class="instructions" [class.show]="showInstructions" (click)="$event.stopPropagation()">
+      <h2>� Controles</h2>
+      <ul>
+        <li><strong>Click izquierdo + Arrastrar:</strong> Rotar edificio</li>
+        <li><strong>Rueda del mouse:</strong> Zoom in/out</li>
+        <li><strong>Click derecho + Arrastrar:</strong> Mover cámara</li>
+        <li><strong>Click en habitación:</strong> Ver sensores</li>
+        <li><strong>Botones de vista:</strong> Cambiar perspectiva</li>
+      </ul>
+      <button class="close-instructions" (click)="toggleInstructions(); $event.stopPropagation()">Entendido</button>
+    </div>
+  </div>
+</div>

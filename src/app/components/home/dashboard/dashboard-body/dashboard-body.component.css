@@ -455,10 +455,16 @@ body {
   color: var(--dark);
 }
 
-#content main .table-data>div {
+#content main .table-data>.todo {
   border-radius: 20px;
   background: var(--light);
   padding: 24px;
+  overflow-x: auto;
+}
+
+#content main .table-data>.order {
+  border-radius: 20px;
+  background: var(--light);
   overflow-x: auto;
 }
 

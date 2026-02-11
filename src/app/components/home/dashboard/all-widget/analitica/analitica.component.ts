@@ -29,6 +29,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { PisosService } from '../../../../../services/Pisos/pisos.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AgregarLabDialogComponent } from './agregar-lab-dialog/agregar-lab-dialog.component';
+import { Plano3dPisosComponent } from "./plano3d-pisos/plano3d-pisos.component";
 
 @Component({
   selector: 'app-analitica',
@@ -45,7 +46,8 @@ import { AgregarLabDialogComponent } from './agregar-lab-dialog/agregar-lab-dial
     MatCheckboxModule,
     MatIconModule,
     FontAwesomeModule,
-  ],
+    Plano3dPisosComponent
+],
   templateUrl: './analitica.component.html',
   styleUrl: './analitica.component.css',
   providers: [],
