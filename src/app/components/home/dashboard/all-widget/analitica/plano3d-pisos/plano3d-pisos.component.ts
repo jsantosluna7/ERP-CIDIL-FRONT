@@ -11,11 +11,13 @@ import {
   NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ConstructorIconos3dService } from './constructor-iconos3d.service';
-
+import { Sensor, Space, SpacesApiService } from '../../../../../../services/Dashboard/spaces-api.service';
 interface RoomData {
+  id?: string;
   name: string;
   type: string;
   position: { x: number; z: number };
@@ -24,18 +26,20 @@ interface RoomData {
   icon?: string;
   error?: boolean;
   showFloorOnly?: boolean;
+  mqttTopic?: string;
   sensors: {
     temp?: number | null;
     humidity?: number | null;
     light?: number | null;
     noise?: number | null;
+    [key: string]: number | null | undefined;
   };
 }
 
 @Component({
   selector: 'app-plano3d-pisos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './plano3d-pisos.component.html',
   styleUrl: './plano3d-pisos.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,45 +71,62 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
   // Instrucciones
   showInstructions = false;
 
+  // Modales de configuración
+  showSpaceConfigModal = false;
+  showSensorsModal = false;
+
+  // Datos de edición
+  editingSpace: RoomData | null = null;
+  editingSensors: Sensor[] = [];
+
   // Datos de habitaciones
   roomsData: RoomData[] = [
     // LABORATORIOS
     {
+      id: 'lab-1a',
       name: 'Laboratorio 1A',
       type: 'lab',
       position: { x: -20, z: 15 },
       size: { width: 14, depth: 12 },
       color: 0x3b82f6,
+      mqttTopic: 'building/floor1/lab1a',
       sensors: { temp: 23, humidity: 55, light: 420, noise: 38 },
     },
     {
+      id: 'lab-1b',
       name: 'Laboratorio 1B',
       type: 'lab',
       position: { x: 0, z: 15 },
       size: { width: 14, depth: 12 },
       color: 0xef4444,
       error: true,
+      mqttTopic: 'building/floor1/lab1b',
       sensors: { temp: 29, humidity: 62, light: 390, noise: null },
     },
     {
+      id: 'lab-1c',
       name: 'Laboratorio 1C',
       type: 'lab',
       position: { x: -20, z: -5 },
       size: { width: 14, depth: 12 },
       color: 0x3b82f6,
+      mqttTopic: 'building/floor1/lab1c',
       sensors: { temp: 22, humidity: 48, light: 435, noise: 41 },
     },
     {
+      id: 'lab-1d',
       name: 'Laboratorio 1D',
       type: 'lab',
       position: { x: 0, z: -5 },
       size: { width: 14, depth: 12 },
       color: 0x3b82f6,
+      mqttTopic: 'building/floor1/lab1d',
       sensors: { temp: 21, humidity: 50, light: 410, noise: 36 },
     },
 
     // ÁREAS DE SERVICIO
     {
+      id: 'stairs-1',
       name: 'Escalera',
       type: 'stairs',
       icon: 'stairs',
@@ -115,6 +136,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       sensors: { temp: 20, light: 280 },
     },
     {
+      id: 'elevator-1',
       name: 'Ascensor',
       type: 'elevator',
       icon: 'elevator',
@@ -124,6 +146,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       sensors: { temp: 21, light: 320 },
     },
     {
+      id: 'bathroom-m',
       name: 'Baño Hombres',
       type: 'bathroom',
       icon: 'male',
@@ -133,6 +156,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       sensors: { temp: 19, humidity: 68 },
     },
     {
+      id: 'bathroom-f',
       name: 'Baño Mujeres',
       type: 'bathroom',
       icon: 'female',
@@ -142,6 +166,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       sensors: { temp: 19, humidity: 65 },
     },
     {
+      id: 'storage-1',
       name: 'Almacén',
       type: 'storage',
       icon: 'storage',
@@ -153,59 +178,71 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ÁREAS COMUNES
     {
+      id: 'cafeteria-1',
       name: 'Cafetería',
       type: 'cafeteria',
       icon: 'cafeteria',
       position: { x: -20, z: -22 },
       size: { width: 12, depth: 10 },
       color: 0xf59e0b,
+      mqttTopic: 'building/floor1/cafeteria',
       sensors: { temp: 24, humidity: 55, light: 400, noise: 52 },
     },
     {
+      id: 'office-1',
       name: 'Oficina Principal',
       type: 'office',
       icon: 'office',
       position: { x: 0, z: -22 },
       size: { width: 10, depth: 8 },
       color: 0x6366f1,
+      mqttTopic: 'building/floor1/office',
       sensors: { temp: 22, humidity: 48, light: 380, noise: 35 },
     },
     {
+      id: 'meeting-1',
       name: 'Sala de Reuniones',
       type: 'meeting',
       icon: 'meeting',
       position: { x: -35, z: 0 },
       size: { width: 14, depth: 12 },
       color: 0xec4899,
+      mqttTopic: 'building/floor1/meeting',
       sensors: { temp: 21, humidity: 50, light: 420, noise: 40 },
     },
 
     // ESPACIOS EDUCATIVOS
     {
+      id: 'teachers-1',
       name: 'Salón de Profesores',
       type: 'teachers',
       icon: 'teachers',
       position: { x: -35, z: -18 },
       size: { width: 14, depth: 10 },
       color: 0x84cc16,
+      mqttTopic: 'building/floor1/teachers',
       sensors: { temp: 23, humidity: 52, light: 390, noise: 38 },
     },
     {
+      id: 'monitors-1',
       name: 'Oficina de Monitores',
       type: 'monitors',
       icon: 'monitors',
       position: { x: 10, z: -35 },
       size: { width: 12, depth: 10 },
       color: 0x14b8a6,
+      mqttTopic: 'building/floor1/monitors',
       sensors: { temp: 22, humidity: 48, light: 410, noise: 42 },
     },
     {
+      id: 'altice-1',
       name: 'Salón Altice',
       type: 'altice',
       icon: 'altice',
       position: { x: -10, z: -35 },
       size: { width: 16, depth: 12 },
       color: 0x8b5cf6,
+      mqttTopic: 'building/floor1/altice',
       sensors: { temp: 20, humidity: 45, light: 450, noise: 35 },
     },
   ];
@@ -214,10 +251,12 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     private iconBuilder: ConstructorIconos3dService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
+    private spacesApi: SpacesApiService,
   ) {}
 
   ngOnInit(): void {
-    // No mostrar instrucciones automáticamente
+    // Cargar espacios desde la API (opcional)
+    // this.loadSpacesFromAPI();
   }
 
   ngAfterViewInit(): void {
@@ -232,7 +271,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       cancelAnimationFrame(this.animationFrameId);
     }
 
-    // Remover event listeners
     const canvas = this.renderer?.domElement;
     if (canvas) {
       canvas.removeEventListener('click', this.onMouseClick.bind(this));
@@ -244,24 +282,273 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.controls?.dispose();
     this.renderer?.dispose();
 
-    console.log('� Componente destruido y limpiado');
+    console.log('🧹 Componente destruido y limpiado');
   }
+
+  // ============================================
+  // MÉTODOS DE API
+  // ============================================
+
+  private loadSpacesFromAPI(): void {
+    this.spacesApi.getAllSpaces().subscribe({
+      next: (spaces: any[]) => {
+        // Convertir datos de API a formato interno
+        this.roomsData = spaces.map((space) => this.convertSpaceToRoomData(space));
+        this.rebuildScene();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('❌ Error al cargar espacios:', err);
+      },
+    });
+  }
+
+  private convertSpaceToRoomData(space: Space): RoomData {
+    const sensors: any = {};
+    space.sensors.forEach((sensor: any) => {
+      const key = sensor.type;
+      sensors[key] = sensor.currentValue;
+    });
+
+    return {
+      id: space.id,
+      name: space.name,
+      type: space.type,
+      position: space.position,
+      size: space.size,
+      color: space.color,
+      icon: space.icon,
+      mqttTopic: space.mqttTopic,
+      sensors,
+    };
+  }
+
+  // ============================================
+  // CONFIGURACIÓN DE ESPACIO
+  // ============================================
+
+  openSpaceConfig(): void {
+    if (!this.selectedRoom) return;
+
+    // Crear copia profunda para editar
+    this.editingSpace = JSON.parse(JSON.stringify(this.selectedRoom));
+    this.showSpaceConfigModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closeSpaceConfigModal(): void {
+    this.showSpaceConfigModal = false;
+    this.editingSpace = null;
+    this.cdr.detectChanges();
+  }
+
+  onColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const hexColor = input.value;
+    // Convertir #RRGGBB a número hexadecimal
+    this.editingSpace!.color = parseInt(hexColor.substring(1), 16);
+  }
+
+  saveSpaceConfig(): void {
+    if (!this.editingSpace || !this.editingSpace.id) return;
+
+    // Enviar a la API
+    const updateDto = {
+      name: this.editingSpace.name,
+      type: this.editingSpace.type,
+      color: this.editingSpace.color,
+      icon: this.editingSpace.icon,
+      mqttTopic: this.editingSpace.mqttTopic,
+    };
+
+    this.spacesApi.updateSpace(this.editingSpace.id, updateDto).subscribe({
+      next: (updatedSpace: any) => {
+        console.log('✅ Espacio actualizado:', updatedSpace);
+
+        // Actualizar en roomsData
+        const index = this.roomsData.findIndex((r) => r.id === this.editingSpace!.id);
+        if (index !== -1) {
+          // Mantener posición y tamaño
+          const { position, size, sensors } = this.roomsData[index];
+          this.roomsData[index] = {
+            ...this.editingSpace!,
+            position,
+            size,
+            sensors,
+          };
+
+          // Actualizar selectedRoom si está seleccionada
+          if (this.selectedRoom?.id === this.editingSpace!.id) {
+            this.selectedRoom = this.roomsData[index];
+          }
+        }
+
+        // Reconstruir la escena 3D
+        this.rebuildScene();
+
+        // Cerrar modal
+        this.closeSpaceConfigModal();
+
+        // Mostrar notificación de éxito
+        alert('✅ Espacio guardado exitosamente');
+      },
+      error: (err: any) => {
+        console.error('❌ Error al guardar espacio:', err);
+        alert('❌ Error al guardar. Intenta de nuevo.');
+      },
+    });
+  }
+
+  // ============================================
+  // GESTIÓN DE SENSORES
+  // ============================================
+
+  openSensorsConfig(): void {
+    if (!this.selectedRoom) return;
+
+    // Crear copia del espacio
+    this.editingSpace = JSON.parse(JSON.stringify(this.selectedRoom));
+
+    // Convertir sensores del formato actual a array de objetos Sensor
+    this.editingSensors = this.convertSensorsToArray(this.selectedRoom.sensors);
+
+    this.showSensorsModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closeSensorsModal(): void {
+    this.showSensorsModal = false;
+    this.editingSpace = null;
+    this.editingSensors = [];
+    this.cdr.detectChanges();
+  }
+
+  private convertSensorsToArray(sensorsObj: any): Sensor[] {
+    const sensors: Sensor[] = [];
+    const sensorTypes: { [key: string]: { name: string; unit: string } } = {
+      temp: { name: 'Temperatura', unit: '°C' },
+      humidity: { name: 'Humedad', unit: '%' },
+      light: { name: 'Luminosidad', unit: 'lux' },
+      noise: { name: 'Ruido', unit: 'dB' },
+      co2: { name: 'CO2', unit: 'ppm' },
+      pressure: { name: 'Presión', unit: 'hPa' },
+    };
+
+    Object.keys(sensorsObj).forEach((key) => {
+      const typeInfo = sensorTypes[key] || { name: key, unit: '' };
+      sensors.push({
+        id: `sensor-${Date.now()}-${Math.random()}`,
+        type: key as any,
+        name: typeInfo.name,
+        unit: typeInfo.unit,
+        currentValue: sensorsObj[key],
+        enabled: true,
+        mqttTopic: `${this.editingSpace?.mqttTopic || 'sensors'}/${key}`,
+      });
+    });
+
+    return sensors;
+  }
+
+  addNewSensor(): void {
+    const newSensor: Sensor = {
+      id: `sensor-${Date.now()}-${Math.random()}`,
+      type: 'temp',
+      name: 'Nuevo Sensor',
+      unit: '°C',
+      enabled: true,
+      mqttTopic: `${this.editingSpace?.mqttTopic || 'sensors'}/temp`,
+    };
+
+    this.editingSensors.push(newSensor);
+    this.cdr.detectChanges();
+  }
+
+  removeSensor(index: number): void {
+    if (confirm('¿Estás seguro de eliminar este sensor?')) {
+      this.editingSensors.splice(index, 1);
+      this.cdr.detectChanges();
+    }
+  }
+
+  saveSensorsConfig(): void {
+    if (!this.editingSpace || !this.editingSpace.id) return;
+
+    // Aquí deberías enviar cada sensor a la API
+    // Por simplicidad, voy a mostrar el enfoque general
+
+    console.log('💾 Guardando sensores:', this.editingSensors);
+
+    // TODO: Implementar guardado en la API
+    // Opción 1: Eliminar todos los sensores existentes y crear nuevos
+    // Opción 2: Hacer PATCH de cada sensor modificado
+
+    // Por ahora, actualizar localmente
+    const sensorsObj: any = {};
+    this.editingSensors.forEach((sensor) => {
+      sensorsObj[sensor.type] = sensor.currentValue ?? null;
+    });
+
+    // Actualizar en roomsData
+    const index = this.roomsData.findIndex((r) => r.id === this.editingSpace!.id);
+    if (index !== -1) {
+      this.roomsData[index].sensors = sensorsObj;
+
+      if (this.selectedRoom?.id === this.editingSpace!.id) {
+        this.selectedRoom.sensors = sensorsObj;
+      }
+    }
+
+    // Cerrar modal
+    this.closeSensorsModal();
+
+    alert('✅ Sensores guardados exitosamente (local)');
+    this.cdr.detectChanges();
+  }
+
+  // Helpers para sensores
+  getSensorIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      temp: '🌡️',
+      humidity: '💧',
+      light: '💡',
+      noise: '🔊',
+      co2: '💨',
+      pressure: '📊',
+      custom: '⚙️',
+    };
+    return icons[type] || '📡';
+  }
+
+  getSensorColorByType(type: string): string {
+    const colors: { [key: string]: string } = {
+      temp: '#ef4444',
+      humidity: '#3b82f6',
+      light: '#fbbf24',
+      noise: '#8b5cf6',
+      co2: '#10b981',
+      pressure: '#ec4899',
+      custom: '#64748b',
+    };
+    return colors[type] || '#64748b';
+  }
+
+  // ============================================
+  // THREE.JS SETUP
+  // ============================================
 
   private initThreeJS(): void {
     const container = this.canvasContainer.nativeElement;
 
-    // Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x1e3c72);
     this.scene.fog = new THREE.Fog(0x1e3c72, 50, 200);
 
-    // Camera
     const aspect = container.clientWidth / container.clientHeight;
     this.camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
     this.camera.position.set(40, 40, 40);
     this.camera.lookAt(0, 0, 0);
 
-    // Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -269,7 +556,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(this.renderer.domElement);
 
-    // Controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
@@ -277,13 +563,10 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.controls.maxDistance = 100;
     this.controls.maxPolarAngle = Math.PI / 2;
 
-    // Raycaster
     this.raycaster = new THREE.Raycaster();
-    // Hacer el raycaster más sensible para mejor detección
     this.raycaster.params.Line = { threshold: 0.5 };
     this.raycaster.params.Points = { threshold: 0.5 };
 
-    // Luces
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     this.scene.add(ambientLight);
 
@@ -298,7 +581,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     directionalLight2.position.set(-20, 30, -20);
     this.scene.add(directionalLight2);
 
-    // Piso
     const floorGeometry = new THREE.PlaneGeometry(100, 100);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0x1e293b,
@@ -311,7 +593,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    // Grid
     const gridHelper = new THREE.GridHelper(100, 50, 0x475569, 0x334155);
     gridHelper.position.y = 0;
     this.scene.add(gridHelper);
@@ -329,10 +610,8 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     const { width, depth } = data.size;
     const { x, z } = data.position;
 
-    // IMPORTANTE: Marcar el grupo como clickeable
     group.name = `room-${index}`;
 
-    // Piso
     const floorGeometry = new THREE.BoxGeometry(width, 0.2, depth);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0xf1f5f9,
@@ -341,12 +620,11 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
     floorMesh.position.y = 0;
     floorMesh.receiveShadow = true;
-    floorMesh.userData['isClickable'] = true; // Marcar como clickeable
+    floorMesh.userData['isClickable'] = true;
     group.add(floorMesh);
 
     const walls: THREE.Mesh[] = [];
 
-    // Paredes (si no es showFloorOnly)
     if (!data.showFloorOnly) {
       const wallMaterial = new THREE.MeshStandardMaterial({
         color: data.color,
@@ -356,14 +634,13 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
         metalness: 0.1,
       });
 
-      // 4 paredes
       const wallFront = new THREE.Mesh(
         new THREE.BoxGeometry(width, height, 0.3),
         wallMaterial,
       );
       wallFront.position.set(0, height / 2, depth / 2);
       wallFront.castShadow = true;
-      wallFront.userData['isClickable'] = true; // Marcar como clickeable
+      wallFront.userData['isClickable'] = true;
       group.add(wallFront);
       walls.push(wallFront);
 
@@ -373,7 +650,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       wallBack.position.set(0, height / 2, -depth / 2);
       wallBack.castShadow = true;
-      wallBack.userData['isClickable'] = true; // Marcar como clickeable
+      wallBack.userData['isClickable'] = true;
       group.add(wallBack);
       walls.push(wallBack);
 
@@ -383,7 +660,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       wallLeft.position.set(-width / 2, height / 2, 0);
       wallLeft.castShadow = true;
-      wallLeft.userData['isClickable'] = true; // Marcar como clickeable
+      wallLeft.userData['isClickable'] = true;
       group.add(wallLeft);
       walls.push(wallLeft);
 
@@ -393,11 +670,10 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       wallRight.position.set(width / 2, height / 2, 0);
       wallRight.castShadow = true;
-      wallRight.userData['isClickable'] = true; // Marcar como clickeable
+      wallRight.userData['isClickable'] = true;
       group.add(wallRight);
       walls.push(wallRight);
 
-      // Bordes
       const edgesGeometry = new THREE.EdgesGeometry(
         new THREE.BoxGeometry(width, height, depth),
       );
@@ -410,12 +686,10 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       group.add(edges);
     }
 
-    // ========== ICONOS 3D ==========
     if (data.icon) {
       const iconGroup = this.iconBuilder.create3DIcon(data.icon, data.color);
       if (iconGroup) {
         iconGroup.position.y = 1;
-        // Marcar todos los hijos del icono como clickeables
         iconGroup.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.userData['isClickable'] = true;
@@ -425,7 +699,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    // Sprite de sensor
     if (data.error) {
       const sprite = this.createErrorSprite(height);
       group.add(sprite);
@@ -435,20 +708,16 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       group.add(sprite);
     }
 
-    // Posicionar grupo
     group.position.set(x, 0, z);
 
-    // CRÍTICO: Guardar los datos de la habitación en el grupo
     (group as any).userData = {
       ...data,
       walls,
-      isRoom: true, // Marcador especial para identificar habitaciones
+      isRoom: true,
     };
 
     this.scene.add(group);
     this.rooms.push(group);
-
-    console.log(`✅ Habitación creada: ${data.name}`, group);
   }
 
   private createErrorSprite(height: number): THREE.Sprite {
@@ -510,12 +779,24 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     return sprite;
   }
 
+  private rebuildScene(): void {
+    // Limpiar escena actual
+    this.rooms.forEach((room) => {
+      this.scene.remove(room);
+    });
+    this.rooms = [];
+    this.sensorSprites = [];
+
+    // Recrear edificio
+    this.createBuilding();
+    this.cdr.detectChanges();
+  }
+
   private setupEventListeners(): void {
     window.addEventListener('resize', this.onWindowResize.bind(this));
 
     const canvas = this.renderer.domElement;
 
-    // CRÍTICO: Envolver eventos en NgZone para que Angular detecte cambios
     canvas.addEventListener(
       'click',
       (event) => {
@@ -535,8 +816,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       false,
     );
-
-    console.log('� Event listeners configurados en canvas con NgZone');
   }
 
   private onWindowResize(): void {
@@ -550,20 +829,16 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     const canvas = this.renderer.domElement;
     const rect = canvas.getBoundingClientRect();
 
-    // Calcular posición del mouse normalizada
     this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-    // Configurar raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-    // Obtener todos los objetos intersectados (recursivo)
     const intersects = this.raycaster.intersectObjects(
       this.scene.children,
       true,
     );
 
-    // Reset hover para todas las habitaciones
     this.rooms.forEach((room) => {
       const walls = (room as any).userData.walls || [];
       walls.forEach((wall: THREE.Mesh) => {
@@ -573,16 +848,12 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
-    // Si hay intersección, buscar la habitación padre
     if (intersects.length > 0) {
-      // Buscar el objeto clickeable más cercano
       for (const intersect of intersects) {
         let obj: any = intersect.object;
 
-        // Subir por la jerarquía hasta encontrar una habitación
         while (obj) {
           if (obj.userData && obj.userData.isRoom) {
-            // Encontramos una habitación!
             const walls = obj.userData.walls || [];
             if (walls.length > 0) {
               walls.forEach((wall: THREE.Mesh) => {
@@ -605,50 +876,34 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
   private onMouseClick(event: MouseEvent): void {
     const canvas = this.renderer.domElement;
 
-    // Verificar que el click sea en el canvas
     if (!canvas.contains(event.target as Node)) {
       return;
     }
 
     const rect = canvas.getBoundingClientRect();
 
-    // Calcular posición del mouse normalizada
     this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-    // Configurar raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-    // Obtener todos los objetos intersectados (recursivo)
     const intersects = this.raycaster.intersectObjects(
       this.scene.children,
       true,
     );
 
-    console.log('�️ Click detectado, intersecciones:', intersects.length);
-
     if (intersects.length > 0) {
-      // Buscar el objeto clickeable más cercano
       for (const intersect of intersects) {
         let obj: any = intersect.object;
 
-        console.log('� Objeto clickeado:', obj.type, obj.userData);
-
-        // Subir por la jerarquía hasta encontrar una habitación
         while (obj) {
           if (obj.userData && obj.userData.isRoom && obj.userData.name) {
-            // ¡Encontramos una habitación!
-            console.log('✅ Habitación encontrada:', obj.userData.name);
             this.showRoomInfo(obj.userData);
             return;
           }
           obj = obj.parent;
         }
       }
-
-      console.log('⚠️ No se encontró ninguna habitación en la jerarquía');
-    } else {
-      console.log('❌ No hay intersecciones');
     }
   }
 
@@ -657,7 +912,6 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const time = Date.now() * 0.001;
 
-    // Animar sprites
     this.sensorSprites.forEach((sprite) => {
       if ((sprite as any).userData.animate) {
         (sprite as any).userData.animate(time);
@@ -668,7 +922,10 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderer.render(this.scene, this.camera);
   }
 
-  // Métodos públicos para controles
+  // ============================================
+  // MÉTODOS PÚBLICOS PARA CONTROLES
+  // ============================================
+
   setView(view: string): void {
     switch (view) {
       case 'iso':
@@ -725,21 +982,12 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showRoomInfo(data: RoomData): void {
-    console.log('� Mostrando información de:', data.name, data);
-
     this.selectedRoom = data;
     this.showInfoPanel = true;
-
-    console.log('✅ Panel de info activado:', this.showInfoPanel);
-    console.log('✅ Habitación seleccionada:', this.selectedRoom);
-
-    // CRÍTICO: Forzar detección de cambios inmediata
     this.cdr.detectChanges();
 
-    // Double check después de un tick
     setTimeout(() => {
       this.cdr.detectChanges();
-      console.log('� Segunda detección de cambios forzada');
     }, 0);
   }
 
