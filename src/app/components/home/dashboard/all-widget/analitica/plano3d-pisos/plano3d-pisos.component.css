@@ -307,7 +307,7 @@
 
 /* Instructions Modal */
 .instructions {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -337,18 +337,16 @@
 
 /* Modal Overlay */
 .modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed !important;
+  inset: 0;
   background: rgba(0, 0, 0, 0.7);
-  z-index: 199;
+  z-index: 9998 !important;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
+
 
 .modal-overlay.show {
   opacity: 1;
@@ -430,15 +428,21 @@
   transform: scale(1.1);
 }
 
+/* Botón toggle de leyenda - OCULTO en desktop */
+.legend-toggle-btn {
+  display: none;
+}
+
 /* =====================================================
    MODAL DE CONFIGURACIÓN DE ESPACIO
+   CRÍTICO: position fixed para estar fuera del contenedor del canvas
    ===================================================== */
 
 .config-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
   background: rgba(15, 23, 42, 0.98);
   backdrop-filter: blur(20px);
   padding: 0;
@@ -448,54 +452,55 @@
   max-height: 70vh;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-  z-index: 2001;
+  z-index: 9999 !important;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.3s ease;
-  scale: 0.9;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease; /* Sin scale */
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .config-modal.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  scale: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 /* =====================================================
    MODAL DE SENSORES
+   CRÍTICO: position fixed para estar fuera del contenedor del canvas
    ===================================================== */
 
 .sensors-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
   background: rgba(15, 23, 42, 0.98);
   backdrop-filter: blur(20px);
   padding: 0;
   border-radius: 16px;
   width: 90%;
   max-width: 700px;
-  max-height: 75vh;
+  max-height: 80vh; /* Aumentado de 75vh a 80vh */
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-  z-index: 2001;
+  z-index: 9999 !important;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.3s ease;
-  scale: 0.9;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease; /* Sin scale */
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .sensors-modal.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  scale: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 /* =====================================================
@@ -560,7 +565,8 @@
 }
 
 .sensors-body {
-  max-height: 55vh;
+  max-height: 58vh; /* Aumentado de 55vh a 58vh */
+  padding-bottom: 15px; /* Agregar espacio extra al final */
 }
 
 /* =====================================================
@@ -800,6 +806,7 @@
   background: rgba(59, 130, 246, 0.05);
   border: 2px dashed rgba(59, 130, 246, 0.3);
   border-radius: 11px;
+  margin-bottom: 20px; /* Agregar margen inferior para separación */
 }
 
 .add-sensor-section h3 {
@@ -812,13 +819,17 @@
    MODAL FOOTER
    ===================================================== */
 
-.modal-footer {
+.modal-abajo {
   padding: 18px 25px;
   background: rgba(0, 0, 0, 0.3);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: flex-end;
   gap: 11px;
+}
+
+.modal-abajo .sensors-footer {
+  flex-wrap: nowrap !important;
 }
 
 /* =====================================================
@@ -890,26 +901,34 @@
 
 /* =====================================================
    MODAL OVERLAY
+   CRÍTICO: position fixed para cubrir toda la pantalla
+   Diferentes z-index para diferentes modales
    ===================================================== */
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed !important;
+  inset: 0;
   background: rgba(0, 0, 0, 0.7);
-  z-index: 2000;
+  z-index: 9998 !important;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
+
 .modal-overlay.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Overlay específico para instrucciones - DENTRO del contenedor */
+
+
+/* Modal de instrucciones - z-index menor que modales de configuración */
+.instructions {
+  z-index: 200 !important;
 }
 
 /* =====================================================
@@ -984,14 +1003,14 @@
   .config-modal {
     width: 95%;
     max-width: none;
-    max-height: 70vh;
+    max-height: 75vh; /* Aumentado de 70vh */
     border-radius: 10px;
   }
 
   .sensors-modal {
     width: 95%;
     max-width: none;
-    max-height: 75vh;
+    max-height: 85vh; /* Aumentado de 75vh a 85vh para ver botones */
     border-radius: 10px;
   }
 
@@ -1017,11 +1036,12 @@
 
   .modal-body {
     padding: 14px;
-    max-height: 50vh;
+    max-height: 55vh; /* Aumentado de 50vh */
   }
 
   .sensors-body {
-    max-height: 55vh;
+    max-height: 65vh; /* Aumentado de 55vh a 65vh */
+    padding-bottom: 20px;
   }
 
   .form-group {
@@ -1114,6 +1134,7 @@
 
   .add-sensor-section {
     padding: 12px;
+    margin-bottom: 10px; /* Aumentado de 25px a 40px */
   }
 
   .add-sensor-section h3 {
@@ -1121,10 +1142,13 @@
     margin-bottom: 10px;
   }
 
-  .modal-footer {
-    padding: 10px 14px;
-    flex-direction: column;
+  .modal-abajo {
+    padding: 12px 14px; /* Aumentado padding */
     gap: 8px;
+  }
+
+  .modal-abajo .sensors-footer {
+    flex-wrap: nowrap !important;
   }
 
   .btn {
@@ -1148,7 +1172,7 @@
   .config-modal,
   .sensors-modal {
     width: 98%;
-    max-height: 75vh;
+    max-height: 88vh; /* Aumentado de 75vh a 88vh */
   }
 
   .modal-header {
@@ -1172,11 +1196,12 @@
 
   .modal-body {
     padding: 12px;
-    max-height: 50vh;
+    max-height: 60vh; /* Aumentado de 50vh */
   }
 
   .sensors-body {
-    max-height: 55vh;
+    max-height: 70vh; /* Aumentado de 55vh a 70vh */
+    padding-bottom: 25px; /* Más espacio para el botón */
   }
 
   .form-group {
@@ -1253,6 +1278,7 @@
 
   .add-sensor-section {
     padding: 10px;
+    margin-bottom: 10px; /* Aumentado de 30px a 50px */
   }
 
   .add-sensor-section h3 {
@@ -1260,8 +1286,12 @@
     margin-bottom: 8px;
   }
 
-  .modal-footer {
-    padding: 8px 12px;
+  .modal-abajo {
+    padding: 12px; /* Aumentado de 8px */
+  }
+
+  .modal-abajo .sensors-footer {
+    flex-wrap: nowrap !important;
   }
 
   .btn {
@@ -1300,8 +1330,12 @@
     padding: 15px 20px;
   }
 
-  .modal-footer {
+  .modal-abajo {
     padding: 12px 20px;
+  }
+
+  .modal-abajo .sensors-footer {
+    flex-wrap: nowrap !important;
   }
 
   .sensor-card {
@@ -1317,6 +1351,36 @@
 /* =====================================================
    ESTILOS RESPONSIVE PARA HUD (CONTROLES, LEYENDA, AYUDA)
    ===================================================== */
+
+/* Header - Responsive desde el inicio */
+.header {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 20px 40px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  background: linear-gradient(45deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  font-size: 14px;
+  color: #cbd5e1;
+  margin: 0;
+}
 
 /* TABLETS (768px - 1024px) */
 @media screen and (max-width: 1024px) and (min-width: 769px) {
@@ -1391,7 +1455,7 @@
   }
 
   .header h1 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .header p {
@@ -1449,71 +1513,79 @@
 
 /* MÓVILES (menor a 600px) */
 @media screen and (max-width: 600px) {
-  /* Header - Más pequeño */
+  /* Header - Más pequeño y reposicionado */
   .header {
     top: 10px;
-    padding: 10px 15px;
-    border-radius: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
   }
 
   .header h1 {
-    font-size: 16px;
-    margin-bottom: 2px;
+    font-size: 12px;
+    margin-bottom: 1px;
   }
 
   .header p {
-    font-size: 10px;
+    font-size: 8px;
   }
 
-  /* Controles de Vista - Compactos */
+  /* Controles de Vista - OCULTOS en móvil */
   .controls {
-    top: 10px;
-    right: 10px;
-    padding: 10px;
-    min-width: 160px;
-    border-radius: 10px;
+    display: none !important;
   }
 
-  .control-section {
-    margin-bottom: 12px;
-  }
-
-  .control-section:last-child {
-    margin-bottom: 0;
-  }
-
-  .control-label {
-    font-size: 9px;
-    margin-bottom: 6px;
-  }
-
-  .control-buttons {
-    gap: 5px;
-  }
-
-  .control-btn {
-    padding: 6px;
-    font-size: 9px;
-    border-radius: 6px;
-  }
-
-  /* Leyenda - Más pequeña */
+  /* Leyenda - OCULTA en móvil, se puede mostrar con botón */
   .legend {
-    bottom: 10px;
-    right: 10px;
-    padding: 10px;
+    display: none; /* Oculta por defecto en móvil */
+  }
+
+  /* Botón para mostrar leyenda en móvil */
+  .legend-toggle-btn {
+    display: block;
+    position: absolute;
+    bottom: 15px; /* Aumentado de 10px */
+    right: 10px; /* Aumentado de 5px */
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 150;
+  }
+
+  .legend-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+  }
+
+  /* Leyenda cuando está visible en móvil */
+  .legend.mobile-visible {
+    display: block !important;
+    position: absolute !important; /* ABSOLUTE, no fixed */
+    bottom: 55px; /* Aumentado de 50px */
+    right: 10px; /* Aumentado de 5px */
+    left: auto;
+    padding: 10px; /* Aumentado de 8px */
     border-radius: 10px;
+    max-width: 180px; /* Aumentado de 160px */
+    z-index: 151;
   }
 
   .legend-title {
-    font-size: 11px;
-    margin-bottom: 10px;
+    font-size: 12px; /* Aumentado de 9px */
+    margin-bottom: 8px; /* Aumentado de 6px */
   }
 
   .legend-item {
-    font-size: 9px;
-    margin-bottom: 6px;
-    gap: 6px;
+    font-size: 10px; /* Aumentado de 7px */
+    margin-bottom: 6px; /* Aumentado de 4px */
+    gap: 6px; /* Aumentado de 4px */
   }
 
   .legend-item:last-child {
@@ -1521,225 +1593,212 @@
   }
 
   .legend-color {
-    width: 14px;
+    width: 14px; /* Aumentado de 10px */
     height: 14px;
     border-radius: 3px;
   }
 
-  /* Botón de Ayuda - Más pequeño */
+  /* Botón de Ayuda - Separado del borde */
   .help-btn {
-    top: 10px;
-    left: 10px;
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
-
-  /* Panel de Info - Ajustado */
-  .info-panel {
-    bottom: 10px !important;
-    left: 10px !important;
-    padding: 14px;
-    min-width: 250px;
-    max-width: calc(100% - 20px);
-    border-radius: 10px;
-  }
-
-  .info-header {
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-  }
-
-  .info-title {
+    top: 15px; /* Aumentado de 10px */
+    left: 10px; /* Aumentado de 5px */
+    width: 30px;
+    height: 30px;
     font-size: 15px;
   }
+}
 
-  .info-close {
-    width: 26px;
-    height: 26px;
-    font-size: 16px;
-  }
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
 
-  .info-btn {
-    width: 26px;
-    height: 26px;
-    font-size: 12px;
-  }
+/* Botón de Ayuda - Más pequeño y reposicionado */
+.help-btn {
+  top: 10px;
+  left: 5px;
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+}
 
-  .sensor-grid {
-    gap: 8px;
-  }
+/* Panel de Info - Ajustado */
+.info-panel {
+  bottom: 10px !important;
+  left: 10px !important;
+  padding: 10px;
+  min-width: 200px;
+  max-width: calc(100% - 20px);
+  border-radius: 8px;
+}
 
-  .sensor-item {
-    padding: 8px;
-    border-radius: 8px;
-  }
+.info-header {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
 
-  .sensor-icon {
-    font-size: 18px;
-    margin-bottom: 5px;
-  }
+.info-title {
+  font-size: 13px;
+}
 
-  .sensor-label {
-    font-size: 9px;
-    margin-bottom: 3px;
-  }
+.info-close {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
 
-  .sensor-value {
-    font-size: 16px;
-  }
+.info-btn {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
 
-  /* Modal de Instrucciones */
-  .instructions {
-    padding: 25px;
-    max-width: 90%;
-    border-radius: 15px;
-  }
+.sensor-grid {
+  gap: 6px;
+}
 
-  .instructions h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-  }
+.sensor-item {
+  padding: 6px;
+  border-radius: 6px;
+}
 
-  .instructions ul {
-    margin-bottom: 20px;
-  }
+.sensor-icon {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
 
-  .instructions ul li {
-    padding: 8px 0;
-    font-size: 12px;
-  }
+.sensor-label {
+  font-size: 8px;
+  margin-bottom: 2px;
+}
 
-  .close-instructions {
-    padding: 10px 24px;
-    font-size: 13px;
-  }
+.sensor-value {
+  font-size: 14px;
+}
+
+/* Modal de Instrucciones */
+.instructions {
+  padding: 20px;
+  max-width: 90%;
+  border-radius: 12px;
+}
+
+.instructions h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.instructions ul {
+  margin-bottom: 16px;
+}
+
+.instructions ul li {
+  padding: 6px 0;
+  font-size: 11px;
+}
+
+.close-instructions {
+  padding: 9px 20px;
+  font-size: 12px;
 }
 
 /* MÓVILES EXTRA PEQUEÑOS (menor a 400px) - iPhone SE */
 @media screen and (max-width: 400px) {
-  /* Header */
+  /* Header - Muy compacto */
   .header {
-    top: 8px;
-    padding: 8px 12px;
+    top: 5px;
+    padding: 5px 8px;
   }
 
   .header h1 {
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .header p {
-    font-size: 9px;
+    font-size: 7px;
   }
 
-  /* Controles - Muy compactos */
+  /* Controles - OCULTOS */
   .controls {
-    top: 8px;
-    right: 8px;
-    padding: 8px;
-    min-width: 140px;
+    display: none !important;
   }
 
-  .control-section {
-    margin-bottom: 10px;
-  }
-
-  .control-label {
-    font-size: 8px;
-    margin-bottom: 5px;
-  }
-
-  .control-buttons {
-    gap: 4px;
-  }
-
-  .control-btn {
-    padding: 5px;
-    font-size: 8px;
-  }
-
-  /* Leyenda */
+  /* Leyenda - OCULTA completamente en iPhone SE */
   .legend {
-    bottom: 8px;
-    right: 8px;
-    padding: 8px;
+    display: none !important;
   }
 
-  .legend-title {
-    font-size: 10px;
-    margin-bottom: 8px;
+  .legend.mobile-visible {
+    display: block !important;
   }
 
-  .legend-item {
-    font-size: 8px;
-    margin-bottom: 5px;
-  }
-
-  .legend-color {
-    width: 12px;
-    height: 12px;
-  }
-
-  /* Botón de Ayuda */
+  /* Botón de Ayuda - Separado del borde */
   .help-btn {
-    top: 8px;
-    left: 8px;
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
+    top: 10px; /* Aumentado de 5px */
+    left: 10px; /* Aumentado de 5px */
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  /* Botón toggle leyenda - Separado del borde */
+  .legend-toggle-btn {
+    bottom: 15px; /* Aumentado de 10px */
+    right: 10px; /* Aumentado de 5px */
   }
 
   /* Panel de Info */
   .info-panel {
     bottom: 8px !important;
     left: 8px !important;
-    padding: 10px;
-    min-width: 200px;
+    padding: 8px;
+    min-width: 180px;
   }
 
   .info-title {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .info-close,
   .info-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
   }
 
   .sensor-item {
-    padding: 6px;
+    padding: 5px;
   }
 
   .sensor-icon {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .sensor-label {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .sensor-value {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   /* Instrucciones */
   .instructions {
-    padding: 20px;
+    padding: 16px;
   }
 
   .instructions h2 {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .instructions ul li {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .close-instructions {
-    padding: 9px 20px;
-    font-size: 12px;
+    padding: 8px 18px;
+    font-size: 11px;
   }
 }
 

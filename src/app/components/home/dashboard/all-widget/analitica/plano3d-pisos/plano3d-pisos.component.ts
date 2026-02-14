@@ -15,7 +15,12 @@ import { FormsModule } from '@angular/forms';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ConstructorIconos3dService } from './constructor-iconos3d.service';
-import { Sensor, Space, SpacesApiService } from '../../../../../../services/Dashboard/spaces-api.service';
+import {
+  Sensor,
+  Space,
+  SpacesApiService,
+} from '../../../../../../services/Dashboard/spaces-api.service';
+
 interface RoomData {
   id?: string;
   name: string;
@@ -70,6 +75,9 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Instrucciones
   showInstructions = false;
+
+  // Leyenda móvil
+  showLegendMobile = false;
 
   // Modales de configuración
   showSpaceConfigModal = false;
@@ -291,13 +299,15 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private loadSpacesFromAPI(): void {
     this.spacesApi.getAllSpaces().subscribe({
-      next: (spaces: any[]) => {
+      next: (spaces) => {
         // Convertir datos de API a formato interno
-        this.roomsData = spaces.map((space) => this.convertSpaceToRoomData(space));
+        this.roomsData = spaces.map((space) =>
+          this.convertSpaceToRoomData(space),
+        );
         this.rebuildScene();
         this.cdr.detectChanges();
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('❌ Error al cargar espacios:', err);
       },
     });
@@ -305,7 +315,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private convertSpaceToRoomData(space: Space): RoomData {
     const sensors: any = {};
-    space.sensors.forEach((sensor: any) => {
+    space.sensors.forEach((sensor) => {
       const key = sensor.type;
       sensors[key] = sensor.currentValue;
     });
@@ -338,8 +348,10 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeSpaceConfigModal(): void {
     this.showSpaceConfigModal = false;
-    this.editingSpace = null;
-    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.editingSpace = null;
+    }, 0);
   }
 
   onColorChange(event: Event): void {
@@ -362,11 +374,13 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.spacesApi.updateSpace(this.editingSpace.id, updateDto).subscribe({
-      next: (updatedSpace: any) => {
+      next: (updatedSpace) => {
         console.log('✅ Espacio actualizado:', updatedSpace);
 
         // Actualizar en roomsData
-        const index = this.roomsData.findIndex((r) => r.id === this.editingSpace!.id);
+        const index = this.roomsData.findIndex(
+          (r) => r.id === this.editingSpace!.id,
+        );
         if (index !== -1) {
           // Mantener posición y tamaño
           const { position, size, sensors } = this.roomsData[index];
@@ -392,7 +406,7 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
         // Mostrar notificación de éxito
         alert('✅ Espacio guardado exitosamente');
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('❌ Error al guardar espacio:', err);
         alert('❌ Error al guardar. Intenta de nuevo.');
       },
@@ -416,11 +430,12 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  closeSensorsModal(): void {
+  closeSensorsModal() {
     this.showSensorsModal = false;
-    this.editingSpace = null;
-    this.editingSensors = [];
-    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.editingSensors = [];
+    }, 0);
   }
 
   private convertSensorsToArray(sensorsObj: any): Sensor[] {
@@ -490,7 +505,9 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Actualizar en roomsData
-    const index = this.roomsData.findIndex((r) => r.id === this.editingSpace!.id);
+    const index = this.roomsData.findIndex(
+      (r) => r.id === this.editingSpace!.id,
+    );
     if (index !== -1) {
       this.roomsData[index].sensors = sensorsObj;
 
@@ -993,12 +1010,19 @@ export class Plano3dPisosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeInfo(): void {
     this.showInfoPanel = false;
-    this.selectedRoom = null;
-    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.selectedRoom = null;
+    }, 0);
   }
 
   toggleInstructions(): void {
     this.showInstructions = !this.showInstructions;
+    this.cdr.detectChanges();
+  }
+
+  toggleLegendMobile(): void {
+    this.showLegendMobile = !this.showLegendMobile;
     this.cdr.detectChanges();
   }
 
