@@ -1,265 +1,170 @@
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { DetallePrestamoUsuario, ModalExtension, ModalStateService } from '../../../../elements/modales-globales/modal-state.service';
 import { Router } from '@angular/router';
 
-interface Loan {
-  id: number;
-  equipmentName: string;
-  equipmentImage: string;
-  equipmentCode: string;
-  quantity: number;
-  loanDate: Date;
-  dueDate: Date;
-  returnDate?: Date;
-  status: 'active' | 'pending' | 'returned' | 'overdue';
-  progress: number;
-  daysRemaining: number;
-  studentName: string;
-  studentId: string;
-  approvedBy?: string;
-  adminNotes?: string;
-}
+export type EstadoPrestamo = 'activo' | 'pendiente' | 'atrasado' | 'devuelto' | 'extension';
 
-interface ExtensionRequest {
-  loanId: number;
-  newDueDate: Date;
-  reason: string;
+export interface PrestamoUsuario {
+  id: string;
+  titulo: string;
+  imagen: string;
+  codigos: string;
+  fechaInfo: string;
+  fechaVence: string;
+  fechaVenceColor?: 'yellow' | 'red' | 'green';
+  cantidad: string;
+  estado: EstadoPrestamo;
+  mensajeEstado: string;
+  enviadaEl: string;
+  progreso?: { actual: number; total: number; tipo: 'normal' | 'warning' | 'danger' };
+  // Para modal detalle
+  fechaInicio: string;
+  fechaFin: string;
+  aprobadoPor: string;
+  diasAtraso?: number;
 }
 
 @Component({
-  selector: 'app-equipos-usuario',
-  imports: [CommonModule, FormsModule],
+  selector: 'app-mis-prestamos',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './equipos-usuario.component.html',
-  styleUrl: './equipos-usuario.component.css',
+  styleUrls: ['./equipos-usuario.component.css']
 })
 export class EquiposUsuarioComponent {
-  studentName: string = 'María González';
-  studentId: string = '2024-0156';
-  studentInitials: string = 'MG';
 
-  activeTab: 'active' | 'pending' | 'history' = 'active';
+  private modalSvc = inject(ModalStateService);
 
-  // Statistics
-  equipmentInUse: number = 7;
-  pendingApproval: number = 1;
-  returnedOnTime: number = 8;
-  totalReturned: number = 8;
+  filtroActivo = signal<string>('todos');
+  tabActivo    = signal<'espacios' | 'equipos'>('equipos');
 
-  constructor(private router: Router) {}
-
-  // Loans data
-  activeLoans: Loan[] = [
+  prestamos = signal<PrestamoUsuario[]>([
     {
-      id: 1,
-      equipmentName: 'Laptop Dell XPS 15',
-      equipmentImage:
-        'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&h=400&fit=crop',
-      equipmentCode: 'LAP-001, LAP-002',
-      quantity: 2,
-      loanDate: new Date('2026-01-25T10:30:00'),
-      dueDate: new Date('2026-01-30T23:59:59'),
-      status: 'active',
-      progress: 100,
-      daysRemaining: 0,
-      studentName: 'María González',
-      studentId: '2024-0156',
-      approvedBy: 'Admin - Juan Pérez',
-      adminNotes:
-        'Equipos verificados y en perfecto estado. Responsabilidad del estudiante mantenerlos en buen estado.',
+      id: 'PREST-2026-002',
+      titulo: 'Laptop Dell XPS 15',
+      imagen: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200&h=200&fit=crop',
+      codigos: 'LAP-001, LAP-002',
+      fechaInfo: 'Prestado: 25 Ene 2026 · 10:30 AM',
+      fechaVence: 'Vence hoy · 30 Ene 2026',
+      fechaVenceColor: 'yellow',
+      cantidad: '2 unidades',
+      estado: 'activo',
+      mensajeEstado: 'Tu préstamo vence hoy a las 11:59 PM. Si necesitas más tiempo, solicita una extensión antes de que expire.',
+      enviadaEl: 'Activo desde hace 5 días',
+      progreso: { actual: 5, total: 5, tipo: 'warning' },
+      fechaInicio: '25 Ene 2026, 10:30 AM',
+      fechaFin: '30 Ene 2026, 11:59 PM',
+      aprobadoPor: 'Admin — Juan Pérez'
     },
     {
-      id: 2,
-      equipmentName: 'Monitor LG UltraWide 34"',
-      equipmentImage:
-        'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=400&fit=crop',
-      equipmentCode: 'MON-015 a MON-017',
-      quantity: 3,
-      loanDate: new Date('2026-01-22T15:45:00'),
-      dueDate: new Date('2026-02-05T23:59:59'),
-      status: 'active',
-      progress: 57,
-      daysRemaining: 6,
-      studentName: 'María González',
-      studentId: '2024-0156',
+      id: 'PREST-2026-001',
+      titulo: 'iPad Pro 12.9" (2024)',
+      imagen: 'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=200&h=200&fit=crop',
+      codigos: 'IPAD-001 a IPAD-004',
+      fechaInfo: 'Solicitado: 30 Ene 2026 · 9:15 AM',
+      fechaVence: 'Devolución solicitada: 10 Feb 2026',
+      cantidad: '4 unidades',
+      estado: 'pendiente',
+      mensajeEstado: 'Tu solicitud está siendo revisada por un administrador. Recibirás una notificación cuando sea aprobada o rechazada.',
+      enviadaEl: 'Enviada hace 2 horas',
+      fechaInicio: '30 Ene 2026, 9:15 AM',
+      fechaFin: '10 Feb 2026, 11:59 PM',
+      aprobadoPor: 'Pendiente de aprobación'
     },
-  ];
-
-  pendingLoans: Loan[] = [
     {
-      id: 3,
-      equipmentName: 'iPad Pro 12.9" (2024)',
-      equipmentImage:
-        'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=600&h=400&fit=crop',
-      equipmentCode: 'IPAD-001 a IPAD-004',
-      quantity: 4,
-      loanDate: new Date('2026-01-30T09:15:00'),
-      dueDate: new Date('2026-02-10T23:59:59'),
-      status: 'pending',
-      progress: 0,
-      daysRemaining: 0,
-      studentName: 'María González',
-      studentId: '2024-0156',
+      id: 'PREST-2026-003',
+      titulo: 'Monitor LG UltraWide 34"',
+      imagen: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop',
+      codigos: 'MON-015 a MON-017',
+      fechaInfo: 'Prestado: 22 Ene 2026 · 3:45 PM',
+      fechaVence: 'Venció: 27 Ene 2026 · 3 días de atraso',
+      fechaVenceColor: 'red',
+      cantidad: '3 unidades',
+      estado: 'atrasado',
+      mensajeEstado: 'Tu préstamo lleva 3 días de atraso. Por favor devuelve los equipos a la brevedad para evitar restricciones en futuros préstamos.',
+      enviadaEl: 'Activo desde hace 17 días',
+      progreso: { actual: 17, total: 14, tipo: 'danger' },
+      diasAtraso: 3,
+      fechaInicio: '22 Ene 2026, 3:45 PM',
+      fechaFin: '27 Ene 2026, 11:59 PM (VENCIDO)',
+      aprobadoPor: 'Admin — Juan Pérez'
     },
-  ];
+    {
+      id: 'PREST-2026-005',
+      titulo: 'Proyector Epson EB-2250U',
+      imagen: 'https://images.unsplash.com/photo-1585792180666-f7347c490ee2?w=200&h=200&fit=crop',
+      codigos: 'PROJ-007',
+      fechaInfo: 'Prestado: 20 Ene 2026 · 2:00 PM',
+      fechaVence: 'Devuelto: 28 Ene 2026 · 2 días antes',
+      fechaVenceColor: 'green',
+      cantidad: '1 unidad',
+      estado: 'devuelto',
+      mensajeEstado: 'Equipo devuelto exitosamente el 28 Ene 2026. Sin observaciones. ¡Gracias por devolver a tiempo!',
+      enviadaEl: 'Enviada el 20 Ene 2026',
+      progreso: { actual: 8, total: 10, tipo: 'normal' },
+      fechaInicio: '20 Ene 2026, 2:00 PM',
+      fechaFin: '30 Ene 2026, 11:59 PM',
+      aprobadoPor: 'Admin — Juan Pérez'
+    }
+  ]);
 
-  historyLoans: Loan[] = [];
+  constructor(private router: Router){}
 
-  // Modal states
-  showExtensionModal: boolean = false;
-  showDetailsModal: boolean = false;
-  selectedLoan: Loan | null = null;
+  prestamosFiltrados = computed(() =>
+    this.prestamos().filter(p =>
+      this.filtroActivo() === 'todos' || p.estado === this.filtroActivo()
+    )
+  );
 
-  // Extension form
-  extensionRequest: ExtensionRequest = {
-    loanId: 0,
-    newDueDate: new Date(),
-    reason: '',
-  };
+  conteo = computed(() => ({
+    todos:     this.prestamos().length,
+    activo:    this.prestamos().filter(p => p.estado === 'activo').length,
+    pendiente: this.prestamos().filter(p => p.estado === 'pendiente').length,
+    atrasado:  this.prestamos().filter(p => p.estado === 'atrasado').length,
+    devuelto:  this.prestamos().filter(p => p.estado === 'devuelto').length,
+  }));
 
-  minExtensionDate: string = '';
-  maxExtensionDate: string = '';
+  filtrar(estado: string): void { this.filtroActivo.set(estado); }
 
-  ngOnInit(): void {
-    this.calculateLoanMetrics();
+  cancelar(id: string): void {
+    this.prestamos.update(list => list.filter(p => p.id !== id));
   }
 
-  rutaInventario() {
-    this.router.navigate(['/home/inventario']);
-  }
-
-  calculateLoanMetrics(): void {
-    const today = new Date();
-
-    this.activeLoans.forEach((loan) => {
-      const dueDate = new Date(loan.dueDate);
-      const loanDate = new Date(loan.loanDate);
-      const totalDays = Math.ceil(
-        (dueDate.getTime() - loanDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
-      const daysElapsed = Math.ceil(
-        (today.getTime() - loanDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
-
-      loan.progress = Math.min(
-        100,
-        Math.round((daysElapsed / totalDays) * 100),
-      );
-      loan.daysRemaining = Math.ceil(
-        (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-      );
-
-      if (loan.daysRemaining < 0) {
-        loan.status = 'overdue';
-      }
-    });
-  }
-
-  showTab(tab: 'active' | 'pending' | 'history'): void {
-    this.activeTab = tab;
-  }
-
-  openExtensionModal(loan: Loan): void {
-    this.selectedLoan = loan;
-    this.showExtensionModal = true;
-
-    // Set date limits
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    this.minExtensionDate = this.formatDateForInput(tomorrow);
-
-    const maxDate = new Date();
-    maxDate.setDate(maxDate.getDate() + 7);
-    this.maxExtensionDate = this.formatDateForInput(maxDate);
-
-    // Reset form
-    this.extensionRequest = {
-      loanId: loan.id,
-      newDueDate: tomorrow,
-      reason: '',
+  abrirDetalle(p: PrestamoUsuario): void {
+    const data: DetallePrestamoUsuario = {
+      id:          p.id,
+      equipo:      p.titulo,
+      codigos:     p.codigos,
+      cantidad:    p.cantidad,
+      fechaInicio: p.fechaInicio,
+      fechaFin:    p.fechaFin,
+      aprobadoPor: p.aprobadoPor,
+      estado:      p.estado,
+      diasAtraso:  p.diasAtraso,
+      progreso:    p.progreso,
     };
+    this.modalSvc.abrirDetallePrestamoUsuario(data);
   }
 
-  openDetailsModal(loan: Loan): void {
-    this.selectedLoan = loan;
-    this.showDetailsModal = true;
-  }
-
-  closeModal(): void {
-    this.showExtensionModal = false;
-    this.showDetailsModal = false;
-    this.selectedLoan = null;
-  }
-
-  submitExtension(): void {
-    if (!this.extensionRequest.newDueDate || !this.extensionRequest.reason) {
-      alert('Por favor completa todos los campos requeridos');
-      return;
-    }
-
-    // Here you would call your service to submit the extension request
-    console.log('Extension request:', this.extensionRequest);
-    alert(
-      'Solicitud de extensión enviada. Recibirás una notificación cuando sea revisada.',
-    );
-    this.closeModal();
-  }
-
-  cancelRequest(requestId: number): void {
-    if (confirm('¿Estás seguro de que deseas cancelar esta solicitud?')) {
-      // Here you would call your service to cancel the request
-      console.log('Canceling request:', requestId);
-      alert('Solicitud cancelada');
-      this.pendingLoans = this.pendingLoans.filter(
-        (loan) => loan.id !== requestId,
+  abrirExtension(p: PrestamoUsuario): void {
+    const data: ModalExtension = {
+      id:          p.id,
+      equipo:      p.titulo,
+      fechaActual: p.fechaFin,
+    };
+    this.modalSvc.abrirExtension(data, (fecha, motivo) => {
+      console.log(`Extensión solicitada para ${p.id}: ${fecha} — ${motivo}`);
+      this.prestamos.update(list =>
+        list.map(x => x.id === p.id
+          ? { ...x, estado: 'extension' as const }
+          : x)
       );
-      this.pendingApproval--;
-    }
-  }
-
-  formatDateForInput(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
-
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
     });
   }
 
-  formatDateTime(date: Date): string {
-    return new Date(date).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
-
-  getDueDateClass(loan: Loan): string {
-    if (loan.daysRemaining < 0) return 'danger';
-    if (loan.daysRemaining === 0) return 'warning';
-    return '';
-  }
-
-  getProgressClass(loan: Loan): string {
-    if (loan.daysRemaining < 0) return 'danger';
-    if (loan.daysRemaining <= 1) return 'warning';
-    return '';
-  }
-
-  getDaysRemainingText(loan: Loan): string {
-    if (loan.daysRemaining < 0) {
-      return `${Math.abs(loan.daysRemaining)} días de atraso`;
-    } else if (loan.daysRemaining === 0) {
-      return 'Vence hoy';
-    } else if (loan.daysRemaining === 1) {
-      return 'Vence mañana';
-    } else {
-      return `Vence en ${loan.daysRemaining} días`;
-    }
+  irInventario(): void {
+    this.router.navigate(['/home/inventario']);
   }
 }

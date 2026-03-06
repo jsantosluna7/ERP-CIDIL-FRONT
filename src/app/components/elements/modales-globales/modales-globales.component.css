@@ -286,3 +286,221 @@ textarea.g-input--error {
   border: 1px solid #fecaca;
   color: #b91c1c;
 }
+
+/* ── Alertas contextuales ─────────────────── */
+.g-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.g-alert svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.g-alert--orange {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
+}
+.g-alert--red {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+/* ── Badges estados equipos ───────────────── */
+.g-badge--eq-pendiente {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+.g-badge--eq-activo {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+.g-badge--eq-extension {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+.g-badge--eq-atrasado {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.g-badge--eq-devuelto {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+/* ── Info devolución ──────────────────────── */
+.g-devolucion-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* ── Inputs del modal ─────────────────────── */
+.g-input {
+  width: 100%;
+  padding: 11px 13px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14px;
+  color: #111827;
+  background: #f1f5f9;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+  margin-bottom: 14px;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+  appearance: none;
+}
+.g-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.g-textarea {
+  width: 100%;
+  padding: 11px 13px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14px;
+  color: #111827;
+  background: #f1f5f9;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  min-height: 90px;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.g-textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Helpers ──────────────────────────────── */
+.g-mono {
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+}
+.g-text--red {
+  color: #dc2626;
+  font-weight: 700;
+}
+.g-field--full {
+  grid-column: 1 / -1;
+}
+
+/* ── Botón success ────────────────────────── */
+.g-btn--success {
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(22, 163, 74, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.g-btn--success:hover {
+  background: #15803d;
+}
+
+/* ── Icono orange ─────────────────────────── */
+.g-modal-icon--orange {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* ── Botón orange ─────────────────────────── */
+.g-btn--orange {
+  background: #ea580c;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.g-btn--orange:hover {
+  background: #c2410c;
+}
+
+/* ── Info box ─────────────────────────────── */
+.g-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #1d4ed8;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.g-info-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Readonly field ───────────────────────── */
+.g-readonly-field {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 14px;
+  color: #6b7280;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  opacity: 0.8;
+}
+
+/* ── Field block ──────────────────────────── */
+.g-field-block {
+  margin-bottom: 4px;
+}
+
+/* ── Barra de progreso ────────────────────── */
+.g-progress-block {
+  margin: 14px 0;
+}
+.g-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 5px;
+}
+.g-progress-track {
+  width: 100%;
+  height: 5px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.g-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.g-progress-fill--normal {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+.g-progress-fill--warning {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+.g-progress-fill--danger {
+  background: linear-gradient(90deg, #dc2626, #f87171);
+}

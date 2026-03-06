@@ -1,327 +1,387 @@
-<div class="container">
+<div class="page-wrapper">
   <!-- Header -->
-  <div class="header">
-    <div class="header-content">
-      <div class="header-title">
-        <h1>Gestión de Préstamos</h1>
-        <p>Panel de administración • Vista completa del sistema</p>
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      </div>
+      <div>
+        <h1>Solicitudes de Equipos</h1>
+        <p class="header-subtitle">
+          Gestiona préstamos y solicitudes de equipos tecnológicos
+        </p>
       </div>
     </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="filters-section">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input 
-        type="text" 
-        class="search-input" 
-        placeholder="Buscar por equipo, estudiante o ID..." 
-        [(ngModel)]="searchTerm"
-        (input)="onSearchChange()">
-    </div>
-    <select class="filter-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
-      <option value="all">Todos los estados</option>
-      <option value="active">Activos</option>
-      <option value="pending">Pendientes</option>
-      <option value="overdue">Atrasados</option>
-      <option value="returned">Devueltos</option>
-    </select>
-    <select class="filter-select" [(ngModel)]="dateFilter">
-      <option value="all">Todas las fechas</option>
-      <option value="today">Hoy</option>
-      <option value="week">Esta semana</option>
-      <option value="month">Este mes</option>
-    </select>
-    <button class="export-btn" (click)="exportData()">
-      📥 Exportar
-    </button>
+    <span class="admin-badge">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+      Panel Admin
+    </span>
   </div>
 
   <!-- Stats -->
-  <div class="stats-grid">
+  <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-header">
-        <div>
-          <div class="stat-label">Préstamos Activos</div>
-          <div class="stat-value">{{ activeLoansCount }}</div>
-        </div>
-        <div class="stat-icon primary">📦</div>
-      </div>
-      <div class="stat-trend positive">↑ 3 desde ayer</div>
+      <span class="stat-label">Total Activos</span>
+      <span class="stat-value">{{ statTotal() }}</span>
+      <span class="stat-sub">Solicitudes registradas</span>
     </div>
-    <div class="stat-card">
-      <div class="stat-header">
-        <div>
-          <div class="stat-label">Equipos Prestados</div>
-          <div class="stat-value">{{ equipmentLoanedCount }}</div>
-        </div>
-        <div class="stat-icon info">🎯</div>
-      </div>
-      <div class="stat-trend">de {{ totalEquipmentCount }} disponibles</div>
+    <div class="stat-card pendiente">
+      <span class="stat-label">Pendientes</span>
+      <span class="stat-value">{{ statPendiente() }}</span>
+      <span class="stat-sub">Requieren atención</span>
     </div>
-    <div class="stat-card">
-      <div class="stat-header">
-        <div>
-          <div class="stat-label">Pendientes Aprobación</div>
-          <div class="stat-value">{{ pendingApprovalsCount }}</div>
-        </div>
-        <div class="stat-icon warning">⏳</div>
-      </div>
-      <div class="stat-trend">Requiere revisión</div>
+    <div class="stat-card atrasado">
+      <span class="stat-label">Atrasados</span>
+      <span class="stat-value">{{ statAtrasado() }}</span>
+      <span class="stat-sub">Requieren seguimiento</span>
     </div>
-    <div class="stat-card">
-      <div class="stat-header">
-        <div>
-          <div class="stat-label">Préstamos Atrasados</div>
-          <div class="stat-value">{{ overdueLoansCount }}</div>
-        </div>
-        <div class="stat-icon danger">⚠️</div>
-      </div>
-      <div class="stat-trend negative">Requiere atención</div>
+    <div class="stat-card devuelto">
+      <span class="stat-label">Devueltos</span>
+      <span class="stat-value">{{ statDevuelto() }}</span>
+      <span class="stat-sub">Este mes</span>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab" [class.active]="activeTab === 'all'" (click)="showTab('all')">
-      📊 Todos
-      <span class="tab-badge">{{ getTabCount('all') }}</span>
-    </button>
-    <button class="tab" [class.active]="activeTab === 'pending'" (click)="showTab('pending')">
-      ⏳ Pendientes
-      <span class="tab-badge">{{ getTabCount('pending') }}</span>
-    </button>
-    <button class="tab" [class.active]="activeTab === 'active'" (click)="showTab('active')">
-      🔄 Activos
-      <span class="tab-badge">{{ getTabCount('active') }}</span>
-    </button>
-    <button class="tab" [class.active]="activeTab === 'overdue'" (click)="showTab('overdue')">
-      ⚠️ Atrasados
-      <span class="tab-badge">{{ getTabCount('overdue') }}</span>
-    </button>
-    <button class="tab" [class.active]="activeTab === 'extensions'" (click)="showTab('extensions')">
-      📅 Extensiones
-      <span class="tab-badge">{{ getTabCount('extensions') }}</span>
-    </button>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar por equipo, estudiante o ID..."
+        [value]="busqueda()"
+        (input)="busqueda.set($any($event.target).value)"
+      />
+    </div>
+    <select
+      class="filter-select"
+      [value]="filtroEstado()"
+      (change)="filtroEstado.set($any($event.target).value)"
+    >
+      <option value="todos">Todos los estados</option>
+      <option value="pendiente">Pendientes</option>
+      <option value="activo">Activos</option>
+      <option value="extension">Con extensión</option>
+      <option value="atrasado">Atrasados</option>
+      <option value="devuelto">Devueltos</option>
+    </select>
   </div>
 
-  <!-- Loans Table -->
-  <div class="loans-table-container">
-    <table class="loans-table">
-      <thead>
-        <tr>
-          <th>Equipo</th>
-          <th>Estudiante</th>
-          <th>Cantidad</th>
-          <th>Fecha Préstamo</th>
-          <th>Fecha Devolución</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let loan of filteredLoans">
-          <td>
-            <div class="equipment-cell">
-              <img [src]="loan.equipmentImage" [alt]="loan.equipmentName" class="equipment-thumb">
-              <div class="equipment-info">
-                <h4>{{ loan.equipmentName }}</h4>
-                <span class="equipment-code">{{ loan.equipmentCode }}</span>
+  <!-- Lista -->
+  <div class="solicitudes-list">
+    @for (p of prestamosFiltrados(); track p.id) {
+      <div class="solicitud-card" [class]="p.estado">
+        <div class="card-inner">
+          <img class="card-image" [src]="p.imagen" [alt]="p.titulo" />
+          <div class="card-body">
+            <div class="card-top">
+              <div class="card-title-group">
+                <span class="card-title">{{ p.titulo }}</span>
+                <span class="card-id">#{{ p.id }} · {{ p.codigos }}</span>
               </div>
-            </div>
-          </td>
-          <td>
-            <div class="student-cell">
-              <div class="student-avatar">{{ loan.studentInitials }}</div>
-              <div class="student-info">
-                <h4>{{ loan.studentName }}</h4>
-                <span class="student-id">ID: {{ loan.studentId }}</span>
-              </div>
-            </div>
-          </td>
-          <td>{{ loan.quantity }}</td>
-          <td>
-            <div class="date-cell">
-              <span class="date-primary" *ngIf="loan.loanDate">{{ formatDate(loan.loanDate) }}</span>
-              <span class="date-primary" *ngIf="!loan.loanDate">-</span>
-              <span class="date-secondary" *ngIf="loan.loanDate">{{ formatDateTime(loan.loanDate).split(',')[1] }}</span>
-              <span class="date-secondary" *ngIf="!loan.loanDate">Pendiente</span>
-            </div>
-          </td>
-          <td>
-            <div class="date-cell">
-              <span class="date-primary" 
-                    [ngClass]="{
-                      'date-danger': loan.status === 'overdue',
-                      'date-warning': getDaysRemaining(loan.dueDate) === 0,
-                      'date-success': loan.status === 'returned'
-                    }">
-                {{ formatDate(loan.dueDate) }}
+              <span class="status-badge" [class]="p.estado">
+                <span class="status-dot"></span>
+                @switch (p.estado) {
+                  @case ("pendiente") {
+                    Pendiente
+                  }
+                  @case ("activo") {
+                    Activo
+                  }
+                  @case ("extension") {
+                    Extensión solicitada
+                  }
+                  @case ("atrasado") {
+                    Atrasado
+                  }
+                  @case ("devuelto") {
+                    Devuelto
+                  }
+                }
               </span>
-              <span class="date-secondary">{{ getDueDateText(loan) }}</span>
             </div>
-          </td>
-          <td>
-            <span class="status-badge" [ngClass]="loan.status">
-              <ng-container [ngSwitch]="loan.status">
-                <ng-container *ngSwitchCase="'active'">✓ Activo</ng-container>
-                <ng-container *ngSwitchCase="'pending'">⏳ Pendiente</ng-container>
-                <ng-container *ngSwitchCase="'overdue'">⚠️ Atrasado</ng-container>
-                <ng-container *ngSwitchCase="'returned'">✓ Devuelto</ng-container>
-                <ng-container *ngSwitchCase="'extension'">📅 Extensión</ng-container>
-              </ng-container>
-            </span>
-          </td>
-          <td>
-            <div class="table-actions">
-              <!-- Pending approval actions -->
-              <ng-container *ngIf="loan.status === 'pending'">
-                <button class="action-icon-btn approve" (click)="approveRequest(loan)" title="Aprobar">✓</button>
-                <button class="action-icon-btn reject" (click)="rejectRequest(loan)" title="Rechazar">✕</button>
-                <button class="action-icon-btn" (click)="viewDetails(loan)" title="Ver detalles">👁️</button>
-              </ng-container>
 
-              <!-- Extension request actions -->
-              <ng-container *ngIf="loan.status === 'extension'">
-                <button class="action-icon-btn approve" (click)="approveExtension(loan)" title="Aprobar extensión">✓</button>
-                <button class="action-icon-btn reject" (click)="rejectExtension(loan)" title="Rechazar extensión">✕</button>
-                <button class="action-icon-btn" (click)="viewDetails(loan)" title="Ver detalles">👁️</button>
-              </ng-container>
-
-              <!-- Active loan actions -->
-              <ng-container *ngIf="loan.status === 'active'">
-                <button class="action-icon-btn" (click)="markReturned(loan)" title="Marcar devuelto">↩️</button>
-                <button class="action-icon-btn" (click)="extendDueDate(loan)" title="Extender plazo">📅</button>
-                <button class="action-icon-btn" (click)="viewDetails(loan)" title="Ver detalles">👁️</button>
-              </ng-container>
-
-              <!-- Overdue loan actions -->
-              <ng-container *ngIf="loan.status === 'overdue'">
-                <button class="action-icon-btn" (click)="markReturned(loan)" title="Marcar devuelto">↩️</button>
-                <button class="action-icon-btn" (click)="sendReminder(loan)" title="Enviar recordatorio">🔔</button>
-                <button class="action-icon-btn" (click)="viewDetails(loan)" title="Ver detalles">👁️</button>
-              </ng-container>
-
-              <!-- Returned loan actions -->
-              <ng-container *ngIf="loan.status === 'returned'">
-                <button class="action-icon-btn" (click)="viewDetails(loan)" title="Ver detalles">👁️</button>
-              </ng-container>
+            <div class="card-meta">
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <circle cx="12" cy="7" r="4" />
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                </svg>
+                {{ p.estudiante }} · ID {{ p.estudianteId }}
+              </span>
+              <span
+                [class.fecha-danger]="p.estado === 'atrasado'"
+                [class.fecha-warn]="p.estado === 'extension'"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                {{ p.fechaInfo }}
+              </span>
+              <span class="qty-badge">{{ p.cantidad }}</span>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
 
-<!-- Details Modal -->
-<div class="modal" [class.active]="showDetailsModal" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Detalles del Préstamo</h2>
-      <p>Préstamo #{{ selectedLoan?.studentId }}-{{ selectedLoan?.id | number:'3.0-0' }}</p>
-    </div>
-    <div class="modal-body" *ngIf="selectedLoan">
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Estudiante</span>
-          <span class="info-value">{{ selectedLoan.studentName }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">ID Estudiante</span>
-          <span class="info-value">{{ selectedLoan.studentId }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Equipo</span>
-          <span class="info-value">{{ selectedLoan.equipmentName }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Códigos</span>
-          <span class="info-value">{{ selectedLoan.equipmentCode }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Cantidad</span>
-          <span class="info-value">{{ selectedLoan.quantity }} unidades</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Estado</span>
-          <span class="info-value">{{ selectedLoan.status }}</span>
-        </div>
-        <div class="info-item" *ngIf="selectedLoan.loanDate">
-          <span class="info-label">Fecha Préstamo</span>
-          <span class="info-value">{{ formatDateTime(selectedLoan.loanDate) }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Fecha Devolución</span>
-          <span class="info-value">{{ formatDateTime(selectedLoan.dueDate) }}</span>
-        </div>
-      </div>
+            <!-- Alerta de extensión -->
+            @if (p.estado === "extension" && p.extensionInfo) {
+              <div class="extension-alert">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{{ p.extensionInfo }}</span>
+              </div>
+            }
 
-      <div class="form-group">
-        <label class="form-label">Notas del administrador</label>
-        <textarea class="form-textarea" [(ngModel)]="selectedLoan.adminNotes" placeholder="Agregar notas sobre este préstamo..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
-    </div>
-  </div>
-</div>
+            <!-- Motivo (si no es extensión) -->
+            @if (p.estado !== "extension") {
+              <div class="card-motivo">"{{ p.motivo }}"</div>
+            }
 
-<!-- Return Modal -->
-<div class="modal" [class.active]="showReturnModal" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Marcar como Devuelto</h2>
-      <p>{{ selectedLoan?.equipmentName }}</p>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Fecha y Hora de Devolución</label>
-        <input type="datetime-local" class="form-input" [(ngModel)]="returnDate">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Estado del Equipo</label>
-        <select class="form-select" [(ngModel)]="equipmentCondition">
-          <option value="excellent">Excelente - Sin daños</option>
-          <option value="good">Bueno - Desgaste normal</option>
-          <option value="fair">Regular - Requiere revisión</option>
-          <option value="poor">Malo - Requiere reparación</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Comentarios de Devolución</label>
-        <textarea class="form-textarea" [(ngModel)]="returnComments" placeholder="Describe el estado del equipo..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" (click)="confirmReturn()">Confirmar Devolución</button>
-    </div>
-  </div>
-</div>
+            <!-- Acciones -->
+            <div class="card-actions">
+              @switch (p.estado) {
+                @case ("pendiente") {
+                  <button class="btn-approve" (click)="aprobar(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Aprobar
+                  </button>
+                  <button class="btn-reject" (click)="rechazar(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Rechazar
+                  </button>
+                }
 
-<!-- Approve/Reject Modal -->
-<div class="modal" [class.active]="showApprovalModal" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>{{ getApprovalTitle() }}</h2>
-      <p>{{ getApprovalSubtitle() }}</p>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Comentarios</label>
-        <textarea class="form-textarea" [(ngModel)]="approvalComments" placeholder="Agregar notas sobre esta decisión..."></textarea>
+                @case ("extension") {
+                  <button class="btn-approve" (click)="aprobarExtension(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Aprobar extensión
+                  </button>
+                  <button class="btn-reject" (click)="rechazar(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Rechazar
+                  </button>
+                }
+
+                @case ("activo") {
+                  <button class="btn-return" (click)="marcarDevuelto(p)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="9 14 4 9 9 4" />
+                      <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                    </svg>
+                    Marcar devuelto
+                  </button>
+                }
+
+                @case ("atrasado") {
+                  <button class="btn-return" (click)="marcarDevuelto(p)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="9 14 4 9 9 4" />
+                      <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                    </svg>
+                    Marcar devuelto
+                  </button>
+                  <button
+                    class="btn-reminder"
+                    (click)="enviarRecordatorio(p.id)"
+                    [disabled]="p.accionTexto === '✓ Recordatorio enviado'"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                    {{
+                      p.accionTexto === "✓ Recordatorio enviado"
+                        ? "✓ Enviado"
+                        : "Enviar recordatorio"
+                    }}
+                  </button>
+                }
+
+                @case ("devuelto") {
+                  <span class="action-taken">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      style="color: #16a34a"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    {{ p.accionTexto ?? "Devuelto" }}
+                  </span>
+                }
+              }
+
+              <button class="btn-detail" (click)="abrirDetalle(p)">
+                Ver detalle
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-      <button class="btn" 
-              [ngClass]="approvalType === 'approve' ? 'btn-primary' : 'btn-danger'" 
-              (click)="confirmApproval()">
-        {{ approvalType === 'approve' ? 'Confirmar' : 'Rechazar' }}
-      </button>
-    </div>
+    }
+
+    @if (prestamosFiltrados().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <p>No se encontraron solicitudes con los filtros aplicados.</p>
+      </div>
+    }
   </div>
 </div>

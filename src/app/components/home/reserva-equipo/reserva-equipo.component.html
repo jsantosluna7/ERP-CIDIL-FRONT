@@ -20,10 +20,9 @@
 
   <!-- Nav -->
   <nav class="tab-nav">
-    <a href="#" class="tab active">Nueva Solicitud</a>
-    <a href="#" class="tab">Ver Solicitudes</a>
-    <a href="#" class="tab">Inventario</a>
-    <a href="#" class="tab">Mis Préstamos</a>
+    <a class="tab active">Nueva Solicitud</a>
+    <a class="tab" (click)="irSolicitudes()">Ver Solicitudes</a>
+    <a class="tab" (click)="irMisPrestamos()">Mis Préstamos</a>
   </nav>
 
   <!-- Stepper -->
@@ -69,7 +68,7 @@
             {{ equiposSeleccionados.length }} equipo{{ equiposSeleccionados.length > 1 ? 's' : '' }}
           </span>
         }
-        <button class="btn-ghost-sm" type="button" (click)="irAlInventario()">
+        <button class="btn-ghost-sm" type="button" (click)="irInventario()">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -150,7 +149,7 @@
           </svg>
         </div>
         <p>Aún no hay equipos en esta solicitud</p>
-        <button class="btn-ghost" type="button" (click)="irAlInventario()">
+        <button class="btn-ghost" type="button" (click)="irInventario()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
             fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />

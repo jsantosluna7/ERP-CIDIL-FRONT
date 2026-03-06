@@ -148,10 +148,6 @@ export class ReservaEquipoComponent implements OnInit {
     this.equiposSeleccionados.splice(index, 1);
   }
 
-  irAlInventario(): void {
-    this.router.navigate(['/inventario']);
-  }
-
   onImgError(event: Event): void {
     (event.target as HTMLImageElement).style.display = 'none';
   }
@@ -188,5 +184,17 @@ export class ReservaEquipoComponent implements OnInit {
       this.enviando = false;
       alert('¡Solicitud enviada correctamente!');
     }, 1800);
+  }
+
+  irSolicitudes(): void {
+    this.router.navigate(['/home/solicitud-equipo']);
+  }
+
+  irMisPrestamos(): void {
+    this.router.navigate(['/home/mis-prestamos']);
+  }
+
+  irInventario(): void {
+    this.router.navigate(['/home/inventario']);
   }
 }
