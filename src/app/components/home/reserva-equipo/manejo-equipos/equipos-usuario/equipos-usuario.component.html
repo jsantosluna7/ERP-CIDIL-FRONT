@@ -1,1 +1,362 @@
-<p>equipos-usuario works!</p>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="user-avatar">{{ studentInitials }}</div>
+        <div class="header-title">
+          <h1>Mis Préstamos</h1>
+          <p>Hola, {{ studentName }} • Estudiante ID: {{ studentId }}</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-new-loan" (click)="rutaInventario()">
+          ➕ Nuevo Préstamo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button
+      class="tab"
+      [class.active]="activeTab === 'active'"
+      (click)="showTab('active')"
+    >
+      🔄 Activos ({{ activeLoans.length }})
+    </button>
+    <button
+      class="tab"
+      [class.active]="activeTab === 'pending'"
+      (click)="showTab('pending')"
+    >
+      ⏳ Pendientes ({{ pendingLoans.length }})
+    </button>
+    <button
+      class="tab"
+      [class.active]="activeTab === 'history'"
+      (click)="showTab('history')"
+    >
+      📚 Historial ({{ historyLoans.length }})
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-icon active">📦</div>
+      <div class="summary-label">Equipos en uso</div>
+      <div class="summary-value">{{ equipmentInUse }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon pending">⏰</div>
+      <div class="summary-label">Por aprobar</div>
+      <div class="summary-value">{{ pendingApproval }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon history">✓</div>
+      <div class="summary-label">Devueltos a tiempo</div>
+      <div class="summary-value">{{ returnedOnTime }}/{{ totalReturned }}</div>
+    </div>
+  </div>
+
+  <!-- Active Loans -->
+  <div class="loans-grid" *ngIf="activeTab === 'active'">
+    <div class="loan-card" *ngFor="let loan of activeLoans">
+      <div class="loan-card-header">
+        <img
+          [src]="loan.equipmentImage"
+          [alt]="loan.equipmentName"
+          class="equipment-image"
+        />
+        <div class="status-badge" [ngClass]="loan.status">
+          {{ loan.status === "active" ? "✓ Activo" : "⚠️ Atrasado" }}
+        </div>
+      </div>
+      <div class="loan-card-body">
+        <h3 class="equipment-name">{{ loan.equipmentName }}</h3>
+
+        <div class="loan-details">
+          <div class="detail-row">
+            <span class="detail-label">Cantidad</span>
+            <span class="quantity-badge">{{ loan.quantity }} unidades</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Prestado</span>
+            <span class="detail-value">{{
+              formatDateTime(loan.loanDate)
+            }}</span>
+          </div>
+        </div>
+
+        <div class="due-date" [ngClass]="getDueDateClass(loan)">
+          <span class="icon">{{
+            loan.daysRemaining < 0
+              ? "⚠️"
+              : loan.daysRemaining === 0
+                ? "⏰"
+                : "📅"
+          }}</span>
+          <div class="text">
+            <div
+              [style.font-weight]="'500'"
+              [style.color]="
+                loan.daysRemaining < 0
+                  ? '#d47a7a'
+                  : loan.daysRemaining === 0
+                    ? '#d4a259'
+                    : 'inherit'
+              "
+            >
+              {{ getDaysRemainingText(loan) }}
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted)">
+              {{ formatDateTime(loan.dueDate) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="loan-progress">
+          <div class="progress-label">
+            <span>Tiempo transcurrido</span>
+            <span>{{ loan.progress }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [ngClass]="getProgressClass(loan)"
+              [style.width.%]="loan.progress"
+            ></div>
+          </div>
+        </div>
+
+        <div class="loan-actions">
+          <button class="action-btn primary" (click)="openExtensionModal(loan)">
+            📅 Solicitar Extensión
+          </button>
+          <button class="action-btn secondary" (click)="openDetailsModal(loan)">
+            👁️ Detalles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="activeLoans.length === 0">
+      <div class="empty-state-icon">📦</div>
+      <h3>No tienes préstamos activos</h3>
+      <p>Solicita equipos desde el inventario</p>
+    </div>
+  </div>
+
+  <!-- Pending Loans -->
+  <div class="loans-grid" *ngIf="activeTab === 'pending'">
+    <div class="loan-card" *ngFor="let loan of pendingLoans">
+      <div class="loan-card-header">
+        <img
+          [src]="loan.equipmentImage"
+          [alt]="loan.equipmentName"
+          class="equipment-image"
+        />
+        <div class="status-badge pending">⏳ Pendiente</div>
+      </div>
+      <div class="loan-card-body">
+        <h3 class="equipment-name">{{ loan.equipmentName }}</h3>
+
+        <div class="loan-details">
+          <div class="detail-row">
+            <span class="detail-label">Cantidad solicitada</span>
+            <span class="quantity-badge">{{ loan.quantity }} unidades</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Solicitado</span>
+            <span class="detail-value">{{
+              formatDateTime(loan.loanDate)
+            }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Estado</span>
+            <span class="detail-value" style="color: #d4a259">En revisión</span>
+          </div>
+        </div>
+
+        <div class="info-box warning">
+          <div class="info-box-title">
+            <span>⏳</span>
+            <span>Esperando aprobación</span>
+          </div>
+          <div class="info-box-text">
+            Tu solicitud está siendo revisada por un administrador. Recibirás
+            una notificación cuando sea aprobada o rechazada.
+          </div>
+        </div>
+
+        <div class="loan-actions">
+          <button class="action-btn secondary" (click)="cancelRequest(loan.id)">
+            ✕ Cancelar Solicitud
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="pendingLoans.length === 0">
+      <div class="empty-state-icon">⏳</div>
+      <h3>No tienes solicitudes pendientes</h3>
+      <p>Tus solicitudes aprobadas aparecerán en Activos</p>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="loans-grid" *ngIf="activeTab === 'history'">
+    <div class="empty-state">
+      <div class="empty-state-icon">📚</div>
+      <h3>Historial de Préstamos</h3>
+      <p>Aquí verás todos tus préstamos anteriores</p>
+    </div>
+  </div>
+</div>
+
+<!-- Extension Modal -->
+<div class="modal" [class.active]="showExtensionModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Solicitar Extensión de Plazo</h2>
+      <p>{{ selectedLoan?.equipmentName }}</p>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        <div class="info-box-title">
+          <span>ℹ️</span>
+          <span>Información importante</span>
+        </div>
+        <div class="info-box-text">
+          • Solo puedes solicitar una extensión antes de la fecha de
+          vencimiento<br />
+          • Máximo 7 días de extensión<br />
+          • La aprobación depende de la disponibilidad del equipo
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Fecha de devolución actual</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="selectedLoan ? formatDateTime(selectedLoan.dueDate) : ''"
+          disabled
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nueva fecha de devolución solicitada</label>
+        <input
+          type="date"
+          class="form-input"
+          [(ngModel)]="extensionRequest.newDueDate"
+          [min]="minExtensionDate"
+          [max]="maxExtensionDate"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Motivo de la extensión *</label>
+        <textarea
+          class="form-textarea"
+          [(ngModel)]="extensionRequest.reason"
+          placeholder="Explica por qué necesitas más tiempo con el equipo..."
+          required
+        >
+        </textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" (click)="submitExtension()">
+        Enviar Solicitud
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" [class.active]="showDetailsModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Detalles del Préstamo</h2>
+      <p>Préstamo #{{ studentId }}-{{ selectedLoan?.id | number: "3.0-0" }}</p>
+    </div>
+    <div class="modal-body" *ngIf="selectedLoan">
+      <div class="form-group">
+        <label class="form-label">Equipo</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="selectedLoan.equipmentName"
+          disabled
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Código de equipo</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="selectedLoan.equipmentCode"
+          disabled
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cantidad</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="selectedLoan.quantity + ' unidades'"
+          disabled
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Fecha de préstamo</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="formatDateTime(selectedLoan.loanDate)"
+          disabled
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Fecha de devolución</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="formatDateTime(selectedLoan.dueDate)"
+          disabled
+        />
+      </div>
+
+      <div class="form-group" *ngIf="selectedLoan.approvedBy">
+        <label class="form-label">Aprobado por</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="selectedLoan.approvedBy"
+          disabled
+        />
+      </div>
+
+      <div class="form-group" *ngIf="selectedLoan.adminNotes">
+        <label class="form-label">Notas del administrador</label>
+        <textarea
+          class="form-textarea"
+          [value]="selectedLoan.adminNotes"
+          disabled
+        ></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+    </div>
+  </div>
+</div>

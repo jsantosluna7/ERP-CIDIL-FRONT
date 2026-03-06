@@ -1,243 +1,375 @@
-import { Component } from '@angular/core';
-import { ReservaEquipos } from '../../../interfaces/solicitud-reserva-equipos.interface';
-import { SolicitudEquipoService } from '../../../services/reserva-equipo/reserva-equipo.service';
-import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
-import { InventarioService } from '../../../services/Inventario/inventario.service';
-import { forkJoin, take } from 'rxjs';
-import { UsuarioService } from '../usuario/usuarios/usuarios.service';
-import { Carta } from '../../../interfaces/carta';
-import { Usuarios } from '../../../interfaces/usuarios.interface';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { UtilitiesService } from '../../../services/Utilities/utilities.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogSolicitudEquipComponent } from './dialog-solicitud-equip/dialog-solicitud-equip.component';
-import { DatosService } from '../../../services/Datos/datos.service';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+interface Loan {
+  id: number;
+  equipmentName: string;
+  equipmentImage: string;
+  equipmentCode: string;
+  quantity: number;
+  studentName: string;
+  studentId: string;
+  studentInitials: string;
+  loanDate?: Date;
+  dueDate: Date;
+  returnDate?: Date;
+  status: 'active' | 'pending' | 'returned' | 'overdue' | 'extension';
+  requestDate?: Date;
+  extensionDays?: number;
+  extensionReason?: string;
+  condition?: 'excellent' | 'good' | 'fair' | 'poor';
+  returnComments?: string;
+  adminNotes?: string;
+}
 
 @Component({
   selector: 'app-solicitud-reserva-equipo',
-  imports: [
-    CommonModule,
-    ToastrModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './solicitud-reserva-equipo.component.html',
   styleUrl: './solicitud-reserva-equipo.component.css',
 })
 export class SolicitudReservaEquipoComponent {
-  solicitud: ReservaEquipos[] = [];
+  activeTab: 'all' | 'pending' | 'active' | 'overdue' | 'extensions' = 'all';
+  searchTerm: string = '';
+  statusFilter: string = 'all';
+  dateFilter: string = 'all';
 
-  loading: { [id: number]: { aprobar: boolean; denegar: boolean } } = {};
+  // Statistics
+  activeLoansCount: number = 12;
+  equipmentLoanedCount: number = 47;
+  totalEquipmentCount: number = 120;
+  pendingApprovalsCount: number = 5;
+  overdueLoansCount: number = 2;
 
-  private setLoading(
-    id: number,
-    accion: 'aprobar' | 'denegar',
-    estado: boolean
-  ) {
-    if (!this.loading[id]) {
-      this.loading[id] = { aprobar: false, denegar: false };
-    }
-    this.loading[id][accion] = estado;
-  }
-
-  usuarioLogueado: any;
-
-  columnas = [
-    'nombreUsuario',
-    'nombreEquipo',
-    'fechaInicio',
-    'fechaFinal',
-    'motivo',
-    'cantidad',
-    'estado',
-    'acciones',
+  // Loans data
+  allLoans: Loan[] = [
+    {
+      id: 1,
+      equipmentName: 'iPad Pro 12.9" (2024)',
+      equipmentImage:
+        'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=120&h=120&fit=crop',
+      equipmentCode: 'IPAD-001 a IPAD-004',
+      quantity: 4,
+      studentName: 'Laura Pérez',
+      studentId: '2024-0289',
+      studentInitials: 'LP',
+      requestDate: new Date('2026-01-30T09:15:00'),
+      dueDate: new Date('2026-02-10T23:59:59'),
+      status: 'pending',
+    },
+    {
+      id: 2,
+      equipmentName: 'Laptop Dell XPS 15',
+      equipmentImage:
+        'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=120&h=120&fit=crop',
+      equipmentCode: 'LAP-001, LAP-002',
+      quantity: 2,
+      studentName: 'María González',
+      studentId: '2024-0156',
+      studentInitials: 'MG',
+      loanDate: new Date('2026-01-25T10:30:00'),
+      dueDate: new Date('2026-01-30T23:59:59'),
+      status: 'extension',
+      extensionDays: 5,
+      extensionReason:
+        'Necesito más tiempo para completar el proyecto final de la materia',
+    },
+    {
+      id: 3,
+      equipmentName: 'Monitor LG UltraWide 34"',
+      equipmentImage:
+        'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=120&h=120&fit=crop',
+      equipmentCode: 'MON-015 a MON-017',
+      quantity: 3,
+      studentName: 'Roberto Silva',
+      studentId: '2024-0234',
+      studentInitials: 'RS',
+      loanDate: new Date('2026-01-22T15:45:00'),
+      dueDate: new Date('2026-02-05T23:59:59'),
+      status: 'active',
+    },
+    {
+      id: 4,
+      equipmentName: 'Cámara Canon EOS R5',
+      equipmentImage:
+        'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=120&h=120&fit=crop',
+      equipmentCode: 'CAM-003',
+      quantity: 1,
+      studentName: 'Ana Martínez',
+      studentId: '2024-0178',
+      studentInitials: 'AM',
+      loanDate: new Date('2026-01-15T09:00:00'),
+      dueDate: new Date('2026-01-27T23:59:59'),
+      status: 'overdue',
+    },
+    {
+      id: 5,
+      equipmentName: 'Proyector Epson EB-2250U',
+      equipmentImage:
+        'https://images.unsplash.com/photo-1585792180666-f7347c490ee2?w=120&h=120&fit=crop',
+      equipmentCode: 'PROJ-007',
+      quantity: 1,
+      studentName: 'Carlos Ramírez',
+      studentId: '2024-0201',
+      studentInitials: 'CR',
+      loanDate: new Date('2026-01-20T14:00:00'),
+      dueDate: new Date('2026-01-30T23:59:59'),
+      returnDate: new Date('2026-01-28T11:15:00'),
+      status: 'returned',
+      condition: 'excellent',
+      returnComments:
+        'Equipo devuelto en excelente estado. Sin daños visibles.',
+    },
   ];
-  constructor(
-    private SolicitudEquipoService: SolicitudEquipoService,
-    private toastr: ToastrService,
-    private usuariosService: UsuariosService,
-    private inventarioService: InventarioService,
-    private usuarios: UsuarioService,
-    private utilitiesService: UtilitiesService,
-    private _dialog: MatDialog,
-    private _datos: DatosService
-  ) {}
+
+  filteredLoans: Loan[] = [];
+
+  // Modal states
+  showDetailsModal: boolean = false;
+  showReturnModal: boolean = false;
+  showApprovalModal: boolean = false;
+  selectedLoan: Loan | null = null;
+
+  // Forms
+  returnDate: string = '';
+  equipmentCondition: string = 'excellent';
+  returnComments: string = '';
+  approvalComments: string = '';
+  approvalType: 'approve' | 'reject' = 'approve';
+  approvalAction: 'loan' | 'extension' = 'loan';
 
   ngOnInit(): void {
-    this.usuariosService.user$.subscribe((user) => {
-      this.usuarioLogueado = user;
-    });
-
-    forkJoin({
-      solicitudesResp: this.SolicitudEquipoService.getReservaE(),
-      usuariosResp: this.usuarios.obtenerUsuarios(),
-      equiposResp: this.inventarioService.getCartas(1, 1000),
-    }).subscribe({
-      next: ({ solicitudesResp, usuariosResp, equiposResp }) => {
-        const solicitudes = solicitudesResp.datos;
-        const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
-        const equipos = equiposResp?.datos || equiposResp || [];
-
-        this.solicitud = solicitudes.map((solicitud) => {
-          const usuario = usuarios.find(
-            (u: any) => u.id === solicitud.idUsuario
-          );
-          const equipo = equipos.find(
-            (e: Carta) => e.id === solicitud.idInventario
-          );
-
-          return {
-            ...solicitud,
-            cantidad: solicitud.cantidad,
-            nombreUsuario: usuario
-              ? `${usuario.nombreUsuario} ${usuario.apellidoUsuario}`
-              : 'Desconocido',
-            nombreEquipo: equipo?.nombre || 'Equipo no encontrado',
-            fechaInicio:
-              this.utilitiesService.formatearFecha(solicitud.fechaInicio) || '',
-            fechaFinal:
-              this.utilitiesService.formatearFecha(solicitud.fechaFinal) || '',
-          };
-        });
-      },
-      error: (err) => {
-        console.error('Error al cargar datos', err);
-        this.toastr.error('Error al cargar solicitudes', 'Error');
-      },
-    });
+    this.setCurrentDateTime();
+    this.filterLoans();
   }
 
-  aprobar(solicitud: ReservaEquipos) {
-    if (!this.usuarioLogueado) {
-      this.toastr.error('Usuario logueado no encontrado');
-      return;
-    }
-
-    const body: ReservaEquipos = {
-      id: solicitud.id,
-      idUsuario: solicitud.idUsuario,
-      idInventario: solicitud.idInventario,
-      fechaInicio: this.utilitiesService.desformatearFecha(
-        solicitud.fechaInicio
-      ),
-      fechaFinal: this.utilitiesService.desformatearFecha(solicitud.fechaFinal),
-      motivo: solicitud.motivo,
-      cantidad: !isNaN(Number(solicitud.cantidad))
-        ? Number(solicitud.cantidad)
-        : 1,
-      fechaEntrega: new Date().toISOString(),
-      idEstado: 1,
-      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-      comentarioAprobacion: 'Aprobado por el usuario logueado',
-    };
-
-    this.setLoading(solicitud.id, 'aprobar', true);
-
-    this.SolicitudEquipoService.updateEstado(body).subscribe({
-      next: () => {
-        solicitud.idEstado = 1;
-        this.toastr.success(
-          `Solicitud del equipo "${solicitud.nombreEquipo}" aprobada.`,
-          'Éxito'
-        );
-        this.SolicitudEquipoService.eliminarSolicitud(solicitud.id).subscribe(
-          () => {
-            this.setLoading(solicitud.id, 'aprobar', false);
-
-            this.solicitud = this.solicitud.filter(
-              (s) => s.id !== solicitud.id
-            );
-          }
-        );
-      },
-      error: (error) => {
-        this.setLoading(solicitud.id, 'aprobar', false);
-
-        console.error('Error al aprobar solicitud:', error);
-        this.toastr.error('Error al aprobar la solicitud.', 'Error');
-      },
-    });
+  setCurrentDateTime(): void {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    this.returnDate = now.toISOString().slice(0, 16);
   }
 
-  desaprobar(solicitud: ReservaEquipos) {
-    if (!this.usuarioLogueado) {
-      this.toastr.error('Usuario logueado no encontrado');
-      return;
+  showTab(tab: 'all' | 'pending' | 'active' | 'overdue' | 'extensions'): void {
+    this.activeTab = tab;
+    this.filterLoans();
+  }
+
+  filterLoans(): void {
+    let filtered = [...this.allLoans];
+
+    // Filter by tab
+    if (this.activeTab !== 'all') {
+      filtered = filtered.filter((loan) => loan.status === this.activeTab);
     }
 
-    const dialogRef = this._dialog.open(DialogSolicitudEquipComponent);
-    this.setLoading(solicitud.id, 'denegar', true);
+    // Filter by search term
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (loan) =>
+          loan.equipmentName.toLowerCase().includes(term) ||
+          loan.studentName.toLowerCase().includes(term) ||
+          loan.studentId.includes(term) ||
+          loan.equipmentCode.toLowerCase().includes(term),
+      );
+    }
 
-    dialogRef
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((resultado) => {
-        if (resultado) {
-          this._datos.comentario$.pipe(take(1)).subscribe((data: any) => {
-            if (data) {
-              const body: ReservaEquipos = {
-                id: solicitud.id,
-                idUsuario: solicitud.idUsuario,
-                idInventario: solicitud.idInventario,
-                fechaInicio: this.utilitiesService.desformatearFecha(
-                  solicitud.fechaInicio
-                ),
-                fechaFinal: this.utilitiesService.desformatearFecha(
-                  solicitud.fechaFinal
-                ),
-                motivo: solicitud.motivo,
-                cantidad: !isNaN(Number(solicitud.cantidad))
-                  ? Number(solicitud.cantidad)
-                  : 1,
-                fechaEntrega: new Date().toISOString(),
-                idEstado: 3,
-                idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-                comentarioAprobacion: data.comentario,
-              };
+    // Filter by status
+    if (this.statusFilter !== 'all') {
+      filtered = filtered.filter((loan) => loan.status === this.statusFilter);
+    }
 
-              this.SolicitudEquipoService.updateEstado(body).subscribe({
-                next: () => {
-                  solicitud.idEstado = 3;
-                  this.toastr.success(
-                    `Solicitud del equipo "${solicitud.nombreEquipo}" rechazada.`,
-                    'Desaprobada'
-                  );
-                  this.SolicitudEquipoService.eliminarSolicitud(
-                    solicitud.id
-                  ).subscribe(() => {
-                    this.setLoading(solicitud.id, 'denegar', false);
+    this.filteredLoans = filtered;
+  }
 
-                    this.solicitud = this.solicitud.filter(
-                      (s) => s.id !== solicitud.id
-                    );
-                  });
-                },
-                error: (error) => {
-                  this.setLoading(solicitud.id, 'denegar', false);
+  onSearchChange(): void {
+    this.filterLoans();
+  }
 
-                  console.error('Error al desaprobar solicitud:', error);
-                  this.toastr.error(
-                    'Error al desaprobar la solicitud.',
-                    'Error'
-                  );
-                },
-              });
-            }
-          });
-        } else {
-          this.setLoading(solicitud.id, 'denegar', false);
-          this.toastr.info(
-            'Se canceló la acción de desaprobar la solicitud',
-            'Información'
-          );
-        }
+  onStatusFilterChange(): void {
+    this.filterLoans();
+  }
+
+  viewDetails(loan: Loan): void {
+    this.selectedLoan = loan;
+    this.showDetailsModal = true;
+  }
+
+  markReturned(loan: Loan): void {
+    this.selectedLoan = loan;
+    this.showReturnModal = true;
+    this.setCurrentDateTime();
+    this.equipmentCondition = 'excellent';
+    this.returnComments = '';
+  }
+
+  confirmReturn(): void {
+    if (this.selectedLoan) {
+      // Here you would call your service to mark as returned
+      console.log('Marking as returned:', {
+        loanId: this.selectedLoan.id,
+        returnDate: this.returnDate,
+        condition: this.equipmentCondition,
+        comments: this.returnComments,
       });
+      alert('Equipo marcado como devuelto');
+      this.closeModal();
+    }
+  }
+
+  approveRequest(loan: Loan): void {
+    this.selectedLoan = loan;
+    this.approvalType = 'approve';
+    this.approvalAction = 'loan';
+    this.approvalComments = '';
+    this.showApprovalModal = true;
+  }
+
+  rejectRequest(loan: Loan): void {
+    this.selectedLoan = loan;
+    this.approvalType = 'reject';
+    this.approvalAction = 'loan';
+    this.approvalComments = '';
+    this.showApprovalModal = true;
+  }
+
+  approveExtension(loan: Loan): void {
+    this.selectedLoan = loan;
+    this.approvalType = 'approve';
+    this.approvalAction = 'extension';
+    this.approvalComments = '';
+    this.showApprovalModal = true;
+  }
+
+  rejectExtension(loan: Loan): void {
+    this.selectedLoan = loan;
+    this.approvalType = 'reject';
+    this.approvalAction = 'extension';
+    this.approvalComments = '';
+    this.showApprovalModal = true;
+  }
+
+  confirmApproval(): void {
+    if (this.selectedLoan) {
+      // Here you would call your service
+      console.log('Approval action:', {
+        loanId: this.selectedLoan.id,
+        type: this.approvalType,
+        action: this.approvalAction,
+        comments: this.approvalComments,
+      });
+      alert('Acción confirmada');
+      this.closeModal();
+    }
+  }
+
+  extendDueDate(loan: Loan): void {
+    const newDate = prompt('Nueva fecha de devolución (YYYY-MM-DD):');
+    if (newDate) {
+      // Here you would call your service
+      console.log('Extending due date:', { loanId: loan.id, newDate });
+      alert('Fecha extendida exitosamente');
+    }
+  }
+
+  sendReminder(loan: Loan): void {
+    if (confirm('¿Enviar recordatorio al estudiante?')) {
+      // Here you would call your service
+      console.log('Sending reminder to:', loan.studentId);
+      alert('Recordatorio enviado');
+    }
+  }
+
+  exportData(): void {
+    // Here you would implement export functionality
+    alert('Exportando datos...');
+  }
+
+  closeModal(): void {
+    this.showDetailsModal = false;
+    this.showReturnModal = false;
+    this.showApprovalModal = false;
+    this.selectedLoan = null;
+  }
+
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  formatDateTime(date: Date): string {
+    return new Date(date).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  getDaysRemaining(dueDate: Date): number {
+    const today = new Date();
+    const due = new Date(dueDate);
+    return Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  getDueDateText(loan: Loan): string {
+    if (loan.status === 'returned' && loan.returnDate) {
+      const days = this.getDaysRemaining(loan.dueDate);
+      if (days > 0) {
+        return `${days} días antes`;
+      } else {
+        return 'A tiempo';
+      }
+    }
+
+    const days = this.getDaysRemaining(loan.dueDate);
+    if (days < 0) {
+      return `${Math.abs(days)} días de atraso`;
+    } else if (days === 0) {
+      return 'Vence hoy';
+    } else {
+      return `En ${days} días`;
+    }
+  }
+
+  getApprovalTitle(): string {
+    if (this.approvalAction === 'extension') {
+      return this.approvalType === 'approve'
+        ? 'Aprobar Extensión de Plazo'
+        : 'Rechazar Extensión de Plazo';
+    }
+    return this.approvalType === 'approve'
+      ? 'Aprobar Solicitud de Préstamo'
+      : 'Rechazar Solicitud de Préstamo';
+  }
+
+  getApprovalSubtitle(): string {
+    if (!this.selectedLoan) return '';
+    if (this.approvalAction === 'extension') {
+      return `${this.selectedLoan.equipmentName} - ${this.selectedLoan.studentName} (+${this.selectedLoan.extensionDays} días)`;
+    }
+    return `${this.selectedLoan.equipmentName} - ${this.selectedLoan.studentName}`;
+  }
+
+  getTabCount(tab: string): number {
+    switch (tab) {
+      case 'all':
+        return this.allLoans.length;
+      case 'pending':
+        return this.allLoans.filter((l) => l.status === 'pending').length;
+      case 'active':
+        return this.allLoans.filter((l) => l.status === 'active').length;
+      case 'overdue':
+        return this.allLoans.filter((l) => l.status === 'overdue').length;
+      case 'extensions':
+        return this.allLoans.filter((l) => l.status === 'extension').length;
+      default:
+        return 0;
+    }
   }
 }

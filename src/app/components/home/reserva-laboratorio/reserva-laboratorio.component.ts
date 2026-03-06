@@ -1,282 +1,276 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import {
-  AbstractControl,
+  ReactiveFormsModule,
   FormBuilder,
   FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
+  AbstractControl,
 } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faEnvelope,
-  faLocationDot,
-  faPhone,
-  faUser,
-  faHome,
-  faClock,
-  faHourglass,
-  faAudioDescription,
-} from '@fortawesome/free-solid-svg-icons';
-import {
-  Laboratorio,
-  SolicitudReserva,
-} from '../../../interfaces/laboratorio.interface';
-import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
-import { ToastrService } from 'ngx-toastr';
-import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
-import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
-import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltip } from '@angular/material/tooltip';
-import { number } from 'echarts/core';
+
+export interface Laboratorio {
+  id: string;
+  nombre: string;
+  ubicacion: string;
+  capacidad: number;
+  imagen: string; // Reemplaza con la ruta real: 'assets/labs/lab1.jpg'
+}
+
+// ── Horarios permitidos ──────────────────────────────────────
+// Lun-Vie: 08:00–22:00 | Sáb: 08:00–18:00 | Dom: cerrado
+const HORARIOS: Record<number, { open: number; close: number } | null> = {
+  0: null, // Domingo: cerrado
+  1: { open: 8, close: 22 }, // Lunes
+  2: { open: 8, close: 22 }, // Martes
+  3: { open: 8, close: 22 }, // Miércoles
+  4: { open: 8, close: 22 }, // Jueves
+  5: { open: 8, close: 22 }, // Viernes
+  6: { open: 8, close: 18 }, // Sábado
+};
 
 @Component({
   selector: 'app-reserva-laboratorio',
-  imports: [
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    RouterLink,
-    AppCualRolDirective,
-    MatProgressSpinnerModule,
-  ],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, DecimalPipe],
   templateUrl: './reserva-laboratorio.component.html',
   styleUrl: './reserva-laboratorio.component.css',
 })
-export class ReservaLaboratorioComponent {
-  laboratoriosSelect: any[] = [];
-  loading = false;
-  laboratorios: Laboratorio[] = [];
-  solicitudesForm!: FormGroup;
-  faUser = faUser;
-  faLocationDot = faLocationDot;
-  faPhone = faPhone;
-  faEnvelope = faEnvelope;
-  fahouse = faHome;
-  faclock = faClock;
-  faDesc = faAudioDescription;
-  estado = faHourglass;
+export class ReservaLaboratorioComponent implements OnInit {
+  // ── Catálogo de laboratorios ─────────────────────────────
+  labsMap: Record<string, Laboratorio> = {
+    lab1: {
+      id: 'lab1',
+      nombre: 'Laboratorio de Cómputo A',
+      ubicacion: 'Piso 2',
+      capacidad: 30,
+      imagen: 'assets/labs/lab-computo-a.jpg',
+    },
+    lab2: {
+      id: 'lab2',
+      nombre: 'Laboratorio de Cómputo B',
+      ubicacion: 'Piso 2',
+      capacidad: 25,
+      imagen: 'assets/labs/lab-computo-b.jpg',
+    },
+    sala1: {
+      id: 'sala1',
+      nombre: 'Sala de Conferencias',
+      ubicacion: 'Piso 1',
+      capacidad: 80,
+      imagen: 'assets/labs/sala-conferencias.jpg',
+    },
+    sala2: {
+      id: 'sala2',
+      nombre: 'Sala de Reuniones',
+      ubicacion: 'Piso 3',
+      capacidad: 15,
+      imagen: 'assets/labs/sala-reuniones.jpg',
+    },
+    aula1: {
+      id: 'aula1',
+      nombre: 'Aula Magna',
+      ubicacion: 'Planta Baja',
+      capacidad: 200,
+      imagen: 'assets/labs/aula-magna.jpg',
+    },
+  };
 
+  labsLista: Laboratorio[] = Object.values(this.labsMap);
+
+  // ── Estado ───────────────────────────────────────────────
+  labSeleccionado: Laboratorio | null = null;
+  duracionTexto = '';
+  enviando = false;
+  excedeCapacidad = false;
+  fechaEventoError: string | null = null;
+  horaFinError: string | null = null;
+
+  // Datetime mínimo = ahora (no se pueden crear reservas en el pasado)
+  minDatetime = this.toDatetimeLocal(new Date());
+
+  form!: FormGroup;
+
+  // ── Computed ─────────────────────────────────────────────
+  get personasValue(): number {
+    return this.form.get('personas')?.value ?? 0;
+  }
+
+  get ocupacionPct(): number {
+    if (!this.labSeleccionado || !this.personasValue) return 0;
+    return Math.min(
+      (this.personasValue / this.labSeleccionado.capacidad) * 100,
+      100,
+    );
+  }
+
+  // ── Lifecycle ────────────────────────────────────────────
   constructor(
-    private laboratorioService: LaboratorioService,
-    private toastr: ToastrService,
     private fb: FormBuilder,
     private router: Router,
-    private _usuarios: UsuariosService
   ) {}
 
-  usuarioLogueado: any;
-
-  ngOnInit(): void {
-    this.solicitudesForm = this.fb.group({
-      idLaboratorio: ['', Validators.required],
-      personasCantidad: ['', Validators.required],
-      horaInicio: ['', [this.horaValida()]],
-      horaFinal: ['', [this.horaValidaFinal()]],
-      motivo: ['', Validators.required],
-      //aprobacion: [null, Validators.required]
-    });
-
-    this._usuarios.user$.subscribe((user) => {
-      this.usuarioLogueado = user;
-    });
-
-    this.laboratorioService.getLaboratorios().subscribe({
-      next: (data) => {
-        this.laboratorios = data;
-      },
-      error: (err) => {
-        console.error('Error al obtener laboratorios', err);
-      },
-    });
-  }
-
-  enviarSolicitud(): void {
-    const idLaboratorio = Number(
-      this.solicitudesForm.get('idLaboratorio')?.value
-    );
-    const personasCantidad = this.solicitudesForm.get('personasCantidad')?.value;
-    const motivo = this.solicitudesForm.get('motivo')?.value;
-    const form = this.solicitudesForm.value;
-    const dtInicio = new Date(form.horaInicio);
-    // const dtFinal = new Date(form.horaFinal);
-    const horaInicio = dtInicio.toTimeString().split(' ')[0]; // HH:mm:ss
-    const horaFinal = `${form.horaFinal}:00`;
-    const fechaInicio = dtInicio.toISOString().split('T')[0] + 'T00:00:00';
-    const fechaFinal = fechaInicio;
-
-    this.loading = true; // Activar el spinner
-
-    // Validaciones paso a paso con toastr
-    if (!idLaboratorio) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.warning('Debe seleccionar un laboratorio.', 'Atención');
-      return;
-    }
-
-    if (!personasCantidad || Number(personasCantidad) <= 0) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.warning('Debe ingresar la cantidad de personas.', 'Atención');
-      return;
-    }
-
-    if (!horaInicio) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.warning('Debe seleccionar la hora de inicio.', 'Atención');
-      return;
-    }
-
-    if (!horaFinal) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.warning(
-        'Debe seleccionar la hora de finalización.',
-        'Atención'
-      );
-      return;
-    }
-
-    if (!motivo || motivo.trim() === '') {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.warning('Debe ingresar el motivo de la reserva.', 'Atención');
-      return;
-    }
-
-    // Validar formulario completo
-    if (this.solicitudesForm.invalid) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.error(
-        'El formulario tiene errores. Revise los campos.',
-        'Error'
-      );
-      return;
-    }
-
-    // Si todo está correcto, preparar la solicitud
-
-    const solicitud = {
-      idUsuario: Number(this.usuarioLogueado.sub),
-      idLaboratorio: Number(idLaboratorio),
-      personasCantidad: Number(personasCantidad),
-      horaInicio: horaInicio,
-      horaFinal: horaFinal,
-      fechaInicio: fechaInicio, // Mismo valor que horaInicio
-      fechaFinal: fechaFinal, // Mismo valor que horaFinal
-      motivo: motivo,
-      fechaSolicitud: new Date().toISOString(),
-    };
-
-    // Envío real al servicio
-    this.laboratorioService.enviarSolicitud(solicitud).subscribe({
-      next: () => {
-        this.loading = false; // Desactivar el spinner
-        this.toastr.success('¡Solicitud enviada correctamente!', 'Éxito');
-        this.solicitudesForm.reset();
-        this.laboratoriosSelect = [];
-      },
-      error: (err) => {
-        this.loading = false; // Desactivar el spinner
-        console.error(err);
-        this.toastr.error(err.error.error, 'Error');
-      },
-    });
-  }
-
-  obtenerDescripcionLaboratorio(id: number): string {
-    const laboratorio = this.laboratorios.find((lab) => lab.id == id);
-
-    return laboratorio?.descripcion.trimStart() || '';
-  }
-
-  ruta() {
+  solicitudes() {
     this.router.navigate(['/home/solicitud-laboratorio']);
   }
 
-  horaValida(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.value) return null;
-
-      const fecha = new Date(control.value);
-      const dia = fecha.getDay(); // 0=Domingo, 6=Sábado
-      const hora = fecha.getHours();
-      const minutos = fecha.getMinutes();
-
-      // Domingo -> siempre inválido
-      if (dia === 0) {
-        return { horaInvalida: true };
-      }
-
-      let horaMax = 22; // por defecto Lunes-Viernes
-      let minutoMax = 0;
-
-      // Sábado -> hasta las 18:00
-      if (dia === 6) {
-        horaMax = 18;
-        minutoMax = 0;
-      }
-
-      // Validaciones
-      if (hora < 8) {
-        return { horaInvalida: true };
-      }
-
-      if (hora > horaMax) {
-        return { horaInvalida: true };
-      }
-
-      if (hora === horaMax && minutos > minutoMax) {
-        return { horaInvalida: true };
-      }
-
-      return null; // válido
-    };
+  misSolicitudes() {
+    this.router.navigate(['/home/mis-solicitudes-espacio']);
   }
 
-  horaValidaFinal(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.value) return null;
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      laboratorio: ['', Validators.required],
+      personas: [null, [Validators.required, Validators.min(1)]],
+      fechaEvento: ['', Validators.required],
+      horaFin: ['', Validators.required],
+      motivo: ['', [Validators.required, Validators.minLength(10)]],
+    });
+  }
 
-      const [horaStr, minutoStr] = control.value.split(':');
-      const hora = parseInt(horaStr, 10);
-      const minutos = parseInt(minutoStr, 10);
+  // ── Helpers ──────────────────────────────────────────────
 
-      if (isNaN(hora) || isNaN(minutos)) {
-        return { formatoInvalido: true };
-      }
+  isInvalid(field: string): boolean {
+    const ctrl = this.form.get(field);
+    return !!(ctrl?.invalid && ctrl.touched);
+  }
 
-      const hoy = new Date();
-      const dia = hoy.getDay(); // 0=Domingo, 6=Sábado
+  /** Convierte un Date a string compatible con datetime-local input */
+  private toDatetimeLocal(date: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
 
-      // Domingo -> siempre inválido
-      if (dia === 0) {
-        return { horaInvalida: true };
-      }
+  /**
+   * Valida si un datetime está dentro del horario permitido.
+   * Devuelve null si es válido o un string con el mensaje de error.
+   */
+  private validarHorario(date: Date): string | null {
+    const diaSemana = date.getDay(); // 0=Dom … 6=Sáb
+    const horario = HORARIOS[diaSemana];
 
-      let horaMax = 22; // por defecto Lunes-Viernes
-      let minutoMax = 0;
+    if (!horario) return 'Los domingos no hay atención';
 
-      // Sábado -> hasta las 18:00
-      if (dia === 6) {
-        horaMax = 18;
-        minutoMax = 0;
-      }
+    const hora = date.getHours() + date.getMinutes() / 60;
 
-      // Validaciones
-      if (hora < 8) {
-        return { horaInvalida: true };
-      }
+    if (hora < horario.open) return `El espacio abre a las ${horario.open}:00`;
+    if (hora >= horario.close) {
+      const cierre = `${horario.close}:00`;
+      return `El espacio cierra a las ${cierre}`;
+    }
+    return null;
+  }
 
-      if (hora > horaMax) {
-        return { horaInvalida: true };
-      }
+  // ── Handlers ─────────────────────────────────────────────
 
-      if (hora === horaMax && minutos > minutoMax) {
-        return { horaInvalida: true };
-      }
+  onLabChange(): void {
+    const id = this.form.get('laboratorio')?.value;
+    this.labSeleccionado = this.labsMap[id] ?? null;
+    this.excedeCapacidad = false;
+    this.onPersonasChange();
+  }
 
-      return null; // válido
-    };
+  onPersonasChange(): void {
+    if (!this.labSeleccionado || !this.personasValue) {
+      this.excedeCapacidad = false;
+      return;
+    }
+    this.excedeCapacidad = this.personasValue > this.labSeleccionado.capacidad;
+  }
+
+  cambiarCantidad(delta: number): void {
+    const actual = this.form.get('personas')?.value ?? 0;
+    this.form.get('personas')?.setValue(Math.max(1, actual + delta));
+    this.form.get('personas')?.markAsTouched();
+    this.onPersonasChange();
+  }
+
+  onFechaChange(): void {
+    this.fechaEventoError = null;
+    const val = this.form.get('fechaEvento')?.value;
+    if (!val) return;
+
+    const fecha = new Date(val);
+    this.fechaEventoError = this.validarHorario(fecha);
+
+    // Re-validar hora de fin con la nueva fecha
+    this.onHoraFinChange();
+    this.calcularDuracion();
+  }
+
+  onHoraFinChange(): void {
+    this.horaFinError = null;
+    const fechaVal = this.form.get('fechaEvento')?.value;
+    const finVal = this.form.get('horaFin')?.value;
+    if (!fechaVal || !finVal) return;
+
+    const inicio = new Date(fechaVal);
+    const [hFin, mFin] = finVal.split(':').map(Number);
+    const fin = new Date(inicio);
+    fin.setHours(hFin, mFin, 0, 0);
+
+    if (fin <= inicio) {
+      this.horaFinError = 'La hora de fin debe ser posterior al inicio';
+      this.duracionTexto = '';
+      return;
+    }
+
+    // Validar que la hora de fin esté dentro del horario
+    this.horaFinError = this.validarHorario(fin);
+    this.calcularDuracion();
+  }
+
+  calcularDuracion(): void {
+    this.duracionTexto = '';
+    const fechaVal = this.form.get('fechaEvento')?.value;
+    const finVal = this.form.get('horaFin')?.value;
+    if (!fechaVal || !finVal || this.horaFinError) return;
+
+    const inicio = new Date(fechaVal);
+    const [hFin, mFin] = finVal.split(':').map(Number);
+    const fin = new Date(inicio);
+    fin.setHours(hFin, mFin, 0, 0);
+
+    const diff = fin.getTime() - inicio.getTime();
+    if (diff <= 0) return;
+
+    const totalMin = Math.round(diff / 60000);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+
+    this.duracionTexto =
+      h > 0
+        ? `Duración: ${h}h${m > 0 ? ' ' + m + 'min' : ''}`
+        : `Duración: ${m} minutos`;
+  }
+
+  onSubmit(): void {
+    this.form.markAllAsTouched();
+    this.onPersonasChange();
+    this.onFechaChange();
+
+    if (
+      this.form.invalid ||
+      this.excedeCapacidad ||
+      this.fechaEventoError ||
+      this.horaFinError
+    )
+      return;
+
+    this.enviando = true;
+
+    const payload = { ...this.form.value };
+    console.log('Enviando reserva de espacio:', payload);
+
+    // Reemplaza con tu servicio:
+    // this.reservaService.crearEspacio(payload).subscribe({
+    //   next: () => { this.enviando = false; this.router.navigate(['/solicitudes']); },
+    //   error: err => { this.enviando = false; console.error(err); }
+    // });
+
+    setTimeout(() => {
+      this.enviando = false;
+      alert('¡Solicitud enviada correctamente!');
+    }, 1800);
   }
 }

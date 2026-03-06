@@ -1,7 +1,13 @@
 <div class="body" [class.sidebar-collapsed]="isSidebarClosed">
   <app-sidebar (toggleSidebar)="toggleSidebar()"></app-sidebar>
-  
+
   <section class="home">
     <router-outlet></router-outlet>
   </section>
 </div>
+
+<!-- 
+  Modales aquí: fuera del .home que tiene overflow:auto
+  El position:fixed funciona correctamente desde este nivel 
+-->
+<app-modales-globales></app-modales-globales>

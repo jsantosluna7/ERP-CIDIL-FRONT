@@ -1,384 +1,140 @@
-import { Component, Input, input } from '@angular/core';
-import { Solicitud } from '../../../interfaces/solicitud-reserva-espacio.interface';
-import { SolicitudReservaService } from '../../../services/reserva-laboratorio/reserva-laboratorio.service';
-import { Console, error } from 'console';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { UsuarioService } from '../usuario/usuarios/usuarios.service';
-import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
-import { forkJoin, take } from 'rxjs';
-import { Laboratorio } from '../../../interfaces/laboratorio.interface';
-import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
-import { DatosService } from '../../../services/Datos/datos.service';
-import { DashboardService } from '../../../services/Dashboard/dashboard.service';
-import { ServicioDashboardService } from '../../../services/Dashboard/servicio-dashboard.service';
-import { PisosService } from '../../../services/Pisos/pisos.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { UtilitiesService } from '../../../services/Utilities/utilities.service';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogSolicitudLabComponent } from './dialog-solicitud-lab/dialog-solicitud-lab.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
+import { DetalleSolicitud, ModalStateService } from '../../elements/modales-globales/modal-state.service';
+
+export interface Solicitud {
+  id: string;
+  titulo: string;
+  imagen: string;
+  solicitante: string;
+  fecha: string;
+  personas: number;
+  motivo: string;
+  estado: 'pendiente' | 'aprobada' | 'rechazada';
+  accionTexto?: string;
+}
 
 @Component({
-  selector: 'app-solicitud-reserva-laboratorio',
-  imports: [
-    CommonModule,
-    ToastrModule,
-    MatTableModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-  ],
+  selector: 'app-solicitudes',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
-  styleUrl: './solicitud-reserva-laboratorio.component.css',
+  styleUrls: ['./solicitud-reserva-laboratorio.component.css']
 })
 export class SolicitudReservaLaboratorioComponent {
-  solicitudes: Solicitud[] = [];
-  @Input() mostrarPiso?: boolean = false;
 
-  loading: { [id: number]: { aprobar: boolean; denegar: boolean } } = {};
+  private modalSvc = inject(ModalStateService);
 
-  private setLoading(
-    id: number,
-    accion: 'aprobar' | 'denegar',
-    estado: boolean
-  ) {
-    if (!this.loading[id]) {
-      this.loading[id] = { aprobar: false, denegar: false };
+  filtroEstado = signal<string>('todos');
+  busqueda     = signal<string>('');
+  tabActivo    = signal<'espacios' | 'equipos'>('espacios');
+
+  private detalles: Record<string, Omit<DetalleSolicitud, 'id' | 'estado'>> = {
+    'SOL-2025-001': {
+      espacio: 'Laboratorio de Cómputo A', solicitante: 'María García',
+      departamento: 'Ingeniería en Sistemas', fechaHora: 'Vie 07 Mar 2025 · 10:00 – 14:00',
+      duracion: '4 horas', personas: 25,
+      motivo: 'Taller de programación introductoria para estudiantes de primer año.',
+      aprobadoPor: 'Pendiente de aprobación'
+    },
+    'SOL-2025-002': {
+      espacio: 'Sala de Conferencias Principal', solicitante: 'Carlos Méndez',
+      departamento: 'Dirección Académica', fechaHora: 'Lun 10 Mar 2025 · 14:00 – 17:00',
+      duracion: '3 horas', personas: 60,
+      motivo: 'Conferencia magistral sobre innovación tecnológica con ponente invitado.',
+      aprobadoPor: 'Pendiente de aprobación'
+    },
+    'SOL-2025-003': {
+      espacio: 'Sala de Reuniones Ejecutiva', solicitante: 'Ana Rodríguez',
+      departamento: 'Coordinación Académica', fechaHora: 'Mar 04 Mar 2025 · 09:00 – 11:00',
+      duracion: '2 horas', personas: 10,
+      motivo: 'Reunión de coordinación académica con jefes de departamento.',
+      aprobadoPor: 'Admin — Juan Pérez'
+    },
+    'SOL-2025-004': {
+      espacio: 'Aula Magna', solicitante: 'Luis Torres',
+      departamento: 'Bienestar Estudiantil', fechaHora: 'Dom 02 Mar 2025 · 18:00 – 22:00',
+      duracion: '4 horas', personas: 150,
+      motivo: 'Evento de gala para celebración de fin de año estudiantil.',
+      aprobadoPor: 'Admin — Juan Pérez'
+    },
+    'SOL-2025-005': {
+      espacio: 'Laboratorio de Cómputo B', solicitante: 'Sofia Núñez',
+      departamento: 'Sistemas de Información', fechaHora: 'Jue 13 Mar 2025 · 16:00 – 20:00',
+      duracion: '4 horas', personas: 20,
+      motivo: 'Práctica de laboratorio de base de datos, asignatura Sistemas de Información II.',
+      aprobadoPor: 'Pendiente de aprobación'
     }
-    this.loading[id][accion] = estado;
+  };
+
+  solicitudes = signal<Solicitud[]>([
+    { id:'SOL-2025-001', titulo:'Laboratorio de Cómputo A',
+      imagen:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop',
+      solicitante:'María García', fecha:'Vie 07 Mar 2025 · 10:00 – 14:00',
+      personas:25, motivo:'Taller de programación introductoria para estudiantes de primer año.',
+      estado:'pendiente' },
+    { id:'SOL-2025-002', titulo:'Sala de Conferencias Principal',
+      imagen:'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=200&h=200&fit=crop',
+      solicitante:'Carlos Méndez', fecha:'Lun 10 Mar 2025 · 14:00 – 17:00',
+      personas:60, motivo:'Conferencia magistral sobre innovación tecnológica.',
+      estado:'pendiente' },
+    { id:'SOL-2025-003', titulo:'Sala de Reuniones Ejecutiva',
+      imagen:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop',
+      solicitante:'Ana Rodríguez', fecha:'Mar 04 Mar 2025 · 09:00 – 11:00',
+      personas:10, motivo:'Reunión de coordinación académica.',
+      estado:'aprobada', accionTexto:'Aprobada el 02 Mar 2025' },
+    { id:'SOL-2025-004', titulo:'Aula Magna',
+      imagen:'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=200&h=200&fit=crop',
+      solicitante:'Luis Torres', fecha:'Dom 02 Mar 2025 · 18:00 – 22:00',
+      personas:150, motivo:'Evento de gala para celebración de fin de año.',
+      estado:'rechazada', accionTexto:'Rechazada · No se atiende domingos' },
+    { id:'SOL-2025-005', titulo:'Laboratorio de Cómputo B',
+      imagen:'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=200&h=200&fit=crop',
+      solicitante:'Sofia Núñez', fecha:'Jue 13 Mar 2025 · 16:00 – 20:00',
+      personas:20, motivo:'Práctica de laboratorio de base de datos.',
+      estado:'pendiente' }
+  ]);
+
+  solicitudesFiltradas = computed(() => {
+    const t = this.busqueda().toLowerCase();
+    return this.solicitudes().filter(s => {
+      const estado   = this.filtroEstado() === 'todos' || s.estado === this.filtroEstado();
+      const busqueda = !t || s.titulo.toLowerCase().includes(t)
+                          || s.solicitante.toLowerCase().includes(t)
+                          || s.id.toLowerCase().includes(t);
+      return estado && busqueda;
+    });
+  });
+
+  total      = computed(() => this.solicitudes().length);
+  pendientes = computed(() => this.solicitudes().filter(s => s.estado === 'pendiente').length);
+  aprobadas  = computed(() => this.solicitudes().filter(s => s.estado === 'aprobada').length);
+  rechazadas = computed(() => this.solicitudes().filter(s => s.estado === 'rechazada').length);
+
+  aprobar(id: string): void {
+    this.solicitudes.update(list =>
+      list.map(s => s.id === id
+        ? { ...s, estado: 'aprobada' as const, accionTexto: 'Aprobada ahora' }
+        : s)
+    );
   }
 
-  endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUD_RESERVA_ESPACIO_PISO']}`;
-
-  columnas: string[] = [
-    'nombreUsuario',
-    'nombreLaboratorio',
-    'horaInicio',
-    'horaFinal',
-    'motivo',
-    'fechaSolicitud',
-    'personasCantidad',
-    'estado',
-    'acciones',
-  ];
-
-  constructor(
-    private reservaLaboratorioService: SolicitudReservaService,
-    private toastr: ToastrService,
-    private usuarioService: UsuarioService,
-    private laboratorioService: LaboratorioService,
-    private _usuarios: UsuariosService,
-    private _datos: DatosService,
-    private _dashboard: ServicioDashboardService,
-    private _toastr: ToastrService,
-    private _piso: PisosService,
-    private _utilidades: UtilitiesService,
-    private _dialog: MatDialog
-  ) {}
-
-  usuarioLogueado: any;
-  idUsuarioAprobador: number = 0;
-
-  ngOnInit(): void {
-    if (this.mostrarPiso) {
-      this._piso.piso$.subscribe({
-        next: (pisoCorres) => {
-          if (pisoCorres != 4) {
-            this._usuarios.user$.subscribe((user) => {
-              this.usuarioLogueado = user;
-            });
-
-            forkJoin({
-              solicitudesResp: this._dashboard.getSolicitudReservaPiso(
-                this.endpoint,
-                pisoCorres
-              ), // <- este devuelve un objeto con .datos
-              usuariosResp: this.usuarioService.obtenerUsuarios(),
-              laboratorios: this.laboratorioService.getLaboratorios(),
-            }).subscribe({
-              next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-                const solicitudes = solicitudesResp; //aquí accedes a las solicitudes reales
-                const usuarios = Array.isArray(usuariosResp)
-                  ? usuariosResp
-                  : [];
-
-                this.solicitudes = solicitudes.map((sol: Solicitud) => {
-                  const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-                  const lab = laboratorios.find(
-                    (l) => l.id === sol.idLaboratorio
-                  );
-
-                  return {
-                    ...sol,
-                    nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
-                    nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: sol.fechaInicio, // importante conservar
-                    fechaFinal: sol.fechaFinal, // importante conservar
-                  };
-                });
-              },
-              error: (err) => {
-                console.error('Error al cargar datos', err);
-                this.toastr.error('Error al cargar solicitudes', 'Error');
-              },
-            });
-          } else {
-            this._usuarios.user$.subscribe((user) => {
-              this.usuarioLogueado = user;
-            });
-
-            forkJoin({
-              solicitudesResp: this.reservaLaboratorioService.getResevas(),
-              usuariosResp: this.usuarioService.obtenerUsuarios(),
-              laboratorios: this.laboratorioService.getLaboratorios(),
-            }).subscribe({
-              next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-                const solicitudes = solicitudesResp.datos;
-                const usuarios = Array.isArray(usuariosResp)
-                  ? usuariosResp
-                  : [];
-
-                this.solicitudes = solicitudes.map((sol: Solicitud) => {
-                  const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-                  const lab = laboratorios.find(
-                    (l) => l.id === sol.idLaboratorio
-                  );
-
-                  return {
-                    id: sol.id,
-                    idUsuario: sol.idUsuario,
-                    idLaboratorio: sol.idLaboratorio,
-                    horaInicio: sol.horaInicio,
-                    horaFinal: sol.horaFinal,
-                    idEstado: sol.idEstado,
-                    personasCantidad: sol.personasCantidad,
-                    nombreUsuario:
-                      `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
-                      'Desconocido',
-                    nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio:
-                      this._utilidades.formatearFechaSolicitudes(
-                        sol.fechaInicio,
-                        sol.horaInicio
-                      ) || '',
-                    fechaFinal:
-                      this._utilidades.formatearFechaSolicitudes(
-                        sol.fechaFinal,
-                        sol.horaFinal
-                      ) || '',
-                    fechaSolicitud:
-                      this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
-                    motivo: sol.motivo,
-                  };
-                });
-              },
-              error: (err) => {
-                console.error('Error al cargar datos', err);
-                this.toastr.warning(
-                  'Error al cargar solicitudes o no existen solicitudes',
-                  'Error'
-                );
-              },
-            });
-          }
-        },
-        error: (err) => {
-          this._toastr.error(
-            'Error al obtener las solicitudes del piso correspondiente',
-            'Hubo un error'
-          );
-        },
-      });
-    } else {
-      this._usuarios.user$.subscribe((user) => {
-        this.usuarioLogueado = user;
-      });
-
-      forkJoin({
-        solicitudesResp: this.reservaLaboratorioService.getResevas(),
-        usuariosResp: this.usuarioService.obtenerUsuarios(),
-        laboratorios: this.laboratorioService.getLaboratorios(),
-      }).subscribe({
-        next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-          const solicitudes = solicitudesResp.datos;
-          const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
-
-          this.solicitudes = solicitudes.map((sol: Solicitud) => {
-            const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-            const lab = laboratorios.find((l) => l.id === sol.idLaboratorio);
-
-            return {
-              id: sol.id,
-              idUsuario: sol.idUsuario,
-              idLaboratorio: sol.idLaboratorio,
-              horaInicio: sol.horaInicio,
-              horaFinal: sol.horaFinal,
-              idEstado: sol.idEstado,
-              personasCantidad: sol.personasCantidad,
-              nombreUsuario:
-                `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
-                'Desconocido',
-              nombreLaboratorio: lab?.nombre || 'Desconocido',
-              fechaInicio:
-                this._utilidades.formatearFechaSolicitudes(
-                  sol.fechaInicio,
-                  sol.horaInicio
-                ) || '',
-              fechaFinal:
-                this._utilidades.formatearFechaSolicitudes(
-                  sol.fechaFinal,
-                  sol.horaFinal
-                ) || '',
-              fechaSolicitud:
-                this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
-              motivo: sol.motivo,
-            };
-          });
-        },
-        error: (err) => {
-          console.error('Error al cargar datos', err);
-          this.toastr.warning(
-            'Error al cargar solicitudes o no existen solicitudes',
-            'Error'
-          );
-        },
-      });
-    }
-  }
-
-  aprobar(solicitud: Solicitud) {
-    if (!solicitud) {
-      console.error('Solicitud es undefined o null');
-      return;
-    }
-
-    if (!this.usuarioLogueado) {
-      console.error('Usuario logueado no está definido');
-      return;
-    }
-
-    const body = {
-      id: solicitud.id,
-      idUsuario: solicitud.idUsuario,
-      idLaboratorio: solicitud.idLaboratorio,
-      horaInicio: solicitud.horaInicio,
-      horaFinal: solicitud.horaFinal,
-      fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
-      fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
-      motivo: solicitud.motivo,
-      fechaSolicitud: this._utilidades.desformatearFecha(
-        solicitud.fechaSolicitud
-      ),
-      idEstado: 1,
-      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-      fechaAprobacion: new Date().toISOString(),
-      comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
-      personasCantidad: solicitud.personasCantidad,
-    };
-
-    this.setLoading(solicitud.id, 'aprobar', true);
-
-    this.reservaLaboratorioService.updateEstado(body).subscribe({
-      next: () => {
-        solicitud.idEstado = 1;
-        this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
-
-        this.reservaLaboratorioService
-          .eliminarSolicitud(solicitud.id)
-          .subscribe(() => {
-            this.setLoading(solicitud.id, 'aprobar', false);
-            this.solicitudes = this.solicitudes.filter(
-              (s) => s.id !== solicitud.id
-            );
-          });
-      },
-      error: (err) => {
-        this.setLoading(solicitud.id, 'aprobar', false);
-        console.error('Error al aprobar solicitud:', err);
-        this.toastr.error('Error al aprobar la solicitud', 'Error');
-      },
+  abrirModal(id: string): void {
+    this.modalSvc.abrirRechazo(id, (motivo) => {
+      const resumen = motivo.length > 40 ? motivo.substring(0, 40) + '…' : motivo;
+      this.solicitudes.update(list =>
+        list.map(s => s.id === id
+          ? { ...s, estado: 'rechazada' as const, accionTexto: `Rechazada · ${resumen}` }
+          : s)
+      );
     });
   }
 
-  desaprobar(solicitud: Solicitud) {
-    if (!solicitud) {
-      console.error('Solicitud es undefined o null');
-      return;
-    }
-
-    if (!this.usuarioLogueado) {
-      console.error('Usuario logueado no está definido');
-      return;
-    }
-
-    const dialogRef = this._dialog.open(DialogSolicitudLabComponent);
-    this.setLoading(solicitud.id, 'denegar', true);
-
-    dialogRef
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((resultado) => {
-        if (resultado) {
-          this._datos.comentario$.pipe(take(1)).subscribe((data: any) => {
-            if (data) {
-              const body = {
-                id: solicitud.id,
-                idUsuario: solicitud.idUsuario,
-                idLaboratorio: solicitud.idLaboratorio,
-                horaInicio: solicitud.horaInicio,
-                horaFinal: solicitud.horaFinal,
-                personasCantidad: solicitud.personasCantidad,
-                fechaInicio: this._utilidades.desformatearFecha(
-                  solicitud.fechaInicio
-                ),
-                fechaFinal: this._utilidades.desformatearFecha(
-                  solicitud.fechaFinal
-                ),
-                motivo: solicitud.motivo,
-                fechaSolicitud: this._utilidades.desformatearFecha(
-                  solicitud.fechaSolicitud
-                ),
-                idEstado: 3, // Rechazado
-                idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-                fechaAprobacion: new Date().toISOString(),
-                comentarioAprobacion: data.comentario,
-              };
-
-              this.reservaLaboratorioService.updateEstado(body).subscribe({
-                next: () => {
-                  // Quita del frontend la solicitud rechazada
-                  this.toastr.info(
-                    'Solicitud desaprobada correctamente',
-                    'Información'
-                  );
-                  this.reservaLaboratorioService
-                    .eliminarSolicitud(solicitud.id)
-                    .subscribe(() => {
-                      this.setLoading(solicitud.id, 'denegar', false);
-                      this.solicitudes = this.solicitudes.filter(
-                        (s) => s.id !== solicitud.id
-                      );
-                    });
-                },
-                error: (err) => {
-                  this.setLoading(solicitud.id, 'denegar', false);
-                  console.error('Error al desaprobar solicitud:', err);
-                  this.toastr.error(
-                    'Error al desaprobar la solicitud',
-                    'Error'
-                  );
-                },
-              });
-            }
-          });
-        } else {
-          this.setLoading(solicitud.id, 'denegar', false);
-          this._toastr.info(
-            'Se canceló la acción de desaprobar la solicitud',
-            'Información'
-          );
-        }
-      });
+  abrirDetalle(id: string): void {
+    const det = this.detalles[id];
+    const sol = this.solicitudes().find(s => s.id === id);
+    if (!det || !sol) return;
+    this.modalSvc.abrirDetalle({ ...det, id, estado: sol.estado });
   }
 }

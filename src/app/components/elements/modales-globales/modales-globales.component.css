@@ -1,0 +1,288 @@
+.g-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  animation: gFadeIn 0.2s ease;
+}
+@keyframes gFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.g-modal {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: gSlideUp 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes gSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.g-modal--wide {
+  max-width: 500px;
+}
+
+/* Header */
+.g-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.g-modal-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.g-modal-icon--red {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.g-modal-icon--blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.g-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+.g-modal-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 2px 0 0;
+}
+
+/* Form elements */
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  display: block;
+  margin-bottom: 6px;
+}
+.g-required {
+  color: #dc2626;
+}
+
+textarea {
+  width: 100%;
+  padding: 11px 13px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14px;
+  color: #111827;
+  background: #f1f5f9;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+textarea:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+textarea.g-input--error {
+  border-color: #dc2626;
+}
+
+/* Actions */
+.g-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.g-btn {
+  padding: 9px 18px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+}
+.g-btn--cancel {
+  background: none;
+  border: 1.5px solid #e5e7eb;
+  color: #6b7280;
+}
+.g-btn--cancel:hover {
+  background: #f1f5f9;
+}
+
+.g-btn--danger {
+  background: #dc2626;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.25);
+}
+.g-btn--danger:hover {
+  background: #b91c1c;
+}
+
+.g-btn--primary {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+  padding: 9px 24px;
+}
+.g-btn--primary:hover {
+  background: #3b82f6;
+}
+
+/* Badge */
+.g-estado-row {
+  margin-bottom: 16px;
+}
+.g-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.g-badge--pendiente {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+.g-badge--aprobada {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.g-badge--rechazada {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.g-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Detalle grid */
+.g-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.g-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.g-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+}
+.g-field-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.g-block {
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.g-motivo {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+  border-left: 3px solid #e5e7eb;
+  padding-left: 10px;
+  font-style: italic;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .g-grid {
+    grid-template-columns: 1fr;
+  }
+  .g-modal {
+    padding: 20px;
+  }
+}
+
+/* ── Mensaje contextual de estado ─────────── */
+.g-status-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.g-status-msg svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.g-status-msg--pendiente {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+.g-status-msg--aprobada {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+.g-status-msg--rechazada {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
