@@ -28,7 +28,7 @@
   @if (labSeleccionado) {
     <div class="space-preview">
       <div class="space-preview-image">
-        <img [src]="labSeleccionado.imagen" [alt]="labSeleccionado.nombre" />
+        <img [src]="labSeleccionado.imagenLaboratorio" [alt]="labSeleccionado.nombre" />
       </div>
       <div class="space-preview-info">
         <div class="space-preview-name">{{ labSeleccionado.nombre }}</div>
@@ -39,7 +39,7 @@
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
               <circle cx="12" cy="10" r="3"/>
             </svg>
-            {{ labSeleccionado.ubicacion }}
+            Piso {{ labSeleccionado.piso }}
           </span>
           <span>
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
@@ -102,7 +102,7 @@
           <select id="lab" formControlName="laboratorio" (change)="onLabChange()">
             <option value="">Seleccione un laboratorio</option>
             @for (lab of labsLista; track lab.id) {
-              <option [value]="lab.id">{{ lab.nombre }} — {{ lab.ubicacion }}</option>
+              <option [value]="lab.id">{{ lab.nombre }} — Piso {{ lab.piso }}</option>
             }
           </select>
           <span class="select-arrow">

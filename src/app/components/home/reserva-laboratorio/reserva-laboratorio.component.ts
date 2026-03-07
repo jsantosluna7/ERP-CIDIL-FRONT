@@ -8,13 +8,20 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { LaboratorioCacheService } from '../../../core/LaboratorioCache/laboratorio-cache.service';
+import { SolicitudReservaEspacioCacheService } from '../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
+import { Console } from 'console';
 
 export interface Laboratorio {
-  id: string;
+  id: number;
   nombre: string;
-  ubicacion: string;
+  codigoDeLab: string;
+  descripcion: string;
   capacidad: number;
-  imagen: string; // Reemplaza con la ruta real: 'assets/labs/lab1.jpg'
+  piso: number;
+  imagenLaboratorio?: string;
 }
 
 // ── Horarios permitidos ──────────────────────────────────────
@@ -38,45 +45,9 @@ const HORARIOS: Record<number, { open: number; close: number } | null> = {
 })
 export class ReservaLaboratorioComponent implements OnInit {
   // ── Catálogo de laboratorios ─────────────────────────────
-  labsMap: Record<string, Laboratorio> = {
-    lab1: {
-      id: 'lab1',
-      nombre: 'Laboratorio de Cómputo A',
-      ubicacion: 'Piso 2',
-      capacidad: 30,
-      imagen: 'assets/labs/lab-computo-a.jpg',
-    },
-    lab2: {
-      id: 'lab2',
-      nombre: 'Laboratorio de Cómputo B',
-      ubicacion: 'Piso 2',
-      capacidad: 25,
-      imagen: 'assets/labs/lab-computo-b.jpg',
-    },
-    sala1: {
-      id: 'sala1',
-      nombre: 'Sala de Conferencias',
-      ubicacion: 'Piso 1',
-      capacidad: 80,
-      imagen: 'assets/labs/sala-conferencias.jpg',
-    },
-    sala2: {
-      id: 'sala2',
-      nombre: 'Sala de Reuniones',
-      ubicacion: 'Piso 3',
-      capacidad: 15,
-      imagen: 'assets/labs/sala-reuniones.jpg',
-    },
-    aula1: {
-      id: 'aula1',
-      nombre: 'Aula Magna',
-      ubicacion: 'Planta Baja',
-      capacidad: 200,
-      imagen: 'assets/labs/aula-magna.jpg',
-    },
-  };
+  labsMap: Record<string, Laboratorio> = {};
 
-  labsLista: Laboratorio[] = Object.values(this.labsMap);
+  labsLista: Laboratorio[] = [];
 
   // ── Estado ───────────────────────────────────────────────
   labSeleccionado: Laboratorio | null = null;
@@ -90,6 +61,9 @@ export class ReservaLaboratorioComponent implements OnInit {
   minDatetime = this.toDatetimeLocal(new Date());
 
   form!: FormGroup;
+
+  // Variables
+  usuarioLogueado: any;
 
   // ── Computed ─────────────────────────────────────────────
   get personasValue(): number {
@@ -108,6 +82,10 @@ export class ReservaLaboratorioComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private laboratorioCache: LaboratorioCacheService,
+    private solicitudCache: SolicitudReservaEspacioCacheService,
+    private _usuarios: UsuariosService,
+    private toastr: ToastrService,
   ) {}
 
   solicitudes() {
@@ -119,12 +97,39 @@ export class ReservaLaboratorioComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._usuarios.user$.subscribe((user) => {
+      this.usuarioLogueado = user;
+    });
+
     this.form = this.fb.group({
       laboratorio: ['', Validators.required],
       personas: [null, [Validators.required, Validators.min(1)]],
       fechaEvento: ['', Validators.required],
       horaFin: ['', Validators.required],
       motivo: ['', [Validators.required, Validators.minLength(10)]],
+    });
+
+    this.cargarLaboratorios();
+  }
+
+  cargarLaboratorios(): void {
+    this.laboratorioCache.getLaboratorios().subscribe({
+      next: (labs) => {
+        console.log('Laboratorios cargados:', labs);
+
+        this.labsLista = labs;
+
+        this.labsMap = labs.reduce(
+          (acc, lab) => {
+            acc[lab.id] = lab;
+            return acc;
+          },
+          {} as Record<string, Laboratorio>,
+        );
+      },
+      error: (err) => {
+        console.error('Error cargando laboratorios', err);
+      },
     });
   }
 
@@ -254,23 +259,60 @@ export class ReservaLaboratorioComponent implements OnInit {
       this.excedeCapacidad ||
       this.fechaEventoError ||
       this.horaFinError
-    )
+    ) {
+      this.toastr.warning('Revise los datos del formulario');
       return;
+    }
+
+    if (!this.usuarioLogueado) {
+      this.toastr.error('Usuario no autenticado');
+      return;
+    }
 
     this.enviando = true;
 
-    const payload = { ...this.form.value };
-    console.log('Enviando reserva de espacio:', payload);
+    const form = this.form.value;
 
-    // Reemplaza con tu servicio:
-    // this.reservaService.crearEspacio(payload).subscribe({
-    //   next: () => { this.enviando = false; this.router.navigate(['/solicitudes']); },
-    //   error: err => { this.enviando = false; console.error(err); }
-    // });
+    const dtInicio = new Date(form.fechaEvento);
 
-    setTimeout(() => {
-      this.enviando = false;
-      alert('¡Solicitud enviada correctamente!');
-    }, 1800);
+    // EXACTAMENTE igual que tu código anterior
+    const horaInicio = dtInicio.toTimeString().split(' ')[0]; // HH:mm:ss
+    const horaFinal = `${form.horaFin}:00`;
+
+    const fechaInicio = dtInicio.toISOString().split('T')[0] + 'T00:00:00';
+    const fechaFinal = fechaInicio;
+
+    const payload = {
+      idUsuario: Number(this.usuarioLogueado.sub),
+      idLaboratorio: Number(form.laboratorio),
+      personasCantidad: Number(form.personas),
+
+      horaInicio: horaInicio,
+      horaFinal: horaFinal,
+
+      fechaInicio: fechaInicio,
+      fechaFinal: fechaFinal,
+
+      motivo: form.motivo,
+      fechaSolicitud: new Date().toISOString(),
+    };
+
+    console.log('Payload enviado:', payload);
+
+    this.solicitudCache.crearSolicitud(payload).subscribe({
+      next: () => {
+        this.enviando = false;
+        this.toastr.success(
+          'La solicitud fue enviada correctamente',
+          'Solicitud creada',
+        );
+        this.router.navigate(['/home/mis-solicitudes-espacio']);
+      },
+      error: (err) => {
+        this.enviando = false;
+        console.error(err);
+        this.toastr.error(err.error?.error || 'Error al crear solicitud');
+      },
+    });
   }
 }
