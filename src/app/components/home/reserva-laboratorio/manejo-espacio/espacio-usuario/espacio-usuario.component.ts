@@ -1,8 +1,33 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DetalleSolicitudUsuario, ModalStateService } from '../../../../elements/modales-globales/modal-state.service';
+import {
+  DetalleSolicitudUsuario,
+  ModalStateService,
+} from '../../../../elements/modales-globales/modal-state.service';
 import { Router } from '@angular/router';
+import { SolicitudReservaEspacioCacheService } from '../../../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
+
+export interface SolicitudApiUsuario {
+  id: number;
+  idEstado: number;
+  idLaboratorio: number;
+  idUsuario: number;
+  idUsuarioAprobador: number;
+  nombreEspacio: string;
+  nombreEstado: string;
+  tipoRegistro: string;
+  motivo: string;
+  personasCantidad: number;
+  fechaSolicitud: string;
+  fechaInicio: string;
+  fechaFinal: string;
+  fechaAprobacion: string;
+  horaInicio: string;
+  horaFinal: string;
+  comentarioAprobacion: string;
+  imagenLaboratorio: string | null;
+}
 
 export interface SolicitudUsuario {
   id: string;
@@ -24,108 +49,159 @@ export interface SolicitudUsuario {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './espacio-usuario.component.html',
-  styleUrls: ['./espacio-usuario.component.css']
+  styleUrls: ['./espacio-usuario.component.css'],
 })
-export class EspacioUsuarioComponent {
-
+export class EspacioUsuarioComponent implements OnInit {
   private modalSvc = inject(ModalStateService);
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private solicitudSvc: SolicitudReservaEspacioCacheService,
+  ) {}
 
   filtroActivo = signal<string>('todos');
-  tabActivo    = signal<'espacios' | 'equipos'>('espacios');
+  tabActivo = signal<'espacios' | 'equipos'>('espacios');
+  solicitudes = signal<SolicitudUsuario[]>([]);
 
-  solicitudes = signal<SolicitudUsuario[]>([
-    {
-      id: 'SOL-2025-001',
-      titulo: 'Laboratorio de Cómputo A',
-      imagen: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop',
-      fecha: 'Vie 07 Mar 2025 · 10:00 – 14:00',
-      personas: 25,
-      ubicacion: 'Piso 2',
-      estado: 'pendiente',
-      enviadaEl: 'Enviada hace 2 horas',
-      motivo: 'Taller de programación introductoria para estudiantes de primer año de Ingeniería en Sistemas.',
-      mensajeEstado: 'Tu solicitud está siendo revisada por el administrador. Recibirás una notificación cuando sea procesada.'
-    },
-    {
-      id: 'SOL-2025-003',
-      titulo: 'Sala de Reuniones Ejecutiva',
-      imagen: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop',
-      fecha: 'Mar 04 Mar 2025 · 09:00 – 11:00',
-      personas: 10,
-      ubicacion: 'Piso 3',
-      estado: 'aprobada',
-      aprobadaEl: '02 Mar 2025',
-      enviadaEl: 'Enviada el 01 Mar 2025',
-      motivo: 'Reunión de coordinación académica con jefes de departamento y dirección general.',
-      mensajeEstado: 'Tu reserva fue aprobada el 02 Mar 2025. El espacio estará disponible en la fecha y hora indicadas.'
-    },
-    {
-      id: 'SOL-2025-004',
-      titulo: 'Aula Magna',
-      imagen: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=200&h=200&fit=crop',
-      fecha: 'Dom 02 Mar 2025 · 18:00 – 22:00',
-      personas: 150,
-      ubicacion: 'Planta Baja',
-      estado: 'rechazada',
-      motivoRechazo: 'El espacio no está disponible los domingos. Por favor selecciona una fecha entre lunes y sábado.',
-      enviadaEl: 'Enviada el 28 Feb 2025',
-      motivo: 'Evento de gala para celebración de fin de año estudiantil con presentaciones artísticas.',
-      mensajeEstado: 'El espacio no está disponible los domingos. Por favor selecciona una fecha entre lunes y sábado dentro del horario permitido.'
-    },
-    {
-      id: 'SOL-2025-005',
-      titulo: 'Laboratorio de Cómputo B',
-      imagen: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=200&h=200&fit=crop',
-      fecha: 'Jue 13 Mar 2025 · 16:00 – 20:00',
-      personas: 20,
-      ubicacion: 'Piso 2',
-      estado: 'pendiente',
-      enviadaEl: 'Enviada hace 1 día',
-      motivo: 'Práctica de laboratorio de base de datos, asignatura Sistemas de Información II.',
-      mensajeEstado: 'Tu solicitud está siendo revisada por el administrador. Recibirás una notificación cuando sea procesada.'
-    }
-  ]);
+  // ── Loading states ──────────────────────────────────────────
+  /** true mientras se carga/recarga la lista */
+  cargando = signal(false);
+  /** id de la solicitud que se está cancelando */
+  cancelandoId = signal<string | null>(null);
+  // ────────────────────────────────────────────────────────────
 
   solicitudesFiltradas = computed(() =>
-    this.solicitudes().filter(s =>
-      this.filtroActivo() === 'todos' || s.estado === this.filtroActivo()
-    )
+    this.solicitudes().filter(
+      (s) => this.filtroActivo() === 'todos' || s.estado === this.filtroActivo(),
+    ),
   );
 
   conteo = computed(() => ({
     todos:     this.solicitudes().length,
-    pendiente: this.solicitudes().filter(s => s.estado === 'pendiente').length,
-    aprobada:  this.solicitudes().filter(s => s.estado === 'aprobada').length,
-    rechazada: this.solicitudes().filter(s => s.estado === 'rechazada').length,
+    pendiente: this.solicitudes().filter((s) => s.estado === 'pendiente').length,
+    aprobada:  this.solicitudes().filter((s) => s.estado === 'aprobada').length,
+    rechazada: this.solicitudes().filter((s) => s.estado === 'rechazada').length,
   }));
+
+  ngOnInit(): void {
+    this.cargarSolicitudes();
+  }
 
   filtrar(estado: string): void {
     this.filtroActivo.set(estado);
   }
 
   cancelar(id: string): void {
-    this.solicitudes.update(list => list.filter(s => s.id !== id));
+    if (this.cancelandoId() === id) return;
+
+    this.cancelandoId.set(id);
+
+    this.solicitudSvc.cancelarSolicitud(Number(id)).subscribe({
+      next: () => {
+        this.cancelandoId.set(null);
+        this.cargarSolicitudes();
+      },
+      error: (err) => {
+        console.error('Error al cancelar solicitud:', err);
+        this.cancelandoId.set(null);
+      },
+    });
   }
 
   abrirDetalle(s: SolicitudUsuario): void {
     const data: DetalleSolicitudUsuario = {
-      id:            s.id,
-      espacio:       s.titulo,
-      fecha:         s.fecha,
-      personas:      s.personas,
-      ubicacion:     s.ubicacion,
-      estado:        s.estado,
-      motivo:        s.motivo,
-      enviadaEl:     s.enviadaEl,
+      id: s.id,
+      espacio: s.titulo,
+      fecha: s.fecha,
+      personas: s.personas,
+      ubicacion: s.ubicacion,
+      estado: s.estado,
+      motivo: s.motivo,
+      enviadaEl: s.enviadaEl,
       motivoRechazo: s.motivoRechazo,
-      aprobadaEl:    s.aprobadaEl,
+      aprobadaEl: s.aprobadaEl,
     };
     this.modalSvc.abrirDetalleUsuario(data);
   }
 
-  irPrincipal() {
+  irPrincipal(): void {
     this.router.navigate(['/home/reserva-laboratorio']);
+  }
+
+  private mapearEstado(idEstado: number): 'pendiente' | 'aprobada' | 'rechazada' {
+    const map: Record<number, 'pendiente' | 'aprobada' | 'rechazada'> = {
+      1: 'aprobada',
+      2: 'pendiente',
+      3: 'rechazada',
+    };
+    return map[idEstado] ?? 'pendiente';
+  }
+
+  private formatearHora(hora: string): string {
+    const [h, m] = hora.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  private buildMensajeEstado(item: SolicitudApiUsuario): string {
+    switch (item.idEstado) {
+      case 1:
+        return `Tu reserva fue aprobada por <strong>${item.comentarioAprobacion ?? 'el administrador'}</strong>.`;
+      case 3:
+        return `Tu solicitud fue rechazada. Motivo: <strong>${item.comentarioAprobacion ?? 'sin especificar'}</strong>.`;
+      default:
+        return 'Tu solicitud está siendo revisada por el administrador.';
+    }
+  }
+
+  private mapearSolicitud(item: SolicitudApiUsuario): SolicitudUsuario {
+    const estado = this.mapearEstado(item.idEstado);
+    const fechaInicio = new Date(item.fechaInicio).toLocaleDateString('es-DO', {
+      weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+    });
+    const horaI = this.formatearHora(item.horaInicio);
+    const horaF = this.formatearHora(item.horaFinal);
+
+    return {
+      id:        item.id.toString(),
+      titulo:    item.nombreEspacio,
+      imagen:    item.imagenLaboratorio ?? 'http://imagenes.cidilipl.online/imagenes/laboratorios/lab-no-disponible.png',
+      fecha:     `${fechaInicio} · ${horaI} – ${horaF}`,
+      personas:  item.personasCantidad,
+      ubicacion: item.tipoRegistro,
+      estado,
+      enviadaEl: new Date(item.fechaSolicitud).toLocaleDateString('es-DO', {
+        day: '2-digit', month: 'short', year: 'numeric',
+      }),
+      motivo: item.motivo,
+      motivoRechazo: estado === 'rechazada' ? item.comentarioAprobacion : undefined,
+      aprobadaEl:    estado === 'aprobada'
+        ? new Date(item.fechaAprobacion).toLocaleDateString('es-DO', {
+            day: '2-digit', month: 'short', year: 'numeric',
+          })
+        : undefined,
+      mensajeEstado: this.buildMensajeEstado(item),
+    };
+  }
+
+  cargarSolicitudes(): void {
+    this.cargando.set(true);
+
+    this.solicitudSvc
+      .obtenerTotalReservasEspacioUsuario({ idUsuario: 5 })
+      .subscribe({
+        next: (total) => {
+          const mapeadas = (total.reservas as SolicitudApiUsuario[]).map((item) =>
+            this.mapearSolicitud(item),
+          );
+          this.solicitudes.set(mapeadas);
+          this.cargando.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar solicitudes:', err);
+          this.cargando.set(false);
+        },
+      });
   }
 }

@@ -53,13 +53,14 @@
       </div>
       @if (modal.detalleData(); as d) {
         <div class="g-estado-row">
-          <span class="g-badge g-badge--{{ d.estado }}">
+          <span class="g-badge g-badge--{{ d.idEstado === 2 ? 'pendiente' : (d.idEstado === 1 ? 'aprobada' : 'rechazada') }}">
             <span class="g-badge-dot"></span>
-            @switch (d.estado) {
-              @case ('pendiente') { Pendiente }
-              @case ('aprobada')  { Aprobada  }
-              @case ('rechazada') { Rechazada }
-            }
+                @switch (d.idEstado) {
+                  @case (2) { Pendiente }
+                  @case (1) { Aprobada  }
+                  @case (3) { Rechazada }
+                  @default  { {{ d.nombreEstado }} }
+                }
           </span>
         </div>
         <div class="g-grid">

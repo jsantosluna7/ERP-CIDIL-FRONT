@@ -25,15 +25,6 @@
     </span>
   </div>
 
-  <!-- <nav class="tab-nav">
-    <a class="tab" [class.active]="tabActivo() === 'espacios'" (click)="tabActivo.set('espacios')">
-      Reserva de Espacios
-    </a>
-    <a class="tab" [class.active]="tabActivo() === 'equipos'" (click)="tabActivo.set('equipos')">
-      Reserva de Equipos
-    </a>
-  </nav> -->
-
   <div class="stats-row">
     <div class="stat-card">
       <span class="stat-label">Total</span>
@@ -65,7 +56,7 @@
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
       <input class="search-input" type="text"
-        placeholder="Buscar por nombre, espacio o solicitante..."
+        placeholder="Buscar por nombre, espacio o ID..."
         [value]="busqueda()"
         (input)="busqueda.set($any($event.target).value)" />
     </div>
@@ -80,82 +71,223 @@
   </div>
 
   <div class="solicitudes-list">
-    @for (solicitud of solicitudesFiltradas(); track solicitud.id) {
-      <div class="solicitud-card" [class]="solicitud.estado">
-        <div class="card-inner">
-          <img class="card-image" [src]="solicitud.imagen" [alt]="solicitud.titulo" />
-          <div class="card-body">
-            <div class="card-top">
-              <div class="card-title-group">
-                <span class="card-title">{{ solicitud.titulo }}</span>
-                <span class="card-id">#{{ solicitud.id }}</span>
+
+    <!-- ── Skeleton loader ── -->
+    @if (cargando()) {
+      @for (sk of [1,2,3]; track sk) {
+        <div class="solicitud-card skeleton-card">
+          <div class="card-inner">
+            <div class="sk sk-image"></div>
+            <div class="card-body">
+              <div class="card-top">
+                <div class="card-title-group">
+                  <div class="sk sk-title"></div>
+                  <div class="sk sk-id"></div>
+                </div>
+                <div class="sk sk-badge"></div>
               </div>
-              <span class="status-badge" [class]="solicitud.estado">
-                <span class="status-dot"></span>
-                @switch (solicitud.estado) {
-                  @case ('pendiente') { Pendiente }
-                  @case ('aprobada')  { Aprobada  }
-                  @case ('rechazada') { Rechazada }
-                }
-              </span>
+              <div class="card-meta" style="margin-bottom:10px">
+                <div class="sk sk-meta"></div>
+                <div class="sk sk-meta"></div>
+                <div class="sk sk-meta-sm"></div>
+              </div>
+              <div class="sk sk-motivo"></div>
+              <div class="card-actions" style="margin-top:12px">
+                <div class="sk sk-btn"></div>
+                <div class="sk sk-btn"></div>
+                <div class="sk sk-btn-sm" style="margin-left:auto"></div>
+              </div>
             </div>
-
-            <div class="card-meta">
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
-                {{ solicitud.solicitante }}
-              </span>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                {{ solicitud.fecha }}
-              </span>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                {{ solicitud.personas }} personas
-              </span>
-            </div>
-
-            <div class="card-motivo">"{{ solicitud.motivo }}"</div>
-
-            <div class="card-actions">
-              @if (solicitud.estado === 'pendiente') {
-                <button class="btn-approve" (click)="aprobar(solicitud.id)">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  Aprobar
-                </button>
-                <button class="btn-reject" (click)="abrirModal(solicitud.id)">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  Rechazar
-                </button>
-              } @else {
-                <span class="action-taken">
-                  @if (solicitud.estado === 'aprobada') {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#16a34a"><polyline points="20 6 9 17 4 12"/></svg>
-                  } @else {
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#dc2626"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  }
-                  {{ solicitud.accionTexto }}
-                </span>
-              }
-              <button class="btn-detail" (click)="abrirDetalle(solicitud.id)">
-                Ver detalle
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
-
           </div>
         </div>
-      </div>
+      }
     }
 
-    @if (solicitudesFiltradas().length === 0) {
-      <div class="empty-state">
-        <div class="empty-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <!-- ── Lista real ── -->
+    @if (!cargando()) {
+      @for (solicitud of solicitudesFiltradas(); track solicitud.id) {
+        <div class="solicitud-card" [ngClass]="estadoClase(solicitud.idEstado)">
+          <div class="card-inner">
+
+            <img class="card-image"
+              [src]="solicitud.imagenLaboratorio || 'http://imagenes.cidilipl.online/imagenes/laboratorios/lab-no-disponible.png'"
+              [alt]="solicitud.nombreEspacio"
+              (error)="$any($event.target).src='http://imagenes.cidilipl.online/imagenes/laboratorios/lab-no-disponible.png'" />
+
+            <div class="card-body">
+              <div class="card-top">
+                <div class="card-title-group">
+                  <span class="card-title">{{ solicitud.nombreEspacio }}</span>
+                  <span class="card-id">#{{ solicitud.id }}</span>
+                </div>
+                <span class="status-badge" [ngClass]="estadoClase(solicitud.idEstado)">
+                  <span class="status-dot"></span>
+                  @switch (solicitud.idEstado) {
+                    @case (2) { Pendiente }
+                    @case (1) { Aprobada  }
+                    @case (3) { Rechazada }
+                    @default  { {{ solicitud.nombreEstado }} }
+                  }
+                </span>
+              </div>
+
+              <div class="card-meta">
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  </svg>
+                  {{ solicitud.nombreSolicitante }} {{ solicitud.apellidoSolicitante }}
+                </span>
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  {{ solicitud.fechaInicio | date:'dd/MM/yyyy' }}
+                  · {{ formatearHora(solicitud.horaInicio) }} – {{ formatearHora(solicitud.horaFinal) }}
+                </span>
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  {{ solicitud.personasCantidad }} personas
+                </span>
+              </div>
+
+              <div class="card-motivo">"{{ solicitud.motivo }}"</div>
+
+              <div class="card-actions">
+                @if (solicitud.idEstado === 2) {
+
+                  <!-- Botón Aprobar -->
+                  <button
+                    class="btn-approve"
+                    [class.btn-loading]="aprobandoId() === solicitud.id"
+                    [disabled]="aprobandoId() === solicitud.id || rechazandoId() === solicitud.id"
+                    (click)="aprobar(solicitud)">
+                    @if (aprobandoId() === solicitud.id) {
+                      <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      </svg>
+                      Aprobando…
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Aprobar
+                    }
+                  </button>
+
+                  <!-- Botón Rechazar -->
+                  <button
+                    class="btn-reject"
+                    [class.btn-loading]="rechazandoId() === solicitud.id"
+                    [disabled]="aprobandoId() === solicitud.id || rechazandoId() === solicitud.id"
+                    (click)="abrirModal(solicitud)">
+                    @if (rechazandoId() === solicitud.id) {
+                      <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      </svg>
+                      Rechazando…
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                      Rechazar
+                    }
+                  </button>
+
+                } @else {
+                  <span class="action-taken">
+                    @if (solicitud.idEstado === 1) {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5" style="color:#16a34a">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Aprobada
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5" style="color:#dc2626">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                      Rechazada
+                    }
+                  </span>
+                }
+
+                <button class="btn-detail" (click)="abrirDetalle(solicitud.id)">
+                  Ver detalle
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
-        <p>No se encontraron solicitudes con los filtros aplicados.</p>
-      </div>
+      }
+
+      @if (solicitudesFiltradas().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <p>No se encontraron solicitudes con los filtros aplicados.</p>
+        </div>
+      }
     }
+
+    <div class="pagination-wrap">
+      <span class="pagination-info">
+        Mostrando {{ inicio() }}–{{ fin() }} de {{ totalItems() }}
+      </span>
+      <div class="pagination-controls">
+        <button class="page-btn" [disabled]="paginaActual() === 1 || cargando()"
+          (click)="irAPagina(paginaActual() - 1)">‹</button>
+        @for (p of paginas(); track $index) {
+          @if (p === '...') {
+            <span class="ellipsis">…</span>
+          } @else {
+            <button class="page-btn" [class.active]="p === paginaActual()" [disabled]="cargando()"
+              (click)="irAPagina(+p)">{{ p }}</button>
+          }
+        }
+        <button class="page-btn" [disabled]="paginaActual() === totalPaginas() || cargando()"
+          (click)="irAPagina(paginaActual() + 1)">›</button>
+      </div>
+      <div class="per-page-wrap">
+        Por página
+        <select class="per-page-select"
+          [value]="itemsPorPagina()"
+          [disabled]="cargando()"
+          (change)="cambiarPorPagina(+$any($event.target).value)">
+          <option>5</option>
+          <option>10</option>
+          <option>20</option>
+        </select>
+      </div>
+    </div>
   </div>
 
 </div>

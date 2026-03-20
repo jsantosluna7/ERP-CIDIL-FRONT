@@ -10,7 +10,8 @@ export interface DetalleSolicitud {
   personas: number;
   motivo: string;
   aprobadoPor: string;
-  estado: string;
+  idEstado: number;
+  nombreEstado: string;
 }
 
 export interface DetalleSolicitudUsuario {

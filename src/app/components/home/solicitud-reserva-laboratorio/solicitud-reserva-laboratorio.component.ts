@@ -1,18 +1,57 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnInit,
+  effect,
+  untracked,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DetalleSolicitud, ModalStateService } from '../../elements/modales-globales/modal-state.service';
+import {
+  DetalleSolicitud,
+  ModalStateService,
+} from '../../elements/modales-globales/modal-state.service';
+import { SolicitudReservaEspacioCacheService } from '../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 
 export interface Solicitud {
-  id: string;
-  titulo: string;
-  imagen: string;
-  solicitante: string;
-  fecha: string;
-  personas: number;
+  id: number;
+  idUsuario: number;
+  idLaboratorio: number;
+  idEstado: number;
+  idUsuarioAprobador: number;
+
+  nombreSolicitante: string;
+  apellidoSolicitante: string;
+  nombreAprobador: string;
+
+  nombreEspacio: string;
+  nombreEstado: string;
+  tipoRegistro: string;
+
   motivo: string;
-  estado: 'pendiente' | 'aprobada' | 'rechazada';
-  accionTexto?: string;
+  personasCantidad: number;
+
+  fechaSolicitud: string;
+  fechaInicio: string;
+  fechaFinal: string;
+  fechaAprobacion: string;
+
+  horaInicio: string;
+  horaFinal: string;
+
+  comentarioAprobacion: string;
+
+  imagenLaboratorio: string | null;
+}
+
+export interface EstadisticasSolicitudes {
+  totalSolicitudes: number;
+  totalAprobadas: number;
+  totalPendientes: number;
+  totalRechazadas: number;
 }
 
 @Component({
@@ -20,121 +59,302 @@ export interface Solicitud {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
-  styleUrls: ['./solicitud-reserva-laboratorio.component.css']
+  styleUrls: ['./solicitud-reserva-laboratorio.component.css'],
 })
-export class SolicitudReservaLaboratorioComponent {
-
+export class SolicitudReservaLaboratorioComponent implements OnInit {
   private modalSvc = inject(ModalStateService);
 
   filtroEstado = signal<string>('todos');
-  busqueda     = signal<string>('');
-  tabActivo    = signal<'espacios' | 'equipos'>('espacios');
+  busqueda = signal<string>('');
+  tabActivo = signal<'espacios' | 'equipos'>('espacios');
 
-  private detalles: Record<string, Omit<DetalleSolicitud, 'id' | 'estado'>> = {
-    'SOL-2025-001': {
-      espacio: 'Laboratorio de Cómputo A', solicitante: 'María García',
-      departamento: 'Ingeniería en Sistemas', fechaHora: 'Vie 07 Mar 2025 · 10:00 – 14:00',
-      duracion: '4 horas', personas: 25,
-      motivo: 'Taller de programación introductoria para estudiantes de primer año.',
-      aprobadoPor: 'Pendiente de aprobación'
-    },
-    'SOL-2025-002': {
-      espacio: 'Sala de Conferencias Principal', solicitante: 'Carlos Méndez',
-      departamento: 'Dirección Académica', fechaHora: 'Lun 10 Mar 2025 · 14:00 – 17:00',
-      duracion: '3 horas', personas: 60,
-      motivo: 'Conferencia magistral sobre innovación tecnológica con ponente invitado.',
-      aprobadoPor: 'Pendiente de aprobación'
-    },
-    'SOL-2025-003': {
-      espacio: 'Sala de Reuniones Ejecutiva', solicitante: 'Ana Rodríguez',
-      departamento: 'Coordinación Académica', fechaHora: 'Mar 04 Mar 2025 · 09:00 – 11:00',
-      duracion: '2 horas', personas: 10,
-      motivo: 'Reunión de coordinación académica con jefes de departamento.',
-      aprobadoPor: 'Admin — Juan Pérez'
-    },
-    'SOL-2025-004': {
-      espacio: 'Aula Magna', solicitante: 'Luis Torres',
-      departamento: 'Bienestar Estudiantil', fechaHora: 'Dom 02 Mar 2025 · 18:00 – 22:00',
-      duracion: '4 horas', personas: 150,
-      motivo: 'Evento de gala para celebración de fin de año estudiantil.',
-      aprobadoPor: 'Admin — Juan Pérez'
-    },
-    'SOL-2025-005': {
-      espacio: 'Laboratorio de Cómputo B', solicitante: 'Sofia Núñez',
-      departamento: 'Sistemas de Información', fechaHora: 'Jue 13 Mar 2025 · 16:00 – 20:00',
-      duracion: '4 horas', personas: 20,
-      motivo: 'Práctica de laboratorio de base de datos, asignatura Sistemas de Información II.',
-      aprobadoPor: 'Pendiente de aprobación'
-    }
-  };
+  total = signal(0);
+  pendientes = signal(0);
+  aprobadas = signal(0);
+  rechazadas = signal(0);
 
-  solicitudes = signal<Solicitud[]>([
-    { id:'SOL-2025-001', titulo:'Laboratorio de Cómputo A',
-      imagen:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200&h=200&fit=crop',
-      solicitante:'María García', fecha:'Vie 07 Mar 2025 · 10:00 – 14:00',
-      personas:25, motivo:'Taller de programación introductoria para estudiantes de primer año.',
-      estado:'pendiente' },
-    { id:'SOL-2025-002', titulo:'Sala de Conferencias Principal',
-      imagen:'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=200&h=200&fit=crop',
-      solicitante:'Carlos Méndez', fecha:'Lun 10 Mar 2025 · 14:00 – 17:00',
-      personas:60, motivo:'Conferencia magistral sobre innovación tecnológica.',
-      estado:'pendiente' },
-    { id:'SOL-2025-003', titulo:'Sala de Reuniones Ejecutiva',
-      imagen:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=200&fit=crop',
-      solicitante:'Ana Rodríguez', fecha:'Mar 04 Mar 2025 · 09:00 – 11:00',
-      personas:10, motivo:'Reunión de coordinación académica.',
-      estado:'aprobada', accionTexto:'Aprobada el 02 Mar 2025' },
-    { id:'SOL-2025-004', titulo:'Aula Magna',
-      imagen:'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=200&h=200&fit=crop',
-      solicitante:'Luis Torres', fecha:'Dom 02 Mar 2025 · 18:00 – 22:00',
-      personas:150, motivo:'Evento de gala para celebración de fin de año.',
-      estado:'rechazada', accionTexto:'Rechazada · No se atiende domingos' },
-    { id:'SOL-2025-005', titulo:'Laboratorio de Cómputo B',
-      imagen:'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=200&h=200&fit=crop',
-      solicitante:'Sofia Núñez', fecha:'Jue 13 Mar 2025 · 16:00 – 20:00',
-      personas:20, motivo:'Práctica de laboratorio de base de datos.',
-      estado:'pendiente' }
-  ]);
+  paginaActual = signal(1);
+  itemsPorPagina = signal(20);
+  totalItems = signal(0);
+
+  // ── Loading states ──────────────────────────────────────────
+  /** true mientras se carga/recarga la lista de solicitudes */
+  cargando = signal(false);
+  /** id de la solicitud que se está aprobando en este momento */
+  aprobandoId = signal<number | null>(null);
+  /** id de la solicitud que se está rechazando en este momento */
+  rechazandoId = signal<number | null>(null);
+  // ────────────────────────────────────────────────────────────
+
+  usuarioLogueado: any;
+
+  totalPaginas = computed(() =>
+    Math.ceil(this.totalItems() / this.itemsPorPagina()),
+  );
+
+  inicio = computed(
+    () => (this.paginaActual() - 1) * this.itemsPorPagina() + 1,
+  );
+  fin = computed(() =>
+    Math.min(this.paginaActual() * this.itemsPorPagina(), this.totalItems()),
+  );
+
+  paginas = computed(() => {
+    const total = this.totalPaginas(),
+      cur = this.paginaActual();
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    if (cur <= 4) return [1, 2, 3, 4, 5, '...', total];
+    if (cur >= total - 3)
+      return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+    return [1, '...', cur - 1, cur, cur + 1, '...', total];
+  });
+
+  constructor(
+    private solicitudSvc: SolicitudReservaEspacioCacheService,
+    private _usuarios: UsuariosService,
+  ) {
+    effect(() => {
+      const _filtro = this.filtroEstado();
+      const _busqueda = this.busqueda();
+
+      untracked(() => {
+        this.paginaActual.set(1);
+        this.cargarSolicitudes();
+      });
+    });
+  }
+
+  ngOnInit(): void {
+    this.conteo();
+
+    this._usuarios.user$.subscribe((user) => {
+      this.usuarioLogueado = user.sub;
+    });
+  }
+
+  private detalles: Record<string, Omit<DetalleSolicitud, 'id' | 'estado'>> =
+    {};
+
+  solicitudes = signal<Solicitud[]>([]);
 
   solicitudesFiltradas = computed(() => {
     const t = this.busqueda().toLowerCase();
-    return this.solicitudes().filter(s => {
-      const estado   = this.filtroEstado() === 'todos' || s.estado === this.filtroEstado();
-      const busqueda = !t || s.titulo.toLowerCase().includes(t)
-                          || s.solicitante.toLowerCase().includes(t)
-                          || s.id.toLowerCase().includes(t);
-      return estado && busqueda;
+    const estadoFiltro = this.filtroEstado();
+
+    return this.solicitudes().filter((s) => {
+      const estadoMatch =
+        estadoFiltro === 'todos' ||
+        (estadoFiltro === 'pendiente' && s.idEstado === 2) ||
+        (estadoFiltro === 'aprobada' && s.idEstado === 1) ||
+        (estadoFiltro === 'rechazada' && s.idEstado === 3);
+
+      const nombreCompleto =
+        `${s.nombreSolicitante} ${s.apellidoSolicitante}`.toLowerCase();
+
+      const busquedaMatch =
+        !t ||
+        s.nombreEspacio.toLowerCase().includes(t) ||
+        nombreCompleto.includes(t) ||
+        s.id.toString().includes(t);
+
+      return estadoMatch && busquedaMatch;
     });
   });
 
-  total      = computed(() => this.solicitudes().length);
-  pendientes = computed(() => this.solicitudes().filter(s => s.estado === 'pendiente').length);
-  aprobadas  = computed(() => this.solicitudes().filter(s => s.estado === 'aprobada').length);
-  rechazadas = computed(() => this.solicitudes().filter(s => s.estado === 'rechazada').length);
+  aprobar(solicitud: Solicitud): void {
+    if (!solicitud) {
+      console.error('Solicitud es undefined o null');
+      return;
+    }
 
-  aprobar(id: string): void {
-    this.solicitudes.update(list =>
-      list.map(s => s.id === id
-        ? { ...s, estado: 'aprobada' as const, accionTexto: 'Aprobada ahora' }
-        : s)
-    );
-  }
+    // Evitar doble clic si ya hay una operación en curso para esta solicitud
+    if (this.aprobandoId() === solicitud.id) return;
 
-  abrirModal(id: string): void {
-    this.modalSvc.abrirRechazo(id, (motivo) => {
-      const resumen = motivo.length > 40 ? motivo.substring(0, 40) + '…' : motivo;
-      this.solicitudes.update(list =>
-        list.map(s => s.id === id
-          ? { ...s, estado: 'rechazada' as const, accionTexto: `Rechazada · ${resumen}` }
-          : s)
-      );
+    this.aprobandoId.set(solicitud.id);
+
+    const payload = {
+      id: solicitud.id,
+      idUsuario: solicitud.idUsuario,
+      idLaboratorio: solicitud.idLaboratorio,
+      horaInicio: solicitud.horaInicio,
+      horaFinal: solicitud.horaFinal,
+      fechaInicio: solicitud.fechaInicio,
+      fechaFinal: solicitud.fechaFinal,
+      motivo: solicitud.motivo,
+      fechaSolicitud: solicitud.fechaSolicitud,
+      idEstado: 1,
+      idUsuarioAprobador: Number(this.usuarioLogueado) || 0,
+      fechaAprobacion: new Date().toISOString(),
+      comentarioAprobacion: 'Solicitud aprobada',
+      personasCantidad: solicitud.personasCantidad,
+    };
+
+    this.solicitudSvc.anadirReserva(payload).subscribe({
+      next: () => {
+        this.solicitudSvc.cancelarSolicitud(solicitud.id).subscribe({
+          next: () => {
+            this.aprobandoId.set(null);
+            this.conteo();
+            this.cargarSolicitudes();
+          },
+          error: (err) => {
+            console.error(
+              'Error al cancelar solicitud original después de aprobar:',
+              err,
+            );
+            this.aprobandoId.set(null);
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error al aprobar solicitud:', err);
+        this.aprobandoId.set(null);
+      },
     });
   }
 
-  abrirDetalle(id: string): void {
-    const det = this.detalles[id];
-    const sol = this.solicitudes().find(s => s.id === id);
-    if (!det || !sol) return;
-    this.modalSvc.abrirDetalle({ ...det, id, estado: sol.estado });
+  abrirModal(solicitud: Solicitud): void {
+    if (!solicitud) return;
+
+    this.modalSvc.abrirRechazo(solicitud.id.toString(), (motivo) => {
+      // Activar loading de rechazo al confirmar en el modal
+      this.rechazandoId.set(solicitud.id);
+
+      const payload = {
+        id: solicitud.id,
+        idUsuario: solicitud.idUsuario,
+        idLaboratorio: solicitud.idLaboratorio,
+        horaInicio: solicitud.horaInicio,
+        horaFinal: solicitud.horaFinal,
+        fechaInicio: solicitud.fechaInicio,
+        fechaFinal: solicitud.fechaFinal,
+        motivo: solicitud.motivo,
+        fechaSolicitud: solicitud.fechaSolicitud,
+        idEstado: 3,
+        idUsuarioAprobador: Number(this.usuarioLogueado) || 0,
+        fechaAprobacion: new Date().toISOString(),
+        comentarioAprobacion: motivo,
+        personasCantidad: solicitud.personasCantidad,
+      };
+
+      this.solicitudSvc.anadirReserva(payload).subscribe({
+        next: () => {
+          this.solicitudSvc.cancelarSolicitud(solicitud.id).subscribe({
+            next: () => {
+              this.rechazandoId.set(null);
+              this.conteo();
+              this.cargarSolicitudes();
+            },
+            error: (err) => {
+              console.error(
+                'Error al cancelar solicitud original después de rechazar:',
+                err,
+              );
+              this.rechazandoId.set(null);
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error al rechazar solicitud:', err);
+          this.rechazandoId.set(null);
+        },
+      });
+    });
+  }
+
+  abrirDetalle(id: number): void {
+    const sol = this.solicitudes().find((s) => s.id === id);
+    if (!sol) return;
+
+    const det: DetalleSolicitud = {
+      id: sol.id.toString(),
+      nombreEstado: sol.nombreEstado,
+      idEstado: sol.idEstado,
+      espacio: sol.nombreEspacio,
+      solicitante: `${sol.nombreSolicitante} ${sol.apellidoSolicitante}`.trim(),
+      departamento: sol.tipoRegistro,
+      fechaHora: `${new Date(sol.fechaInicio).toLocaleDateString('es-DO', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })}`,
+      duracion: `${this.formatearHora(sol.horaInicio)} – ${this.formatearHora(sol.horaFinal)}`,
+      personas: sol.personasCantidad,
+      motivo: sol.motivo,
+      aprobadoPor: sol.nombreAprobador || 'Pendiente de aprobación',
+    };
+
+    this.modalSvc.abrirDetalle(det);
+  }
+
+  conteo() {
+    this.solicitudSvc
+      .obtenerConteoReservas()
+      .subscribe((conteo: EstadisticasSolicitudes) => {
+        this.total.set(conteo.totalSolicitudes);
+        this.pendientes.set(conteo.totalPendientes);
+        this.aprobadas.set(conteo.totalAprobadas);
+        this.rechazadas.set(conteo.totalRechazadas);
+      });
+  }
+
+  cargarSolicitudes(): void {
+    const estadoMap: Record<string, number | undefined> = {
+      todos: undefined,
+      pendiente: 2,
+      aprobada: 1,
+      rechazada: 3,
+    };
+
+    this.cargando.set(true);
+
+    this.solicitudSvc
+      .obtenerTotalReservasEspacio({
+        idEstado: estadoMap[this.filtroEstado()],
+        busqueda: this.busqueda() || undefined,
+        pagina: this.paginaActual(),
+        tamanoPagina: this.itemsPorPagina(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.solicitudes.set(res.reservasDeEspacios);
+          this.totalItems.set(res.total ?? res.reservasDeEspacios.length);
+          this.cargando.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar solicitudes:', err);
+          this.cargando.set(false);
+        },
+      });
+  }
+
+  irAPagina(n: number): void {
+    if (n >= 1 && n <= this.totalPaginas()) {
+      this.paginaActual.set(n);
+      this.cargarSolicitudes();
+    }
+  }
+
+  cambiarPorPagina(valor: number): void {
+    this.itemsPorPagina.set(valor);
+    this.paginaActual.set(1);
+    this.cargarSolicitudes();
+  }
+
+  estadoClase(idEstado: number): string {
+    const map: Record<number, string> = {
+      1: 'aprobada',
+      2: 'pendiente',
+      3: 'rechazada',
+    };
+    return map[idEstado] ?? '';
+  }
+
+  formatearHora(hora: string): string {
+    const [h, m] = hora.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
   }
 }
