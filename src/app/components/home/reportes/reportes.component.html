@@ -1,0 +1,69 @@
+<div class="fondo d-flex justify-content-center align-items-center">
+  <form
+    [formGroup]="solicitudesForm"
+    class="row container w-auto h-auto rounded-5 p-4 mt-5"
+  >
+    <h2>Reporte de Falla</h2>
+
+    <hr />
+
+    <section class="mb-3">
+      <div class="example-button-row">
+        <a
+          mat-button="elevated"
+          routerLink="/home/vista-reportes"
+          *appCualRol="[1, 2]"
+          >Ver Reportes</a
+        >
+      </div>
+    </section>
+
+    <div class="col-md-12 mt-1 row w-100">
+      <!-- Descripción de la falla -->
+      <label for="descripcion" class="form-label mt-3"
+        >Descripción de la Falla</label
+      >
+      <div class="location">
+        <fa-icon [icon]="faEnvelope"></fa-icon>
+        <textarea
+          id="descripcion"
+          class="form-control"
+          formControlName="descripcion"
+          rows="3"
+          placeholder="Describe la falla..."
+        ></textarea>
+      </div>
+
+      <!-- Lugar específico -->
+      <label for="lugar" class="form-label mt-3">Lugar</label>
+      <div class="location">
+        <fa-icon [icon]="faLocationDot"></fa-icon>
+        <input
+          type="text"
+          class="form-control"
+          id="lugar"
+          formControlName="lugar"
+          placeholder="Ejemplo: Aula 203, Rack principal..."
+        />
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-success mt-4 text-center"
+      (click)="enviarReporte()"
+      [disabled]="loading"
+    >
+      @if(loading){
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="30"
+        strokeWidth="3"
+        class="white-spinner"
+      >
+      </mat-progress-spinner>
+
+      } @if(!loading){ Enviar Reporte }
+    </button>
+  </form>
+</div>

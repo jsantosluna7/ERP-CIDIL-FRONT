@@ -1,0 +1,61 @@
+<div class="main-form">
+  <div class="first-box">
+    <div class="login-main">
+      <div class="login-label">
+        <h1 class="">Bienvenido <strong>de vuelta!</strong></h1>
+        <p>Inicia sesión en tu cuenta.</p>
+      </div>
+      <div class="login-form">
+        <form [formGroup]="loginForm">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <div class="envelope">
+              <fa-icon [icon]="faEnvelope"></fa-icon>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control"
+                id="email"
+                aria-describedby="emailHelp"
+                placeholder="ejemplo@ipl.edu.do"
+              />
+            </div>
+          </div>
+          <!-- Input para la contraseña -->
+          <div class="mb-3">
+            <label for="contrasena" class="form-label">Contraseña</label>
+            <div class="lock">
+              <fa-icon [icon]="faLock"></fa-icon>
+              <input
+                type="password"
+                formControlName="contrasena"
+                class="form-control"
+                id="contrasena"
+                placeholder="******"
+              />
+            </div>
+          </div>
+          <button class="btn" (click)="login()">
+            @if(loading){
+            <mat-progress-spinner
+              mode="indeterminate"
+              diameter="30"
+              strokeWidth="3"
+              class="white-spinner"
+            >
+            </mat-progress-spinner>
+
+            } @if(!loading){ Iniciar Sesión }
+          </button>
+        </form>
+      </div>
+      <div class="login-forgot">
+        <a routerLink="/acceso/recuperar-contrasena">¿Olvidaste tu contraseña?</a>
+      </div>
+    </div>
+  </div>
+  <div class="second-box">
+    <img src="/assets/logo-ieesl.png" alt="" />
+    <button class="button" routerLink="/acceso/registrar">Registrate</button>
+  </div>
+</div>

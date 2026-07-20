@@ -1,0 +1,113 @@
+import { Component, OnInit } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faCheck,
+  faEnvelope,
+  faLock,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { Router, RouterLink } from '@angular/router';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+@Component({
+  selector: 'app-login',
+  imports: [ReactiveFormsModule, RouterLink, FontAwesomeModule, MatProgressSpinnerModule],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css',
+})
+export class LoginComponent {
+  faEnvelope = faEnvelope;
+  faLock = faLock;
+  faCheck = faCheck;
+  faXmark = faXmark;
+  loading = false;
+
+  // FormGroup para el formulario de inicio de sesión
+  // Se utiliza ReactiveFormsModule para la gestión de formularios reactivos
+  // Se importan los módulos necesarios desde Angular y FontAwesome
+  loginForm: FormGroup;
+  meterPopup: any = {};
+  passwordValid: any = {};
+
+  //ENDPOINTS
+  iniciarSesion = `${process.env['API_URL']}${process.env['ENDPOINT_INICIAR_SESION']}`;
+
+  constructor(
+    private _usuario: UsuariosService,
+    private _toastr: ToastrService,
+    private _router: Router
+  ) {
+    this.loginForm = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email]),
+      contrasena: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+      ]),
+      // rememberMe: new FormControl(false)
+    });
+  }
+
+  login() {
+    const data = {
+      correoInstitucional: this.loginForm.value.email,
+      contrasena: this.loginForm.value.contrasena,
+    };
+
+    this.loading = true;
+
+    // Llamada al servicio de inicio de sesión
+    // Se utiliza el servicio UsuariosService para realizar la petición
+    // Se maneja la respuesta y los posibles errores
+
+    this._usuario.iniciarSesion(this.iniciarSesion, data).subscribe({
+      next: (e) => {
+        this._usuario.user$.pipe(take(1)).subscribe((u: any) => {
+          this.loading = false;
+          if (u) {
+            this._toastr.success(
+              `Bienvenido, ${u.nombreUsuario} ${u.apellidoUsuario}`,
+              'Inicio Éxitoso'
+            );
+          }
+        });
+        this._router.navigate(['home']);
+      },
+      error: (err) => {
+        this.loading = false;
+
+        // Determinar el mensaje más útil según el tipo de error
+        let mensaje: string;
+        let titulo = 'Hubo un error';
+
+        if (err.status === 0) {
+          // Sin conexión con el backend
+          mensaje = 'No se pudo conectar al servidor. Verifique que el backend esté corriendo o revise su conexión.';
+          titulo = 'Sin conexión con el servidor';
+        } else if (err.error?.error) {
+          // El backend respondió con un error específico { error: "mensaje" }
+          mensaje = err.error.error;
+        } else if (typeof err.error === 'string' && err.error.length > 0) {
+          // El backend respondió con un string plano
+          mensaje = err.error;
+        } else if (err.message) {
+          // HttpErrorResponse.message como último recurso
+          mensaje = err.message;
+        } else {
+          mensaje = 'Ocurrió un error desconocido. Revise la consola.';
+        }
+
+        this._toastr.error(mensaje, titulo);
+        console.error('Error al iniciar sesión:', err);
+      },
+    });
+  }
+}

@@ -1,0 +1,282 @@
+/* app-analitica.component.scss */
+:host {
+    display: block;
+    height: 100%;
+}
+
+.analitica-scroll {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.analitica-completa {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.analitica-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.analitica-btn p {
+    font-weight: bold;
+    background-color: #1825AA;
+    padding: .2rem 1rem .2rem 1rem;
+    border-radius: 25px;
+    color: white;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.analitica-container {
+    width: 70%;
+}
+
+.botones {
+    margin-top: .5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
+
+.boton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.temp {
+    color: #CC3333;
+}
+
+.hum {
+    color: #1825AA;
+}
+
+.luz {
+    color: #FFD94A;
+}
+
+.sonido {
+    color: #009688;
+}
+
+.lock-open {
+    color: #008000;
+}
+
+.lock-close {
+    color: #CC3333;
+}
+
+fa-icon {
+    margin-bottom: .8rem;
+}
+
+.toggle-btn {
+    color: black !important;
+}
+
+.delete-btn {
+    align-self: center;
+    margin-left: 1rem;
+}
+
+.gauge-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    justify-content: flex-start;
+}
+
+.gauge-with-icon fa-icon {
+    font-size: 2rem;
+}
+
+@media screen and (max-width: 600px) {
+    .gauge-with-icon fa-icon {
+        font-size: 1.3rem;
+    }
+
+    .analitica-container {
+        width: 100%;
+    }
+}
+
+.boton fa-icon {
+    font-size: 2rem !important;
+}
+
+@media screen and (max-width: 600px) {
+    .boton fa-icon {
+        font-size: 1.5rem !important;
+    }
+
+    .analitica-btn p {
+        font-size: 1.2rem;
+    }
+}
+
+/* === MOBILE SMALL: hasta 400px (iPhone SE, móviles mini) === */
+@media screen and (max-width: 400px) {
+    .iconos {
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin: 1rem;
+        justify-content: center;
+    }
+
+    .add-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .analitica-completa {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .analitica-container {
+        width: 100%;
+    }
+
+    .botones {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .analitica-btn p {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    fa-icon {
+        font-size: 2rem !important;
+    }
+}
+
+/* === DESKTOP FORZADO (para mantener vista horizontal en escritorio) === */
+@media (min-width: 900px) {
+
+    .d-icon {
+        display: none;
+    }
+
+    .analitica-scroll {
+        overflow-x: hidden !important;
+        width: 100%;
+    }
+
+    .analitica-completa {
+        flex-wrap: wrap;
+        /* permite que se acomoden hacia abajo si no caben */
+        justify-content: center;
+        /* centra elementos si sobran espacio */
+        gap: 2rem;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        /* importante para que padding no sume al ancho */
+    }
+
+    .analitica-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+        width: 100%;
+        padding: 0 2vw;
+        gap: clamp(1rem, 4vw, 5rem);
+        box-sizing: border-box;
+    }
+
+
+    .analitica-btn {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+/* === MOBILE LARGE / TABLET: hasta 600px === */
+@media screen and (max-width: 600px) {
+    .iconos {
+        flex-wrap: wrap;
+        gap: 3rem;
+        margin: 1rem 2rem;
+        justify-content: center;
+    }
+
+    .add-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .analitica-completa {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .analitica-container {
+        width: 90%;
+    }
+
+    .botones {
+        flex-direction: row;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .analitica-btn p {
+        font-size: 1.6rem;
+    }
+
+    fa-icon {
+        font-size: 2.5rem !important;
+    }
+}
+
+/* === LAPTOP (hasta 1024px) === */
+@media screen and (max-width: 1024px) {
+    .iconos {
+        gap: 6rem;
+        margin: 1rem 3rem;
+    }
+
+    .add-btn {
+        margin-left: 4rem;
+    }
+
+    .analitica-container {
+        width: 80%;
+    }
+}
+
+/* === DESKTOP LARGE (desde 1025px en adelante) === */
+@media screen and (min-width: 1025px) {
+    .iconos {
+        gap: 10.3rem;
+        margin: 1.5rem 6.5rem;
+    }
+
+    .add-btn {
+        margin-left: 15rem;
+    }
+
+    .analitica-container {
+        width: 70%;
+    }
+}

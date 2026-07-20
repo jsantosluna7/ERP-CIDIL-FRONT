@@ -1,0 +1,61 @@
+<mat-dialog-content>
+  <div class="info-orden">
+    <span class="info-codigo">{{ orden().codigo }}</span>
+    <span class="info-nombre">{{ orden().nombre }}</span>
+  </div>
+
+  <form class="formulario">
+    <mat-form-field class="total">
+      <mat-label>Estado</mat-label>
+      <mat-select [formControl]="estadoId">
+        @for (timeline of timelines; track timeline.id) {
+          <mat-option [value]="timeline.id">{{ timeline.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if ([7, 8].includes(orden().estadoTimelineId)) {
+      <mat-form-field class="total">
+        <mat-label>Departamento</mat-label>
+        <mat-select [formControl]="departamento">
+          @for (dep of departamentos; track dep.id) {
+            <mat-option [value]="dep.departamento">{{
+              dep.departamento
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    <mat-form-field class="total">
+      <mat-label>Evento</mat-label>
+      <textarea
+        matInput
+        #message
+        maxlength="256"
+        placeholder="Cuenta lo que pasa con la Orden, Ej. La orden presenta..."
+        [formControl]="evento"
+      ></textarea>
+      <mat-hint align="end">{{ message.value.length }} / 256</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button type="button" (click)="onNoCancelar()">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    mat-raised-button
+    (click)="onSiActualizar()"
+    cdkFocusInitial
+  >
+    @if (loading) {
+      <div class="spinner">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    } @else {
+      OK
+    }
+  </button>
+</mat-dialog-actions>

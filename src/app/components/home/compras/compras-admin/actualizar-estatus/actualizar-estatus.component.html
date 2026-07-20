@@ -1,0 +1,49 @@
+<mat-dialog-content>
+  <div class="info-item">
+    <span class="info-nombre">{{item().nombre}}</span>
+    <span class="info-cantidad">{{item().cantidadRecibida}} / {{item().cantidad}} recibido</span>
+  </div>
+  <form class="formulario">
+    <mat-form-field class="total">
+      <mat-label>Cantidad Recibida</mat-label>
+      <input
+        matInput
+        type="number"
+        inputmode="numeric"
+        placeholder="Ej. 10"
+        [formControl]="cantidadRecibida"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="total">
+      <mat-label>Comentarios</mat-label>
+      <textarea
+        matInput
+        #message
+        maxlength="256"
+        placeholder="Ej. El item presenta..."
+        [formControl]="comentario"
+      ></textarea>
+      <mat-hint align="end">{{ message.value.length }} / 256</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button type="button" (click)="onNoCancelar()">
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    type="button"
+    (click)="onSiActualizar()"
+    cdkFocusInitial
+  >
+    @if (loading) {
+      <div class="spinner">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    } @else {
+      OK
+    }
+  </button>
+</mat-dialog-actions>

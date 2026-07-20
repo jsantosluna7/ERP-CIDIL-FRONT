@@ -1,0 +1,35 @@
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { Solicitud } from "../../interfaces/solicitud-reserva-espacio.interface";
+
+
+
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class SolicitudReservaService{
+
+private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDR']}`;
+private apiUrlP = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDLB']}`;
+private apiUrlDLT = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUDELETE']}`;
+
+constructor(private http: HttpClient){}
+
+
+getResevas(): Observable<{datos: Solicitud[]}> {
+    return this.http.get<{datos: Solicitud[]}>(this.apiUrl)
+}
+
+updateEstado( body: any) {
+  return this.http.post(`${this.apiUrlP}`, body);
+  
+}
+
+eliminarSolicitud(id: number){
+  return this.http.delete(`${this.apiUrlDLT}/${id}`);
+}
+
+}

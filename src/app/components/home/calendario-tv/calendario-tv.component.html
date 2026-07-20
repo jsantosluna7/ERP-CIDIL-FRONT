@@ -1,0 +1,62 @@
+<div class="bc">
+<mat-accordion>
+  <mat-expansion-panel [(expanded)]="panelOpen" #panel>
+    @if (!panel.expanded) {
+    <mat-expansion-panel-header hideToggle>
+      <mat-panel-title> </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    } @if (panel.expanded) {
+    <!-- Botón flotante de toggle cuando está expandido -->
+    <div class="toggle-button">
+      <button
+        mat-icon-button
+        (click)="panel.close()"
+        aria-label="Cerrar opciones"
+      >
+        <mat-icon>expand_less</mat-icon>
+      </button>
+    </div>
+
+    <!-- Tabs solo para cambiar el estado -->
+    <div class="contenido-expansion">
+      <mat-tab-group
+        class="vertical-tabs"
+        mat-stretch-tabs="false"
+        (selectedIndexChange)="cambiarPiso($event)"
+      >
+        <mat-tab label="1er Piso"></mat-tab>
+        <mat-tab label="2do Piso"></mat-tab>
+        <mat-tab label="3er Piso"></mat-tab>
+        <mat-tab label="Todo"></mat-tab>
+      </mat-tab-group>
+    </div>
+    }
+  </mat-expansion-panel>
+
+  @if (!panel.expanded) {
+  <div class="toggle-button">
+    <button mat-icon-button (click)="panel.open()" aria-label="Cerrar opciones">
+      <mat-icon>expand_more</mat-icon>
+    </button>
+  </div>
+  }
+</mat-accordion>
+
+  <!-- Contenedor principal -->
+  <div class="calendar-wrapper">
+    <!-- Spinner tipo overlay -->
+    <div class="overlay-spinner" *ngIf="loading">
+      <mat-spinner mode="indeterminate" diameter="50"></mat-spinner>
+    </div>
+
+    <!-- Calendario (siempre visible) -->
+    <ng-container *ngIf="mostrarComponente">
+      <div class="calendar-container">
+        <div #calendarHost>
+          <full-calendar #fc [options]="opcionesCalendario"></full-calendar>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

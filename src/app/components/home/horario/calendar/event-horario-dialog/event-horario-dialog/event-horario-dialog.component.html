@@ -1,0 +1,56 @@
+<mat-dialog-content class="data">
+  <div class="top-content">
+    <div class="lab">
+      <p class="p-lab">{{ data.asignatura }}</p>
+    </div>
+  </div>
+  <div class="all-content">
+    <div class="info">
+      <div class="p-info">
+        <p class="p-txt">Profesor</p>
+        <h6>{{ data.profesor }}</h6>
+      </div>
+
+      <div class="d-info">
+        <p class="d-txt">Día</p>
+        <h6>{{ data.dia }}</h6>
+      </div>
+
+      <div class="a-info">
+        <p class="a-txt">Aula</p>
+        <h6>{{ data.labNombre }}</h6>
+      </div>
+    </div>
+    <div class="h-content">
+      <div class="h-all">
+        <p>Hora de Inicio - Hora de Fin</p>
+        <div class="h">
+          <div class="h-inicio">
+            <mat-icon title="Fecha de Inicio">alarm_on</mat-icon>
+            <p>{{ data.horaInicio }}</p>
+          </div>
+          <div class="h-fin">
+            <mat-icon title="Fecha de Fin">alarm_off</mat-icon>
+            <p>{{ data.horaFinal }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="f-all">
+        <p>Fecha de Inicio - Fecha de Fin</p>
+        <div class="f">
+          <div class="f-inicio">
+            <mat-icon title="Fecha de Inicio">event_available</mat-icon>
+            <p>{{ data.fechaInicio }}</p>
+          </div>
+          <div class="f-fin">
+            <mat-icon title="Fecha de Fin">event_busy</mat-icon>
+            <p>{{ data.fechaFinal }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onOk()" cdkFocusInitial>Ok</button>
+</mat-dialog-actions>

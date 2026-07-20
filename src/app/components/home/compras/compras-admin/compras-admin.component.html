@@ -1,0 +1,192 @@
+<!-- Campo de introduccion y boton de importar -->
+<div class="general">
+  <div class="introduccion">
+    <h2>Gestión de compras</h2>
+    <p>Gestiona los pedidos y entregas en todos los departamentos</p>
+  </div>
+
+  <button
+    mat-raised-button
+    color="secondary"
+    (click)="openDialog()"
+    [disabled]="loadingUpload"
+  >
+    @if(loadingUpload){
+    <mat-spinner diameter="18"></mat-spinner>
+    } @if(!loadingUpload){
+    <mat-icon>upload</mat-icon>
+    } Importar Compras (PDF)
+  </button>
+</div>
+
+<!-- Caja de total de órdenes -->
+<div class="caja-total">
+  <div class="caja-data">
+    <div class="titulo">
+      <p>Total de Pedidos</p>
+    </div>
+    <div class="cantidad">
+      <h2>{{ cantidadOrdenes }}</h2>
+    </div>
+  </div>
+  <div class="caja-emoji">
+    <fa-icon [icon]="file" size="3x" style="color: #1825aa"></fa-icon>
+  </div>
+</div>
+
+<!-- Filtros de búsqueda -->
+<div class="filtrado">
+  <!-- Campo de Filtro -->
+  <mat-form-field appearance="fill">
+    <mat-label>Buscar por {{ filtroSeleccionado.value | titlecase }}</mat-label>
+    <input matInput [formControl]="termino" placeholder="Buscar..." />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-chip-listbox
+    [formControl]="filtroSeleccionado"
+    aria-label="Filtros de Búsqueda"
+    [ariaOrientation]="'horizontal'"
+    (selectionChange)="cambiarFiltro(filtroSeleccionado.value ?? 'codigo')"
+  >
+    @for (filtro of filtros; track filtro) {
+    <mat-chip-option [value]="filtro.value">{{ filtro.label }}</mat-chip-option>
+    }
+  </mat-chip-listbox>
+</div>
+
+<!-- Caja de órdenes -->
+
+@if (loadingOrdenes) {
+<div class="spinner-ordenes">
+  <mat-spinner diameter="40"></mat-spinner>
+  <span>Cargando órdenes...</span>
+</div>
+} @else { @for (orden of ordenes; track orden.id) {
+<div class="ordenes">
+  <div
+    [className]="expandedOrderId ? 'orden-too' : 'orden-too-2'"
+    (click)="toggle(orden.id, orden)"
+  >
+    <div class="ordenes-title">
+      <fa-icon
+        [icon]="expandedOrderId ? angelDown : angelRight"
+        size="xl"
+        style="color: black"
+      ></fa-icon>
+      <h3>{{ orden.codigo }}</h3>
+      <div class="follow-chip" [ngClass]="orden.timeline.color">
+        @if (updatingItemId === orden.id) {
+        <mat-spinner diameter="14"></mat-spinner>
+        } @else {
+        <fa-icon [icon]="iconMap[orden.timeline.icono]" size="sm"></fa-icon>
+        <span>{{ orden.timeline.nombre }}</span>
+        }
+      </div>
+      <div class="editar-orden">
+        <button mat-icon-button (click)="editarOrden($event, orden.id, orden)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="ordenes-data">
+      <h4>{{ orden.nombre }}</h4>
+      <div class="data">
+        <div class="solicitado">
+          <fa-icon [icon]="calendar" size="sm"></fa-icon>
+          <span>Solicitado: {{ orden.fechaSolicitud }}</span>
+        </div>
+        <div class="subido">
+          <fa-icon [icon]="upload" size="sm"></fa-icon>
+          <span>Subido: {{ orden.fechaSubida }}</span>
+        </div>
+        <div class="cantidad">
+          <fa-icon [icon]="box" size="sm"></fa-icon>
+          <span>{{ orden.itemsCount }} items</span>
+        </div>
+        <div class="dep">
+          <fa-icon [icon]="dep" size="sm"></fa-icon>
+          <span>{{ orden.departamento ?? "Compras" }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="ordenes-comentario">
+      <fa-icon [icon]="mensaje" size="sm"></fa-icon>
+      <span>{{ orden.comentario }}</span>
+    </div>
+  </div>
+  @if (expandedOrderId === orden.id) {
+  <hr />
+
+  @if (orden.loadingItems) {
+  <div class="spinner">
+    <mat-spinner diameter="30"></mat-spinner>
+    <span>Cargando items...</span>
+  </div>
+  } @if (!orden.loadingItems && orden.items?.length) {
+  <div class="ordenes-expandibles">
+    <div class="items-title">
+      <fa-icon [icon]="clip" size="lg"></fa-icon>
+      <h4>Items de la Orden</h4>
+    </div>
+    <div class="items-data">
+      @if (orden.itemsLoaded && orden.items) { @for (item of orden.items; track
+      item.id) {
+      <div class="item">
+        <div class="item-top">
+          <div class="top-1">
+            <div class="top-titulo">
+              <span class="item-id">#{{ item.numeroLista }}</span>
+              <span class="item-top-titulo">{{ item.nombre }}</span>
+            </div>
+            <div class="pildora" [ngClass]="item.estadosTimeline.color">
+              <fa-icon
+                [icon]="iconMap[item.estadosTimeline.icono]"
+                size="sm"
+              ></fa-icon>
+              <span>{{ item.estadosTimeline.nombre }}</span>
+            </div>
+          </div>
+          <div class="top-2">
+            <span class="item-top-2-titulo"
+              >{{ item.cantidadRecibida }} / {{ item.cantidad }} recibido</span
+            >
+            <div class="item-fecha">
+              <fa-icon [icon]="calendar" size="sm"></fa-icon>
+              <span>{{ item.fechaActualizacion }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="item-comentario">
+          <fa-icon [icon]="mensaje" size="sm"></fa-icon>
+          <span>{{ item.comentario }}</span>
+        </div>
+        @if (item.estadoTimelineId != 7 && orden.estadoTimelineId >= 5 && orden.estadoTimelineId != 9 && orden.estadoTimelineId != 8) {
+        <hr class="hr-item" />
+        <button
+          mat-raised-button
+          color="secondary"
+          [disabled]="updatingItemId === item.id"
+          (click)="actualizarItem(item.id, orden.id, item)"
+        >
+          @if (updatingItemId === item.id) {
+          <mat-spinner diameter="16"></mat-spinner>
+          } @else {
+          <mat-icon>edit</mat-icon>
+          } Actualizar estatus de recepción
+        </button>
+        }
+        <!-- <hr class="hr-item" />
+        <button mat-raised-button color="secondary" (click)="actualizarItem(item.id)">
+          <mat-icon>edit</mat-icon>
+          Actualizar estatus de recepción
+        </button> -->
+      </div>
+      } }
+    </div>
+  </div>
+  } @if (!orden.loadingItems && orden.items?.length === 0) {
+  <p>No hay items para esta orden.</p>
+  } }
+</div>
+} }

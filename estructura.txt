@@ -1,0 +1,503 @@
+�                   
++---public
+�   �   logo_loyola.ico
+�   �   
+�   +---assets
+�   �   �   cidil-fachada.jpg
+�   �   �   logo-ieesl.png
+�   �   �   
+�   �   +---icons
+�   �           cloud.png
+�   �           image.png
+�   �           pdf.png
+�   �           video.png
+�   �           
+�   +---Imagenes
+�           b28877eeb2256c4a9be79f20ac04409b.jpg
+�           Imagen de WhatsApp 2025-06-03 a las 14.17.00_691d2cbd.jpg
+�           loyola.jpeg
+�           
++---src
+    �   custom-theme.scss
+    �   custom-webpack.config.js
+    �   index.html
+    �   main.ts
+    �   styles.css
+    �   
+    +---app
+        �   app.component.css
+        �   app.component.html
+        �   app.component.spec.ts
+        �   app.component.ts
+        �   app.config.ts
+        �   app.routes.ts
+        �   
+        +---components
+        �   +---elements
+        �   �   +---back-button
+        �   �   �       back-button.component.css
+        �   �   �       back-button.component.html
+        �   �   �       back-button.component.spec.ts
+        �   �   �       back-button.component.ts
+        �   �   �       
+        �   �   +---error-list
+        �   �   �       error-list.component.css
+        �   �   �       error-list.component.html
+        �   �   �       error-list.component.spec.ts
+        �   �   �       error-list.component.ts
+        �   �   �       
+        �   �   +---fecha-dialog
+        �   �   �       fecha-dialog.component.css
+        �   �   �       fecha-dialog.component.html
+        �   �   �       fecha-dialog.component.spec.ts
+        �   �   �       fecha-dialog.component.ts
+        �   �   �       
+        �   �   +---navbar
+        �   �   �   �   navbar.component.css
+        �   �   �   �   navbar.component.html
+        �   �   �   �   navbar.component.spec.ts
+        �   �   �   �   navbar.component.ts
+        �   �   �   �   
+        �   �   �   +---configuracion
+        �   �   �           configuracion.component.css
+        �   �   �           configuracion.component.html
+        �   �   �           configuracion.component.spec.ts
+        �   �   �           configuracion.component.ts
+        �   �   �           
+        �   �   +---password-input
+        �   �   �       password-input.component.css
+        �   �   �       password-input.component.html
+        �   �   �       password-input.component.spec.ts
+        �   �   �       password-input.component.ts
+        �   �   �       
+        �   �   +---pregunta-dialog
+        �   �   �       pregunta-dialog.component.css
+        �   �   �       pregunta-dialog.component.html
+        �   �   �       pregunta-dialog.component.spec.ts
+        �   �   �       pregunta-dialog.component.ts
+        �   �   �       
+        �   �   +---sidebar
+        �   �   �       sidebar.component.css
+        �   �   �       sidebar.component.html
+        �   �   �       sidebar.component.spec.ts
+        �   �   �       sidebar.component.ts
+        �   �   �       
+        �   �   +---widget
+        �   �       �   widget.component.css
+        �   �       �   widget.component.html
+        �   �       �   widget.component.spec.ts
+        �   �       �   widget.component.ts
+        �   �       �   
+        �   �       +---widget-options
+        �   �       �       widget-options.component.css
+        �   �       �       widget-options.component.html
+        �   �       �       widget-options.component.spec.ts
+        �   �       �       widget-options.component.ts
+        �   �       �       
+        �   �       +---widget-panel
+        �   �               widget-panel.component.css
+        �   �               widget-panel.component.html
+        �   �               widget-panel.component.spec.ts
+        �   �               widget-panel.component.ts
+        �   �               
+        �   +---home
+        �   �   �   home.component.css
+        �   �   �   home.component.html
+        �   �   �   home.component.spec.ts
+        �   �   �   home.component.ts
+        �   �   �   
+        �   �   +---calendario-home
+        �   �   �   �   calendario-home.component.css
+        �   �   �   �   calendario-home.component.html
+        �   �   �   �   calendario-home.component.spec.ts
+        �   �   �   �   calendario-home.component.ts
+        �   �   �   �   
+        �   �   �   +---date-dialog-home
+        �   �   �           date-dialog-home.component.css
+        �   �   �           date-dialog-home.component.html
+        �   �   �           date-dialog-home.component.spec.ts
+        �   �   �           date-dialog-home.component.ts
+        �   �   �           
+        �   �   +---carrito
+        �   �   �       carrito.component.css
+        �   �   �       carrito.component.html
+        �   �   �       carrito.component.spec.ts
+        �   �   �       carrito.component.ts
+        �   �   �       carrito.service.ts
+        �   �   �       cartaCarrito.interface.ts
+        �   �   �       
+        �   �   +---crear-equipo
+        �   �   �       crear-equipo.component.css
+        �   �   �       crear-equipo.component.html
+        �   �   �       crear-equipo.component.spec.ts
+        �   �   �       crear-equipo.component.ts
+        �   �   �       
+        �   �   +---crear-laboratorio
+        �   �   �       crear-laboratorio.component.css
+        �   �   �       crear-laboratorio.component.html
+        �   �   �       crear-laboratorio.component.spec.ts
+        �   �   �       crear-laboratorio.component.ts
+        �   �   �       
+        �   �   +---dashboard
+        �   �   �   �   dashboard.component.css
+        �   �   �   �   dashboard.component.html
+        �   �   �   �   dashboard.component.spec.ts
+        �   �   �   �   dashboard.component.ts
+        �   �   �   �   
+        �   �   �   +---all-widget
+        �   �   �   �   +---analitica
+        �   �   �   �   �   �   analitica.component.css
+        �   �   �   �   �   �   analitica.component.html
+        �   �   �   �   �   �   analitica.component.spec.ts
+        �   �   �   �   �   �   analitica.component.ts
+        �   �   �   �   �   �   
+        �   �   �   �   �   +---agregar-lab-dialog
+        �   �   �   �   �   �       agregar-lab-dialog.component.css
+        �   �   �   �   �   �       agregar-lab-dialog.component.html
+        �   �   �   �   �   �       agregar-lab-dialog.component.spec.ts
+        �   �   �   �   �   �       agregar-lab-dialog.component.ts
+        �   �   �   �   �   �       
+        �   �   �   �   �   +---analitica-toda
+        �   �   �   �   �   �       analitica-toda.component.css
+        �   �   �   �   �   �       analitica-toda.component.html
+        �   �   �   �   �   �       analitica-toda.component.spec.ts
+        �   �   �   �   �   �       analitica-toda.component.ts
+        �   �   �   �   �   �       
+        �   �   �   �   �   +---timer-dialog
+        �   �   �   �   �           timer-dialog.component.css
+        �   �   �   �   �           timer-dialog.component.html
+        �   �   �   �   �           timer-dialog.component.spec.ts
+        �   �   �   �   �           timer-dialog.component.ts
+        �   �   �   �   �           
+        �   �   �   �   +---calendario
+        �   �   �   �   �   �   calendario.component.css
+        �   �   �   �   �   �   calendario.component.html
+        �   �   �   �   �   �   calendario.component.spec.ts
+        �   �   �   �   �   �   calendario.component.ts
+        �   �   �   �   �   �   
+        �   �   �   �   �   +---date-dialog
+        �   �   �   �   �   �       date-dialog.component.css
+        �   �   �   �   �   �       date-dialog.component.html
+        �   �   �   �   �   �       date-dialog.component.spec.ts
+        �   �   �   �   �   �       date-dialog.component.ts
+        �   �   �   �   �   �       
+        �   �   �   �   �   +---event-dialog
+        �   �   �   �   �           event-dialog.component.css
+        �   �   �   �   �           event-dialog.component.html
+        �   �   �   �   �           event-dialog.component.spec.ts
+        �   �   �   �   �           event-dialog.component.ts
+        �   �   �   �   �           
+        �   �   �   �   +---users-widget
+        �   �   �   �           users-widget.component.css
+        �   �   �   �           users-widget.component.html
+        �   �   �   �           users-widget.component.spec.ts
+        �   �   �   �           users-widget.component.ts
+        �   �   �   �           
+        �   �   �   +---dashboard-body
+        �   �   �           dashboard-body.component.css
+        �   �   �           dashboard-body.component.html
+        �   �   �           dashboard-body.component.spec.ts
+        �   �   �           dashboard-body.component.ts
+        �   �   �           
+        �   �   +---horario
+        �   �   �   �   horario.component.css
+        �   �   �   �   horario.component.html
+        �   �   �   �   horario.component.spec.ts
+        �   �   �   �   horario.component.ts
+        �   �   �   �   
+        �   �   �   +---calendar
+        �   �   �   �   �   calendar.component.css
+        �   �   �   �   �   calendar.component.html
+        �   �   �   �   �   calendar.component.spec.ts
+        �   �   �   �   �   calendar.component.ts
+        �   �   �   �   �   
+        �   �   �   �   +---date-horario-dialog
+        �   �   �   �   �   +---date-horario-dialog
+        �   �   �   �   �           date-horario-dialog.component.css
+        �   �   �   �   �           date-horario-dialog.component.html
+        �   �   �   �   �           date-horario-dialog.component.spec.ts
+        �   �   �   �   �           date-horario-dialog.component.ts
+        �   �   �   �   �           
+        �   �   �   �   +---event-horario-dialog
+        �   �   �   �       +---event-horario-dialog
+        �   �   �   �               event-horario-dialog.component.css
+        �   �   �   �               event-horario-dialog.component.html
+        �   �   �   �               event-horario-dialog.component.spec.ts
+        �   �   �   �               event-horario-dialog.component.ts
+        �   �   �   �               
+        �   �   �   +---crud
+        �   �   �   �   +---editar-horario
+        �   �   �   �   �       editar-horario.component.css
+        �   �   �   �   �       editar-horario.component.html
+        �   �   �   �   �       editar-horario.component.spec.ts
+        �   �   �   �   �       editar-horario.component.ts
+        �   �   �   �   �       
+        �   �   �   �   +---elegir-fecha
+        �   �   �   �           elegir-fecha.component.css
+        �   �   �   �           elegir-fecha.component.html
+        �   �   �   �           elegir-fecha.component.spec.ts
+        �   �   �   �           elegir-fecha.component.ts
+        �   �   �   �           
+        �   �   �   +---dialog
+        �   �   �   �   +---file-dialog
+        �   �   �   �   �       file-dialog.component.css
+        �   �   �   �   �       file-dialog.component.html
+        �   �   �   �   �       file-dialog.component.spec.ts
+        �   �   �   �   �       file-dialog.component.ts
+        �   �   �   �   �       
+        �   �   �   �   +---file-dialog-content
+        �   �   �   �           file-dialog-content.component.css
+        �   �   �   �           file-dialog-content.component.html
+        �   �   �   �           file-dialog-content.component.spec.ts
+        �   �   �   �           file-dialog-content.component.ts
+        �   �   �   �           
+        �   �   �   +---horario-table
+        �   �   �       +---horario-table
+        �   �   �               horario-table.component.css
+        �   �   �               horario-table.component.html
+        �   �   �               horario-table.component.spec.ts
+        �   �   �               horario-table.component.ts
+        �   �   �               
+        �   �   +---inventario
+        �   �   �   �   inventario.component.css
+        �   �   �   �   inventario.component.html
+        �   �   �   �   inventario.component.spec.ts
+        �   �   �   �   inventario.component.ts
+        �   �   �   �   
+        �   �   �   +---actualizarcarta
+        �   �   �           actualizarcarta.component.css
+        �   �   �           actualizarcarta.component.html
+        �   �   �           actualizarcarta.component.spec.ts
+        �   �   �           actualizarcarta.component.ts
+        �   �   �           
+        �   �   +---IoT
+        �   �   �   �   iot.component.css
+        �   �   �   �   iot.component.html
+        �   �   �   �   iot.component.spec.ts
+        �   �   �   �   iot.component.ts
+        �   �   �   �   
+        �   �   �   +---mqtt-charts
+        �   �   �   �       mqtt-charts.component.css
+        �   �   �   �       mqtt-charts.component.html
+        �   �   �   �       mqtt-charts.component.spec.ts
+        �   �   �   �       mqtt-charts.component.ts
+        �   �   �   �       
+        �   �   �   +---mqtt-labs
+        �   �   �   �       mqtt-labs.component.css
+        �   �   �   �       mqtt-labs.component.html
+        �   �   �   �       mqtt-labs.component.spec.ts
+        �   �   �   �       mqtt-labs.component.ts
+        �   �   �   �       
+        �   �   �   +---mqtt-table
+        �   �   �           mqtt-table.component.css
+        �   �   �           mqtt-table.component.html
+        �   �   �           mqtt-table.component.spec.ts
+        �   �   �           mqtt-table.component.ts
+        �   �   �           
+        �   �   +---layout
+        �   �   �       layout.component.css
+        �   �   �       layout.component.html
+        �   �   �       layout.component.spec.ts
+        �   �   �       layout.component.ts
+        �   �   �       
+        �   �   +---redireccion
+        �   �   �       redireccion.component.css
+        �   �   �       redireccion.component.html
+        �   �   �       redireccion.component.spec.ts
+        �   �   �       redireccion.component.ts
+        �   �   �       
+        �   �   +---reportes
+        �   �   �       reportes.component.css
+        �   �   �       reportes.component.html
+        �   �   �       reportes.component.spec.ts
+        �   �   �       reportes.component.ts
+        �   �   �       
+        �   �   +---reserva-equipo
+        �   �   �       reserva-equipo.component.css
+        �   �   �       reserva-equipo.component.html
+        �   �   �       reserva-equipo.component.spec.ts
+        �   �   �       reserva-equipo.component.ts
+        �   �   �       
+        �   �   +---reserva-laboratorio
+        �   �   �       reserva-laboratorio.component.css
+        �   �   �       reserva-laboratorio.component.html
+        �   �   �       reserva-laboratorio.component.spec.ts
+        �   �   �       reserva-laboratorio.component.ts
+        �   �   �       
+        �   �   +---solicitud-reserva-equipo
+        �   �   �       solicitud-reserva-equipo.component.css
+        �   �   �       solicitud-reserva-equipo.component.html
+        �   �   �       solicitud-reserva-equipo.component.spec.ts
+        �   �   �       solicitud-reserva-equipo.component.ts
+        �   �   �       
+        �   �   +---solicitud-reserva-laboratorio
+        �   �   �       solicitud-reserva-laboratorio.component.css
+        �   �   �       solicitud-reserva-laboratorio.component.html
+        �   �   �       solicitud-reserva-laboratorio.component.spec.ts
+        �   �   �       solicitud-reserva-laboratorio.component.ts
+        �   �   �       
+        �   �   +---usuario
+        �   �   �   +---layout-usuarios
+        �   �   �   �       layout-usuarios.component.css
+        �   �   �   �       layout-usuarios.component.html
+        �   �   �   �       layout-usuarios.component.spec.ts
+        �   �   �   �       layout-usuarios.component.ts
+        �   �   �   �       
+        �   �   �   +---modificar-usuario
+        �   �   �   �       modificar-usuario.component.css
+        �   �   �   �       modificar-usuario.component.html
+        �   �   �   �       modificar-usuario.component.spec.ts
+        �   �   �   �       modificar-usuario.component.ts
+        �   �   �   �       
+        �   �   �   +---usuarios
+        �   �   �       �   usuarios.component.css
+        �   �   �       �   usuarios.component.html
+        �   �   �       �   usuarios.component.spec.ts
+        �   �   �       �   usuarios.component.ts
+        �   �   �       �   usuarios.service.ts
+        �   �   �       �   
+        �   �   �       +---usuario-dialog
+        �   �   �               usuario-dialog.component.css
+        �   �   �               usuario-dialog.component.html
+        �   �   �               usuario-dialog.component.spec.ts
+        �   �   �               usuario-dialog.component.ts
+        �   �   �               
+        �   �   +---vista-reportes
+        �   �           vista-reportes.component.css
+        �   �           vista-reportes.component.html
+        �   �           vista-reportes.component.spec.ts
+        �   �           vista-reportes.component.ts
+        �   �           
+        �   +---inicio-sesion
+        �       +---cambiar-contrasena
+        �       �       cambiar-contrasena.component.css
+        �       �       cambiar-contrasena.component.html
+        �       �       cambiar-contrasena.component.spec.ts
+        �       �       cambiar-contrasena.component.ts
+        �       �       
+        �       +---login
+        �       �       login.component.css
+        �       �       login.component.html
+        �       �       login.component.spec.ts
+        �       �       login.component.ts
+        �       �       
+        �       +---login-layout
+        �       �       login-layout.component.css
+        �       �       login-layout.component.html
+        �       �       login-layout.component.spec.ts
+        �       �       login-layout.component.ts
+        �       �       
+        �       +---recuperar-contrasena
+        �       �       recuperar-contrasena.component.css
+        �       �       recuperar-contrasena.component.html
+        �       �       recuperar-contrasena.component.spec.ts
+        �       �       recuperar-contrasena.component.ts
+        �       �       
+        �       +---registro
+        �               registro.component.css
+        �               registro.component.html
+        �               registro.component.spec.ts
+        �               registro.component.ts
+        �               
+        +---directives
+        �       app-cual-rol.directive.spec.ts
+        �       app-cual-rol.directive.ts
+        �       
+        +---guards
+        �   +---AuthGuard
+        �   �       auth-guard.service.spec.ts
+        �   �       auth-guard.service.ts
+        �   �       
+        �   +---NoAuthGuard
+        �   �       no-auth-guard.service.spec.ts
+        �   �       no-auth-guard.service.ts
+        �   �       
+        �   +---RoleGuard
+        �           role-guard.service.spec.ts
+        �           role-guard.service.ts
+        �           
+        +---interfaces
+        �       carta.ts
+        �       laboratorio.interface.ts
+        �       reporteFalla.interface.ts
+        �       reservaEquipoNueva.interface.ts
+        �       solicitud-reserva-equipos.interface.ts
+        �       solicitud-reserva-espacio.interface.ts
+        �       usuarios.interface.ts
+        �       widget.ts
+        �       
+        +---services
+        �   +---Api
+        �   �   +---Calendario
+        �   �   �       calendario.service.spec.ts
+        �   �   �       calendario.service.ts
+        �   �   �       
+        �   �   +---Horario
+        �   �   �       horario.service.spec.ts
+        �   �   �       horario.service.ts
+        �   �   �       
+        �   �   +---Laboratorio
+        �   �   �       laboratorio.service.spec.ts
+        �   �   �       laboratorio.service.ts
+        �   �   �       
+        �   �   +---Mqtt
+        �   �   �       mqtt-iot.service.spec.ts
+        �   �   �       mqtt-iot.service.ts
+        �   �   �       
+        �   �   +---ReporteFalla
+        �   �   �       reporteFalla.service.ts
+        �   �   �       
+        �   �   +---Rol
+        �   �   �       rol.service.spec.ts
+        �   �   �       rol.service.ts
+        �   �   �       
+        �   �   +---Usuarios
+        �   �           usuarios.service.spec.ts
+        �   �           usuarios.service.ts
+        �   �           
+        �   +---Dashboard
+        �   �       dashboard.service.spec.ts
+        �   �       dashboard.service.ts
+        �   �       servicio-dashboard.service.spec.ts
+        �   �       servicio-dashboard.service.ts
+        �   �       
+        �   +---Datos
+        �   �       datos.service.spec.ts
+        �   �       datos.service.ts
+        �   �       
+        �   +---Files
+        �   �       files.service.spec.ts
+        �   �       files.service.ts
+        �   �       
+        �   +---Inventario
+        �   �       inventario.service.spec.ts
+        �   �       inventario.service.ts
+        �   �       
+        �   +---Laboratorio
+        �   �       laboratorio.service.ts
+        �   �       
+        �   +---loT
+        �   �       servicio-mqtt.service.spec.ts
+        �   �       servicio-mqtt.service.ts
+        �   �       
+        �   +---Pisos
+        �   �       pisos.service.spec.ts
+        �   �       pisos.service.ts
+        �   �       
+        �   +---reserva-equipo
+        �   �       reserva-equipo.service.ts
+        �   �       
+        �   +---reserva-laboratorio
+        �   �       reserva-laboratorio.service.ts
+        �   �       
+        �   +---Utilities
+        �   �       utilities.service.spec.ts
+        �   �       utilities.service.ts
+        �   �       
+        �   +---Widget
+        �           servicio-widget.service.spec.ts
+        �           servicio-widget.service.ts
+        �           
+        +---tools
+                mqtt-options.ts
+                

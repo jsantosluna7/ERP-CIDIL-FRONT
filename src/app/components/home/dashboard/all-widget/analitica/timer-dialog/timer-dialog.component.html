@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>{{data.titulo}}</h2>
+<mat-dialog-content class="contenido">
+    <form class="row g-3" [formGroup]="minutosForm">
+        <div class="col-md-6">
+            <label for="minutos" class="form-label">Minutos</label>
+            <input type="number" formControlName="minutos" class="form-control" id="minutos" />
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onNo()">No</button>
+    <button mat-button [mat-dialog-close]="selection()" (click)="minutos()" cdkFocusInitial>
+        Ok
+    </button>
+</mat-dialog-actions>

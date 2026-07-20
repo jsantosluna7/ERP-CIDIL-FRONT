@@ -1,0 +1,91 @@
+<mat-tab-group mat-align-tabs="center" preserveContent>
+  <mat-tab label="Errores de Archivo">
+    <div class="lista-a">
+      <h1>En el archivo cargado</h1>
+      <mat-selection-list>
+        @for (error of allErrorsA; track error) {
+        <mat-list-option>
+          <div class="errores">
+            <div class="titulo">
+              {{ error.labNombre }}
+            </div>
+            <div class="body">
+              <div class="line-1">
+                - {{ error.asignaturaA }} <strong>({{ error.diaA }})</strong>
+                {{ _utilities.formatearHora(error.horaInicioA) }} -
+                {{ _utilities.formatearHora(error.horaFinalA) }}
+              </div>
+              <div class="line-2">
+                - {{ error.asignaturaB }} <strong>({{ error.diaB }})</strong>
+                {{ _utilities.formatearHora(error.horaInicioB) }} -
+                {{ _utilities.formatearHora(error.horaFinalB) }}
+              </div>
+            </div>
+          </div>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        }
+      </mat-selection-list>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Errores del Calendario">
+    <div class="lista-b">
+      <h1>En el Calendario</h1>
+      <mat-selection-list>
+        @for (error of allErrorsB; track error) {
+        <mat-list-option>
+          <div class="errores">
+            <div class="titulo">
+              {{ error.labNombre }}
+            </div>
+            <div class="body">
+              <div class="line-1">
+                - {{ error.asignaturaA }} <strong>({{ error.diaA }})</strong>
+                {{ _utilities.formatearHora(error.horaInicioA) }} -
+                {{ _utilities.formatearHora(error.horaFinalA) }}
+              </div>
+              <div class="line-2">
+                - {{ error.asignaturaB }} <strong>({{ error.diaB }})</strong>
+                {{ _utilities.formatearHora(error.horaInicioB) }} -
+                {{ _utilities.formatearHora(error.horaFinalB) }}
+              </div>
+            </div>
+          </div>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        }
+      </mat-selection-list>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Errores de la Hora">
+    <div class="lista-c">
+      <h1>En las horas</h1>
+      <mat-selection-list>
+        @for (error of allErrorsC; track error) {
+        <mat-list-option>
+          <div class="errores">
+            <div class="titulo">
+              {{ error.labNombre }}
+            </div>
+            <div class="body">
+              <div class="line-1">
+                - {{ error.asignaturaA }} <strong>({{ error.diaA }})</strong>
+                {{ _utilities.formatearHora(error.horaInicioA) }} -
+                {{ _utilities.formatearHora(error.horaFinalA) }}
+              </div>
+              <div class="line-2">
+                - {{ error.asignaturaB }} <strong>({{ error.diaB }})</strong>
+                {{ _utilities.formatearHora(error.horaInicioB) }} -
+                {{ _utilities.formatearHora(error.horaFinalB) }}
+              </div>
+            </div>
+          </div>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        }
+      </mat-selection-list>
+    </div>
+  </mat-tab>
+</mat-tab-group>

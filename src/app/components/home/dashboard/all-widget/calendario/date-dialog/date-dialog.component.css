@@ -1,0 +1,95 @@
+.data {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+.top-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.hora-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.hora-content p{
+    font-weight: bold;
+}
+
+.motivo-content {
+    align-self: center;
+}
+
+.aprobado {
+    background-color: rgba(0, 128, 0, 0.747);
+    color: white;
+    padding: .7rem;
+    border-radius: 1.5rem;
+}
+
+.pendiente {
+    background-color: rgba(255, 255, 51, 0.747);
+    color: black;
+    padding: .7rem;
+    border-radius: 1.5rem;
+}
+
+.rechazado {
+    background-color: rgba(204, 51, 51, 0.747);
+    color: white;
+    padding: .7rem;
+    border-radius: 1.5rem;
+}
+
+.p-lab {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.lab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.h-inicio,
+.h-fin,
+.f-inicio,
+.f-fin {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: .5rem;
+}
+
+.p-header {
+    font-size: .7rem;
+    margin: 0;
+    padding: 0;
+}
+
+.comentario{
+    margin-top: 1rem;
+}
+
+.h {
+    margin-top: 1.5rem;
+    margin-bottom: .5rem;
+}
+
+.h,
+.f {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: .7rem;
+}

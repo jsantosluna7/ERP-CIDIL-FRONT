@@ -1,0 +1,7 @@
+.titulo {
+    font-weight: bold !important;
+}
+
+.lista-a, .lista-b, .lista-c{
+    margin-top: 2rem;
+}

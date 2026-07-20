@@ -1,0 +1,10 @@
+.body{
+    height: 100vh;
+}
+
+.home{
+   position: relative;
+   transition: all 0.4s ease;
+   overflow: auto;
+   overflow-x: hidden;
+}

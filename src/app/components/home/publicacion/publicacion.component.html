@@ -1,0 +1,534 @@
+<div class="pub-wrapper">
+  <!-- Barra de progreso de lectura — se llena a medida que el usuario baja -->
+  <div class="reading-progress" role="progressbar" aria-label="Progreso de lectura" aria-hidden="true"></div>
+
+  <!-- ════════════ HEADER ════════════ -->
+  <header class="site-header" [class.con-scroll]="headerConScroll">
+    <div class="site-header-inner">
+      <div class="brand">
+        <img src="assets/logo-ipl-header.png" alt="Instituto Especializado de Estudios Superiores Loyola" class="brand-logo" />
+        <span class="brand-divider"></span>
+        <span class="brand-mark">CIDIL</span>
+      </div>
+      <nav class="site-nav">
+        <a href="javascript:void(0)" (click)="irASeccion('institucion', $event)" [class.activo]="seccionActiva === 'institucion'">Institución</a>
+        <a href="javascript:void(0)" (click)="irASeccion('noticias', $event)" [class.activo]="seccionActiva === 'noticias'">Noticias</a>
+        <a href="javascript:void(0)" (click)="irASeccion('laboratorios', $event)" [class.activo]="seccionActiva === 'laboratorios'">Laboratorios</a>
+        <a href="javascript:void(0)" (click)="irASeccion('telepresencia', $event)" [class.activo]="seccionActiva === 'telepresencia'">Telepresencialidad</a>
+        <a href="javascript:void(0)" (click)="irASeccion('centros', $event)" [class.activo]="seccionActiva === 'centros'">Centros</a>
+        <a href="javascript:void(0)" (click)="irASeccion('portales', $event)" [class.activo]="seccionActiva === 'portales'">Portales</a>
+        <a routerLink="/acceso/login" class="btn-nav-secundario">Iniciar Sesión</a>
+        <a routerLink="/acceso/registrar" class="btn-acceso">Regístrate</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ════════════ HERO ════════════ -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-field" aria-hidden="true">
+      <svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="gridPattern" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          </pattern>
+          <pattern id="dotGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+            <circle cx="15" cy="15" r="1.2" fill="rgba(255,255,255,0.07)"/>
+          </pattern>
+        </defs>
+        <!-- Grid base -->
+        <rect width="1200" height="600" fill="url(#gridPattern)" />
+        <rect width="1200" height="600" fill="url(#dotGrid)" />
+        <!-- Halo dorado esquina superior derecha — calor focal -->
+        <circle cx="1060" cy="100" r="260" fill="rgba(212,164,55,0.09)" />
+        <circle cx="1060" cy="100" r="140" fill="rgba(212,164,55,0.07)" />
+        <!-- Halo azul suave inferior izquierda -->
+        <circle cx="100" cy="540" r="200" fill="rgba(31,90,168,0.12)" />
+        <!-- Líneas tipo plano técnico — horizontales de referencia -->
+        <line x1="0" y1="300" x2="320" y2="300" stroke="rgba(212,164,55,0.12)" stroke-width="1" stroke-dasharray="6 10"/>
+        <line x1="880" y1="300" x2="1200" y2="300" stroke="rgba(212,164,55,0.12)" stroke-width="1" stroke-dasharray="6 10"/>
+        <!-- Marcas de tick en los extremos de la línea -->
+        <line x1="316" y1="293" x2="316" y2="307" stroke="rgba(212,164,55,0.25)" stroke-width="1.5"/>
+        <line x1="884" y1="293" x2="884" y2="307" stroke="rgba(212,164,55,0.25)" stroke-width="1.5"/>
+        <!-- Nodo de circuito — esquina inferior izquierda -->
+        <circle cx="160" cy="490" r="4" fill="none" stroke="rgba(212,164,55,0.2)" stroke-width="1.5"/>
+        <circle cx="160" cy="490" r="1.5" fill="rgba(212,164,55,0.3)"/>
+        <line x1="164" y1="490" x2="220" y2="490" stroke="rgba(212,164,55,0.15)" stroke-width="1"/>
+        <line x1="160" y1="486" x2="160" y2="420" stroke="rgba(212,164,55,0.12)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <!-- Carrusel real cuando hay anuncios -->
+    <div class="hero-content" *ngIf="anunciosCarrusel.length > 0 && anuncioActual">
+      <span class="eyebrow">Destacado &middot; CIDIL</span>
+      <h1>{{ anuncioActual.titulo }}</h1>
+      <p class="hero-date">{{ formatearFecha(anuncioActual.fechaPublicacion) }}</p>
+      <button class="btn-primary" (click)="abrirDetalle(anuncioActual)">Leer más</button>
+
+      <div class="hero-controls" *ngIf="anunciosCarrusel.length > 1">
+        <button class="hero-arrow" (click)="retrocederCarrusel()" aria-label="Anterior">&#8249;</button>
+        <div class="hero-dots">
+          <span *ngFor="let a of anunciosCarrusel; let i = index"
+                [class.activo]="i === indiceCarrusel"
+                (click)="irAlIndice(i)"></span>
+        </div>
+        <button class="hero-arrow" (click)="avanzarCarrusel()" aria-label="Siguiente">&#8250;</button>
+      </div>
+    </div>
+
+    <!-- Hero por defecto: siempre presente, no depende del backend -->
+    <div class="hero-content" *ngIf="anunciosCarrusel.length === 0">
+      <span class="eyebrow">Centro de Innovación, Desarrollo e Investigación</span>
+      <h1>CIDIL impulsa la investigación aplicada del Instituto Politécnico Loyola</h1>
+      <p class="hero-lede">Una nueva visión de lo que es la educación técnica, que agrupa 16 laboratorios, todos con las más altas tecnologías, además de salas de innovación y espacios de trabajo en equipo, que se unen para estrechar la vinculación del sector productivo con la educación técnica en el país.</p>
+      <p class="hero-location">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        Pueblo Nuevo, San Cristóbal &middot; República Dominicana
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════ ESTADÍSTICAS ════════════ -->
+  <section class="stats-strip">
+    <div class="stats-strip-inner">
+      <div class="stat-block">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 3h6m-5 0v5.5L4.8 17a2.4 2.4 0 0 0 2 3.7h10.4a2.4 2.4 0 0 0 2-3.7L14 8.5V3"/><path d="M7.5 13h9"/></svg>
+        <div class="stat-number cifra">16</div>
+        <div class="stat-label">Laboratorios Especializados</div>
+      </div>
+      <div class="stat-block">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="stat-number cifra">4,000+</div>
+        <div class="stat-label">Profesionales Graduados</div>
+      </div>
+      <div class="stat-block">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <div class="stat-number cifra">70+</div>
+        <div class="stat-label">Años de Trayectoria</div>
+      </div>
+      <div class="stat-block">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
+        <div class="stat-number cifra">3,500</div>
+        <div class="stat-label">Metros Cuadrados de Instalaciones</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ MISIÓN / VISIÓN / VALORES ════════════ -->
+  <!-- ════════════ EDIFICIO CENTRO I+D+i ════════════ -->
+  <section class="building-section">
+    <div class="building-img">
+      <img src="assets/cidil/edificio-cidil-completo.jpg" alt="Edificio Centro I+D+i Loyola" loading="lazy" />
+    </div>
+    <div class="building-caption">
+      <span class="section-kicker">Nuestras instalaciones</span>
+      <h3>Edificio Centro I+D+i Loyola</h3>
+      <p>Inaugurado en diciembre de 2019, el Centro de Investigación, Desarrollo e Innovación del Instituto Politécnico Loyola es un edificio de 3,500 metros cuadrados destinado a estrechar la vinculación del sector productivo con la educación técnica del país, incrementando la competitividad a través del desarrollo de competencias de investigación, innovación y emprendimiento en los estudiantes de la institución.</p>
+      <div class="building-meta">
+        <div class="building-meta-item">
+          <span class="building-meta-num cifra">16</span>
+          <span class="building-meta-label">Laboratorios especializados</span>
+        </div>
+        <div class="building-meta-item">
+          <span class="building-meta-num cifra">2019</span>
+          <span class="building-meta-label">Año de inauguración</span>
+        </div>
+        <div class="building-meta-item">
+          <span class="building-meta-num cifra">3,500</span>
+          <span class="building-meta-label">Metros cuadrados</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ MISIÓN, VISIÓN Y VALORES ════════════ -->
+  <section class="section section-tinted" id="institucion">
+    <div class="section-inner">
+      <div class="section-head">
+        <span class="section-kicker">Nuestra institución</span>
+        <h2>Fundamentos Filosóficos</h2>
+      </div>
+
+      <div class="values-grid reveal-stagger">
+        <article class="value-card">
+          <svg class="value-glyph" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="6" fill="currentColor"/>
+          </svg>
+          <h3>Misión</h3>
+          <p>Contribuir con el bienestar social generando respuestas viables y eficaces a problemas locales y nacionales mediante una oferta educativa a todos los niveles, fundamentada en la pedagogía ignaciana y orientada a la formación de técnicos y profesionales competentes.</p>
+        </article>
+
+        <article class="value-card">
+          <svg class="value-glyph" viewBox="0 0 48 48" fill="none">
+            <path d="M4 24c4-9 12-15 20-15s16 6 20 15c-4 9-12 15-20 15S8 33 4 24Z" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="5" fill="currentColor"/>
+          </svg>
+          <h3>Visión</h3>
+          <p>Ser una comunidad educativa ágil, creativa e innovadora para la gestión de conocimientos y prácticas apropiadas a la realidad dominicana, con liderazgo nacional en la educación técnica y profesional de calidad.</p>
+        </article>
+
+        <article class="value-card value-card-list">
+          <svg class="value-glyph" viewBox="0 0 48 48" fill="none">
+            <path d="M24 41s-17-9.6-17-21.6C7 13 11 9 16.5 9c3.4 0 6.2 1.8 7.5 4.6C25.3 10.8 28.1 9 31.5 9 37 9 41 13 41 19.4 41 31.4 24 41 24 41Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+          </svg>
+          <h3>Valores Institucionales</h3>
+          <ul class="values-tags">
+            <li>Honestidad</li>
+            <li>Solidaridad</li>
+            <li>Humildad</li>
+            <li>Respeto</li>
+            <li>Trabajo en equipo</li>
+            <li>Justicia social</li>
+            <li>Innovación</li>
+            <li>Excelencia</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ NOTICIAS ════════════ -->
+  <section class="section" id="noticias">
+    <div class="section-inner">
+      <div class="news-head">
+        <span class="news-head-spacer" aria-hidden="true"></span>
+        <div class="section-head section-head-center">
+          <span class="section-kicker">Actualidad</span>
+          <h2>Noticias</h2>
+        </div>
+        <div class="news-nav">
+          <button class="news-arrow" (click)="noticiasAnterior()" [disabled]="!hayNoticiasAnteriores" aria-label="Noticias anteriores">&#8249;</button>
+          <button class="news-arrow" (click)="noticiasSiguiente()" [disabled]="!hayNoticiasSiguientes" aria-label="Noticias siguientes">&#8250;</button>
+        </div>
+      </div>
+
+      <div class="news-track reveal-stagger">
+        <article class="news-tile" *ngFor="let noticia of noticiasVisibles">
+          <a [href]="noticia.url" target="_blank" rel="noopener" class="news-tile-link">
+            <div class="news-tile-img">
+              <img [src]="noticia.imagen" [alt]="noticia.titulo" loading="lazy" />
+            </div>
+            <div class="news-tile-body">
+              <span class="tag tag-ghost">{{ noticia.categoria }}</span>
+              <h4>{{ noticia.titulo }}</h4>
+              <p>{{ noticia.descripcion | slice:0:110 }}&hellip;</p>
+              <time>{{ noticia.fecha }}</time>
+            </div>
+          </a>
+        </article>
+      </div>
+
+      <div class="news-dots">
+        <span *ngFor="let n of noticiasIEESL; let i = index"
+              [class.activo]="i >= indiceNoticias && i < indiceNoticias + noticiasPorPagina"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ LABORATORIOS ════════════ -->
+  <section class="section section-warm" id="laboratorios">
+    <div class="section-inner">
+      <div class="section-head">
+        <span class="section-kicker">Infraestructura</span>
+        <h2>Laboratorios</h2>
+        <p class="section-sub">Equipados con tecnología de vanguardia para la formación de profesionales competentes.</p>
+      </div>
+
+      <div class="labs-grid reveal-stagger">
+        <article class="lab-card" *ngFor="let lab of laboratorios">
+          <div class="lab-card-img">
+            <img [src]="lab.imagen" [alt]="lab.nombre" loading="lazy" />
+            <span class="lab-codigo">{{ lab.codigo }}</span>
+          </div>
+          <div class="lab-card-body">
+            <h4>{{ lab.nombre }}</h4>
+            <span class="lab-area">{{ lab.area }}</span>
+            <p>{{ lab.descripcion | slice:0:100 }}&hellip;</p>
+            <button class="btn-leer-mas" (click)="abrirLab(lab)">Leer más →</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="labs-extras">
+        <span class="labs-extras-label">El centro también dispone de:</span>
+        <ul>
+          <li>Sala de Investigadores</li>
+          <li>Salas de Innovación</li>
+          <li>Espacios de Trabajo en Equipo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ SALA DE TELEPRESENCIALIDAD PEDAGÓGICA ════════════ -->
+  <section class="section telepresencia-section" id="telepresencia">
+    <div class="section-inner">
+      <div class="section-head">
+        <span class="section-kicker">Innovación Educativa</span>
+        <h2>Sala de Telepresencialidad Pedagógica</h2>
+        <p class="section-sub">Un espacio de vanguardia inaugurado junto a la Fundación Altice, que conecta el aula con el mundo.</p>
+      </div>
+
+      <div class="telepresencia-grid">
+        <div class="telepresencia-visual">
+          <div class="tp-gallery">
+            <img src="assets/cidil/sala-telepresencialidad-1.jpg" alt="Sala de Telepresencialidad Pedagógica del IPL durante una conferencia" class="tp-gallery-img tp-gallery-main" loading="lazy" />
+            <img src="assets/cidil/sala-telepresencialidad-2.jpg" alt="Inauguración de la Sala de Telepresencialidad junto a Fundación Altice" class="tp-gallery-img tp-gallery-alt" loading="lazy" />
+          </div>
+          <span class="telepresencia-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            En colaboración con Fundación Altice
+          </span>
+        </div>
+
+        <div class="telepresencia-info">
+          <p>El espacio permite realizar conferencias, clases magistrales, eventos académicos e institucionales y programas educativos para participantes ubicados dentro y fuera del campus, localmente o desde cualquier país.</p>
+
+          <div class="telepresencia-features">
+            <div class="tp-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+              <div>
+                <span class="tp-feature-num">50 Mbps</span>
+                <span class="tp-feature-label">Red de internet de alta velocidad</span>
+              </div>
+            </div>
+            <div class="tp-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              <div>
+                <span class="tp-feature-num">8 IP</span>
+                <span class="tp-feature-label">Direcciones para conectividad flexible</span>
+              </div>
+            </div>
+            <div class="tp-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <div>
+                <span class="tp-feature-num">+13,000</span>
+                <span class="tp-feature-label">Estudiantes beneficiados</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ MODAL: DETALLE LABORATORIO ════════════ -->
+  <div class="modal-overlay" *ngIf="laboratorioSeleccionado" (click)="cerrarLab()">
+    <div class="modal-lab" (click)="$event.stopPropagation()">
+      <button class="modal-cerrar" (click)="cerrarLab()" aria-label="Cerrar">&times;</button>
+      <div class="modal-lab-img">
+        <img [src]="laboratorioSeleccionado.imagen" [alt]="laboratorioSeleccionado.nombre" />
+      </div>
+      <div class="modal-lab-body">
+        <span class="lab-area">{{ laboratorioSeleccionado.area }}</span>
+        <h3>{{ laboratorioSeleccionado.nombre }}</h3>
+        <p>{{ laboratorioSeleccionado.descripcion }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ CENTROS ════════════ -->
+  <section class="section" id="centros">
+    <div class="section-inner">
+      <div class="section-head">
+        <span class="section-kicker">Servicios al Emprendedor</span>
+        <h2>Centros de Apoyo Empresarial</h2>
+        <p class="section-sub">Dos espacios del Centro I+D+i Loyola dedicados a fortalecer a emprendedores y MIPYMES de San Cristóbal y la región sur del país.</p>
+      </div>
+
+      <div class="centros-grid reveal-stagger">
+        <!-- Centro MIPYMES Loyola -->
+        <article class="centro-card">
+          <div class="centro-card-head">
+            <img
+              src="assets/logo-mipymes.png"
+              alt="Centro MIPYMES Loyola"
+              class="centro-logo"
+              loading="lazy"
+            />
+            <div>
+              <h3>Centro MIPYMES Loyola</h3>
+              <span class="centro-tag">Alianza MICM &middot; IPL</span>
+            </div>
+          </div>
+
+          <p class="centro-intro">Agencia promotora y facilitadora de servicios sin fines de lucro, administrada bajo una alianza entre el gobierno y la academia. Nace de la iniciativa del Ministerio de Industria, Comercio y MIPYMES (MICM), aplicando el Modelo SBDC Global de la Universidad de Texas en San Antonio (UTSA), para fortalecer la innovación, la productividad y la competitividad de las micro, pequeñas y medianas empresas.</p>
+
+          <ul class="centro-servicios">
+            <li>
+              <strong>Asesorías Empresariales</strong>
+              <span>Acompañamiento continuo, gratuito y confidencial en mercadeo, finanzas, TIC y mejora de procesos.</span>
+            </li>
+            <li>
+              <strong>Asistencias Técnicas</strong>
+              <span>Servicios especializados de mayor envergadura, como gestión financiera y certificación de calidad, realizados por consultores externos.</span>
+            </li>
+            <li>
+              <strong>Capacitaciones</strong>
+              <span>Formaciones para fortalecer el recurso humano de la empresa y aumentar su productividad y competitividad.</span>
+            </li>
+            <li>
+              <strong>Vinculación</strong>
+              <span>Acercamiento de los empresarios a otros servicios, inversionistas y empresas dentro de la red de apoyo.</span>
+            </li>
+          </ul>
+
+          <div class="centro-footer">
+            <span class="centro-contacto">Tel.: (809) 528-4020 Ext. 3311</span>
+            <a href="https://ipl.edu.do/index.php/servicios/centro-mipymes-loyola" target="_blank" rel="noopener" class="centro-link">Más información &rarr;</a>
+          </div>
+        </article>
+
+        <!-- Centro de Prototipado y Transferencia Tecnológica -->
+        <article class="centro-card">
+          <div class="centro-card-head">
+            <img
+              src="assets/logo-cptt.png"
+              alt="Centro de Prototipado y Transferencia Tecnológica Loyola"
+              class="centro-logo"
+              loading="lazy"
+            />
+            <div>
+              <h3>Centro de Prototipado y Transferencia Tecnológica</h3>
+              <span class="centro-tag">Único en San Cristóbal y la Región Sur</span>
+            </div>
+          </div>
+
+          <p class="centro-intro">Creado con el auspicio del Ministerio de Industria, Comercio y MIPYMES (MICM), es la única área especializada de este tipo en San Cristóbal y la región sur del país. Brinda asistencia técnica gratuita a emprendedores y MIPYMES para materializar una idea de producto o servicio: desde el diseño y el modelado hasta su impresión final, ayudando a producir más con menos recursos sin descuidar la calidad.</p>
+
+          <ul class="centro-servicios">
+            <li>
+              <strong>Diseño y Modelado 3D</strong>
+              <span>Desarrollo del diseño técnico de cada producto a partir de las características específicas del emprendedor.</span>
+            </li>
+            <li>
+              <strong>Impresión 3D</strong>
+              <span>Materialización del prototipo, único para cada emprendedor según su idea de negocio.</span>
+            </li>
+            <li>
+              <strong>Metodología 5S</strong>
+              <span>Asistencia técnica para la organización y mejora de procesos productivos.</span>
+            </li>
+            <li>
+              <strong>Digitalización</strong>
+              <span>Acompañamiento para la transformación digital de procesos del negocio.</span>
+            </li>
+          </ul>
+
+          <div class="centro-footer">
+            <span class="centro-contacto">Servicios gratuitos para emprendedores y MIPYMES</span>
+            <a href="https://magisfm.ipl.edu.do/index.php/economicas/10357-centro-prototipado-loyola-un-instrumento-para-el-desarrollo-de-los-emprendedores" target="_blank" rel="noopener" class="centro-link">Más información &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ PORTALES DE INTERÉS ════════════ -->
+  <section class="section section-portales" id="portales">
+    <div class="section-inner">
+      <div class="section-head">
+        <span class="section-kicker">Enlaces</span>
+        <h2>Portales de Interés</h2>
+        <p class="section-sub">Acceso directo a los servicios digitales del Instituto Politécnico Loyola</p>
+      </div>
+
+      <div class="portals-grid">
+        <a href="https://ipl.edu.do/" target="_blank" rel="noopener" class="portal-card">
+          <svg viewBox="0 0 40 40" fill="none"><use href="#icon-institucion"></use></svg>
+          <h4>Portal Principal</h4>
+          <p>Sitio web oficial del IPL</p>
+        </a>
+
+        <a href="https://superior.ipl.edu.do/" target="_blank" rel="noopener" class="portal-card">
+          <svg viewBox="0 0 40 40" fill="none"><use href="#icon-graduacion"></use></svg>
+          <h4>IEESL &middot; Nivel Superior</h4>
+          <p>Instituto Especializado de Estudios Superiores</p>
+        </a>
+
+        <a href="https://continuada.ipl.edu.do/" target="_blank" rel="noopener" class="portal-card">
+          <svg viewBox="0 0 40 40" fill="none"><use href="#icon-libro"></use></svg>
+          <h4>Educación Continuada</h4>
+          <p>Programas de formación técnica</p>
+        </a>
+
+        <a href="https://primaria.ipl.edu.do/" target="_blank" rel="noopener" class="portal-card">
+          <svg viewBox="0 0 40 40" fill="none"><use href="#icon-primaria"></use></svg>
+          <h4>Primaria</h4>
+          <p>Nivel Inicial y Primario</p>
+        </a>
+
+        <a href="https://campusvirtual.ipl.edu.do/" target="_blank" rel="noopener" class="portal-card">
+          <svg viewBox="0 0 40 40" fill="none"><use href="#icon-monitor"></use></svg>
+          <h4>Campus Virtual</h4>
+          <p>Plataforma de educación a distancia</p>
+        </a>
+
+        <a href="https://www.instagram.com/politecnicoloyola/" target="_blank" rel="noopener" class="portal-card">
+          <svg viewBox="0 0 40 40" fill="none"><use href="#icon-red"></use></svg>
+          <h4>Redes Sociales</h4>
+          <p>Síguenos en nuestras redes</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ FOOTER ════════════ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col footer-col-brand">
+        <div class="footer-brand-row">
+          <span class="brand-mark brand-mark-light">CIDIL</span>
+        </div>
+        <p>
+          El Centro de Innovación, Desarrollo e Investigación del Instituto Politécnico Loyola forma profesionales competentes en tecnología, investigación e innovación, contribuyendo al desarrollo del país.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <p class="footer-contacto">Calle Capotillo, San Cristóbal, República Dominicana</p>
+        <p class="footer-contacto">(809) 528-4010 Ext. 3001<br>cidil&#64;ipl.edu.do</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Instituto Politécnico Loyola</h4>
+        <p>Institución educativa fundada bajo los principios de la pedagogía ignaciana, dedicada a la formación integral en los niveles Inicial, Primario, Secundario y Superior.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Síguenos</h4>
+        <div class="footer-links">
+          <a href="https://www.instagram.com/politecnicoloyola/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/politecnicoloyola/?locale=es_LA" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://twitter.com/loyolaipl" target="_blank" rel="noopener">Twitter</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 Centro I+D+i Loyola &middot; Instituto Politécnico Loyola</p>
+    </div>
+  </footer>
+
+  <!-- ════════════ SPRITE SVG (no visible, fuente de íconos de Portales de Interés) ════════════ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="icon-institucion" viewBox="0 0 40 40"><path d="M6 33V18l14-9 14 9v15" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/><path d="M6 33h28M14 33V23h12v10" stroke="currentColor" stroke-width="2.2" fill="none"/></symbol>
+      <symbol id="icon-graduacion" viewBox="0 0 40 40"><path d="M6 15 20 9l14 6-14 6-14-6Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/><path d="M12 18v8c2.6 2.6 5.4 4 8 4s5.4-1.4 8-4v-8" stroke="currentColor" stroke-width="2.2" fill="none"/></symbol>
+      <symbol id="icon-libro" viewBox="0 0 40 40"><path d="M6 9h11c2.5 0 3.7 1.2 3.7 3.7v20c-2.5-1.9-6.2-1.9-11.2-1.9-1.9 0-3.5.6-3.5.6V9ZM34 9H23c-2.5 0-3.7 1.2-3.7 3.7v20c2.5-1.9 6.2-1.9 11.2-1.9 1.9 0 3.5.6 3.5.6V9Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-primaria" viewBox="0 0 40 40"><circle cx="20" cy="13" r="5.5" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M9 33c0-7 5-11 11-11s11 4 11 11" stroke="currentColor" stroke-width="2.2" fill="none"/></symbol>
+      <symbol id="icon-monitor" viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="28" rx="3" stroke="currentColor" stroke-width="2.5" fill="none"/><path d="M24 50h16M32 42v8" stroke="currentColor" stroke-width="2.5"/><path d="M20 24l8 6-8 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-red" viewBox="0 0 40 40"><circle cx="9" cy="10" r="3.2" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="31" cy="10" r="3.2" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="20" cy="25" r="3.2" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M11 12l7 11M29 12l-7 11" stroke="currentColor" stroke-width="2"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- Botón flotante "volver arriba" — aparece al bajar y desaparece arriba -->
+  <button class="btn-volver-arriba" (click)="volverArriba()" [class.visible]="mostrarVolverArriba" aria-label="Volver al inicio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+  </button>
+
+</div>

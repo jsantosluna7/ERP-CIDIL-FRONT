@@ -1,0 +1,237 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+::ng-deep .mdc-tab {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(
+    --mdc-typography-button-font-family,
+    var(--mdc-typography-button-font-family, Roboto, sans-serif)
+  );
+  font-size: var(--mdc-typography-button-font-size, 0.8rem) !important;
+  line-height: var(--mdc-typography-button-line-height, 36px);
+  font-weight: var(--mdc-typography-button-font-weight, 600) !important;
+  letter-spacing: var(--mdc-typography-button-letter-spacing, 2px) !important;
+  text-decoration: var(--mdc-typography-button-text-decoration, none);
+  text-transform: var(--mdc-typography-button-text-transform, uppercase);
+}
+
+.botonera {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1.7rem;
+}
+
+.selectedBtn {
+  background-color: #101a88 !important;
+  color: white !important;
+  box-shadow: none !important;
+  font-weight: bold !important;
+}
+
+.mat-expansion-panel {
+  box-shadow: none !important;
+  background-color: transparent;
+}
+
+.toggle-button {
+  display: flex;
+  justify-content: end;
+  padding: 4px;
+}
+
+mat-expansion-panel-header {
+  min-height: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+.custom-header {
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex;
+  justify-content: center;
+}
+
+.contenido-expansion {
+  padding: 16px;
+  margin-bottom: 1rem;
+}
+
+.botonera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  .tab-button {
+    display: flex;
+    align-items: end;
+    gap: 4px;
+  }
+}
+
+/* Contenedor principal */
+.bc {
+  background-color: #fff;
+  height: 100%; /* usa % ya que globals establecen 100vh */
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* tabs arriba, calendario debajo */
+  overflow: hidden;
+}
+
+/* MAT TABS: forzar que el body del tab ocupe todo el alto disponible */
+::ng-deep .mat-tab-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* wrapper provisto por material: asegurarnos que ocupe todo */
+::ng-deep .mat-tab-body-wrapper {
+  flex: 1 1 auto;
+  min-height: 0; /* CRUCIAL para que los hijos flex no colapsen */
+}
+
+/* cada tab body */
+::ng-deep .mat-tab-body {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+::ng-deep .mat-tab-body-content {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+/* Wrapper del calendario: ocupa el espacio restante */
+.calendar-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0.5rem; /* ajusta si quieres menos padding */
+  box-sizing: border-box;
+  min-height: 0; /* CRUCIAL */
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Spinner overlay */
+.overlay-spinner {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor directo del calendario */
+.calendar-container {
+  flex: 1 1 auto;
+  min-height: 0; /* evita que colapse en flex */
+  display: flex;
+  width: 100%;
+}
+
+/* Fullcalendar: que ocupe todo el contenedor */
+::ng-deep full-calendar,
+::ng-deep .fc {
+  width: 100% !important;
+  height: 100% !important; /* FullCalendar respetará la altura del padre */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Corrección de colores / legibilidad (mantén tus reglas) */
+::ng-deep .fc {
+  background-color: white !important;
+  color: black !important;
+}
+::ng-deep .fc-col-header-cell-cushion,
+::ng-deep .fc-timegrid-slot-label,
+::ng-deep .fc-toolbar-title {
+  color: #000 !important;
+}
+::ng-deep .fc-event,
+::ng-deep .evento-card,
+::ng-deep .fc-timegrid-event {
+  color: #fff !important;
+}
+
+/* ====== ESTILO PERSONALIZADO PARA EVENTOS ====== */
+::ng-deep .evento-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  color: #fff !important;
+  height: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.3px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hora del evento */
+::ng-deep .evento-horas {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  opacity: 0.9;
+}
+
+/* Bloque principal de texto */
+::ng-deep .evento-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Título de la materia */
+::ng-deep .evento-titulo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+/* Nombre del profesor */
+::ng-deep .evento-profesor {
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Laboratorio / aula */
+::ng-deep .evento-lab {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Íconos opcionales */
+::ng-deep .evento-card i {
+  font-size: 1rem;
+  opacity: 0.9;
+}

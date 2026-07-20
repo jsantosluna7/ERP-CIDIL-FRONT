@@ -1,0 +1,7 @@
+.dialog-content{
+    text-align: center;
+    width: 100%;
+    max-width: 550px;
+    min-height: fit-content;
+    margin: auto;
+}

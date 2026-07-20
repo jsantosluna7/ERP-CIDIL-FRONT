@@ -1,0 +1,7 @@
+<div class="body" [class.sidebar-collapsed]="isSidebarClosed">
+  <app-sidebar (toggleSidebar)="toggleSidebar()"></app-sidebar>
+  
+  <section class="home">
+    <router-outlet></router-outlet>
+  </section>
+</div>

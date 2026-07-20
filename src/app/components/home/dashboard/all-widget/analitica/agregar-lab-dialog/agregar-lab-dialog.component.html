@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Agregar Laboratorio</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Nombre del laboratorio</mat-label>
+    <input matInput [(ngModel)]="nombreLab" />
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="guardar()">Agregar</button>
+</mat-dialog-actions>

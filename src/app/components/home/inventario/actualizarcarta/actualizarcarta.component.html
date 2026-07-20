@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>Editar Carta</h2>
+
+<mat-dialog-content [formGroup]="form" style="max-height: 60vh; overflow-y: auto; padding-right: 16px;">
+  <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Nombre corto</mat-label>
+      <input matInput formControlName="nombreCorto" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Perfil</mat-label>
+      <input matInput formControlName="perfil" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Laboratorio ID</mat-label>
+      <input matInput type="number" formControlName="idLaboratorio" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Fabricante</mat-label>
+      <input matInput formControlName="fabricante" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Modelo</mat-label>
+      <input matInput formControlName="modelo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Serial</mat-label>
+      <input matInput formControlName="serial" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Departamento</mat-label>
+      <input matInput formControlName="departamento" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Importe Activo</mat-label>
+      <input matInput type="number" formControlName="importeActivo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Cantidad</mat-label>
+      <input matInput type="number" formControlName="cantidad" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 45%;">
+      <mat-label>Estado Físico ID</mat-label>
+      <input matInput type="number" formControlName="idEstadoFisico" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 100%;">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput formControlName="descripcionLarga" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="flex: 1 1 100%;">
+      <mat-label>Imagen (URL o base64)</mat-label>
+      <input matInput formControlName="imagenEquipo" />
+    </mat-form-field>
+
+    <div style="flex: 1 1 100%; display: flex; gap: 24px; margin-top: 8px;">
+      <mat-slide-toggle formControlName="disponible">Disponible</mat-slide-toggle>
+      <mat-slide-toggle formControlName="validacionPrestamo">Validación préstamo</mat-slide-toggle>
+      <mat-slide-toggle formControlName="activado">Activado</mat-slide-toggle>
+    </div>
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" style="gap: 12px; padding: 16px 0 0 0;">
+  <button mat-stroked-button color="warn" (click)="cancelar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">Guardar</button>
+</mat-dialog-actions>

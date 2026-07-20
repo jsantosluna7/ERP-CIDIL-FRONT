@@ -1,0 +1,136 @@
+<mat-dialog-content class="formulario hide-scroll">
+  @if (loadingDatos) {
+    <div class="spinner">
+      <mat-spinner diameter="50"></mat-spinner>
+      <span>Cargando la Información de la orden...</span>
+    </div>
+  } @else {
+    <div class="orden-info-top">
+      <div class="orden-title">
+        <span class="orden-id">{{ orden().codigo }}</span>
+        <span>{{ orden().nombre }}</span>
+      </div>
+      <div class="close-btn">
+        <button mat-icon-button (click)="onNoCancelar()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <hr />
+    <div class="orden-info-bottom">
+      <div class="bottom-title">
+        <fa-icon [icon]="clipCheck" size="sm"></fa-icon>
+        <span>Información de las ordenes</span>
+      </div>
+      <div class="bottom-title-1">
+        <div class="part-1">
+          <div class="status">
+            <span>Status:</span>
+            <div class="follow-chip" [ngClass]="orden().timeline.color">
+              <fa-icon
+                [icon]="iconMap[orden().timeline.icono]"
+                size="sm"
+              ></fa-icon>
+              <span>{{ orden().timeline.nombre }}</span>
+            </div>
+          </div>
+          <span
+            >Subido: <strong>{{ orden().fechaSubida }}</strong></span
+          >
+          
+          <span
+            >departamento: <strong>{{ orden().departamento }}</strong></span
+          >
+        </div>
+        <div class="part-2">
+          <span class="solicitado"
+            >Solicitado: <strong>{{ orden().fechaSolicitud }}</strong></span
+          >
+          <span
+            >Total Items: <strong>{{ orden().itemsCount }}</strong></span
+          >
+        </div>
+      </div>
+      <hr />
+      <div class="orden-info-bottom-comentario">
+        <div class="comentario-title">
+          <fa-icon [icon]="mensaje" size="sm"></fa-icon>
+          <span>Comentario:</span>
+        </div>
+        <span>{{ orden().comentario }}</span>
+      </div>
+    </div>
+    <div class="orden-info">
+      <div class="orden-info-title">
+        <fa-icon [icon]="boxPacking" size="sm"></fa-icon>
+        <span>Items ({{ orden().itemsCount }})</span>
+      </div>
+
+      <div class="orden-title-middle">
+        @for (item of items; track item.id) {
+          <div class="items-data">
+            <div class="item">
+              <div class="item-top">
+                <div class="top-1">
+                  <div class="top-titulo">
+                    <span class="item-id">#{{ item.numeroLista }}</span>
+                    <span class="item-top-titulo">{{ item.nombre }}</span>
+                  </div>
+                  <div class="pildora" [ngClass]="item.estadosTimeline.color">
+                    <fa-icon
+                      [icon]="iconMap[item.estadosTimeline.icono]"
+                      size="sm"
+                    ></fa-icon>
+                    <span>{{ item.estadosTimeline.nombre }}</span>
+                  </div>
+                </div>
+                <div class="top-2">
+                  <span class="item-top-2-titulo"
+                    >{{ item.cantidadRecibida }} /
+                    {{ item.cantidad }} recibido</span
+                  >
+                  <div class="item-fecha">
+                    <fa-icon [icon]="calendar" size="sm"></fa-icon>
+                    <span>{{ item.fechaActualizacion }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="item-comentario">
+                <fa-icon [icon]="mensaje" size="sm"></fa-icon>
+                <span>{{ item.comentario }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="orden-timeline-sin-linea">
+        <div class="timeline-title">
+          <fa-icon [icon]="calendar" size="sm"></fa-icon>
+          <span>Orden Timeline</span>
+        </div>
+        @for (timeline of timelineOrden; track timeline; let esUltimo = $last) {
+          <div class="timeline">
+            <div class="timeline-icon">
+              <div class="iconos" [ngClass]="timeline.estadosTimeline.color">
+                <fa-icon
+                  [icon]="iconMap[timeline.estadosTimeline.icono]"
+                ></fa-icon>
+              </div>
+              @if (!esUltimo) {
+                <div class="linea"></div>
+              }
+            </div>
+            <div class="texto">
+              <span class="texto-orden">{{ timeline.evento }}</span>
+              <div class="timeline-fecha">
+                <fa-icon [icon]="calendar"></fa-icon>
+                <span>{{ timeline.fechaActualizacion }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</mat-dialog-content>
