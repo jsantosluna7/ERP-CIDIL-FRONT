@@ -22,7 +22,7 @@ export class VistaReportesComponent {
   reportes: ReporteFalla[] = [];
   laboratorios: Laboratorio[] = [];
 
-  loading: { [id: number]: { recibido: boolean; solucionar: boolean } | undefined } = {};
+  loading: { [id: number]: { recibido: boolean; solucionar: boolean } } = {};
 
   private setLoading(
     id: number,

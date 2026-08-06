@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
-import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
-import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { MatButton } from '@angular/material/button';
 import { ComprasService } from '../../../services/Api/compras.service';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 import { ComprasAdminComponent } from "./compras-admin/compras-admin.component";
 import { ComprasReadonlyComponent } from "./compras-readonly/compras-readonly.component";
 
@@ -13,7 +13,7 @@ import { ComprasReadonlyComponent } from "./compras-readonly/compras-readonly.co
   selector: 'app-compras',
   imports: [CommonModule, MatButton, AppCualRolDirective, ComprasAdminComponent, ComprasReadonlyComponent],
   templateUrl: './compras.component.html',
-  styleUrl: './compras.component.css',  
+  styleUrl: './compras.component.css',
 })
 export class ComprasComponent {
   modoVista = signal<'admin' | 'readonly'>('admin');

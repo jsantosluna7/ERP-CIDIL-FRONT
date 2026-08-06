@@ -1,220 +1,200 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faClock,
-  faEnvelope,
-  faHome,
-  faLocationDot,
-  faPhone,
-  faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import { Carta } from '../../../interfaces/carta';
-import { CarritoService } from '../carrito/carrito.service';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
-import { SolicitudEquipoService } from '../../../services/reserva-equipo/reserva-equipo.service';
-import { ReservaEquipoNueva } from '../../../interfaces/reservaEquipoNueva.interface';
-import { InventarioService } from '../../../services/Inventario/inventario.service';
-import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router } from '@angular/router';
+
+export interface Equipo {
+  id: string | number;
+  nombre: string;
+  imagenUrl: string;
+  cantidad: number;
+  stock: number;
+}
+
+// ─── Constantes de horario ────────────────────────────────────────────────────
+const HORARIO = {
+  // 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+  diasHabiles: [1, 2, 3, 4, 5],
+  sabado: 6,
+  domingo: 0,
+  apertura: 8,           // 08:00 todos los días habiles y sábado
+  cierreSemana: 22,      // 22:00 lun–vie
+  cierreSabado: 18,      // 18:00 sábado
+};
+
+// ─── Validador de fecha/horario ───────────────────────────────────────────────
+function validarHorario(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  if (!value) return null;
+
+  const fecha = new Date(value);
+  const dia   = fecha.getDay();
+  const hora  = fecha.getHours() + fecha.getMinutes() / 60;
+
+  // Domingo: cerrado
+  if (dia === HORARIO.domingo) {
+    return { horarioInvalido: 'Los domingos no hay servicio. Elige otro día.' };
+  }
+
+  // Apertura común
+  if (hora < HORARIO.apertura) {
+    return { horarioInvalido: 'El horario de apertura es a las 8:00 AM.' };
+  }
+
+  // Sábado: cierra 18:00
+  if (dia === HORARIO.sabado && hora >= HORARIO.cierreSabado) {
+    return { horarioInvalido: 'Los sábados el servicio cierra a las 6:00 PM.' };
+  }
+
+  // Lun–Vie: cierra 22:00
+  if (HORARIO.diasHabiles.includes(dia) && hora >= HORARIO.cierreSemana) {
+    return { horarioInvalido: 'De lunes a viernes el servicio cierra a las 10:00 PM.' };
+  }
+
+  return null;
+}
+
+// ─── Validador cruzado: fin > inicio ─────────────────────────────────────────
+function finPosteriorAlInicio(group: AbstractControl): ValidationErrors | null {
+  const inicio = group.get('horaInicio')?.value;
+  const fin    = group.get('horaFin')?.value;
+  if (!inicio || !fin) return null;
+  return new Date(fin) > new Date(inicio) ? null : { finAnteriorAlInicio: true };
+}
 
 @Component({
-  selector: 'app-reserva-equipo',
-  imports: [
-    CommonModule,
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    RouterLink,
-    MatButtonModule,
-    AppCualRolDirective,
-    MatProgressSpinnerModule,
-  ],
+  selector: 'app-reserva-equipos',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './reserva-equipo.component.html',
-  styleUrl: './reserva-equipo.component.css',
+  styleUrl: './reserva-equipo.component.css'
 })
 export class ReservaEquipoComponent implements OnInit {
-  solicitudesForm: FormGroup;
-  equiposSeleccionados: Carta[] = [];
-  loading = false;
 
-  faUser = faUser;
-  faLocationDot = faLocationDot;
-  faPhone = faPhone;
-  faEnvelope = faEnvelope;
-  fahouse = faHome;
-  faclock = faClock;
+  form!: FormGroup;
+  equiposSeleccionados: Equipo[] = [];
+  duracionTexto = '';
+  enviando = false;
 
-  constructor(
-    private carritoService: CarritoService,
-    private toastr: ToastrService,
-    private router: Router,
-    private _usuarios: UsuariosService,
-    private solicitudEquipoService: SolicitudEquipoService,
-    private inventarioService: InventarioService
-  ) {
-    this.solicitudesForm = new FormGroup({
-      fechaInicio: new FormControl('', [this.horaValida()]),
-      fechaDevolucion: new FormControl('', [this.horaValida()]),
-      Motivo: new FormControl('', [Validators.min(1)]),
-    });
-  }
+  // Mock — reemplazar con servicio real
+  private equiposMock: Equipo[] = [
+    {
+      id: 'EQ-001',
+      nombre: 'MacBook Pro 14"',
+      imagenUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200',
+      cantidad: 2,
+      stock: 5
+    },
+    {
+      id: 'EQ-047',
+      nombre: 'Proyector Epson X49',
+      imagenUrl: '',
+      cantidad: 1,
+      stock: 3
+    }
+  ];
 
-  usuarioLogueado: any;
+  constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
-    this.equiposSeleccionados = this.carritoService.getCarrito();
+    this.form = this.fb.group(
+      {
+        horaInicio: ['', [Validators.required, validarHorario]],
+        horaFin:    ['', [Validators.required, validarHorario]],
+        motivo:     ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]]
+      },
+      { validators: finPosteriorAlInicio }
+    );
 
-    //datos del usuario
-    this._usuarios.user$.subscribe((user) => {
-      this.usuarioLogueado = user;
-    });
+    // PRODUCCION: this.equiposSeleccionados = this.carritoService.getEquipos();
+    this.equiposSeleccionados = [...this.equiposMock];
   }
 
-  enviarSolicitud(): void {
-    this.equiposSeleccionados = this.carritoService.getCarrito();
-    const fechaInicio = this.solicitudesForm.get('fechaInicio')?.value;
-    const fechaFin = this.solicitudesForm.get('fechaDevolucion')?.value;
-    const motivo = this.solicitudesForm.get('Motivo')?.value;
+  // ─── Helpers template ─────────────────────────────────────────────────────
+  isInvalid(campo: string): boolean {
+    const ctrl = this.form.get(campo);
+    return !!(ctrl && ctrl.invalid && ctrl.touched);
+  }
 
-    this.loading = true; // Activar el spinner
+  getError(campo: string): string {
+    const ctrl = this.form.get(campo);
+    if (!ctrl || !ctrl.errors) return '';
+    if (ctrl.errors['required'])      return 'Este campo es requerido.';
+    if (ctrl.errors['minlength'])     return `Mínimo ${ctrl.errors['minlength'].requiredLength} caracteres.`;
+    if (ctrl.errors['horarioInvalido']) return ctrl.errors['horarioInvalido'];
+    return 'Valor inválido.';
+  }
+
+  // ─── Duración ─────────────────────────────────────────────────────────────
+  onFechaChange(): void {
+    const inicio = this.form.get('horaInicio')?.value;
+    const fin    = this.form.get('horaFin')?.value;
+
+    if (!inicio || !fin) { this.duracionTexto = ''; return; }
+
+    const diff = new Date(fin).getTime() - new Date(inicio).getTime();
+    if (diff <= 0) { this.duracionTexto = ''; return; }
+
+    const h = Math.floor(diff / 3600000);
+    const m = Math.round((diff % 3600000) / 60000);
+
+    this.duracionTexto = h > 0 && m > 0 ? `${h}h ${m}min`
+                       : h > 0           ? `${h} hora${h > 1 ? 's' : ''}`
+                       :                   `${m} minutos`;
+  }
+
+  // ─── Equipos ──────────────────────────────────────────────────────────────
+  removeEquipo(index: number): void {
+    this.equiposSeleccionados.splice(index, 1);
+  }
+
+  onImgError(event: Event): void {
+    (event.target as HTMLImageElement).style.display = 'none';
+  }
+
+  // ─── Submit ───────────────────────────────────────────────────────────────
+  onSubmit(): void {
+    this.form.markAllAsTouched();
+
+    if (this.form.invalid) return;
 
     if (this.equiposSeleccionados.length === 0) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.error('Debe seleccionar al menos un equipo');
+      alert('Agrega al menos un equipo a la solicitud.');
       return;
     }
 
-    if (!fechaInicio || !fechaFin || !motivo) {
-      this.loading = false; // Desactivar el spinner
-      this.toastr.error('Complete todos los campos requeridos');
-      return;
-    }
+    this.enviando = true;
 
-    const fechaSolicitud = new Date().toISOString();
-
-    this.equiposSeleccionados.forEach((equipo) => {
-      const solicitud: ReservaEquipoNueva = {
-        idUsuario: Number(this.usuarioLogueado.sub),
-        idInventario: equipo.id,
-        fechaInicio,
-        fechaFinal: fechaFin,
-        motivo,
-        fechaSolicitud,
-        cantidad: equipo.cantidadSeleccionada,
-      };
-
-      // Resta la cantidad
-      const cantidadRestante = equipo.cantidad! - equipo.cantidadSeleccionada!;
-      const equipoActualizado = {
-        ...equipo,
-        cantidad: cantidadRestante,
-        disponible: cantidadRestante > 0,
-      };
-
-      this.solicitudEquipoService.crearReserva(solicitud).subscribe({
-        next: () => {
-          this.loading = false; // Desactivar el spinner
-          this.toastr.success(`Solicitud para ${equipo.nombreData} enviada.`);
-
-          //Agreglar la actualizacion de la cantidad.
-          // this.inventarioService.obtenerCartaPorId(equipo.id).subscribe({
-          //   next: (cartaCompleta) => {
-          //     const cantidadRestante =
-          //       (equipo.cantidad || 0) - (equipo.cantidadSeleccionada || 0);
-
-          //     const equipoActualizado: Carta = {
-          //       ...cartaCompleta,
-          //       cantidad: cantidadRestante,
-          //       disponible: cantidadRestante > 0,
-          //     };
-          //     this.inventarioService
-          //       .actualizarCarta(equipo.id, equipoActualizado)
-          //       .subscribe({
-          //         next: () => {
-          //           this.loading = false; // Desactivar el spinner
-          //           this.toastr.success('Equipo actualizado correctamente');
-          //         },
-          //         error: () => {
-          //           this.loading = false; // Desactivar el spinner
-          //           this.toastr.error('Error al actualizar el inventario');
-          //         },
-          //       });
-          //   },
-          //   error: () => {
-          //     this.loading = false; // Desactivar el spinner
-          //     this.toastr.error(
-          //       'No se pudo obtener la información completa del equipo'
-          //     );
-          //   },
-          // });
-        },
-        error: (err) => {
-          this.loading = false; // Desactivar el spinner
-          console.error(' Error al enviar la solicitud:', err);
-          this.toastr.error('Error al enviar la solicitud');
-        },
-      });
-    });
-
-    this.carritoService.vaciarCarrito();
-    this.equiposSeleccionados = [];
-    this.solicitudesForm.reset();
-  }
-
-  ruta() {
-    this.router.navigate(['/home/inventario']);
-  }
-
-  horaValida(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.value) return null;
-
-      const fecha = new Date(control.value);
-      const dia = fecha.getDay(); // 0=Domingo, 6=Sábado
-      const hora = fecha.getHours();
-      const minutos = fecha.getMinutes();
-
-      // Domingo -> siempre inválido
-      if (dia === 0) {
-        return { horaInvalida: true };
-      }
-
-      let horaMax = 22; // por defecto Lunes-Viernes
-      let minutoMax = 0;
-
-      // Sábado -> hasta las 18:00
-      if (dia === 6) {
-        horaMax = 18;
-        minutoMax = 0;
-      }
-
-      // Validaciones
-      if (hora < 8) {
-        return { horaInvalida: true };
-      }
-
-      if (hora > horaMax) {
-        return { horaInvalida: true };
-      }
-
-      if (hora === horaMax && minutos > minutoMax) {
-        return { horaInvalida: true };
-      }
-
-      return null; // válido
+    const payload = {
+      equipos:    this.equiposSeleccionados.map(e => ({ id: e.id, cantidad: e.cantidad })),
+      horaInicio: this.form.value.horaInicio,
+      horaFin:    this.form.value.horaFin,
+      motivo:     this.form.value.motivo,
     };
+
+    console.log('Payload:', payload);
+
+    // Reemplaza con tu servicio:
+    // this.reservaService.crear(payload).subscribe({
+    //   next: () => { this.enviando = false; this.router.navigate(['/solicitudes']); },
+    //   error: err => { this.enviando = false; console.error(err); }
+    // });
+
+    setTimeout(() => {
+      this.enviando = false;
+      alert('¡Solicitud enviada correctamente!');
+    }, 1800);
+  }
+
+  irSolicitudes(): void {
+    this.router.navigate(['/home/solicitud-equipo']);
+  }
+
+  irMisPrestamos(): void {
+    this.router.navigate(['/home/mis-prestamos']);
+  }
+
+  irInventario(): void {
+    this.router.navigate(['/home/inventario']);
   }
 }

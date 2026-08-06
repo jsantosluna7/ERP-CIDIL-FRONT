@@ -221,6 +221,13 @@ export const routes: Routes = [
         data: { roles: [1, 2] },
       },
       {
+        path: 'mis-solicitudes-espacio',
+        loadComponent: () =>
+          import(
+            './components/home/reserva-laboratorio/manejo-espacio/espacio-usuario/espacio-usuario.component'
+          ).then((m) => m.EspacioUsuarioComponent)
+      },
+      {
         path: 'solicitud-equipo',
         loadComponent: () =>
           import(
@@ -228,6 +235,13 @@ export const routes: Routes = [
           ).then((m) => m.SolicitudReservaEquipoComponent),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
+      },
+      {
+        path: 'mis-prestamos',
+        loadComponent: () =>
+          import(
+            './components/home/reserva-equipo/manejo-equipos/equipos-usuario/equipos-usuario.component'
+          ).then((m) => m.EquiposUsuarioComponent)
       },
 
       /** Módulo IoT (roles 1 y 2) */

@@ -1,0 +1,583 @@
+<!-- ══════════════════════════════════════════
+     MODALES EXISTENTES (no cambiar)
+     ══════════════════════════════════════════ -->
+
+<!-- Modal Rechazo Espacios -->
+@if (modal.rechazoVisible()) {
+  <div class="g-backdrop" (click)="$event.target === $event.currentTarget && modal.cerrarRechazo()">
+    <div class="g-modal">
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--red">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Rechazar solicitud</p>
+          <p class="g-modal-subtitle">#{{ modal.rechazoId() }}</p>
+        </div>
+      </div>
+      <label for="g-motivo">Motivo del rechazo <span class="g-required">*</span></label>
+      <textarea id="g-motivo"
+        placeholder="Explica la razón del rechazo para notificar al solicitante..."
+        [value]="modal.motivoRechazo()"
+        (input)="modal.motivoRechazo.set($any($event.target).value)"
+        [class.g-input--error]="modal.motivoError()">
+      </textarea>
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--cancel" (click)="modal.cerrarRechazo()">Cancelar</button>
+        <button class="g-btn g-btn--danger" (click)="modal.confirmarRechazo()">Confirmar rechazo</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Detalle Admin Espacios -->
+@if (modal.detalleVisible()) {
+  <div class="g-backdrop" (click)="$event.target === $event.currentTarget && modal.cerrarDetalle()">
+    <div class="g-modal g-modal--wide">
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Detalle de la solicitud</p>
+          <p class="g-modal-subtitle">#{{ modal.detalleData()?.id }}</p>
+        </div>
+      </div>
+      @if (modal.detalleData(); as d) {
+        <div class="g-estado-row">
+          <span class="g-badge g-badge--{{ d.idEstado === 2 ? 'pendiente' : (d.idEstado === 1 ? 'aprobada' : 'rechazada') }}">
+            <span class="g-badge-dot"></span>
+                @switch (d.idEstado) {
+                  @case (2) { Pendiente }
+                  @case (1) { Aprobada  }
+                  @case (3) { Rechazada }
+                  @default  { {{ d.nombreEstado }} }
+                }
+          </span>
+        </div>
+        <div class="g-grid">
+          <div class="g-field"><span class="g-field-label">Espacio</span><span class="g-field-value">{{ d.espacio }}</span></div>
+          <div class="g-field"><span class="g-field-label">Solicitante</span><span class="g-field-value">{{ d.solicitante }}</span></div>
+          <div class="g-field"><span class="g-field-label">Departamento</span><span class="g-field-value">{{ d.departamento }}</span></div>
+          <div class="g-field"><span class="g-field-label">Fecha y hora</span><span class="g-field-value">{{ d.fechaHora }}</span></div>
+          <div class="g-field"><span class="g-field-label">Duración</span><span class="g-field-value">{{ d.duracion }}</span></div>
+          <div class="g-field"><span class="g-field-label">Personas</span><span class="g-field-value">{{ d.personas }} personas</span></div>
+        </div>
+        <div class="g-block"><span class="g-field-label">Motivo de la reserva</span><p class="g-motivo">"{{ d.motivo }}"</p></div>
+        <div class="g-block"><span class="g-field-label">Gestionado por</span><span class="g-field-value">{{ d.aprobadoPor }}</span></div>
+      }
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--primary" (click)="modal.cerrarDetalle()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Detalle Usuario Espacios -->
+@if (modal.detalleUsuarioVisible()) {
+  <div class="g-backdrop" (click)="$event.target === $event.currentTarget && modal.cerrarDetalleUsuario()">
+    <div class="g-modal g-modal--wide">
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Detalle de mi solicitud</p>
+          <p class="g-modal-subtitle">#{{ modal.detalleUsuarioData()?.id }}</p>
+        </div>
+      </div>
+      @if (modal.detalleUsuarioData(); as d) {
+        <div class="g-estado-row">
+          <span class="g-badge g-badge--{{ d.estado }}">
+            <span class="g-badge-dot"></span>
+            @switch (d.estado) {
+              @case ('pendiente') { Pendiente }
+              @case ('aprobada')  { Aprobada  }
+              @case ('rechazada') { Rechazada }
+            }
+          </span>
+        </div>
+        <div class="g-status-msg g-status-msg--{{ d.estado }}">
+          @switch (d.estado) {
+            @case ('pendiente') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Tu solicitud está siendo revisada. Recibirás una notificación cuando sea procesada.</span>
+            }
+            @case ('aprobada') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Tu reserva fue <strong>aprobada</strong>@if (d.aprobadaEl) { el {{ d.aprobadaEl }}}. El espacio estará disponible en la fecha indicada.</span>
+            }
+            @case ('rechazada') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span><strong>Motivo:</strong> {{ d.motivoRechazo ?? 'No especificado.' }}</span>
+            }
+          }
+        </div>
+        <div class="g-grid">
+          <div class="g-field"><span class="g-field-label">Espacio</span><span class="g-field-value">{{ d.espacio }}</span></div>
+          <div class="g-field"><span class="g-field-label">Fecha y hora</span><span class="g-field-value">{{ d.fecha }}</span></div>
+          <div class="g-field"><span class="g-field-label">Personas</span><span class="g-field-value">{{ d.personas }} personas</span></div>
+          <div class="g-field"><span class="g-field-label">Ubicación</span><span class="g-field-value">{{ d.ubicacion }}</span></div>
+        </div>
+        <div class="g-block"><span class="g-field-label">Motivo de la reserva</span><p class="g-motivo">"{{ d.motivo }}"</p></div>
+        <div class="g-block"><span class="g-field-label">Enviada</span><span class="g-field-value">{{ d.enviadaEl }}</span></div>
+      }
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--primary" (click)="modal.cerrarDetalleUsuario()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════
+     NUEVOS MODALES — Admin Equipos
+     ══════════════════════════════════════════ -->
+
+<!-- Modal Rechazo Préstamo Equipo -->
+@if (modal.rechazoPrestamoVisible()) {
+  <div class="g-backdrop" (click)="$event.target === $event.currentTarget && modal.cerrarRechazoPrestamo()">
+    <div class="g-modal">
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--red">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Rechazar solicitud de préstamo</p>
+          <p class="g-modal-subtitle">#{{ modal.rechazoPrestamoId() }}</p>
+        </div>
+      </div>
+      <label for="g-motivo-prestamo">Motivo del rechazo <span class="g-required">*</span></label>
+      <textarea id="g-motivo-prestamo"
+        placeholder="Explica la razón del rechazo para notificar al estudiante..."
+        [value]="modal.motivoRechazoPrestamo()"
+        (input)="modal.motivoRechazoPrestamo.set($any($event.target).value)"
+        [class.g-input--error]="modal.motivoErrorPrestamo()">
+      </textarea>
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--cancel" (click)="modal.cerrarRechazoPrestamo()">Cancelar</button>
+        <button class="g-btn g-btn--danger" (click)="modal.confirmarRechazoPrestamo()">Confirmar rechazo</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Devolución Equipo -->
+@if (modal.devolucionVisible()) {
+  <div class="g-backdrop" (click)="$event.target === $event.currentTarget && modal.cerrarDevolucion()">
+    <div class="g-modal g-modal--wide">
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 14 4 9 9 4"/>
+            <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Registrar devolución</p>
+          <p class="g-modal-subtitle">#{{ modal.devolucionData()?.id }}</p>
+        </div>
+      </div>
+
+      @if (modal.devolucionData(); as d) {
+        <!-- Info resumen -->
+        <div class="g-devolucion-info">
+          <div class="g-field">
+            <span class="g-field-label">Equipo</span>
+            <span class="g-field-value">{{ d.equipo }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Estudiante</span>
+            <span class="g-field-value">{{ d.estudiante }}</span>
+          </div>
+        </div>
+      }
+
+      <label for="g-fecha-dev">Fecha y hora de devolución</label>
+      <input
+        id="g-fecha-dev"
+        type="datetime-local"
+        class="g-input"
+        [value]="modal.fechaDevolucion()"
+        (change)="modal.fechaDevolucion.set($any($event.target).value)" />
+
+      <label for="g-estado-equipo">Estado del equipo al devolver</label>
+      <select
+        id="g-estado-equipo"
+        class="g-input"
+        [value]="modal.estadoEquipo()"
+        (change)="modal.estadoEquipo.set($any($event.target).value)">
+        <option value="excelente">Excelente — Sin daños visibles</option>
+        <option value="bueno">Bueno — Desgaste normal</option>
+        <option value="regular">Regular — Requiere revisión</option>
+        <option value="danado">Dañado — Requiere reparación</option>
+      </select>
+
+      <label for="g-notas-dev">Observaciones</label>
+      <textarea
+        id="g-notas-dev"
+        placeholder="Notas sobre el estado del equipo al momento de la devolución..."
+        [value]="modal.notasDevolucion()"
+        (input)="modal.notasDevolucion.set($any($event.target).value)">
+      </textarea>
+
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--cancel" (click)="modal.cerrarDevolucion()">Cancelar</button>
+        <button class="g-btn g-btn--success" (click)="modal.confirmarDevolucion()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Confirmar devolución
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Detalle Préstamo Equipo (Admin) -->
+@if (modal.detallePrestamoVisible()) {
+  <div class="g-backdrop" (click)="$event.target === $event.currentTarget && modal.cerrarDetallePrestamo()">
+    <div class="g-modal g-modal--wide">
+
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Detalle del préstamo</p>
+          <p class="g-modal-subtitle">#{{ modal.detallePrestamoData()?.id }}</p>
+        </div>
+      </div>
+
+      @if (modal.detallePrestamoData(); as d) {
+
+        <!-- Badge estado -->
+        <div class="g-estado-row">
+          <span class="g-badge g-badge--eq-{{ d.estado }}">
+            <span class="g-badge-dot"></span>
+            @switch (d.estado) {
+              @case ('pendiente') { Pendiente           }
+              @case ('activo')    { Activo              }
+              @case ('extension') { Extensión solicitada}
+              @case ('atrasado')  { Atrasado            }
+              @case ('devuelto')  { Devuelto            }
+            }
+          </span>
+        </div>
+
+        <!-- Alerta si hay extensión pendiente -->
+        @if (d.estado === 'extension') {
+          <div class="g-alert g-alert--orange">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Extensión solicitada: <strong>{{ d.extensionSolicitada }}</strong></span>
+          </div>
+        }
+
+        <!-- Alerta si está atrasado -->
+        @if (d.estado === 'atrasado') {
+          <div class="g-alert g-alert--red">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Este préstamo lleva <strong>{{ d.diasAtraso }} días de atraso</strong>.</span>
+          </div>
+        }
+
+        <!-- Grid de datos -->
+        <div class="g-grid">
+          <div class="g-field">
+            <span class="g-field-label">Equipo</span>
+            <span class="g-field-value">{{ d.equipo }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Estudiante</span>
+            <span class="g-field-value">{{ d.estudiante }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">ID Estudiante</span>
+            <span class="g-field-value g-mono">{{ d.estudianteId }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Cantidad</span>
+            <span class="g-field-value">{{ d.cantidad }}</span>
+          </div>
+          <div class="g-field g-field--full">
+            <span class="g-field-label">Código(s)</span>
+            <span class="g-field-value g-mono">{{ d.codigos }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Fecha de préstamo</span>
+            <span class="g-field-value">{{ d.fechaPrestamo }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Fecha de devolución</span>
+            <span class="g-field-value" [class.g-text--red]="d.estado === 'atrasado'">
+              {{ d.fechaDevolucion }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Motivo -->
+        <div class="g-block">
+          <span class="g-field-label">Motivo del préstamo</span>
+          <p class="g-motivo">"{{ d.motivo }}"</p>
+        </div>
+
+        <!-- Notas admin (editable) -->
+        <div style="margin-bottom: 4px;">
+          <label class="g-field-label" style="margin-bottom:6px; display:block;">
+            Notas del administrador
+          </label>
+          <textarea
+            class="g-textarea"
+            placeholder="Agregar notas internas sobre este préstamo..."
+            [value]="modal.notasAdmin()"
+            (input)="modal.notasAdmin.set($any($event.target).value)">
+          </textarea>
+        </div>
+
+      }
+
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--cancel" (click)="modal.cerrarDetallePrestamo()">Cerrar</button>
+        <button class="g-btn g-btn--primary" (click)="modal.cerrarDetallePrestamo()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v14a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Guardar notas
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════
+     Usuario Equipos — Detalle Préstamo
+     ══════════════════════════════════════════ -->
+@if (modal.detallePrestamoUsuarioVisible()) {
+  <div class="g-backdrop"
+    (click)="$event.target === $event.currentTarget && modal.cerrarDetallePrestamoUsuario()">
+    <div class="g-modal g-modal--wide">
+
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Detalle del préstamo</p>
+          <p class="g-modal-subtitle">#{{ modal.detallePrestamoUsuarioData()?.id }}</p>
+        </div>
+      </div>
+
+      @if (modal.detallePrestamoUsuarioData(); as d) {
+
+        <!-- Badge de estado -->
+        <div class="g-estado-row">
+          <span class="g-badge g-badge--eq-{{ d.estado }}">
+            <span class="g-badge-dot"></span>
+            @switch (d.estado) {
+              @case ('pendiente') { Pendiente  }
+              @case ('activo')    { Activo     }
+              @case ('atrasado')  { Atrasado   }
+              @case ('devuelto')  { Devuelto   }
+              @case ('extension') { En revisión de extensión }
+            }
+          </span>
+        </div>
+
+        <!-- Alerta contextual por estado -->
+        @if (d.estado === 'atrasado') {
+          <div class="g-alert g-alert--red">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Tu préstamo lleva <strong>{{ d.diasAtraso }} día(s) de atraso</strong>. Por favor devuelve el equipo a la brevedad.</span>
+          </div>
+        }
+
+        <!-- Grid de datos -->
+        <div class="g-grid">
+          <div class="g-field">
+            <span class="g-field-label">Equipo</span>
+            <span class="g-field-value">{{ d.equipo }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Cantidad</span>
+            <span class="g-field-value">{{ d.cantidad }}</span>
+          </div>
+          <div class="g-field g-field--full">
+            <span class="g-field-label">Código(s)</span>
+            <span class="g-field-value g-mono">{{ d.codigos }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Fecha de préstamo</span>
+            <span class="g-field-value">{{ d.fechaInicio }}</span>
+          </div>
+          <div class="g-field">
+            <span class="g-field-label">Fecha de devolución</span>
+            <span class="g-field-value" [class.g-text--red]="d.estado === 'atrasado'">
+              {{ d.fechaFin }}
+            </span>
+          </div>
+          <div class="g-field g-field--full">
+            <span class="g-field-label">Aprobado por</span>
+            <span class="g-field-value">{{ d.aprobadoPor }}</span>
+          </div>
+        </div>
+
+        <!-- Barra de progreso -->
+        @if (d.progreso) {
+          <div class="g-progress-block">
+            <div class="g-progress-label">
+              <span>Tiempo transcurrido</span>
+              <span>{{ d.progreso.actual }} / {{ d.progreso.total }} días</span>
+            </div>
+            <div class="g-progress-track">
+              <div class="g-progress-fill g-progress-fill--{{ d.progreso.tipo }}"
+                [style.width.%]="(d.progreso.actual / d.progreso.total) * 100 > 100
+                  ? 100
+                  : (d.progreso.actual / d.progreso.total) * 100">
+              </div>
+            </div>
+          </div>
+        }
+
+      }
+
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--primary" (click)="modal.cerrarDetallePrestamoUsuario()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════
+     Usuario Equipos — Solicitar Extensión
+     ══════════════════════════════════════════ -->
+@if (modal.extensionVisible()) {
+  <div class="g-backdrop"
+    (click)="$event.target === $event.currentTarget && modal.cerrarExtension()">
+    <div class="g-modal g-modal--wide">
+
+      <div class="g-modal-header">
+        <div class="g-modal-icon g-modal-icon--orange">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div>
+          <p class="g-modal-title">Solicitar extensión de plazo</p>
+          <p class="g-modal-subtitle">{{ modal.extensionData()?.equipo }}</p>
+        </div>
+      </div>
+
+      <!-- Info box -->
+      <div class="g-info-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Solo puedes solicitar una extensión antes del vencimiento · Máximo 7 días · Sujeto a disponibilidad.</span>
+      </div>
+
+      <!-- Fecha actual (readonly) -->
+      <div class="g-field-block">
+        <label class="g-field-label" style="margin-bottom:6px; display:block;">
+          Fecha de devolución actual
+        </label>
+        <div class="g-readonly-field">{{ modal.extensionData()?.fechaActual }}</div>
+      </div>
+
+      <!-- Nueva fecha -->
+      <div class="g-field-block">
+        <label class="g-field-label" style="margin-bottom:6px; display:block;">
+          Nueva fecha de devolución solicitada <span class="g-required">*</span>
+        </label>
+        <input
+          type="date"
+          class="g-input"
+          [class.g-input--error]="modal.extensionFechaError()"
+          [min]="modal.extensionMinDate"
+          [max]="modal.extensionMaxDate"
+          [value]="modal.extensionNuevaFecha()"
+          (change)="modal.extensionNuevaFecha.set($any($event.target).value)" />
+      </div>
+
+      <!-- Motivo -->
+      <div class="g-field-block">
+        <label class="g-field-label" style="margin-bottom:6px; display:block;">
+          Motivo de la extensión <span class="g-required">*</span>
+        </label>
+        <textarea
+          class="g-textarea"
+          [class.g-input--error]="modal.extensionMotivoError()"
+          placeholder="Explica por qué necesitas más tiempo con el equipo..."
+          [value]="modal.extensionMotivo()"
+          (input)="modal.extensionMotivo.set($any($event.target).value)">
+        </textarea>
+      </div>
+
+      <div class="g-modal-actions">
+        <button class="g-btn g-btn--cancel" (click)="modal.cerrarExtension()">Cancelar</button>
+        <button class="g-btn g-btn--orange" (click)="modal.confirmarExtension()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Enviar solicitud
+        </button>
+      </div>
+    </div>
+  </div>
+}

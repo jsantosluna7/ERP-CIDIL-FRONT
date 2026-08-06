@@ -1,0 +1,261 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Mis Préstamos</h1>
+        <p class="header-subtitle">Hola, María González · Estudiante ID: 2024-0156</p>
+      </div>
+    </div>
+    <a class="btn-nueva" (click)="irInventario()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span>Nuevo préstamo</span>
+    </a>
+  </div>
+
+  <!-- Chips -->
+  <div class="summary-row">
+    <div class="summary-chip" [class.active]="filtroActivo() === 'todos'" (click)="filtrar('todos')">
+      Todos <span class="chip-count">{{ conteo().todos }}</span>
+    </div>
+    <div class="summary-chip" [class.active]="filtroActivo() === 'activo'" (click)="filtrar('activo')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+      Activos <span class="chip-count">{{ conteo().activo }}</span>
+    </div>
+    <div class="summary-chip" [class.active]="filtroActivo() === 'pendiente'" (click)="filtrar('pendiente')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Pendientes <span class="chip-count">{{ conteo().pendiente }}</span>
+    </div>
+    <div class="summary-chip" [class.active]="filtroActivo() === 'atrasado'" (click)="filtrar('atrasado')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Atrasados <span class="chip-count">{{ conteo().atrasado }}</span>
+    </div>
+    <div class="summary-chip" [class.active]="filtroActivo() === 'devuelto'" (click)="filtrar('devuelto')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Devueltos <span class="chip-count">{{ conteo().devuelto }}</span>
+    </div>
+  </div>
+
+  <!-- Lista -->
+  <div class="solicitudes-list">
+
+    @for (p of prestamosFiltrados(); track p.id) {
+      <div class="solicitud-card" [class]="p.estado">
+        <div class="card-inner">
+          <img class="card-image" [src]="p.imagen" [alt]="p.titulo" />
+          <div class="card-body">
+
+            <!-- Top -->
+            <div class="card-top">
+              <div class="card-title-group">
+                <span class="card-title">{{ p.titulo }}</span>
+                <span class="card-id">#{{ p.id }} · {{ p.codigos }}</span>
+              </div>
+              <span class="status-badge" [class]="p.estado">
+                <span class="status-dot"></span>
+                @switch (p.estado) {
+                  @case ('activo')    { Activo     }
+                  @case ('pendiente') { Pendiente  }
+                  @case ('atrasado')  { Atrasado   }
+                  @case ('devuelto')  { Devuelto   }
+                  @case ('extension') { En revisión }
+                }
+              </span>
+            </div>
+
+            <!-- Meta -->
+            <div class="card-meta">
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                {{ p.fechaInfo }}
+              </span>
+              <span
+                [class.fecha-yellow]="p.fechaVenceColor === 'yellow'"
+                [class.fecha-red]="p.fechaVenceColor === 'red'"
+                [class.fecha-green]="p.fechaVenceColor === 'green'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                {{ p.fechaVence }}
+              </span>
+              <span class="qty-badge">{{ p.cantidad }}</span>
+            </div>
+
+            <!-- Barra de progreso -->
+            @if (p.progreso) {
+              <div class="loan-progress">
+                <div class="progress-label">
+                  <span>
+                    @if (p.estado === 'devuelto') { Duración del préstamo }
+                    @else { Tiempo transcurrido }
+                  </span>
+                  <span>{{ p.progreso.actual }} / {{ p.progreso.total }} días</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" [class]="p.progreso.tipo"
+                    [style.width.%]="(p.progreso.actual / p.progreso.total) * 100 > 100
+                      ? 100
+                      : (p.progreso.actual / p.progreso.total) * 100">
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Mensaje de estado -->
+            <div class="status-message" [class]="p.estado">
+              @switch (p.estado) {
+                @case ('activo') {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                    <line x1="12" y1="17" x2="12" y2="21"/>
+                  </svg>
+                }
+                @case ('pendiente') {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                }
+                @case ('atrasado') {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                }
+                @case ('devuelto') {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                }
+                @case ('extension') {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                }
+              }
+              <span>{{ p.mensajeEstado }}</span>
+            </div>
+
+            <!-- Acciones -->
+            <div class="card-actions">
+
+              <button class="btn-detail" (click)="abrirDetalle(p)">
+                Ver detalle
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+
+              @if (p.estado === 'activo') {
+                <button class="btn-extension" (click)="abrirExtension(p)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  Solicitar extensión
+                </button>
+              }
+
+              @if (p.estado === 'pendiente') {
+                <button class="btn-cancel-sol" (click)="cancelar(p.id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  Cancelar solicitud
+                </button>
+              }
+
+              @if (p.estado === 'devuelto') {
+                <a class="btn-nueva btn-nueva--sm" (click)="irInventario()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Volver a solicitar
+                </a>
+              }
+
+              <span class="sent-at">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                {{ p.enviadaEl }}
+              </span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (prestamosFiltrados().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <h3>Sin préstamos</h3>
+        <p>No tienes préstamos con este estado todavía.</p>
+      </div>
+    }
+
+  </div>
+</div>

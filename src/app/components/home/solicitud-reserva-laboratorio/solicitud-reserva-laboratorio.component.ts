@@ -1,384 +1,360 @@
-import { Component, Input, input } from '@angular/core';
-import { Solicitud } from '../../../interfaces/solicitud-reserva-espacio.interface';
-import { SolicitudReservaService } from '../../../services/reserva-laboratorio/reserva-laboratorio.service';
-import { Console, error } from 'console';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnInit,
+  effect,
+  untracked,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { UsuarioService } from '../usuario/usuarios/usuarios.service';
-import { LaboratorioService } from '../../../services/Laboratorio/laboratorio.service';
-import { forkJoin, take } from 'rxjs';
-import { Laboratorio } from '../../../interfaces/laboratorio.interface';
+import { FormsModule } from '@angular/forms';
+import {
+  DetalleSolicitud,
+  ModalStateService,
+} from '../../elements/modales-globales/modal-state.service';
+import { SolicitudReservaEspacioCacheService } from '../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
-import { DatosService } from '../../../services/Datos/datos.service';
-import { DashboardService } from '../../../services/Dashboard/dashboard.service';
-import { ServicioDashboardService } from '../../../services/Dashboard/servicio-dashboard.service';
-import { PisosService } from '../../../services/Pisos/pisos.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { UtilitiesService } from '../../../services/Utilities/utilities.service';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogSolicitudLabComponent } from './dialog-solicitud-lab/dialog-solicitud-lab.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+export interface Solicitud {
+  id: number;
+  idUsuario: number;
+  idLaboratorio: number;
+  idEstado: number;
+  idUsuarioAprobador: number;
+
+  nombreSolicitante: string;
+  apellidoSolicitante: string;
+  nombreAprobador: string;
+
+  nombreEspacio: string;
+  nombreEstado: string;
+  tipoRegistro: string;
+
+  motivo: string;
+  personasCantidad: number;
+
+  fechaSolicitud: string;
+  fechaInicio: string;
+  fechaFinal: string;
+  fechaAprobacion: string;
+
+  horaInicio: string;
+  horaFinal: string;
+
+  comentarioAprobacion: string;
+
+  imagenLaboratorio: string | null;
+}
+
+export interface EstadisticasSolicitudes {
+  totalSolicitudes: number;
+  totalAprobadas: number;
+  totalPendientes: number;
+  totalRechazadas: number;
+}
 
 @Component({
-  selector: 'app-solicitud-reserva-laboratorio',
-  imports: [
-    CommonModule,
-    ToastrModule,
-    MatTableModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-  ],
+  selector: 'app-solicitudes',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './solicitud-reserva-laboratorio.component.html',
-  styleUrl: './solicitud-reserva-laboratorio.component.css',
+  styleUrls: ['./solicitud-reserva-laboratorio.component.css'],
 })
-export class SolicitudReservaLaboratorioComponent {
-  solicitudes: Solicitud[] = [];
-  @Input() mostrarPiso?: boolean = false;
+export class SolicitudReservaLaboratorioComponent implements OnInit {
+  private modalSvc = inject(ModalStateService);
 
-  loading: { [id: number]: { aprobar: boolean; denegar: boolean } | undefined } = {};
+  filtroEstado = signal<string>('todos');
+  busqueda = signal<string>('');
+  tabActivo = signal<'espacios' | 'equipos'>('espacios');
 
-  private setLoading(
-    id: number,
-    accion: 'aprobar' | 'denegar',
-    estado: boolean
-  ) {
-    if (!this.loading[id]) {
-      this.loading[id] = { aprobar: false, denegar: false };
-    }
-    this.loading[id][accion] = estado;
-  }
+  total = signal(0);
+  pendientes = signal(0);
+  aprobadas = signal(0);
+  rechazadas = signal(0);
 
-  endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUD_RESERVA_ESPACIO_PISO']}`;
+  paginaActual = signal(1);
+  itemsPorPagina = signal(20);
+  totalItems = signal(0);
 
-  columnas: string[] = [
-    'nombreUsuario',
-    'nombreLaboratorio',
-    'horaInicio',
-    'horaFinal',
-    'motivo',
-    'fechaSolicitud',
-    'personasCantidad',
-    'estado',
-    'acciones',
-  ];
-
-  constructor(
-    private reservaLaboratorioService: SolicitudReservaService,
-    private toastr: ToastrService,
-    private usuarioService: UsuarioService,
-    private laboratorioService: LaboratorioService,
-    private _usuarios: UsuariosService,
-    private _datos: DatosService,
-    private _dashboard: ServicioDashboardService,
-    private _toastr: ToastrService,
-    private _piso: PisosService,
-    private _utilidades: UtilitiesService,
-    private _dialog: MatDialog
-  ) {}
+  // ── Loading states ──────────────────────────────────────────
+  /** true mientras se carga/recarga la lista de solicitudes */
+  cargando = signal(false);
+  /** id de la solicitud que se está aprobando en este momento */
+  aprobandoId = signal<number | null>(null);
+  /** id de la solicitud que se está rechazando en este momento */
+  rechazandoId = signal<number | null>(null);
+  // ────────────────────────────────────────────────────────────
 
   usuarioLogueado: any;
-  idUsuarioAprobador: number = 0;
 
-  ngOnInit(): void {
-    if (this.mostrarPiso) {
-      this._piso.piso$.subscribe({
-        next: (pisoCorres) => {
-          if (pisoCorres != 4) {
-            this._usuarios.user$.subscribe((user) => {
-              this.usuarioLogueado = user;
-            });
+  totalPaginas = computed(() =>
+    Math.ceil(this.totalItems() / this.itemsPorPagina()),
+  );
 
-            forkJoin({
-              solicitudesResp: this._dashboard.getSolicitudReservaPiso(
-                this.endpoint,
-                pisoCorres
-              ), // <- este devuelve un objeto con .datos
-              usuariosResp: this.usuarioService.obtenerUsuarios(),
-              laboratorios: this.laboratorioService.getLaboratorios(),
-            }).subscribe({
-              next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-                const solicitudes = solicitudesResp; //aquí accedes a las solicitudes reales
-                const usuarios = Array.isArray(usuariosResp)
-                  ? usuariosResp
-                  : [];
+  inicio = computed(
+    () => (this.paginaActual() - 1) * this.itemsPorPagina() + 1,
+  );
+  fin = computed(() =>
+    Math.min(this.paginaActual() * this.itemsPorPagina(), this.totalItems()),
+  );
 
-                this.solicitudes = solicitudes.map((sol: Solicitud) => {
-                  const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-                  const lab = laboratorios.find(
-                    (l) => l.id === sol.idLaboratorio
-                  );
+  paginas = computed(() => {
+    const total = this.totalPaginas(),
+      cur = this.paginaActual();
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    if (cur <= 4) return [1, 2, 3, 4, 5, '...', total];
+    if (cur >= total - 3)
+      return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+    return [1, '...', cur - 1, cur, cur + 1, '...', total];
+  });
 
-                  return {
-                    ...sol,
-                    nombreUsuario: usuario?.nombreUsuario || 'Desconocido',
-                    nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio: sol.fechaInicio, // importante conservar
-                    fechaFinal: sol.fechaFinal, // importante conservar
-                  };
-                });
-              },
-              error: (err) => {
-                console.error('Error al cargar datos', err);
-                this.toastr.error('Error al cargar solicitudes', 'Error');
-              },
-            });
-          } else {
-            this._usuarios.user$.subscribe((user) => {
-              this.usuarioLogueado = user;
-            });
+  constructor(
+    private solicitudSvc: SolicitudReservaEspacioCacheService,
+    private _usuarios: UsuariosService,
+  ) {
+    effect(() => {
+      const _filtro = this.filtroEstado();
+      const _busqueda = this.busqueda();
 
-            forkJoin({
-              solicitudesResp: this.reservaLaboratorioService.getResevas(),
-              usuariosResp: this.usuarioService.obtenerUsuarios(),
-              laboratorios: this.laboratorioService.getLaboratorios(),
-            }).subscribe({
-              next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-                const solicitudes = solicitudesResp.datos;
-                const usuarios = Array.isArray(usuariosResp)
-                  ? usuariosResp
-                  : [];
-
-                this.solicitudes = solicitudes.map((sol: Solicitud) => {
-                  const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-                  const lab = laboratorios.find(
-                    (l) => l.id === sol.idLaboratorio
-                  );
-
-                  return {
-                    id: sol.id,
-                    idUsuario: sol.idUsuario,
-                    idLaboratorio: sol.idLaboratorio,
-                    horaInicio: sol.horaInicio,
-                    horaFinal: sol.horaFinal,
-                    idEstado: sol.idEstado,
-                    personasCantidad: sol.personasCantidad,
-                    nombreUsuario:
-                      `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
-                      'Desconocido',
-                    nombreLaboratorio: lab?.nombre || 'Desconocido',
-                    fechaInicio:
-                      this._utilidades.formatearFechaSolicitudes(
-                        sol.fechaInicio,
-                        sol.horaInicio
-                      ) || '',
-                    fechaFinal:
-                      this._utilidades.formatearFechaSolicitudes(
-                        sol.fechaFinal,
-                        sol.horaFinal
-                      ) || '',
-                    fechaSolicitud:
-                      this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
-                    motivo: sol.motivo,
-                  };
-                });
-              },
-              error: (err) => {
-                console.error('Error al cargar datos', err);
-                this.toastr.warning(
-                  'Error al cargar solicitudes o no existen solicitudes',
-                  'Error'
-                );
-              },
-            });
-          }
-        },
-        error: (err) => {
-          this._toastr.error(
-            'Error al obtener las solicitudes del piso correspondiente',
-            'Hubo un error'
-          );
-        },
+      untracked(() => {
+        this.paginaActual.set(1);
+        this.cargarSolicitudes();
       });
-    } else {
-      this._usuarios.user$.subscribe((user) => {
-        this.usuarioLogueado = user;
-      });
-
-      forkJoin({
-        solicitudesResp: this.reservaLaboratorioService.getResevas(),
-        usuariosResp: this.usuarioService.obtenerUsuarios(),
-        laboratorios: this.laboratorioService.getLaboratorios(),
-      }).subscribe({
-        next: ({ solicitudesResp, usuariosResp, laboratorios }) => {
-          const solicitudes = solicitudesResp.datos;
-          const usuarios = Array.isArray(usuariosResp) ? usuariosResp : [];
-
-          this.solicitudes = solicitudes.map((sol: Solicitud) => {
-            const usuario = usuarios.find((u) => u.id === sol.idUsuario);
-            const lab = laboratorios.find((l) => l.id === sol.idLaboratorio);
-
-            return {
-              id: sol.id,
-              idUsuario: sol.idUsuario,
-              idLaboratorio: sol.idLaboratorio,
-              horaInicio: sol.horaInicio,
-              horaFinal: sol.horaFinal,
-              idEstado: sol.idEstado,
-              personasCantidad: sol.personasCantidad,
-              nombreUsuario:
-                `${usuario?.nombreUsuario} ${usuario?.apellidoUsuario}` ||
-                'Desconocido',
-              nombreLaboratorio: lab?.nombre || 'Desconocido',
-              fechaInicio:
-                this._utilidades.formatearFechaSolicitudes(
-                  sol.fechaInicio,
-                  sol.horaInicio
-                ) || '',
-              fechaFinal:
-                this._utilidades.formatearFechaSolicitudes(
-                  sol.fechaFinal,
-                  sol.horaFinal
-                ) || '',
-              fechaSolicitud:
-                this._utilidades.formatearFecha(sol.fechaSolicitud) || '',
-              motivo: sol.motivo,
-            };
-          });
-        },
-        error: (err) => {
-          console.error('Error al cargar datos', err);
-          this.toastr.warning(
-            'Error al cargar solicitudes o no existen solicitudes',
-            'Error'
-          );
-        },
-      });
-    }
+    });
   }
 
-  aprobar(solicitud: Solicitud) {
+  ngOnInit(): void {
+    this.conteo();
+
+    this._usuarios.user$.subscribe((user) => {
+      this.usuarioLogueado = user.sub;
+    });
+  }
+
+  private detalles: Record<string, Omit<DetalleSolicitud, 'id' | 'estado'>> =
+    {};
+
+  solicitudes = signal<Solicitud[]>([]);
+
+  solicitudesFiltradas = computed(() => {
+    const t = this.busqueda().toLowerCase();
+    const estadoFiltro = this.filtroEstado();
+
+    return this.solicitudes().filter((s) => {
+      const estadoMatch =
+        estadoFiltro === 'todos' ||
+        (estadoFiltro === 'pendiente' && s.idEstado === 2) ||
+        (estadoFiltro === 'aprobada' && s.idEstado === 1) ||
+        (estadoFiltro === 'rechazada' && s.idEstado === 3);
+
+      const nombreCompleto =
+        `${s.nombreSolicitante} ${s.apellidoSolicitante}`.toLowerCase();
+
+      const busquedaMatch =
+        !t ||
+        s.nombreEspacio.toLowerCase().includes(t) ||
+        nombreCompleto.includes(t) ||
+        s.id.toString().includes(t);
+
+      return estadoMatch && busquedaMatch;
+    });
+  });
+
+  aprobar(solicitud: Solicitud): void {
     if (!solicitud) {
       console.error('Solicitud es undefined o null');
       return;
     }
 
-    if (!this.usuarioLogueado) {
-      console.error('Usuario logueado no está definido');
-      return;
-    }
+    // Evitar doble clic si ya hay una operación en curso para esta solicitud
+    if (this.aprobandoId() === solicitud.id) return;
 
-    const body = {
+    this.aprobandoId.set(solicitud.id);
+
+    const payload = {
       id: solicitud.id,
       idUsuario: solicitud.idUsuario,
       idLaboratorio: solicitud.idLaboratorio,
       horaInicio: solicitud.horaInicio,
       horaFinal: solicitud.horaFinal,
-      fechaInicio: this._utilidades.desformatearFecha(solicitud.fechaInicio),
-      fechaFinal: this._utilidades.desformatearFecha(solicitud.fechaFinal),
+      fechaInicio: solicitud.fechaInicio,
+      fechaFinal: solicitud.fechaFinal,
       motivo: solicitud.motivo,
-      fechaSolicitud: this._utilidades.desformatearFecha(
-        solicitud.fechaSolicitud
-      ),
+      fechaSolicitud: solicitud.fechaSolicitud,
       idEstado: 1,
-      idUsuarioAprobador: Number(this.usuarioLogueado.sub),
+      idUsuarioAprobador: Number(this.usuarioLogueado) || 0,
       fechaAprobacion: new Date().toISOString(),
-      comentarioAprobacion: `Aprobado por el usuario: ${this.usuarioLogueado.nombreUsuario}}`,
+      comentarioAprobacion: 'Solicitud aprobada',
       personasCantidad: solicitud.personasCantidad,
     };
 
-    this.setLoading(solicitud.id, 'aprobar', true);
-
-    this.reservaLaboratorioService.updateEstado(body).subscribe({
+    this.solicitudSvc.anadirReserva(payload).subscribe({
       next: () => {
-        solicitud.idEstado = 1;
-        this.toastr.success('Solicitud aprobada correctamente', 'Éxito');
-
-        this.reservaLaboratorioService
-          .eliminarSolicitud(solicitud.id)
-          .subscribe(() => {
-            this.setLoading(solicitud.id, 'aprobar', false);
-            this.solicitudes = this.solicitudes.filter(
-              (s) => s.id !== solicitud.id
+        this.solicitudSvc.cancelarSolicitud(solicitud.id).subscribe({
+          next: () => {
+            this.aprobandoId.set(null);
+            this.conteo();
+            this.cargarSolicitudes();
+          },
+          error: (err) => {
+            console.error(
+              'Error al cancelar solicitud original después de aprobar:',
+              err,
             );
-          });
+            this.aprobandoId.set(null);
+          },
+        });
       },
       error: (err) => {
-        this.setLoading(solicitud.id, 'aprobar', false);
         console.error('Error al aprobar solicitud:', err);
-        this.toastr.error('Error al aprobar la solicitud', 'Error');
+        this.aprobandoId.set(null);
       },
     });
   }
 
-  desaprobar(solicitud: Solicitud) {
-    if (!solicitud) {
-      console.error('Solicitud es undefined o null');
-      return;
-    }
+  abrirModal(solicitud: Solicitud): void {
+    if (!solicitud) return;
 
-    if (!this.usuarioLogueado) {
-      console.error('Usuario logueado no está definido');
-      return;
-    }
+    this.modalSvc.abrirRechazo(solicitud.id.toString(), (motivo) => {
+      // Activar loading de rechazo al confirmar en el modal
+      this.rechazandoId.set(solicitud.id);
 
-    const dialogRef = this._dialog.open(DialogSolicitudLabComponent);
-    this.setLoading(solicitud.id, 'denegar', true);
+      const payload = {
+        id: solicitud.id,
+        idUsuario: solicitud.idUsuario,
+        idLaboratorio: solicitud.idLaboratorio,
+        horaInicio: solicitud.horaInicio,
+        horaFinal: solicitud.horaFinal,
+        fechaInicio: solicitud.fechaInicio,
+        fechaFinal: solicitud.fechaFinal,
+        motivo: solicitud.motivo,
+        fechaSolicitud: solicitud.fechaSolicitud,
+        idEstado: 3,
+        idUsuarioAprobador: Number(this.usuarioLogueado) || 0,
+        fechaAprobacion: new Date().toISOString(),
+        comentarioAprobacion: motivo,
+        personasCantidad: solicitud.personasCantidad,
+      };
 
-    dialogRef
-      .afterClosed()
-      .pipe(take(1))
-      .subscribe((resultado) => {
-        if (resultado) {
-          this._datos.comentario$.pipe(take(1)).subscribe((data: any) => {
-            if (data) {
-              const body = {
-                id: solicitud.id,
-                idUsuario: solicitud.idUsuario,
-                idLaboratorio: solicitud.idLaboratorio,
-                horaInicio: solicitud.horaInicio,
-                horaFinal: solicitud.horaFinal,
-                personasCantidad: solicitud.personasCantidad,
-                fechaInicio: this._utilidades.desformatearFecha(
-                  solicitud.fechaInicio
-                ),
-                fechaFinal: this._utilidades.desformatearFecha(
-                  solicitud.fechaFinal
-                ),
-                motivo: solicitud.motivo,
-                fechaSolicitud: this._utilidades.desformatearFecha(
-                  solicitud.fechaSolicitud
-                ),
-                idEstado: 3, // Rechazado
-                idUsuarioAprobador: Number(this.usuarioLogueado.sub),
-                fechaAprobacion: new Date().toISOString(),
-                comentarioAprobacion: data.comentario,
-              };
-
-              this.reservaLaboratorioService.updateEstado(body).subscribe({
-                next: () => {
-                  // Quita del frontend la solicitud rechazada
-                  this.toastr.info(
-                    'Solicitud desaprobada correctamente',
-                    'Información'
-                  );
-                  this.reservaLaboratorioService
-                    .eliminarSolicitud(solicitud.id)
-                    .subscribe(() => {
-                      this.setLoading(solicitud.id, 'denegar', false);
-                      this.solicitudes = this.solicitudes.filter(
-                        (s) => s.id !== solicitud.id
-                      );
-                    });
-                },
-                error: (err) => {
-                  this.setLoading(solicitud.id, 'denegar', false);
-                  console.error('Error al desaprobar solicitud:', err);
-                  this.toastr.error(
-                    'Error al desaprobar la solicitud',
-                    'Error'
-                  );
-                },
-              });
-            }
+      this.solicitudSvc.anadirReserva(payload).subscribe({
+        next: () => {
+          this.solicitudSvc.cancelarSolicitud(solicitud.id).subscribe({
+            next: () => {
+              this.rechazandoId.set(null);
+              this.conteo();
+              this.cargarSolicitudes();
+            },
+            error: (err) => {
+              console.error(
+                'Error al cancelar solicitud original después de rechazar:',
+                err,
+              );
+              this.rechazandoId.set(null);
+            },
           });
-        } else {
-          this.setLoading(solicitud.id, 'denegar', false);
-          this._toastr.info(
-            'Se canceló la acción de desaprobar la solicitud',
-            'Información'
-          );
-        }
+        },
+        error: (err) => {
+          console.error('Error al rechazar solicitud:', err);
+          this.rechazandoId.set(null);
+        },
       });
+    });
+  }
+
+  abrirDetalle(id: number): void {
+    const sol = this.solicitudes().find((s) => s.id === id);
+    if (!sol) return;
+
+    const det: DetalleSolicitud = {
+      id: sol.id.toString(),
+      nombreEstado: sol.nombreEstado,
+      idEstado: sol.idEstado,
+      espacio: sol.nombreEspacio,
+      solicitante: `${sol.nombreSolicitante} ${sol.apellidoSolicitante}`.trim(),
+      departamento: sol.tipoRegistro,
+      fechaHora: `${new Date(sol.fechaInicio).toLocaleDateString('es-DO', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })}`,
+      duracion: `${this.formatearHora(sol.horaInicio)} – ${this.formatearHora(sol.horaFinal)}`,
+      personas: sol.personasCantidad,
+      motivo: sol.motivo,
+      aprobadoPor: sol.nombreAprobador || 'Pendiente de aprobación',
+    };
+
+    this.modalSvc.abrirDetalle(det);
+  }
+
+  conteo() {
+    this.solicitudSvc
+      .obtenerConteoReservas()
+      .subscribe((conteo: EstadisticasSolicitudes) => {
+        this.total.set(conteo.totalSolicitudes);
+        this.pendientes.set(conteo.totalPendientes);
+        this.aprobadas.set(conteo.totalAprobadas);
+        this.rechazadas.set(conteo.totalRechazadas);
+      });
+  }
+
+  cargarSolicitudes(): void {
+    const estadoMap: Record<string, number | undefined> = {
+      todos: undefined,
+      pendiente: 2,
+      aprobada: 1,
+      rechazada: 3,
+    };
+
+    this.cargando.set(true);
+
+    this.solicitudSvc
+      .obtenerTotalReservasEspacio({
+        idEstado: estadoMap[this.filtroEstado()],
+        busqueda: this.busqueda() || undefined,
+        pagina: this.paginaActual(),
+        tamanoPagina: this.itemsPorPagina(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.solicitudes.set(res.reservasDeEspacios);
+          this.totalItems.set(res.total ?? res.reservasDeEspacios.length);
+          this.cargando.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar solicitudes:', err);
+          this.cargando.set(false);
+        },
+      });
+  }
+
+  irAPagina(n: number): void {
+    if (n >= 1 && n <= this.totalPaginas()) {
+      this.paginaActual.set(n);
+      this.cargarSolicitudes();
+    }
+  }
+
+  cambiarPorPagina(valor: number): void {
+    this.itemsPorPagina.set(valor);
+    this.paginaActual.set(1);
+    this.cargarSolicitudes();
+  }
+
+  estadoClase(idEstado: number): string {
+    const map: Record<number, string> = {
+      1: 'aprobada',
+      2: 'pendiente',
+      3: 'rechazada',
+    };
+    return map[idEstado] ?? '';
+  }
+
+  formatearHora(hora: string): string {
+    const [h, m] = hora.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
   }
 }

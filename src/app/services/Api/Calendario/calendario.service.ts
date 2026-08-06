@@ -16,7 +16,7 @@ export class CalendarioService {
     return this.http.get(`${endpoint}/${id}`);
   }
   
-  getEstado(endpoint: string, id: string): Observable<any> {
+  getEstado(endpoint: string, id: number): Observable<any> {
     return this.http.get(`${endpoint}/${id}`);
   }
 }

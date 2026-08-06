@@ -1,3 +1,10 @@
-<div #calendarHost class="calendario-container">
+<div class="calendario-container">
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Cargando eventos...</p>
+    </div>
+  }
+
   <full-calendar #fc [options]="opcionesCalendario"></full-calendar>
 </div>

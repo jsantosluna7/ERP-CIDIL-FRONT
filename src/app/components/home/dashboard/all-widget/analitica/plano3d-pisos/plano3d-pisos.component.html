@@ -1,0 +1,496 @@
+<!-- floor-plan-3d.component.html -->
+<div class="floor-plan-container">
+  <!-- Canvas Container -->
+  <div #canvasContainer class="canvas-container"></div>
+
+  <!-- HUD Overlay -->
+  <div class="hud">
+    <!-- Help Button -->
+    <div class="help-btn" (click)="toggleInstructions()">❓</div>
+
+    <!-- Header -->
+    <div class="header">
+      <h1>🏢 Plano 3D Isométrico</h1>
+      <p>Edificio de Laboratorios - Piso 1</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-section">
+        <span class="control-label">Vista</span>
+        <div class="control-buttons">
+          <button class="control-btn" (click)="setView('iso')">
+            Isométrica
+          </button>
+          <button class="control-btn" (click)="setView('top')">Superior</button>
+          <button class="control-btn" (click)="setView('front')">
+            Frontal
+          </button>
+          <button class="control-btn" (click)="setView('side')">Lateral</button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <span class="control-label">Visualización</span>
+        <div class="control-buttons">
+          <button
+            class="control-btn"
+            [class.active]="showWalls"
+            (click)="toggleWalls()"
+          >
+            Paredes
+          </button>
+          <button
+            class="control-btn"
+            [class.active]="showSensors"
+            (click)="toggleSensors()"
+          >
+            Sensores
+          </button>
+          <button
+            class="control-btn"
+            [class.active]="showLabels"
+            (click)="toggleLabels()"
+          >
+            Etiquetas
+          </button>
+          <button
+            class="control-btn"
+            [class.active]="showHeatmap"
+            (click)="toggleHeatmap()"
+          >
+            Heatmap
+          </button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <span class="control-label">Acción</span>
+        <div class="control-buttons">
+          <button
+            class="control-btn"
+            (click)="resetCamera()"
+            style="grid-column: span 2"
+          >
+            🔄 Reiniciar Vista
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel" [class.active]="showInfoPanel">
+      <div class="info-header">
+        <div class="info-title">
+          {{ selectedRoom?.name || "Selecciona un espacio" }}
+        </div>
+        <div class="info-actions">
+          <button
+            class="info-btn"
+            (click)="openSpaceConfig()"
+            title="Configurar espacio"
+          >
+            ⚙️
+          </button>
+          <button
+            class="info-btn"
+            (click)="openSensorsConfig()"
+            title="Gestionar sensores"
+          >
+            🔧
+          </button>
+          <div class="info-close" (click)="closeInfo()">×</div>
+        </div>
+      </div>
+
+      @if (selectedRoom) {
+        <div class="sensor-grid">
+          <!-- Temperatura -->
+          @if (selectedRoom.sensors.temp !== undefined) {
+            <div
+              class="sensor-item"
+              [class.alert]="
+                selectedRoom.error &&
+                selectedRoom.sensors.temp &&
+                selectedRoom.sensors.temp > 25
+              "
+            >
+              <div class="sensor-icon">🌡️</div>
+              <div class="sensor-label">Temperatura</div>
+              <div
+                class="sensor-value"
+                [class.alert]="
+                  selectedRoom.error &&
+                  selectedRoom.sensors.temp &&
+                  selectedRoom.sensors.temp > 25
+                "
+              >
+                {{ selectedRoom.sensors.temp }}°C
+              </div>
+            </div>
+          }
+
+          <!-- Humedad -->
+
+          @if (selectedRoom.sensors.humidity !== undefined) {
+            <div class="sensor-item">
+              <div class="sensor-icon">💧</div>
+              <div class="sensor-label">Humedad</div>
+              <div class="sensor-value">
+                {{ selectedRoom.sensors.humidity }}%
+              </div>
+            </div>
+          }
+
+          <!-- Luminosidad -->
+
+          @if (selectedRoom.sensors.light !== undefined) {
+            <div class="sensor-item">
+              <div class="sensor-icon">💡</div>
+              <div class="sensor-label">Luminosidad</div>
+              <div class="sensor-value">
+                {{ selectedRoom.sensors.light }} lux
+              </div>
+            </div>
+          }
+
+          <!-- Ruido -->
+
+          @if (selectedRoom.sensors.noise !== undefined) {
+            <div
+              class="sensor-item"
+              [class.alert]="selectedRoom.sensors.noise === null"
+            >
+              <div class="sensor-icon">🔊</div>
+              <div class="sensor-label">Ruido</div>
+              <div
+                class="sensor-value"
+                [class.alert]="selectedRoom.sensors.noise === null"
+              >
+                {{
+                  selectedRoom.sensors.noise !== null
+                    ? selectedRoom.sensors.noise + " dB"
+                    : "ERROR"
+                }}
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" [class.mobile-visible]="showLegendMobile">
+      <div class="legend-title">Leyenda de Espacios</div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #3b82f6"></div>
+        <span>Laboratorios</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #84cc16"></div>
+        <span>👨‍🏫 Salón Profesores</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #14b8a6"></div>
+        <span>🖥️ Oficina Monitores</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #8b5cf6"></div>
+        <span>🏢 Salón Altice</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #f59e0b"></div>
+        <span>☕ Cafetería</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #ec4899"></div>
+        <span>🤝 Sala Reuniones</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #ef4444"></div>
+        <span>⚠️ Alerta</span>
+      </div>
+    </div>
+
+    <!-- Botón para mostrar leyenda en móvil -->
+    <button
+      class="legend-toggle-btn"
+      (click)="toggleLegendMobile()"
+      title="Mostrar/Ocultar Leyenda"
+    >
+      📋
+    </button>
+
+    <!-- Instructions Modal -->
+    <div
+      class="modal-overlay"
+      [class.show]="showInstructions"
+      (click)="toggleInstructions()"
+    ></div>
+    <div
+      class="instructions"
+      [class.show]="showInstructions"
+      (click)="$event.stopPropagation()"
+    >
+      <h2>📖 Controles</h2>
+      <ul>
+        <li><strong>Click izquierdo + Arrastrar:</strong> Rotar edificio</li>
+        <li><strong>Rueda del mouse:</strong> Zoom in/out</li>
+        <li><strong>Click derecho + Arrastrar:</strong> Mover cámara</li>
+        <li><strong>Click en habitación:</strong> Ver sensores</li>
+        <li><strong>Botones de vista:</strong> Cambiar perspectiva</li>
+      </ul>
+      <button
+        class="close-instructions"
+        (click)="toggleInstructions(); $event.stopPropagation()"
+      >
+        Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MODALES FUERA DEL CONTENEDOR DEL CANVAS -->
+<!-- ============================================ -->
+
+<!-- Space Configuration Modal -->
+<div
+  class="modal-overlay"
+  [class.show]="showSpaceConfigModal"
+  (click)="closeSpaceConfigModal()"
+></div>
+<div
+  class="config-modal"
+  [class.show]="showSpaceConfigModal"
+  (click)="$event.stopPropagation()"
+>
+  <div class="modal-header">
+    <h2>⚙️ Configurar Espacio</h2>
+    <button class="modal-close-btn" (click)="closeSpaceConfigModal()">×</button>
+  </div>
+
+  <div class="modal-body" *ngIf="editingSpace">
+    <div class="form-group">
+      <label>Nombre del Espacio</label>
+      <input
+        type="text"
+        [(ngModel)]="editingSpace.name"
+        class="form-input"
+        placeholder="Ej: Laboratorio 1A"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Tipo de Espacio</label>
+      <select [(ngModel)]="editingSpace.type" class="form-input">
+        <option value="lab">Laboratorio</option>
+        <option value="office">Oficina</option>
+        <option value="cafeteria">Cafetería</option>
+        <option value="meeting">Sala de Reuniones</option>
+        <option value="teachers">Salón de Profesores</option>
+        <option value="monitors">Oficina de Monitores</option>
+        <option value="altice">Salón Altice</option>
+        <option value="storage">Almacén</option>
+        <option value="bathroom">Baño</option>
+        <option value="stairs">Escalera</option>
+        <option value="elevator">Ascensor</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>MQTT Topic</label>
+      <input
+        type="text"
+        [(ngModel)]="editingSpace.mqttTopic"
+        class="form-input"
+        placeholder="Ej: building/floor1/lab1a"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Color (Hexadecimal)</label>
+      <input
+        type="color"
+        [value]="'#' + editingSpace.color.toString(16).padStart(6, '0')"
+        (change)="onColorChange($event)"
+        class="form-input color-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Ícono 3D</label>
+      <select [(ngModel)]="editingSpace.icon" class="form-input">
+        <option [ngValue]="undefined">Sin ícono</option>
+        <option value="stairs">🚶 Escalera</option>
+        <option value="elevator">🛗 Ascensor</option>
+        <option value="male">🚹 Baño Hombres</option>
+        <option value="female">🚺 Baño Mujeres</option>
+        <option value="storage">📦 Almacén</option>
+        <option value="cafeteria">☕ Cafetería</option>
+        <option value="office">💼 Oficina</option>
+        <option value="meeting">🤝 Sala Reuniones</option>
+        <option value="teachers">👨‍🏫 Profesores</option>
+        <option value="monitors">🖥️ Monitores</option>
+        <option value="altice">🏢 Altice</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="modal-abajo">
+    <button class="btn btn-secondary" (click)="closeSpaceConfigModal()">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" (click)="saveSpaceConfig()">
+      💾 Guardar Cambios
+    </button>
+  </div>
+</div>
+
+<!-- Sensors Management Modal -->
+<div
+  class="modal-overlay"
+  [class.show]="showSensorsModal"
+  (click)="closeSensorsModal()"
+></div>
+<div
+  class="sensors-modal"
+  [class.show]="showSensorsModal"
+  (click)="$event.stopPropagation()"
+>
+  <div class="modal-header">
+    <h2>🔧 Gestión de Sensores</h2>
+    <button class="modal-close-btn" (click)="closeSensorsModal()">×</button>
+  </div>
+
+  @if (editingSpace) {
+    <div class="modal-subheader">
+      <strong>{{ editingSpace.name }}</strong>
+    </div>
+  }
+
+  <div class="modal-body sensors-body">
+    <!-- Lista de Sensores Actuales -->
+    <div class="sensors-list">
+      <h3>Sensores Actuales</h3>
+
+      @for (sensor of editingSensors; track $index) {
+        <div class="sensor-card">
+          <div class="sensor-card-header">
+            <span
+              class="sensor-type-badge"
+              [style.background]="getSensorColorByType(sensor.type)"
+            >
+              {{ getSensorIcon(sensor.type) }}
+            </span>
+            <input
+              type="text"
+              [(ngModel)]="sensor.name"
+              class="sensor-name-input"
+              placeholder="Nombre del sensor"
+            />
+            <button
+              class="btn-icon btn-delete"
+              (click)="removeSensor($index)"
+              title="Eliminar sensor"
+            >
+              🗑️
+            </button>
+          </div>
+
+          <div class="sensor-card-body">
+            <div class="sensor-field">
+              <label>Tipo:</label>
+              <select [(ngModel)]="sensor.type" class="form-input-sm">
+                <option value="temp">🌡️ Temperatura</option>
+                <option value="humidity">💧 Humedad</option>
+                <option value="light">💡 Luminosidad</option>
+                <option value="noise">🔊 Ruido</option>
+                <option value="co2">💨 CO2</option>
+                <option value="pressure">📊 Presión</option>
+                <option value="custom">⚙️ Personalizado</option>
+              </select>
+            </div>
+
+            <div class="sensor-field">
+              <label>Unidad:</label>
+              <input
+                type="text"
+                [(ngModel)]="sensor.unit"
+                class="form-input-sm"
+                placeholder="Ej: °C, %, lux"
+              />
+            </div>
+
+            <div class="sensor-field">
+              <label>MQTT Topic:</label>
+              <input
+                type="text"
+                [(ngModel)]="sensor.mqttTopic"
+                class="form-input-sm"
+                placeholder="sensors/temp/lab1a"
+              />
+            </div>
+
+            <div class="sensor-field-row">
+              <div class="sensor-field">
+                <label>Min:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="sensor.minValue"
+                  class="form-input-sm"
+                />
+              </div>
+              <div class="sensor-field">
+                <label>Max:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="sensor.maxValue"
+                  class="form-input-sm"
+                />
+              </div>
+              <div class="sensor-field">
+                <label>Alerta:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="sensor.alertThreshold"
+                  class="form-input-sm"
+                />
+              </div>
+            </div>
+
+            <div class="sensor-field">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="sensor.enabled" />
+                <span>Sensor habilitado</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (editingSensors.length === 0) {
+        <div class="empty-state">
+          <p>📭 No hay sensores configurados</p>
+        </div>
+      }
+    </div>
+
+    <!-- Agregar Nuevo Sensor -->
+    <div class="add-sensor-section">
+      <h3>➕ Agregar Nuevo Sensor</h3>
+      <button class="btn btn-add" (click)="addNewSensor()">
+        ➕ Agregar Sensor
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-abajo sensors-footer">
+    <button class="btn btn-secondary" (click)="closeSensorsModal()">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" (click)="saveSensorsConfig()">
+      💾 Guardar Sensores
+    </button>
+  </div>
+</div>

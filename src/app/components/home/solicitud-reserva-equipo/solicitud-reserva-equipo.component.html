@@ -1,133 +1,387 @@
-<div class="container mt-4">
-  <h2 class="mb-3">Solicitudes de Reserva de Equipos</h2>
+<div class="page-wrapper">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      </div>
+      <div>
+        <h1>Solicitudes de Equipos</h1>
+        <p class="header-subtitle">
+          Gestiona préstamos y solicitudes de equipos tecnológicos
+        </p>
+      </div>
+    </div>
+    <span class="admin-badge">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+      Panel Admin
+    </span>
+  </div>
 
-  <div class="table-scroll">
-    @if (solicitud.length > 0) {
-    <table
-      mat-table
-      [dataSource]="solicitud"
-      class="mat-elevation-z8 full-width-table"
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-label">Total Activos</span>
+      <span class="stat-value">{{ statTotal() }}</span>
+      <span class="stat-sub">Solicitudes registradas</span>
+    </div>
+    <div class="stat-card pendiente">
+      <span class="stat-label">Pendientes</span>
+      <span class="stat-value">{{ statPendiente() }}</span>
+      <span class="stat-sub">Requieren atención</span>
+    </div>
+    <div class="stat-card atrasado">
+      <span class="stat-label">Atrasados</span>
+      <span class="stat-value">{{ statAtrasado() }}</span>
+      <span class="stat-sub">Requieren seguimiento</span>
+    </div>
+    <div class="stat-card devuelto">
+      <span class="stat-label">Devueltos</span>
+      <span class="stat-value">{{ statDevuelto() }}</span>
+      <span class="stat-sub">Este mes</span>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar por equipo, estudiante o ID..."
+        [value]="busqueda()"
+        (input)="busqueda.set($any($event.target).value)"
+      />
+    </div>
+    <select
+      class="filter-select"
+      [value]="filtroEstado()"
+      (change)="filtroEstado.set($any($event.target).value)"
     >
-      <!-- Usuario -->
-      <ng-container matColumnDef="nombreUsuario">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Usuario
-        </th>
-        <td mat-cell *matCellDef="let solicitud">
-          {{ solicitud.nombreUsuario }}
-        </td>
-      </ng-container>
+      <option value="todos">Todos los estados</option>
+      <option value="pendiente">Pendientes</option>
+      <option value="activo">Activos</option>
+      <option value="extension">Con extensión</option>
+      <option value="atrasado">Atrasados</option>
+      <option value="devuelto">Devueltos</option>
+    </select>
+  </div>
 
-      <!-- Equipo -->
-      <ng-container matColumnDef="nombreEquipo">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Equipo
-        </th>
-        <td mat-cell *matCellDef="let solicitud">
-          {{ solicitud.nombreEquipo }}
-        </td>
-      </ng-container>
+  <!-- Lista -->
+  <div class="solicitudes-list">
+    @for (p of prestamosFiltrados(); track p.id) {
+      <div class="solicitud-card" [class]="p.estado">
+        <div class="card-inner">
+          <img class="card-image" [src]="p.imagen" [alt]="p.titulo" />
+          <div class="card-body">
+            <div class="card-top">
+              <div class="card-title-group">
+                <span class="card-title">{{ p.titulo }}</span>
+                <span class="card-id">#{{ p.id }} · {{ p.codigos }}</span>
+              </div>
+              <span class="status-badge" [class]="p.estado">
+                <span class="status-dot"></span>
+                @switch (p.estado) {
+                  @case ("pendiente") {
+                    Pendiente
+                  }
+                  @case ("activo") {
+                    Activo
+                  }
+                  @case ("extension") {
+                    Extensión solicitada
+                  }
+                  @case ("atrasado") {
+                    Atrasado
+                  }
+                  @case ("devuelto") {
+                    Devuelto
+                  }
+                }
+              </span>
+            </div>
 
-      <!-- Fecha Inicio -->
-      <ng-container matColumnDef="fechaInicio">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Fecha Inicio
-        </th>
-        <td mat-cell *matCellDef="let solicitud">
-          {{ solicitud.fechaInicio }}
-        </td>
-      </ng-container>
+            <div class="card-meta">
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <circle cx="12" cy="7" r="4" />
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                </svg>
+                {{ p.estudiante }} · ID {{ p.estudianteId }}
+              </span>
+              <span
+                [class.fecha-danger]="p.estado === 'atrasado'"
+                [class.fecha-warn]="p.estado === 'extension'"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                {{ p.fechaInfo }}
+              </span>
+              <span class="qty-badge">{{ p.cantidad }}</span>
+            </div>
 
-      <!-- Fecha Final -->
-      <ng-container matColumnDef="fechaFinal">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Fecha Final
-        </th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.fechaFinal }}</td>
-      </ng-container>
-
-      <!-- Motivo -->
-      <ng-container matColumnDef="motivo">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Motivo
-        </th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.motivo }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="cantidad">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Cantidad
-        </th>
-        <td mat-cell *matCellDef="let solicitud">{{ solicitud.cantidad }}</td>
-      </ng-container>
-
-      <!-- Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Estado
-        </th>
-        <td mat-cell *matCellDef="let solicitud">
-          {{
-            solicitud.idEstado === 1
-              ? "Aprobado"
-              : solicitud.idEstado === 3
-              ? "Rechazado"
-              : "Pendiente"
-          }}
-        </td>
-      </ng-container>
-
-      <!-- Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef class="encabezado-azul">
-          Acciones
-        </th>
-        <td mat-cell *matCellDef="let solicitud">
-          <button
-            mat-raised-button
-            color="primary"
-            class="botones-green"
-            (click)="aprobar(solicitud)"
-            [disabled]="loading[solicitud.id]?.aprobar"
-          >
-            @if (loading[solicitud.id]?.aprobar) {
-            <mat-progress-spinner
-              mode="indeterminate"
-              diameter="30"
-              strokeWidth="3"
-              class="white-spinner"
-            ></mat-progress-spinner>
-            } @else {
-            <span>Aprobar</span>
+            <!-- Alerta de extensión -->
+            @if (p.estado === "extension" && p.extensionInfo) {
+              <div class="extension-alert">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{{ p.extensionInfo }}</span>
+              </div>
             }
-          </button>
-          <button
-            mat-raised-button
-            color="warn"
-            class="botones-red"
-            (click)="desaprobar(solicitud)"
-            [disabled]="loading[solicitud.id]?.denegar"
-          >
-            @if (loading[solicitud.id]?.denegar) {
-            <mat-progress-spinner
-              mode="indeterminate"
-              diameter="30"
-              strokeWidth="3"
-              class="white-spinner"
-            ></mat-progress-spinner>
-            } @else {
-            <span>Negar</span>
-            }
-          </button>
-        </td>
-      </ng-container>
 
-      <!-- Filas -->
-      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-      <tr mat-row *matRowDef="let solicitud; columns: columnas"></tr>
-    </table>
-    } @else {
-    <div class="alert alert-info">No hay solicitudes disponibles.</div>
+            <!-- Motivo (si no es extensión) -->
+            @if (p.estado !== "extension") {
+              <div class="card-motivo">"{{ p.motivo }}"</div>
+            }
+
+            <!-- Acciones -->
+            <div class="card-actions">
+              @switch (p.estado) {
+                @case ("pendiente") {
+                  <button class="btn-approve" (click)="aprobar(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Aprobar
+                  </button>
+                  <button class="btn-reject" (click)="rechazar(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Rechazar
+                  </button>
+                }
+
+                @case ("extension") {
+                  <button class="btn-approve" (click)="aprobarExtension(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Aprobar extensión
+                  </button>
+                  <button class="btn-reject" (click)="rechazar(p.id)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Rechazar
+                  </button>
+                }
+
+                @case ("activo") {
+                  <button class="btn-return" (click)="marcarDevuelto(p)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="9 14 4 9 9 4" />
+                      <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                    </svg>
+                    Marcar devuelto
+                  </button>
+                }
+
+                @case ("atrasado") {
+                  <button class="btn-return" (click)="marcarDevuelto(p)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="9 14 4 9 9 4" />
+                      <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                    </svg>
+                    Marcar devuelto
+                  </button>
+                  <button
+                    class="btn-reminder"
+                    (click)="enviarRecordatorio(p.id)"
+                    [disabled]="p.accionTexto === '✓ Recordatorio enviado'"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                    {{
+                      p.accionTexto === "✓ Recordatorio enviado"
+                        ? "✓ Enviado"
+                        : "Enviar recordatorio"
+                    }}
+                  </button>
+                }
+
+                @case ("devuelto") {
+                  <span class="action-taken">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      style="color: #16a34a"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    {{ p.accionTexto ?? "Devuelto" }}
+                  </span>
+                }
+              }
+
+              <button class="btn-detail" (click)="abrirDetalle(p)">
+                Ver detalle
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (prestamosFiltrados().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <p>No se encontraron solicitudes con los filtros aplicados.</p>
+      </div>
     }
   </div>
 </div>

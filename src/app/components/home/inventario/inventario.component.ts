@@ -29,6 +29,33 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 
+export interface Equipo {
+  id: number;
+  nombre: string;
+
+  cantidad: number;
+
+  activado: boolean;
+  disponible: boolean;
+  validacionPrestamo: boolean;
+
+  departamento: string | null;
+  descripcionLarga: string | null;
+  fabricante: string | null;
+  modelo: string | null;
+  nombreCorto: string | null;
+  perfil: string | null;
+  serial: string | null;
+
+  fechaTransaccion: string | null;
+
+  idEstadoFisico: number | null;
+  idLaboratorio: number | null;
+
+  imagenEquipo: string | null;
+  importeActivo: number | null;
+}
+
 @Component({
   selector: 'app-inventario',
   imports: [
@@ -84,6 +111,7 @@ export class InventarioComponent implements OnInit {
       .getLaboratorios()
       .subscribe((labs: Laboratorio[]) => {
         this.laboratorios = labs;
+        console.log('Laboratorios cargados:', this.laboratorios);
         this.cargarCartas();
       });
 
@@ -138,6 +166,8 @@ export class InventarioComponent implements OnInit {
       .subscribe({
         next: (d: any) => {
           let datosFiltrados = d.datos.filter((data: any) => data.disponible);
+
+          console.log('Datos recibidos del backend:', d);
 
           //  Mapear los datos con información del laboratorio
           this.cartasConLaboratorio = datosFiltrados.map((data: any) => {
