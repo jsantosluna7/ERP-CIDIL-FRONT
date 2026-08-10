@@ -44,6 +44,6 @@ export class CarritoComponent implements OnInit {
   }
 
   ruta(){
-    this.router.navigate(['/home/reserva-equipo']);
+    this.router.navigate(['/acceso/home/reserva-equipo']);
   }
 }

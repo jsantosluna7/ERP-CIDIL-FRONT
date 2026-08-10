@@ -79,7 +79,7 @@ export class LoginComponent {
             );
           }
         });
-        this._router.navigate(['home']);
+        this._router.navigate(['/acceso/home']);
       },
       error: (err) => {
         this.loading = false;

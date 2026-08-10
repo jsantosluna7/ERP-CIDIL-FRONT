@@ -34,7 +34,7 @@ export class RecuperarContrasenaComponent {
     this._usuarios.olvideContrasena(this.olvide, data).subscribe({
       next: (e) => {
         this._toastr.success('Correo enviado con éxito, revisa tu bandeja', 'Éxito');
-        this._router.navigate(['login'])
+        this._router.navigate(['/acceso/login'])
       }, error: (e) => {
         this._toastr.error(e.error, 'Hubo un Error');
       }

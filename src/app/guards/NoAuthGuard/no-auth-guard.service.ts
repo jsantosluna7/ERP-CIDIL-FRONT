@@ -10,7 +10,7 @@ export class NoAuthGuard implements CanActivate {
 
   canActivate(): boolean {
     if (this._usuario.isAuthenticated()) {
-      this.router.navigate(['/home']); // Redirige a donde quieras
+      this.router.navigate(['/acceso/home']); // Redirige a donde quieras
       return false;
     }
     return true;

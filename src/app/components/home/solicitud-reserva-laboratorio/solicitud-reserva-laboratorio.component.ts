@@ -15,6 +15,7 @@ import {
 } from '../../elements/modales-globales/modal-state.service';
 import { SolicitudReservaEspacioCacheService } from '../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { environment } from '../../../../environments/environment';
 
 export interface Solicitud {
   id: number;
@@ -62,6 +63,7 @@ export interface EstadisticasSolicitudes {
   styleUrls: ['./solicitud-reserva-laboratorio.component.css'],
 })
 export class SolicitudReservaLaboratorioComponent implements OnInit {
+  readonly IMAGENES_URL = environment.imagenesUrl + '/laboratorios/lab-no-disponible.png';
   private modalSvc = inject(ModalStateService);
 
   filtroEstado = signal<string>('todos');

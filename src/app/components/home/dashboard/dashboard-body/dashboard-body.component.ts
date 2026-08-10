@@ -66,14 +66,14 @@ export class DashboardBodyComponent implements OnInit {
   }
 
   openEspacios(){
-    this._router.navigate(['/home/solicitud-laboratorio']);
+    this._router.navigate(['/acceso/home/solicitud-laboratorio']);
   }
 
   openEquipos(){
-    this._router.navigate(['/home/solicitud-equipo']);
+    this._router.navigate(['/acceso/home/solicitud-equipo']);
   }
 
   openUsuarios(){
-    this._router.navigate(['/home/usuarios/listado-usuarios']);
+    this._router.navigate(['/acceso/home/usuarios/listado-usuarios']);
   }
 }

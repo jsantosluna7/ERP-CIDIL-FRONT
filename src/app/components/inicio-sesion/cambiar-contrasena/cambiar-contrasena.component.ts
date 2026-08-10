@@ -47,7 +47,7 @@ export class CambiarContrasenaComponent implements OnInit {
     this._usuarios.restablecerContrasena(this.restablecerContrasena, data).subscribe({
       next: (e) => {
         this._toastr.success('Se ha restablecido su contraseña', 'Éxito');
-        this._router.navigate(['login']);
+        this._router.navigate(['/acceso/login']);
       },error: (e) => {
         this._toastr.error(e.error, 'Hubo un error');
       }

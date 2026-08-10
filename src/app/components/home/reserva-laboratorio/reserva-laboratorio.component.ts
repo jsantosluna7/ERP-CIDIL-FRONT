@@ -13,6 +13,7 @@ import { SolicitudReservaEspacioCacheService } from '../../../core/SolicitudRese
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { ToastrService } from 'ngx-toastr';
 import { Console } from 'console';
+import { environment } from '../../../../environments/environment';
 
 export interface Laboratorio {
   id: number;
@@ -44,9 +45,11 @@ const HORARIOS: Record<number, { open: number; close: number } | null> = {
   styleUrl: './reserva-laboratorio.component.css',
 })
 export class ReservaLaboratorioComponent implements OnInit {
+
+  readonly IMAGENES_URL = environment.imagenesUrl + '/laboratorios/lab-no-disponible.png';
+
   // ── Catálogo de laboratorios ─────────────────────────────
   labsMap: Record<string, Laboratorio> = {};
-
   labsLista: Laboratorio[] = [];
 
   // ── Estado ───────────────────────────────────────────────
@@ -89,11 +92,11 @@ export class ReservaLaboratorioComponent implements OnInit {
   ) {}
 
   solicitudes() {
-    this.router.navigate(['/home/solicitud-laboratorio']);
+    this.router.navigate(['/acceso/home/solicitud-laboratorio']);
   }
 
   misSolicitudes() {
-    this.router.navigate(['/home/mis-solicitudes-espacio']);
+    this.router.navigate(['/acceso/home/mis-solicitudes-espacio']);
   }
 
   ngOnInit(): void {
@@ -306,7 +309,7 @@ export class ReservaLaboratorioComponent implements OnInit {
           'La solicitud fue enviada correctamente',
           'Solicitud creada',
         );
-        this.router.navigate(['/home/mis-solicitudes-espacio']);
+        this.router.navigate(['/acceso/home/mis-solicitudes-espacio']);
       },
       error: (err) => {
         this.enviando = false;

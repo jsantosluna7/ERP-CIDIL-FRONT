@@ -28,7 +28,7 @@
   @if (labSeleccionado) {
     <div class="space-preview">
       <div class="space-preview-image">
-        <img [src]="labSeleccionado.imagenLaboratorio" [alt]="labSeleccionado.nombre" />
+        <img [src]="labSeleccionado.imagenLaboratorio || this.IMAGENES_URL" [alt]="labSeleccionado.nombre" />
       </div>
       <div class="space-preview-info">
         <div class="space-preview-name">{{ labSeleccionado.nombre }}</div>

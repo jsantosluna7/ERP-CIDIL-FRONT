@@ -110,9 +110,9 @@
           <div class="card-inner">
 
             <img class="card-image"
-              [src]="solicitud.imagenLaboratorio || 'http://imagenes.cidilipl.online/imagenes/laboratorios/lab-no-disponible.png'"
+              [src]="solicitud.imagenLaboratorio || this.IMAGENES_URL"
               [alt]="solicitud.nombreEspacio"
-              (error)="$any($event.target).src='http://imagenes.cidilipl.online/imagenes/laboratorios/lab-no-disponible.png'" />
+              (error)="$any($event.target).src= this.IMAGENES_URL" />
 
             <div class="card-body">
               <div class="card-top">

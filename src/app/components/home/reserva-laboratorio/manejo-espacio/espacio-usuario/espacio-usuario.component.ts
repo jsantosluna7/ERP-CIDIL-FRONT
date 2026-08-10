@@ -7,6 +7,7 @@ import {
 } from '../../../../elements/modales-globales/modal-state.service';
 import { Router } from '@angular/router';
 import { SolicitudReservaEspacioCacheService } from '../../../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
+import { environment } from '../../../../../../environments/environment';
 
 export interface SolicitudApiUsuario {
   id: number;
@@ -52,6 +53,7 @@ export interface SolicitudUsuario {
   styleUrls: ['./espacio-usuario.component.css'],
 })
 export class EspacioUsuarioComponent implements OnInit {
+  readonly IMAGENES_URL = environment.imagenesUrl + '/laboratorios/lab-no-disponible.png';
   private modalSvc = inject(ModalStateService);
 
   constructor(
@@ -125,7 +127,7 @@ export class EspacioUsuarioComponent implements OnInit {
   }
 
   irPrincipal(): void {
-    this.router.navigate(['/home/reserva-laboratorio']);
+    this.router.navigate(['/acceso/home/reserva-laboratorio']);
   }
 
   private mapearEstado(idEstado: number): 'pendiente' | 'aprobada' | 'rechazada' {
@@ -166,7 +168,7 @@ export class EspacioUsuarioComponent implements OnInit {
     return {
       id:        item.id.toString(),
       titulo:    item.nombreEspacio,
-      imagen:    item.imagenLaboratorio ?? 'http://imagenes.cidilipl.online/imagenes/laboratorios/lab-no-disponible.png',
+      imagen:    item.imagenLaboratorio ?? this.IMAGENES_URL,
       fecha:     `${fechaInicio} · ${horaI} – ${horaF}`,
       personas:  item.personasCantidad,
       ubicacion: item.tipoRegistro,

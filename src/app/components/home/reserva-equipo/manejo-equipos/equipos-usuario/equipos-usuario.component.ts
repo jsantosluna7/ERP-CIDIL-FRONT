@@ -165,6 +165,6 @@ export class EquiposUsuarioComponent {
   }
 
   irInventario(): void {
-    this.router.navigate(['/home/inventario']);
+    this.router.navigate(['/acceso/home/inventario']);
   }
 }

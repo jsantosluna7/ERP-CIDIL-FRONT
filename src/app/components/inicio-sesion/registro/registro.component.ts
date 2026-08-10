@@ -101,7 +101,7 @@ export class RegistroComponent implements OnInit {
     this._usuarios.registro(this.registrar, data).subscribe({
       next: (e) => {
         this.loading = false;
-        this._router.navigate(['verificacion-otp']);
+        this._router.navigate(['/acceso/verificacion-otp']);
       },
       error: (e) => {
         this.loading = false;

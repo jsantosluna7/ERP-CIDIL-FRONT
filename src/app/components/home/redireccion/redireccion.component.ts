@@ -13,19 +13,19 @@ export class RedireccionComponent {
     const rol = Number(this._usuarios.userSubject.value?.idRol);
     switch (rol) {
       case 1: // Superusuario
-        this.router.navigate(['/home/dashboard']);
+        this.router.navigate(['/acceso/home/dashboard']);
         break;
       case 2: // Admin
-        this.router.navigate(['/home/dashboard']);
+        this.router.navigate(['/acceso/home/dashboard']);
         break;
       case 3: // Profesor
-        this.router.navigate(['/home/calendario']);
+        this.router.navigate(['/acceso/home/calendario']);
         break;
       case 4: // Estudiante
-        this.router.navigate(['/home/calendario']);
+        this.router.navigate(['/acceso/home/calendario']);
         break;
       default:
-        this.router.navigate(['/no-autorizado']);
+        this.router.navigate(['/acceso/no-autorizado']);
     }
   }
 }

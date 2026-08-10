@@ -176,7 +176,7 @@ export class ReservaEquipoComponent implements OnInit {
 
     // Reemplaza con tu servicio:
     // this.reservaService.crear(payload).subscribe({
-    //   next: () => { this.enviando = false; this.router.navigate(['/solicitudes']); },
+    //   next: () => { this.enviando = false; this.router.navigate(['/acceso/solicitudes']); },
     //   error: err => { this.enviando = false; console.error(err); }
     // });
 
@@ -187,14 +187,14 @@ export class ReservaEquipoComponent implements OnInit {
   }
 
   irSolicitudes(): void {
-    this.router.navigate(['/home/solicitud-equipo']);
+    this.router.navigate(['/acceso/home/solicitud-equipo']);
   }
 
   irMisPrestamos(): void {
-    this.router.navigate(['/home/mis-prestamos']);
+    this.router.navigate(['/acceso/home/mis-prestamos']);
   }
 
   irInventario(): void {
-    this.router.navigate(['/home/inventario']);
+    this.router.navigate(['/acceso/home/inventario']);
   }
 }
