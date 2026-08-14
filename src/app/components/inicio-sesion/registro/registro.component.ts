@@ -1,177 +1,117 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
-  FormControl,
+  FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faArrowLeft,
-  faCheck,
-  faEnvelope,
-  faLocationDot,
-  faLock,
-  faPhone,
-  faUser,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
-import { BackButtonComponent } from '../../elements/back-button/back-button.component';
-import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
-import { error } from 'console';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatButtonModule } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
+
+/** Valida que "pass" y "pass2" coincidan. Se aplica a nivel de FormGroup. */
+function passwordsMatchValidator(
+  control: AbstractControl,
+): ValidationErrors | null {
+  const pass = control.get('pass')?.value;
+  const pass2 = control.get('pass2')?.value;
+  if (!pass || !pass2) return null;
+  return pass === pass2 ? null : { passwordMismatch: true };
+}
 
 @Component({
   selector: 'app-registro',
-  imports: [
-    ReactiveFormsModule,
-    FontAwesomeModule,
-    BackButtonComponent,
-    MatProgressSpinnerModule,
-    MatButtonModule
-  ],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css',
 })
-export class RegistroComponent implements OnInit {
-  faEnvelope = faEnvelope;
-  faPhone = faPhone;
-  faLock = faLock;
-  faLocationDot = faLocationDot;
-  faUser = faUser;
-  faCheck = faCheck;
-  faXmark = faXmark;
-  loading = false;
+export class RegistroComponent {
+  /** Paso actual del wizard: 1 = cuenta, 2 = datos. */
+  currentStep = 1;
+  registerForm: FormGroup;
 
-  registroForm: FormGroup;
+  /** Campos que pertenecen al paso 1, usados para validar antes de avanzar. */
+  private readonly step1Fields = [
+    'nombres',
+    'apellidos',
+    'email',
+    'pass',
+    'pass2',
+  ];
 
-  meterPopup: any = {};
-  passwordValid: any = {};
-
-  //ENDPOINTS
-  registrar = `${process.env['API_URL']}${process.env['ENDPOINT_REGISTRAR']}`;
-
-  constructor(
-    private _usuarios: UsuariosService,
-    private _toastr: ToastrService,
-    private _router: Router
-  ) {
-    this.registroForm = new FormGroup(
+  constructor(private fb: FormBuilder) {
+    this.registerForm = this.fb.group(
       {
-        email: new FormControl('', [Validators.required, Validators.email]),
-        contrasena: new FormControl('', [
-          Validators.required,
-          Validators.minLength(8),
-        ]),
-        confirmarcontrasena: new FormControl('', [
-          Validators.required,
-          Validators.minLength(8),
-        ]),
-        nombre: new FormControl('', [Validators.required]),
-        apellido: new FormControl('', [Validators.required]),
-        matricula: new FormControl('', [Validators.required]),
-        telefono: new FormControl('', [Validators.required]),
-        direccion: new FormControl('', [Validators.required]),
+        nombres: ['', [Validators.required, Validators.minLength(2)]],
+        apellidos: ['', [Validators.required, Validators.minLength(2)]],
+        email: ['', [Validators.required, Validators.email]],
+        pass: ['', [Validators.required, Validators.minLength(8)]],
+        pass2: ['', [Validators.required]],
+        matricula: ['', [Validators.required]],
+        telefono: [
+          '',
+          [Validators.required, Validators.pattern(/^[0-9+\-\s()]{7,15}$/)],
+        ],
+        direccion: ['', [Validators.required, Validators.minLength(5)]],
       },
-      {
-        validators: this.matchContrasena,
-      }
+      { validators: passwordsMatchValidator },
     );
   }
 
-  register() {
-    const data = {
-      idMatricula: this.registroForm.value.matricula,
-      nombreUsuario: this.registroForm.value.nombre,
-      apellidoUsuario: this.registroForm.value.apellido,
-      correoInstitucional: this.registroForm.value.email,
-      contrasenaHash: this.registroForm.value.contrasena,
-      telefono: this.registroForm.value.telefono,
-      direccion: this.registroForm.value.direccion,
-    };
-
-    this.loading = true;
-
-    this._usuarios.registro(this.registrar, data).subscribe({
-      next: (e) => {
-        this.loading = false;
-        this._router.navigate(['/acceso/verificacion-otp']);
-      },
-      error: (e) => {
-        this.loading = false;
-        this._toastr.error(e.error.error, 'Hubo un error');
-      },
-    });
+  get subText(): string {
+    return this.currentStep === 1
+      ? 'Crea tu cuenta.'
+      : 'Cuéntanos un poco más sobre ti.';
   }
 
-  //Validar contrasena
-  matchContrasena: ValidatorFn = (
-    control: AbstractControl
-  ): ValidationErrors | null => {
-    let contrasena = control.get('contrasena');
-    let confirmarcontrasena = control.get('confirmarcontrasena');
-    if (
-      contrasena &&
-      confirmarcontrasena &&
-      contrasena?.value != confirmarcontrasena?.value
-    ) {
-      return {
-        contrasenaError: true,
-      };
+  /** Devuelve true si el campo tiene un error visible (tocado + inválido). */
+  hasError(controlName: string): boolean {
+    const control = this.registerForm.get(controlName);
+    return !!control && control.invalid && (control.touched || control.dirty);
+  }
+
+  get passwordsMismatch(): boolean {
+    const pass2 = this.registerForm.get('pass2');
+    return (
+      this.registerForm.hasError('passwordMismatch') &&
+      !!pass2 &&
+      (pass2.touched || pass2.dirty)
+    );
+  }
+
+  goToStep2(): void {
+    this.step1Fields.forEach((name) =>
+      this.registerForm.get(name)?.markAsTouched(),
+    );
+
+    const step1Valid = this.step1Fields.every(
+      (name) => this.registerForm.get(name)?.valid,
+    );
+    const passwordsOk = !this.registerForm.hasError('passwordMismatch');
+
+    if (step1Valid && passwordsOk) {
+      this.currentStep = 2;
     }
-    // this._toastr.error('La contraseña debe coincidir', 'Error')
-    return null;
-  };
-
-  ngOnInit() {
-    this.registroForm.get('contrasena')?.valueChanges.subscribe((value) => {
-      this.passwordValidation(value);
-    });
-
-    this.closePopup();
   }
 
-  login() {}
+  goToStep1(): void {
+    this.currentStep = 1;
+  }
 
-  openPopup(event: Event) {
-    const contrasenaElem = document.querySelector('#contrasena');
-    if (contrasenaElem) {
-      const rect = contrasenaElem.getBoundingClientRect();
-      this.meterPopup = {
-        display: 'block',
-        position: 'absolute',
-        'left.px': window.scrollY + rect.left,
-        'top.px': window.scrollY + rect.top + 39,
-      };
+  onSubmit(): void {
+    if (this.registerForm.valid) {
+      console.log('Formulario enviado:', this.registerForm.value);
+      // Aquí va la llamada al servicio/API de registro.
     } else {
-      this.meterPopup = {
-        display: 'none',
-      };
-      console.warn('Elemento con id "contrasena" no encontrado.');
+      this.registerForm.markAllAsTouched();
+      if (
+        this.step1Fields.some((name) => this.registerForm.get(name)?.invalid) ||
+        this.registerForm.hasError('passwordMismatch')
+      ) {
+        this.currentStep = 1;
+      }
     }
-  }
-  closePopup() {
-    this.meterPopup = { display: 'none' };
-  }
-  passwordValidation(PasswordText: any) {
-    const hasUpperCase = /[A-Z]/.test(PasswordText);
-    const hasLowerCase = /[a-z]/.test(PasswordText);
-    const hasNumeric = /[0-9]/.test(PasswordText);
-    const hasSpecialCharacterCheck = /\W|_/g;
-    const hasSpecialCharacter = hasSpecialCharacterCheck.test(PasswordText);
-    const hasNoSpaces = !/\s/.test(PasswordText);
-
-    this.passwordValid.hasMinLength = PasswordText.length >= 8 ? true : false;
-    this.passwordValid.hasUpperCase = hasUpperCase;
-    this.passwordValid.hasLowerCase = hasLowerCase;
-    this.passwordValid.hasNumber = hasNumeric;
-    this.passwordValid.hasSpecialChar = hasSpecialCharacter;
-    this.passwordValid.hasNoSpaces = hasNoSpaces;
   }
 }

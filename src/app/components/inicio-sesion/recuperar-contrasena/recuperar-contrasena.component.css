@@ -1,126 +1,151 @@
-/* Contenedor general */
-.fondo {
-  min-height: 100vh;
-  padding: 2rem 1rem;
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Fuente Inter — si prefieres cargarla de forma global, mueve esta línea
+   al <head> de tu index.html en lugar de importarla aquí. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:host{
+  display:block;
+  margin:0; padding:0; min-height:100%;
+  font-family:'Inter', sans-serif;
+  color: var(--ink);
+
+  /* Variables movidas desde :root — bajo la encapsulación normal de
+     Angular, :root no recibe el atributo de scope (el <html> real está
+     fuera del árbol del componente), así que las variables no se
+     aplicarían si se dejan en :root. Aquí en :host se heredan
+     normalmente a todos los elementos hijos del componente. */
+  --blue: #1825AA;
+  --blue-2: #10186E;
+  --red: #CC3333;
+  --yellow: #FFFF33;
+  --ink: #333333;
+  --ink-soft: #85888f;
+  --border: #E4E3DF;
+  --paper: #FFFFFF;
+  --radius-outer: 28px;
 }
 
-/* Formulario */
-.form {
-  position: relative;
-  width: 100%;
-  max-width: 400px; /* perfecto para laptops */
-  background-color: white;
-  border-radius: 2rem;
-  box-shadow: 25px 30px 54px -15px rgba(0, 0, 0, 0.75);
-  padding: 2.5rem 2rem 2rem 2rem;
-  margin: auto;
-  color: black;
+*{ box-sizing:border-box; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
 }
 
-/* Botón de retroceso */
-.back-btn {
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  z-index: 2;
+.scene{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 40px 20px;
+  /* Fondo movido desde "body" del original: .scene ya cubre el 100% del
+     viewport (min-height:100vh), así que el resultado visual es idéntico,
+     pero queda encapsulado dentro del componente en vez de global. */
+  background-color: #F6F5F2;
+  background-image:
+    radial-gradient(circle at 12% 15%, rgba(24,37,170,.30) 0%, rgba(24,37,170,0) 42%),
+    radial-gradient(circle at 88% 12%, rgba(255,255,51,.28) 0%, rgba(255,255,51,0) 38%),
+    radial-gradient(circle at 85% 90%, rgba(204,51,51,.22) 0%, rgba(204,51,51,0) 40%),
+    radial-gradient(circle at 10% 88%, rgba(24,37,170,.22) 0%, rgba(24,37,170,0) 42%);
+  background-attachment: fixed;
 }
 
-/* Títulos */
-h1 {
-  font-size: 1.5rem;
-  text-align: center;
-  margin-top: 1rem;
+.card{
+  position:relative;
+  background: var(--paper);
+  border-radius: var(--radius-outer);
+  padding: 44px 48px 40px 48px;
+  max-width: 420px;
+  width:100%;
+  box-shadow: 0 30px 70px -30px rgba(24,25,40,.25);
 }
 
-p {
-  font-size: 1rem;
-  text-align: center;
+.head{
+  text-align:center;
+  margin-bottom: 30px;
 }
 
-/* Etiquetas */
-label {
-  font-size: 0.9rem;
+h1{
+  font-size:24px;
+  font-weight:700;
+  margin: 0 0 8px 0;
+}
+h1 b{ color: var(--blue); }
+
+.sub{
+  font-size:13.5px;
+  color: var(--ink-soft);
+  margin: 0;
 }
 
-/* Inputs */
-input {
-  padding-left: 1.9rem;
-  font-size: 1rem;
+.field{ margin-bottom:26px; }
+
+.field label{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  color: var(--ink);
+  margin-bottom:8px;
+  text-align:center;
 }
 
-input::placeholder {
-  font-size: 0.8rem;
+.input-shell{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border: 1.4px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: border-color .2s ease;
 }
 
-/* Icono en input */
-.envelope {
-  position: relative;
-  display: flex;
-  align-items: center;
+.input-shell:focus-within{ border-color: var(--blue); }
+
+.input-shell svg{ width:16px; height:16px; flex-shrink:0; color: var(--ink-soft); }
+
+.input-shell input{
+  width:100%;
+  border:none;
+  background:transparent;
+  padding: 12px 0;
+  font-size:14px;
+  font-family:'Inter', sans-serif;
+  color: var(--ink);
+  outline:none;
 }
 
-.envelope fa-icon {
-  position: absolute;
-  left: 0.5rem;
+.input-shell input::placeholder{ color:#B7B9BE; }
+.input-shell input:focus-visible{ outline:none; }
+
+button.cta{
+  width:100%;
+  padding: 14px;
+  background: var(--blue);
+  color:#fff;
+  border:none;
+  border-radius: 999px;
+  font-family:'Inter', sans-serif;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.01em;
+  cursor:pointer;
+  transition: background .2s ease, transform .15s ease;
 }
+button.cta:hover{ background: var(--blue-2); }
+button.cta:active{ transform: scale(.99); }
+button.cta:focus-visible{ outline:2px solid var(--blue); outline-offset:3px; }
 
-/* Botón enviar */
-.btn-custom-blue {
-  background-color: #1825AA;
-  color: white;
-  border: none;
-  width: 100%;
+.login-note{
+  text-align:center;
+  font-size:13px;
+  color: var(--ink-soft);
+  margin-top: 22px;
 }
-
-.btn-custom-blue:hover {
-  background-color: #12208c;
+.login-note a{
+  color: var(--blue);
+  font-weight:700;
+  text-decoration:none;
 }
+.login-note a:hover{ text-decoration:underline; }
 
-/* Responsive Tablets */
-@media (max-width: 1024px) {
-  .form {
-    max-width: 90%;
-    padding: 2rem 1.5rem;
-  }
-
-  .back-btn {
-    top: 1rem;
-    left: 1rem;
-  }
-
-  h1 {
-    font-size: 1.4rem;
-  }
-
-  p {
-    font-size: 0.95rem;
-  }
-}
-
-/* Responsive Móviles */
-@media (max-width: 480px) {
-  .form {
-    max-width: 95%;
-    padding: 2rem 1rem;
-  }
-
-  h1 {
-    font-size: 1.2rem;
-  }
-
-  p {
-    font-size: 0.85rem;
-  }
-
-  input {
-    font-size: 0.95rem;
-  }
-
-  .btn-custom-blue {
-    font-size: 0.95rem;
-  }
+@media (max-width: 460px){
+  .card{ padding: 36px 28px 32px 28px; }
 }

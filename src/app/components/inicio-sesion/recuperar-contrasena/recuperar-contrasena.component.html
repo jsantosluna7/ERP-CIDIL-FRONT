@@ -1,30 +1,32 @@
-<div class="fondo d-flex justify-content-center align-items-center">
-  <form [formGroup]="recuperarContrasenaForm"
-    class="row g-3 container form">
-    
-    <div class="top-form">
-      <div class="back-btn">
-        <app-back-button [link]="'/login'"></app-back-button>
-      </div>
-      <div class="text-center mt-1">
-        <h1>Restablecer <strong>contraseña!</strong></h1>
-        <p>Establece una nueva contraseña.</p>
-      </div>
+<div class="scene">
+  <div class="card">
+
+    <div class="head">
+      <h1>Restablecer <b>contraseña</b></h1>
+      <p class="sub">Establece una nueva contraseña.</p>
     </div>
 
-    <div class="col-md-12">
-      <label for="inputEmail4" class="form-label">Email</label>
-      <div class="envelope">
-        <fa-icon [icon]="faEnvelope"></fa-icon>
-        <input type="email" formControlName="email" class="form-control" id="inputEmail4"
-          placeholder="ejemplo@ipl.edu.do" />
+    <form [formGroup]="resetForm" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <div class="input-shell">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <path d="m3 7 9 6 9-6"/>
+          </svg>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="ejemplo@loyola.edu.do"
+            autocomplete="email">
+        </div>
       </div>
-    </div>
 
-    <div class="col-12 text-center">
-      <button (click)="olvideContrasena()" class="btn btn-custom-blue mb-5 mt-3">
-        Enviar correo
-      </button>
-    </div>
-  </form>
+      <button type="submit" class="cta">Enviar correo</button>
+    </form>
+
+    <p class="login-note">¿Recordaste tu contraseña? <a routerLink="/acceso/login">Inicia sesión</a></p>
+
+  </div>
 </div>
