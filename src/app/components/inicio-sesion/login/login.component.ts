@@ -20,22 +20,15 @@ interface Slide {
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  // Encapsulación normal (Emulated, el default de Angular): esto aísla
-  // nuestros estilos con un atributo único por componente, así que clases
-  // genéricas como .card, .field o .line NO chocan con Bootstrap, Angular
-  // Material, u otros componentes de tu app que usen los mismos nombres.
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  /** Formulario reactivo equivalente al <form> del login original */
   loginForm: FormGroup;
   loading: boolean = false;
 
-  //ENDPOINTS
   iniciarSesion = `${process.env['API_URL']}${process.env['ENDPOINT_INICIAR_SESION']}`;
 
-  /** Mismas imágenes/captions que estaban hardcodeadas en el <script> original */
   slides: Slide[] = [
     {
       url: 'assets/cidil/edificio-cidil-completo.jpg',
@@ -55,7 +48,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     },
   ];
 
-  /** Índice del slide activo (equivalente a la variable "current" del script original) */
   current = 0;
 
   private autoplayTimer: ReturnType<typeof setInterval> | null = null;
@@ -81,22 +73,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.stopAutoplay();
   }
 
-  /** Equivalente a la función goTo(i) del script original */
   goTo(index: number): void {
     this.current = index;
   }
 
-  /** Equivalente a la función next() del script original */
   next(): void {
     this.goTo((this.current + 1) % this.slides.length);
   }
 
-  /** Equivalente a startAutoplay() del script original */
   startAutoplay(): void {
     this.autoplayTimer = setInterval(() => this.next(), 4500);
   }
 
-  /** Equivalente a stopAutoplay() del script original */
   stopAutoplay(): void {
     if (this.autoplayTimer) {
       clearInterval(this.autoplayTimer);
@@ -110,7 +98,23 @@ export class LoginComponent implements OnInit, OnDestroy {
     return !!control && control.invalid && (control.touched || control.dirty);
   }
 
-  /** Maneja el submit del formulario de login (Reactive Forms) */
+  /** Mensaje de error a mostrar en el tooltip del ícono "i". */
+  errorMessage(controlName: string): string {
+    const control = this.loginForm.get(controlName);
+    if (!control || !control.errors) return '';
+
+    if (controlName === 'email') {
+      if (control.hasError('required')) return 'El correo es obligatorio.';
+      if (control.hasError('email')) return 'Formato de correo inválido.';
+    }
+
+    if (controlName === 'password') {
+      if (control.hasError('required')) return 'La contraseña es obligatoria.';
+    }
+
+    return 'Campo inválido.';
+  }
+
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -123,10 +127,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     };
 
     this.loading = true;
-
-    // Llamada al servicio de inicio de sesión
-    // Se utiliza el servicio UsuariosService para realizar la petición
-    // Se maneja la respuesta y los posibles errores
 
     this._usuario.iniciarSesion(this.iniciarSesion, data).subscribe({
       next: (e) => {

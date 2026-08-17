@@ -23,13 +23,13 @@
       </div>
     </div>
 
-    <form class="steps" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <form class="steps" [formGroup]="registerForm" (ngSubmit)="onSubmit()" (keydown.enter)="onEnterKey($event)">
       <!-- STEP 1 -->
       <div class="step" [class.active]="currentStep === 1">
         <div class="grid-2">
           <div class="field">
             <label for="nombres">Nombres</label>
-            <div class="input-shell" [class.has-error]="hasError('nombres')">
+            <div class="input-shell" [class.has-error]="fieldHasError('nombres')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -45,15 +45,24 @@
                 placeholder="Nombre"
                 formControlName="nombres"
                 (input)="onSoloTextoInput($event, 'nombres')"
+                [attr.aria-describedby]="fieldHasError('nombres') ? 'nombres-error' : null"
               />
+              @if (fieldHasError('nombres')) {
+                <div class="error-tooltip-wrap">
+                  <span
+                    class="error-icon"
+                    tabindex="0"
+                    role="img"
+                    [attr.aria-label]="'Error: ' + errorMessage('nombres')"
+                  >i</span>
+                  <span class="error-bubble" id="nombres-error">{{ errorMessage('nombres') }}</span>
+                </div>
+              }
             </div>
-            @if (hasError("nombres")) {
-              <span class="error-text">Ingresa tu nombre.</span>
-            }
           </div>
           <div class="field">
             <label for="apellidos">Apellidos</label>
-            <div class="input-shell" [class.has-error]="hasError('apellidos')">
+            <div class="input-shell" [class.has-error]="fieldHasError('apellidos')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -69,17 +78,26 @@
                 placeholder="Apellidos"
                 formControlName="apellidos"
                 (input)="onSoloTextoInput($event, 'apellidos')"
+                [attr.aria-describedby]="fieldHasError('apellidos') ? 'apellidos-error' : null"
               />
+              @if (fieldHasError('apellidos')) {
+                <div class="error-tooltip-wrap">
+                  <span
+                    class="error-icon"
+                    tabindex="0"
+                    role="img"
+                    [attr.aria-label]="'Error: ' + errorMessage('apellidos')"
+                  >i</span>
+                  <span class="error-bubble" id="apellidos-error">{{ errorMessage('apellidos') }}</span>
+                </div>
+              }
             </div>
-            @if (hasError("apellidos")) {
-              <span class="error-text">Ingresa tus apellidos.</span>
-            }
           </div>
         </div>
 
         <div class="field">
           <label for="email">Correo electrónico</label>
-          <div class="input-shell" [class.has-error]="hasError('email')">
+          <div class="input-shell" [class.has-error]="fieldHasError('email')">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -94,27 +112,26 @@
               type="email"
               placeholder="ejemplo@ipl.edu.do"
               formControlName="email"
+              [attr.aria-describedby]="fieldHasError('email') ? 'email-error' : null"
             />
+            @if (fieldHasError('email')) {
+              <div class="error-tooltip-wrap">
+                <span
+                  class="error-icon"
+                  tabindex="0"
+                  role="img"
+                  [attr.aria-label]="'Error: ' + errorMessage('email')"
+                >i</span>
+                <span class="error-bubble" id="email-error">{{ errorMessage('email') }}</span>
+              </div>
+            }
           </div>
-          @if (hasError("email")) {
-            <span class="error-text">
-              @if (registerForm.get("email")?.hasError("required")) {
-                El correo es obligatorio.
-              } @else if (registerForm.get("email")?.hasError("email")) {
-                Formato de correo inválido.
-              } @else if (
-                registerForm.get("email")?.hasError("correoInstitucional")
-              ) {
-                Debes usar tu correo institucional {{`${'(@ipl.edu.do)'}`}}.
-              }
-            </span>
-          }
         </div>
 
         <div class="grid-2">
           <div class="field">
             <label for="pass">Contraseña</label>
-            <div class="input-shell" [class.has-error]="hasError('pass')">
+            <div class="input-shell" [class.has-error]="fieldHasError('pass')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -129,17 +146,26 @@
                 type="password"
                 placeholder="••••••••"
                 formControlName="pass"
+                [attr.aria-describedby]="fieldHasError('pass') ? 'pass-error' : null"
               />
+              @if (fieldHasError('pass')) {
+                <div class="error-tooltip-wrap">
+                  <span
+                    class="error-icon"
+                    tabindex="0"
+                    role="img"
+                    [attr.aria-label]="'Error: ' + errorMessage('pass')"
+                  >i</span>
+                  <span class="error-bubble" id="pass-error">{{ errorMessage('pass') }}</span>
+                </div>
+              }
             </div>
-            @if (hasError("pass")) {
-              <span class="error-text">Mínimo 8 caracteres.</span>
-            }
           </div>
           <div class="field">
             <label for="pass2">Confirmar contraseña</label>
             <div
               class="input-shell"
-              [class.has-error]="hasError('pass2') || passwordsMismatch"
+              [class.has-error]="fieldHasError('pass2')"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -155,11 +181,20 @@
                 type="password"
                 placeholder="••••••••"
                 formControlName="pass2"
+                [attr.aria-describedby]="fieldHasError('pass2') ? 'pass2-error' : null"
               />
+              @if (fieldHasError('pass2')) {
+                <div class="error-tooltip-wrap">
+                  <span
+                    class="error-icon"
+                    tabindex="0"
+                    role="img"
+                    [attr.aria-label]="'Error: ' + errorMessage('pass2')"
+                  >i</span>
+                  <span class="error-bubble" id="pass2-error">{{ errorMessage('pass2') }}</span>
+                </div>
+              }
             </div>
-            @if (passwordsMismatch) {
-              <span class="error-text">Las contraseñas no coinciden.</span>
-            }
           </div>
         </div>
 
@@ -175,7 +210,7 @@
         <div class="grid-2">
           <div class="field">
             <label for="matricula">Matrícula o ID de Empleado</label>
-            <div class="input-shell" [class.has-error]="hasError('matricula')">
+            <div class="input-shell" [class.has-error]="fieldHasError('matricula')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -191,15 +226,24 @@
                 placeholder="Ej: 10089635 o 1513"
                 formControlName="matricula"
                 (input)="onSoloNumeroInput($event, 'matricula')"
+                [attr.aria-describedby]="fieldHasError('matricula') ? 'matricula-error' : null"
               />
+              @if (fieldHasError('matricula')) {
+                <div class="error-tooltip-wrap">
+                  <span
+                    class="error-icon"
+                    tabindex="0"
+                    role="img"
+                    [attr.aria-label]="'Error: ' + errorMessage('matricula')"
+                  >i</span>
+                  <span class="error-bubble" id="matricula-error">{{ errorMessage('matricula') }}</span>
+                </div>
+              }
             </div>
-            @if (hasError("matricula")) {
-              <span class="error-text">Ingresa tu matrícula o ID.</span>
-            }
           </div>
           <div class="field">
             <label for="telefono">Teléfono</label>
-            <div class="input-shell" [class.has-error]="hasError('telefono')">
+            <div class="input-shell" [class.has-error]="fieldHasError('telefono')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -217,19 +261,26 @@
                 maxlength="12"
                 formControlName="telefono"
                 (input)="onTelefonoInput($event)"
+                [attr.aria-describedby]="fieldHasError('telefono') ? 'telefono-error' : null"
               />
+              @if (fieldHasError('telefono')) {
+                <div class="error-tooltip-wrap">
+                  <span
+                    class="error-icon"
+                    tabindex="0"
+                    role="img"
+                    [attr.aria-label]="'Error: ' + errorMessage('telefono')"
+                  >i</span>
+                  <span class="error-bubble" id="telefono-error">{{ errorMessage('telefono') }}</span>
+                </div>
+              }
             </div>
-            @if (hasError("telefono")) {
-              <span class="error-text"
-                >Debe iniciar con 809, 829 u 849, formato 809-777-7777.</span
-              >
-            }
           </div>
         </div>
 
         <div class="field">
           <label for="direccion">Dirección de domicilio</label>
-          <div class="input-shell" [class.has-error]="hasError('direccion')">
+          <div class="input-shell" [class.has-error]="fieldHasError('direccion')">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -244,18 +295,34 @@
               type="text"
               placeholder="Dirección"
               formControlName="direccion"
+              [attr.aria-describedby]="fieldHasError('direccion') ? 'direccion-error' : null"
             />
+            @if (fieldHasError('direccion')) {
+              <div class="error-tooltip-wrap">
+                <span
+                  class="error-icon"
+                  tabindex="0"
+                  role="img"
+                  [attr.aria-label]="'Error: ' + errorMessage('direccion')"
+                >i</span>
+                <span class="error-bubble" id="direccion-error">{{ errorMessage('direccion') }}</span>
+              </div>
+            }
           </div>
-          @if (hasError("direccion")) {
-            <span class="error-text">Ingresa tu dirección.</span>
-          }
         </div>
 
         <div class="actions">
           <button type="button" class="cta secondary" (click)="goToStep1()">
             Atrás
           </button>
-          <button type="submit" class="cta">Regístrate</button>
+          <button type="submit" class="cta" [disabled]="loading">
+            @if (loading) {
+              <span class="spinner" aria-hidden="true"></span>
+              Registrando...
+            } @else {
+              Regístrate
+            }
+          </button>
         </div>
       </div>
     </form>

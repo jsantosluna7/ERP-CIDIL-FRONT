@@ -327,9 +327,9 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
 
-  /** Ruta comodín: cualquier otra URL redirige a anuncios */
-  {
-    path: '**',
-    redirectTo: 'anuncios',
-  },
+  // /** Ruta comodín: cualquier otra URL redirige a anuncios */
+  // {
+  //   path: '**',
+  //   redirectTo: 'anuncios',
+  // },
 ];

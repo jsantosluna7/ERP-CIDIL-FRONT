@@ -187,14 +187,14 @@ export class ReservaEquipoComponent implements OnInit {
   }
 
   irSolicitudes(): void {
-    this.router.navigate(['/acceso/home/solicitud-equipo']);
+    this.router.navigate(['/home/solicitud-equipo']);
   }
 
   irMisPrestamos(): void {
-    this.router.navigate(['/acceso/home/mis-prestamos']);
+    this.router.navigate(['/home/mis-prestamos']);
   }
 
   irInventario(): void {
-    this.router.navigate(['/acceso/home/inventario']);
+    this.router.navigate(['/home/inventario']);
   }
 }

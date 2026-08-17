@@ -367,7 +367,7 @@ export class HorarioTableComponent {
   }
 
   abrirErrores(todosErrores: any[]) {
-    // this._router.navigate(['/acceso/home/horario/errores'], {
+    // this._router.navigate(['/home/horario/errores'], {
     //   state: { error: todosErrores },
     // });
 

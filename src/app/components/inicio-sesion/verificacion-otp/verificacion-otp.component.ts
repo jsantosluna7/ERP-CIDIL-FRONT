@@ -143,7 +143,7 @@ export class VerificacionOtpComponent implements OnInit, AfterViewInit {
     this._userService.usuarioPendiente(this.VerificacionOtp, body).subscribe({
       next: (response) => {
         this.loading = false;
-        this._router.navigate(['/acceso/home']);
+        this._router.navigate(['/home']);
         this._toastr.success('OTP verificado exitosamente.', 'Éxito');
         this._userService.user$.pipe(take(1)).subscribe((user) => {
           this._toastr.success(

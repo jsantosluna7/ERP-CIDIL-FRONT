@@ -127,7 +127,7 @@ export class EspacioUsuarioComponent implements OnInit {
   }
 
   irPrincipal(): void {
-    this.router.navigate(['/acceso/home/reserva-laboratorio']);
+    this.router.navigate(['/home/reserva-laboratorio']);
   }
 
   private mapearEstado(idEstado: number): 'pendiente' | 'aprobada' | 'rechazada' {

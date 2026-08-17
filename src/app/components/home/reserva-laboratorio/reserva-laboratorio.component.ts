@@ -92,11 +92,11 @@ export class ReservaLaboratorioComponent implements OnInit {
   ) {}
 
   solicitudes() {
-    this.router.navigate(['/acceso/home/solicitud-laboratorio']);
+    this.router.navigate(['/home/solicitud-laboratorio']);
   }
 
   misSolicitudes() {
-    this.router.navigate(['/acceso/home/mis-solicitudes-espacio']);
+    this.router.navigate(['/home/mis-solicitudes-espacio']);
   }
 
   ngOnInit(): void {
@@ -309,7 +309,7 @@ export class ReservaLaboratorioComponent implements OnInit {
           'La solicitud fue enviada correctamente',
           'Solicitud creada',
         );
-        this.router.navigate(['/acceso/home/mis-solicitudes-espacio']);
+        this.router.navigate(['/home/mis-solicitudes-espacio']);
       },
       error: (err) => {
         this.enviando = false;

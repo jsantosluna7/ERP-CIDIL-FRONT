@@ -8,7 +8,9 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
 
 /** Valida que "pass" y "pass2" coincidan. Se aplica a nivel de FormGroup. */
 function passwordsMatchValidator(
@@ -40,6 +42,10 @@ export class RegistroComponent {
   /** Paso actual del wizard: 1 = cuenta, 2 = datos. */
   currentStep = 1;
   registerForm: FormGroup;
+  loading: boolean = false;
+
+  //ENDPOINTS
+  registrar = `${process.env['API_URL']}${process.env['ENDPOINT_REGISTRAR']}`;
 
   /** Campos que pertenecen al paso 1, usados para validar antes de avanzar. */
   private readonly step1Fields = [
@@ -50,7 +56,12 @@ export class RegistroComponent {
     'pass2',
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private _usuarios: UsuariosService,
+    private _toastr: ToastrService,
+    private _router: Router,
+  ) {
     this.registerForm = this.fb.group(
       {
         nombres: [
@@ -110,6 +121,50 @@ export class RegistroComponent {
     );
   }
 
+  /**
+   * Igual que hasError(), pero para 'pass2' también considera el error de
+   * FormGroup (passwordMismatch), que no vive dentro del propio control.
+   */
+  fieldHasError(controlName: string): boolean {
+    if (controlName === 'pass2') {
+      return this.hasError('pass2') || this.passwordsMismatch;
+    }
+    return this.hasError(controlName);
+  }
+
+  /** Mensaje de error a mostrar en el tooltip del ícono "i". */
+  errorMessage(controlName: string): string {
+    if (controlName === 'pass2' && this.passwordsMismatch) {
+      return 'Las contraseñas no coinciden.';
+    }
+
+    const control = this.registerForm.get(controlName);
+    if (!control || !control.errors) return '';
+
+    switch (controlName) {
+      case 'nombres':
+        return 'Ingresa tu nombre.';
+      case 'apellidos':
+        return 'Ingresa tus apellidos.';
+      case 'email':
+        if (control.hasError('required')) return 'El correo es obligatorio.';
+        if (control.hasError('email')) return 'Formato de correo inválido.';
+        if (control.hasError('correoInstitucional'))
+          return 'Debes usar tu correo institucional (@ipl.edu.do).';
+        return 'Correo inválido.';
+      case 'pass':
+        return 'Mínimo 8 caracteres.';
+      case 'matricula':
+        return 'Ingresa tu matrícula o ID.';
+      case 'telefono':
+        return 'Debe iniciar con 809, 829 u 849, formato 809-777-7777.';
+      case 'direccion':
+        return 'Ingresa tu dirección.';
+      default:
+        return 'Campo inválido.';
+    }
+  }
+
   goToStep2(): void {
     this.step1Fields.forEach((name) =>
       this.registerForm.get(name)?.markAsTouched(),
@@ -158,10 +213,44 @@ export class RegistroComponent {
     this.registerForm.get('telefono')?.setValue(formatted);
   }
 
+  /** Enter en el paso 1 avanza al paso 2 en vez de enviar el formulario. */
+  onEnterKey(event: Event): void {
+    if (this.currentStep === 1) {
+      event.preventDefault();
+      this.goToStep2();
+    }
+    // En el paso 2 no hacemos nada: el comportamiento nativo del <form>
+    // ya dispara (ngSubmit) porque el botón type="submit" está presente.
+  }
+
   onSubmit(): void {
     if (this.registerForm.valid) {
-      console.log('Formulario enviado:', this.registerForm.value);
-      // Aquí va la llamada al servicio/API de registro.
+      this.loading = true;
+
+      const formValue = this.registerForm.value;
+
+      const data = {
+        idMatricula: formValue.matricula,
+        nombreUsuario: formValue.nombres,
+        apellidoUsuario: formValue.apellidos,
+        correoInstitucional: formValue.email,
+        contrasenaHash: formValue.pass2,
+        telefono: formValue.telefono.replace(/-/g, ''), // 8097777777
+        direccion: formValue.direccion,
+      };
+
+      this._usuarios.registro(this.registrar, data).subscribe({
+        next: (e) => {
+          this.loading = false;
+          this._router.navigate(['acceso/verificacion-otp']);
+        },
+        error: (e) => {
+          this.loading = false;
+          this._toastr.error(e.error.error, 'Hubo un error');
+        },
+      });
+
+      console.log('Formulario enviado:', data);
     } else {
       this.registerForm.markAllAsTouched();
       if (
