@@ -14,7 +14,8 @@
      :root nunca recibe el atributo de scope (el <html> real está fuera
      del árbol del componente), así que las variables no se aplicaban.
      Definidas aquí en :host, se heredan normalmente a todos los hijos. */
-  --blue: #1825aa; /* Pantone 2736 C */
+  --blue: #1825aa;
+  /* Pantone 2736 C */
   --blue-2: #10186e;
   --red: #cc3333;
   --yellow: #ffff33;
@@ -48,26 +49,18 @@
      pero ahora queda encapsulado dentro del componente. */
   background-color: #f6f5f2;
   background-image:
-    radial-gradient(
-      circle at 12% 15%,
+    radial-gradient(circle at 12% 15%,
       rgba(24, 37, 170, 0.3) 0%,
-      rgba(24, 37, 170, 0) 42%
-    ),
-    radial-gradient(
-      circle at 88% 12%,
+      rgba(24, 37, 170, 0) 42%),
+    radial-gradient(circle at 88% 12%,
       rgba(255, 255, 51, 0.28) 0%,
-      rgba(255, 255, 51, 0) 38%
-    ),
-    radial-gradient(
-      circle at 85% 90%,
+      rgba(255, 255, 51, 0) 38%),
+    radial-gradient(circle at 85% 90%,
       rgba(204, 51, 51, 0.22) 0%,
-      rgba(204, 51, 51, 0) 40%
-    ),
-    radial-gradient(
-      circle at 10% 88%,
+      rgba(204, 51, 51, 0) 40%),
+    radial-gradient(circle at 10% 88%,
       rgba(24, 37, 170, 0.22) 0%,
-      rgba(24, 37, 170, 0) 42%
-    );
+      rgba(24, 37, 170, 0) 42%);
   background-attachment: fixed;
 }
 
@@ -76,7 +69,8 @@
   background: var(--paper);
   border-radius: var(--radius-outer);
   padding: 22px;
-  display: flex !important; /* refuerzo temporal: algo en tu app está ganando la especificidad contra display:flex — ver nota abajo */
+  display: flex !important;
+  /* refuerzo temporal: algo en tu app está ganando la especificidad contra display:flex — ver nota abajo */
   flex-direction: row !important;
   max-width: 1040px;
   width: 100%;
@@ -88,8 +82,10 @@
 .carousel {
   position: relative;
   width: 46%;
-  min-height: 400px; /* respaldo: no depender solo del stretch del flex padre */
-  align-self: stretch; /* refuerza el stretch por si el default se pierde */
+  min-height: 400px;
+  /* respaldo: no depender solo del stretch del flex padre */
+  align-self: stretch;
+  /* refuerza el stretch por si el default se pierde */
   border-radius: var(--radius-inner);
   overflow: hidden;
   background: #e9e8e4;
@@ -129,11 +125,9 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 55%,
-    rgba(0, 0, 0, 0.45) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0) 55%,
+      rgba(0, 0, 0, 0.45) 100%);
   z-index: 2;
   pointer-events: none;
 }
@@ -247,9 +241,21 @@ h1 {
 .field input:focus {
   border-color: var(--blue);
 }
+
 .field input:focus-visible {
-  outline: 2px solid var(--blue);
+  /* outline: 2px solid var(--blue); */
   outline-offset: 2px;
+}
+
+input.has-error {
+  border-color: #e53e3e;
+}
+
+.error-text {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
 }
 
 .row-between {
@@ -305,9 +311,11 @@ button.cta {
 button.cta:hover {
   background: var(--blue-2);
 }
+
 button.cta:active {
   transform: scale(0.99);
 }
+
 button.cta:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 3px;
@@ -319,11 +327,13 @@ button.cta:focus-visible {
   gap: 12px;
   margin: 26px 0 20px 0;
 }
+
 .divider-row .line {
   flex: 1;
   height: 1px;
   background: var(--border);
 }
+
 .divider-row span {
   font-size: 12px;
   color: var(--ink-soft);
@@ -351,10 +361,12 @@ button.sso {
 button.sso:hover {
   background: #ecebe8;
 }
+
 button.sso:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
+
 button.sso svg {
   width: 17px;
   height: 17px;
@@ -366,11 +378,13 @@ button.sso svg {
   color: var(--ink-soft);
   margin-top: 6px;
 }
+
 .signup-note a {
   color: var(--blue);
   font-weight: 700;
   text-decoration: none;
 }
+
 .signup-note a:hover {
   text-decoration: underline;
 }
@@ -380,10 +394,12 @@ button.sso svg {
     flex-direction: column !important;
     padding: 16px;
   }
+
   .carousel {
     width: 100%;
     height: 220px;
   }
+
   .form-side {
     padding: 32px 20px;
   }

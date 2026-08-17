@@ -20,6 +20,15 @@ function passwordsMatchValidator(
   return pass === pass2 ? null : { passwordMismatch: true };
 }
 
+function correoInstitucionalValidator(
+  control: AbstractControl,
+): ValidationErrors | null {
+  const value = control.value as string;
+  if (!value) return null;
+  const regex = /^[a-zA-Z0-9._%+-]+@ipl\.edu\.do$/i;
+  return regex.test(value) ? null : { correoInstitucional: true };
+}
+
 @Component({
   selector: 'app-registro',
   standalone: true,
@@ -44,15 +53,35 @@ export class RegistroComponent {
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group(
       {
-        nombres: ['', [Validators.required, Validators.minLength(2)]],
-        apellidos: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
+        nombres: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/),
+          ],
+        ],
+        apellidos: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(2),
+            Validators.pattern(/^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/),
+          ],
+        ],
+        email: [
+          '',
+          [Validators.required, Validators.email, correoInstitucionalValidator],
+        ],
         pass: ['', [Validators.required, Validators.minLength(8)]],
         pass2: ['', [Validators.required]],
-        matricula: ['', [Validators.required]],
+        matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
         telefono: [
           '',
-          [Validators.required, Validators.pattern(/^[0-9+\-\s()]{7,15}$/)],
+          [
+            Validators.required,
+            Validators.pattern(/^(809|829|849)-\d{3}-\d{4}$/),
+          ],
         ],
         direccion: ['', [Validators.required, Validators.minLength(5)]],
       },
@@ -98,6 +127,35 @@ export class RegistroComponent {
 
   goToStep1(): void {
     this.currentStep = 1;
+  }
+
+  /** Elimina cualquier carácter que no sea letra o espacio mientras se escribe. */
+  onSoloTextoInput(event: Event, controlName: string): void {
+    const input = event.target as HTMLInputElement;
+    const limpio = input.value.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ\s]/g, '');
+    this.registerForm.get(controlName)?.setValue(limpio);
+  }
+
+  /** Elimina cualquier carácter que no sea dígito mientras se escribe. */
+  onSoloNumeroInput(event: Event, controlName: string): void {
+    const input = event.target as HTMLInputElement;
+    const limpio = input.value.replace(/\D/g, '');
+    this.registerForm.get(controlName)?.setValue(limpio);
+  }
+
+  /** Formatea el teléfono como 809-777-7777 mientras el usuario escribe. */
+  onTelefonoInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 10);
+
+    let formatted = digits;
+    if (digits.length > 6) {
+      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    } else if (digits.length > 3) {
+      formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    }
+
+    this.registerForm.get('telefono')?.setValue(formatted);
   }
 
   onSubmit(): void {
