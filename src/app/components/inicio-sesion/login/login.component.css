@@ -32,28 +32,39 @@
 }
 
 .scene {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh; /* fallback */
+  height: 100svh; /* viewport "seguro" en móviles con barra dinámica */
+  height: 100dvh; /* se ajusta cuando la barra de Safari aparece/desaparece */
+  width: 100%;
+  overflow: hidden;
+  touch-action: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: clamp(16px, 5vw, 40px) clamp(12px, 4vw, 20px);
   background-color: #f6f5f2;
   background-image:
-    radial-gradient(circle at 12% 15%,
+    radial-gradient(
+      circle at 12% 15%,
       rgba(24, 37, 170, 0.3) 0%,
-      rgba(24, 37, 170, 0) 42%),
-    radial-gradient(circle at 88% 12%,
+      rgba(24, 37, 170, 0) 42%
+    ),
+    radial-gradient(
+      circle at 88% 12%,
       rgba(255, 255, 51, 0.28) 0%,
-      rgba(255, 255, 51, 0) 38%),
-    radial-gradient(circle at 85% 90%,
+      rgba(255, 255, 51, 0) 38%
+    ),
+    radial-gradient(
+      circle at 85% 90%,
       rgba(204, 51, 51, 0.22) 0%,
-      rgba(204, 51, 51, 0) 40%),
-    radial-gradient(circle at 10% 88%,
+      rgba(204, 51, 51, 0) 40%
+    ),
+    radial-gradient(
+      circle at 10% 88%,
       rgba(24, 37, 170, 0.22) 0%,
-      rgba(24, 37, 170, 0) 42%);
+      rgba(24, 37, 170, 0) 42%
+    );
   background-attachment: fixed;
-  overflow-x: hidden;
 }
 
 .card {
@@ -65,8 +76,18 @@
   flex-direction: row !important;
   max-width: 1040px;
   width: 100%;
-  min-height: clamp(460px, 88vh, 640px);
   box-shadow: 0 30px 70px -30px rgba(24, 25, 40, 0.25);
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.card::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge modernos, Android WebView */
 }
 
 /* ---------------- carousel ---------------- */
@@ -114,9 +135,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg,
-      rgba(0, 0, 0, 0) 55%,
-      rgba(0, 0, 0, 0.45) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
   z-index: 2;
   pointer-events: none;
 }
@@ -309,10 +332,18 @@ input.has-error {
 }
 
 @keyframes errorFlash {
-  0% { opacity: 0; }
-  12% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .error-tooltip-wrap:hover .error-bubble,
@@ -476,12 +507,16 @@ button.sso svg {
   }
 
   .carousel {
-    width: 100%;
-    height: clamp(160px, 30vh, 240px);
-    min-height: 0;
+    display: none;
   }
 
   .form-side {
     padding: clamp(20px, 6vw, 32px) clamp(16px, 5vw, 20px);
+  }
+}
+
+@media (min-width: 821px) {
+  .card {
+    min-height: clamp(460px, 88vh, 640px);
   }
 }

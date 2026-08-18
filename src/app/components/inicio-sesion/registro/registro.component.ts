@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -38,7 +38,7 @@ function correoInstitucionalValidator(
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css',
 })
-export class RegistroComponent {
+export class RegistroComponent implements OnInit, OnDestroy {
   /** Paso actual del wizard: 1 = cuenta, 2 = datos. */
   currentStep = 1;
   registerForm: FormGroup;
@@ -100,6 +100,16 @@ export class RegistroComponent {
     );
   }
 
+  ngOnInit(): void {
+    document.body.classList.add('no-scroll');
+    document.documentElement.classList.add('no-scroll');
+  }
+
+  ngOnDestroy(): void {
+    document.body.classList.remove('no-scroll');
+    document.documentElement.classList.remove('no-scroll');
+  }
+
   get subText(): string {
     return this.currentStep === 1
       ? 'Crea tu cuenta.'
@@ -109,7 +119,7 @@ export class RegistroComponent {
   /** Devuelve true si el campo tiene un error visible (tocado + inválido). */
   hasError(controlName: string): boolean {
     const control = this.registerForm.get(controlName);
-    return !!control && control.invalid && (control.touched || control.dirty);
+    return !!control && control.invalid && control.touched;
   }
 
   get passwordsMismatch(): boolean {

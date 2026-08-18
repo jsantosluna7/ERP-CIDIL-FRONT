@@ -7,7 +7,7 @@
 }
 
 * {
-  font-family: 'helvetica neue', sans-serif;
+  font-family: "helvetica neue", sans-serif;
 }
 
 /* .sidebar.close ~ .home{
@@ -16,13 +16,13 @@
 } */
 
 body {
-  background-color: #ECF1F2;
+  background-color: #ecf1f2;
 }
 
 .body .home {
   transition: margin-left 0.4s ease;
   padding: 20px;
-  background-color: #ECF1F2;
+  background-color: #ecf1f2;
   /* Esto agrega espacio interno al contenido */
 }
 
@@ -46,15 +46,24 @@ body {
   }
 }
 
-
 html,
 body {
-  height: 100%;
   margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+html.no-scroll,
+body.no-scroll {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
 }
 
 body {
-  margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
@@ -81,11 +90,11 @@ body {
 .fc .fc-daygrid-day-number,
 .fc .fc-col-header-cell-cushion {
   text-decoration: none;
-  color: #1825AA;
+  color: #1825aa;
 }
 
 .fc .fc-scrollgrid,
-.fc .fc-scrollgrid-section>td {
+.fc .fc-scrollgrid-section > td {
   border-radius: 20px;
 }
 

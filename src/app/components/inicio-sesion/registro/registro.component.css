@@ -34,8 +34,12 @@
 }
 
 .scene {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh; /* fallback */
+  height: 100svh; /* viewport "seguro" en móviles con barra dinámica */
+  height: 100dvh; /* se ajusta cuando la barra de Safari aparece/desaparece */
+  width: 100%;
+  overflow: hidden;
+  touch-action: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,7 +67,6 @@
       rgba(24, 37, 170, 0) 42%
     );
   background-attachment: fixed;
-  overflow-x: hidden;
 }
 
 .card {
@@ -76,6 +79,17 @@
   width: 100%;
   box-shadow: 0 30px 70px -30px rgba(24, 25, 40, 0.25);
   overflow: hidden;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.card::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge modernos, Android WebView */
 }
 
 .head {
@@ -421,5 +435,15 @@ button.cta.secondary:hover {
   }
   .progress-step .label {
     display: none;
+  }
+}
+
+@media (min-width: 821px) {
+  .card {
+    min-height: clamp(
+      460px,
+      88vh,
+      640px
+    ); /* este valor ya lo tenías en login */
   }
 }

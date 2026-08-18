@@ -67,10 +67,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.startAutoplay();
+    document.body.classList.add('no-scroll');
+    document.documentElement.classList.add('no-scroll');
   }
 
   ngOnDestroy(): void {
     this.stopAutoplay();
+    document.body.classList.remove('no-scroll');
+    document.documentElement.classList.remove('no-scroll');
   }
 
   goTo(index: number): void {
@@ -95,7 +99,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   /** Devuelve true si el campo tiene un error visible (tocado + inválido). */
   hasError(controlName: string): boolean {
     const control = this.loginForm.get(controlName);
-    return !!control && control.invalid && (control.touched || control.dirty);
+    return !!control && control.invalid && control.touched;
   }
 
   /** Mensaje de error a mostrar en el tooltip del ícono "i". */
