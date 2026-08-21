@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
+import { GoogleOauthService } from '../../../services/GoogleOauth/google-oauth.service';
 
 interface Slide {
   url: string;
@@ -57,6 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private _usuario: UsuariosService,
     private _toastr: ToastrService,
     private _router: Router,
+    private _google: GoogleOauthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -66,6 +68,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this._google.initTokenClient();
     this.startAutoplay();
     document.body.classList.add('no-scroll');
     document.documentElement.classList.add('no-scroll');
@@ -117,6 +120,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     return 'Campo inválido.';
+  }
+
+  onLoginGoogle(){
+    this._google.loginConGoogle();
   }
 
   onSubmit(): void {
