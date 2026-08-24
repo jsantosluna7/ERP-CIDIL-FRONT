@@ -44,6 +44,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'registrar-google',
+        loadComponent: () =>
+          import('./components/inicio-sesion/registro-google/registro-google.component').then(
+            (m) => m.RegistroGoogleComponent
+          ),
+      },
+      {
         path: 'recuperar-contrasena',
         loadComponent: () =>
           import(
