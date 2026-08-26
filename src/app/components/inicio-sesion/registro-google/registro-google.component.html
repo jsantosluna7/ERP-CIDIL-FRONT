@@ -2,7 +2,7 @@
   <div class="card">
     <div class="profile-head">
       <div class="avatar-wrap">
-        <img [src]="userPhoto" [alt]="'Foto de perfil de ' + userName" />
+        <img [src]="fotoPerfil" [alt]="'Foto de perfil de ' + nombre" />
         <span class="avatar-badge" title="Cuenta vinculada con Google">
           <svg viewBox="0 0 48 48">
             <path
@@ -26,7 +26,7 @@
       </div>
 
       <h1>
-        Hola, <b>{{ userName }}</b>
+        Hola, <b>{{ nombre }}</b>
       </h1>
       <p class="sub">
         Ya validamos tu cuenta con Google. Solo necesitamos algunos datos más
@@ -34,7 +34,7 @@
       </p>
     </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="completarRegistro()">
       <div class="field">
         <div class="label-row">
           <label for="matricula">Matrícula o ID de Empleado</label>

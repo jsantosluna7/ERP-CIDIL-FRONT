@@ -13,7 +13,10 @@ export class UsuariosService {
   user$ = this.userSubject.asObservable();
   private sesionTimer: any;
 
-  constructor(private http: HttpClient, private _router: Router) {
+  constructor(
+    private http: HttpClient,
+    private _router: Router,
+  ) {
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -61,7 +64,7 @@ export class UsuariosService {
             this.setAutoLogout(tokenDecodificado.exp);
           }
         },
-      })
+      }),
     );
   }
 
@@ -88,8 +91,19 @@ export class UsuariosService {
             this.setAutoLogout(tokenDecodificado.exp);
           }
         },
-      })
+      }),
     );
+  }
+
+  establecerSesionDesdeToken(token: string): void {
+    const tokenDecodificado: JwtPayload = jwtDecode(token);
+
+    this.userSubject.next(tokenDecodificado);
+    localStorage.setItem('token', token);
+
+    if (tokenDecodificado.exp) {
+      this.setAutoLogout(tokenDecodificado.exp);
+    }
   }
 
   usuarioPendiente(endpoint: string, body: any): Observable<any> {
@@ -106,7 +120,7 @@ export class UsuariosService {
             this.setAutoLogout(tokenDecodificado.exp);
           }
         },
-      })
+      }),
     );
   }
 

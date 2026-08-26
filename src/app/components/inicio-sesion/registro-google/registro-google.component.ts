@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -8,6 +8,11 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { GoogleOauthStateService } from '../../../services/GoogleOauth/google-oauth-state.service';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
 
 export interface DatosRegistro {
   matricula: string;
@@ -46,16 +51,12 @@ function formatPhoneInput(raw: string): string {
   templateUrl: './registro-google.component.html',
   styleUrl: './registro-google.component.css',
 })
-export class RegistroGoogleComponent {
-  /** Nombre del usuario ya autenticado con Google. */
-  @Input() userName = 'Usuario';
-  /** URL de la foto de perfil entregada por Google. */
-  @Input() userPhoto = '';
+export class RegistroGoogleComponent implements OnInit {
+  endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_REGISTRO_GOOGLE']}`;
 
-  /** Emite los datos capturados cuando el formulario es válido y se envía. */
-  @Output() registroCompleto = new EventEmitter<DatosRegistro>();
-
-  registerForm: FormGroup;
+  form!: FormGroup;
+  nombre: string | null = '';
+  fotoPerfil: string | null = '';
 
   private readonly errorMessages: Record<string, Record<string, string>> = {
     matricula: { required: 'Ingresa tu matrícula o ID de empleado.' },
@@ -69,9 +70,27 @@ export class RegistroGoogleComponent {
     },
   };
 
-  constructor(private fb: FormBuilder) {
-    this.registerForm = this.fb.group({
-      matricula: ['', [Validators.required]],
+  constructor(
+    private fb: FormBuilder,
+    private _authState: GoogleOauthStateService,
+    private http: HttpClient,
+    private router: Router,
+    private _usuario: UsuariosService,
+    private _toastr: ToastrService
+  ) {}
+
+  ngOnInit(): void {
+    const datos = this._authState.getUserData();
+
+    //Setear nombre de usuario e imagen de perfil
+    this.nombre = datos?.nombre ?? null;
+    this.fotoPerfil = datos?.foto ?? null;
+
+    this.form = this.fb.group({
+      email: [{ value: datos?.email, disabled: true }],
+      nombre: [datos?.nombre, Validators.required],
+      apellido: [datos?.apellido, Validators.required],
+      matricula: ['', Validators.required],
       telefono: ['', [Validators.required, phoneFormatValidator]],
       direccion: ['', [Validators.required, Validators.minLength(5)]],
     });
@@ -81,20 +100,18 @@ export class RegistroGoogleComponent {
   onPhoneInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const formatted = formatPhoneInput(input.value);
-    this.registerForm
-      .get('telefono')
-      ?.setValue(formatted, { emitEvent: false });
+    this.form.get('telefono')?.setValue(formatted, { emitEvent: false });
   }
 
   /** true si el control tiene un error visible (tocado o modificado + inválido). */
   hasError(controlName: string): boolean {
-    const control = this.registerForm.get(controlName);
+    const control = this.form.get(controlName);
     return !!control && control.invalid && (control.touched || control.dirty);
   }
 
   /** Mensaje de error correspondiente al primer validador que falló para ese control. */
   errorMessage(controlName: string): string {
-    const control = this.registerForm.get(controlName);
+    const control = this.form.get(controlName);
     if (!control || !control.errors) return '';
     const firstErrorKey = Object.keys(control.errors)[0];
     return (
@@ -102,11 +119,31 @@ export class RegistroGoogleComponent {
     );
   }
 
-  onSubmit(): void {
-    if (this.registerForm.valid) {
-      this.registroCompleto.emit(this.registerForm.value as DatosRegistro);
-    } else {
-      this.registerForm.markAllAsTouched();
+  completarRegistro() {
+    const accessToken = this._authState.getAccessToken();
+    if (!accessToken) {
+      this.router.navigate(['acceso/login']);
+      return;
     }
+
+    const payload = {
+      accessToken,
+      idMatricula: this.form.value.matricula,
+      telefono: this.form.value.telefono,
+      direccion: this.form.value.direccion,
+    };
+
+    this.http.post<any>(this.endpoint, payload).subscribe({
+      next: (res) => {
+        this._usuario.establecerSesionDesdeToken(res.tokenId)
+        this._authState.limpiar(); // ya no necesitamos el accessToken de Google
+        this.router.navigate(['home']);
+      },
+      error: (err) => {
+        this._toastr.error('Error al completar registro', 'Error')
+        console.error('Error al completar registro:', err);
+        // mostrar el mensaje de error al usuario
+      },
+    });
   }
 }

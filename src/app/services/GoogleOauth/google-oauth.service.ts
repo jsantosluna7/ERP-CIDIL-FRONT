@@ -6,6 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ACESFilmicToneMapping } from 'three';
+import { GoogleOauthStateService } from './google-oauth-state.service';
+import { ToastrService } from 'ngx-toastr';
+import { UsuariosService } from '../Api/Usuarios/usuarios.service';
 
 const GOOGLE_CLIENT_ID = environment.googleClientId;
 
@@ -14,11 +17,15 @@ const GOOGLE_CLIENT_ID = environment.googleClientId;
 })
 export class GoogleOauthService {
   private tokenClient: any;
+  endpoint: string = `${process.env['API_URL']}${process.env['ENDPOINT_LOGIN_GOOGLE']}`;
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private ngZone: NgZone,
+    private _authState: GoogleOauthStateService,
+    private _toastr: ToastrService,
+    private _usuario: UsuariosService
   ) {}
 
   private esperarGoogle(intentos = 20): Promise<void> {
@@ -67,28 +74,29 @@ export class GoogleOauthService {
 
     const accessToken = response.access_token;
 
-    console.log('token', accessToken);
+    try {
+      const res: any = await firstValueFrom(
+        this.http.post(this.endpoint, { accessToken }),
+      );
 
-    // Enviás el access_token a tu backend, y el backend
-    // lo valida contra Google y obtiene los datos del usuario
-    // const res: any = await firstValueFrom(
-    //   this.http.post('https://tu-api.com/api/auth/google', { accessToken }),
-    // );
-
-    // this.ngZone.run(() => {
-    //   if (res.exists) {
-    //     localStorage.setItem('token', res.token);
-    //     this.router.navigate(['/dashboard']);
-    //   } else {
-    //     this.router.navigate(['/completar-registro'], {
-    //       state: {
-    //         accessToken,
-    //         email: res.email,
-    //         nombre: res.nombre,
-    //         foto: res.foto,
-    //       },
-    //     });
-    //   }
-    // });
+      this.ngZone.run(() => {
+        if (res.existe) {
+          this._usuario.establecerSesionDesdeToken(res.token.tokenId);
+          this.router.navigate(['home']);
+        } else {
+          // Guardamos el accessToken en memoria, no en el Router state ni en storage
+          this._authState.setEstado(accessToken, {
+            email: res.correoInstitucional,
+            nombre: res.nombreUsuario,
+            apellido: res.apellidoUsuario,
+            foto: res.fotoPerfil,
+          });
+          this.router.navigate(['acceso/registrar-google']);
+        }
+      });
+    } catch (err: any) {
+      console.error(err)
+      this._toastr.error(err.error.mensaje, 'Error');
+    }
   }
 }

@@ -1,117 +1,135 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { BackButtonComponent } from "../../elements/back-button/back-button.component";
+import { CommonModule } from '@angular/common';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 
+/**
+ * Validador a nivel de FormGroup: si "password" y "confirmPassword" no coinciden,
+ * marca el error `passwordMismatch` directamente sobre el control confirmPassword.
+ */
+function passwordsMatchValidator(): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword');
+
+    if (!confirmPassword) return null;
+
+    if (confirmPassword.value && password !== confirmPassword.value) {
+      confirmPassword.setErrors({
+        ...confirmPassword.errors,
+        passwordMismatch: true,
+      });
+    } else if (confirmPassword.hasError('passwordMismatch')) {
+      const { passwordMismatch, ...rest } = confirmPassword.errors ?? {};
+      confirmPassword.setErrors(Object.keys(rest).length ? rest : null);
+    }
+
+    return null;
+  };
+}
+
 @Component({
-  selector: 'app-cambiar-contrasena',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, BackButtonComponent],
+  selector: 'app-reset-password',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './cambiar-contrasena.component.html',
-  styleUrl: './cambiar-contrasena.component.css'
+  styleUrl: './cambiar-contrasena.component.css',
 })
 export class CambiarContrasenaComponent implements OnInit {
-  faLock = faLock;
-  faCheck = faCheck;
-  faXmark = faXmark;
-
-  recuperarContrasenaForm: FormGroup;
-  meterPopup: any = {};
-  passwordValid: any = {};
+  form!: FormGroup;
+  loading = false;
   token: string = '';
 
-  //ENDPOINTS
-  restablecerContrasena = `${process.env['API_URL']}${process.env['ENDPOINT_RESTABLECER_CONTRASENA']}`
+  restablecerContrasena = `${process.env['API_URL']}${process.env['ENDPOINT_RESTABLECER_CONTRASENA']}`;
 
-  constructor(private _usuarios: UsuariosService, private _toastr: ToastrService, private _router: Router, private _token: ActivatedRoute) {
-    this.recuperarContrasenaForm = new FormGroup({
-      contrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      confirmarContrasena: new FormControl('', [Validators.required, Validators.minLength(6)]),
+  private readonly errorMessages: Record<string, Record<string, string>> = {
+    password: {
+      required: 'La contraseña es obligatoria.',
+      minlength: 'Debe tener al menos 8 caracteres.',
     },
+    confirmPassword: {
+      required: 'Confirma la contraseña.',
+      passwordMismatch: 'Las contraseñas no coinciden.',
+    },
+  };
+
+  constructor(
+    private fb: FormBuilder,
+    private _usuarios: UsuariosService,
+    private _toastr: ToastrService,
+    private _router: Router,
+    private _token: ActivatedRoute,
+  ) {}
+
+  ngOnInit(): void {
+    this.form = this.fb.group(
       {
-        validators: this.matchContrasena
-      });
-  }
+        password: ['', [Validators.required, Validators.minLength(8)]],
+        confirmPassword: ['', [Validators.required]],
+      },
+      { validators: passwordsMatchValidator() },
+    );
 
-  recuperar() {
-
-    const data = {
-      "token": this.token,
-      "nuevaContrasena": this.recuperarContrasenaForm.value.contrasena
-    }
-
-    this._usuarios.restablecerContrasena(this.restablecerContrasena, data).subscribe({
-      next: (e) => {
-        this._toastr.success('Se ha restablecido su contraseña', 'Éxito');
-        this._router.navigate(['/acceso/login']);
-      },error: (e) => {
-        this._toastr.error(e.error, 'Hubo un error');
-      }
-    })
-  }
-
-  //Validar contrasena
-  matchContrasena: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-
-    let contrasena = control.get('contrasena');
-    let confirmarContrasena = control.get('confirmarContrasena');
-    if (contrasena && confirmarContrasena && contrasena?.value != confirmarContrasena?.value) {
-      return {
-        contrasenaError: true
-      }
-    }
-    return null;
-  }
-
-  ngOnInit() {
-    this.recuperarContrasenaForm.get('contrasena')?.valueChanges.subscribe(value => {
-      this.passwordValidation(value);
-    });
-
-    this._token.queryParams.subscribe(params => {
+    this._token.queryParams.subscribe((params) => {
       const token = params['token'];
       this.token = token;
-    })
-    this.closePopup();
+    });
   }
 
-  openPopup($event: Event) {
-    const contrasenaElem = document.querySelector('#contrasena');
-    if (contrasenaElem) {
-      const rect = contrasenaElem.getBoundingClientRect();
-      this.meterPopup = {
-        'display': 'block',
-        'position': 'absolute',
-        'left.px': window.scrollY + rect.left,
-        'top.px': window.scrollY + rect.top + 39,
-      };
-    } else {
-      this.meterPopup = {
-        'display': 'none'
-      };
-      console.warn('Elemento con id "contrasena" no encontrado.');
+  /** true si el control tiene un error visible (tocado o modificado + inválido). */
+  hasError(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!control && control.invalid && (control.touched || control.dirty);
+  }
+
+  /** Mensaje de error correspondiente al primer validador que falló para ese control. */
+  errorMessage(controlName: string): string {
+    const control = this.form.get(controlName);
+    if (!control || !control.errors) return '';
+    const firstErrorKey = Object.keys(control.errors)[0];
+    return (
+      this.errorMessages[controlName]?.[firstErrorKey] ?? 'Campo inválido.'
+    );
+  }
+
+  onSubmit(): void {
+    this.loading = true;
+
+    if (this.form.invalid) {
+      this.loading = false;
+      this.form.markAllAsTouched();
+      return;
     }
-  }
-  closePopup() {
-    this.meterPopup = { 'display': 'none' };
-  }
-  passwordValidation(PasswordText: any) {
-    const hasUpperCase = /[A-Z]/.test(PasswordText);
-    const hasLowerCase = /[a-z]/.test(PasswordText);
-    const hasNumeric = /[0-9]/.test(PasswordText);
-    const hasSpecialCharacterCheck = /\W|_/g;
-    const hasSpecialCharacter = hasSpecialCharacterCheck.test(PasswordText);
-    const hasNoSpaces = !/\s/.test(PasswordText);
 
-    this.passwordValid.hasMinLength = PasswordText.length >= 6 ? true : false;
-    this.passwordValid.hasUpperCase = hasUpperCase;
-    this.passwordValid.hasLowerCase = hasLowerCase;
-    this.passwordValid.hasNumber = hasNumeric;
-    this.passwordValid.hasSpecialChar = hasSpecialCharacter;
-    this.passwordValid.hasNoSpaces = hasNoSpaces;
+    const { confirmPassword } = this.form.value;
+
+    const data = {
+      token: this.token,
+      nuevaContrasena: confirmPassword,
+    };
+
+    this._usuarios
+      .restablecerContrasena(this.restablecerContrasena, data)
+      .subscribe({
+        next: (e) => {
+          this.loading = false;
+          this._toastr.success('Se ha restablecido su contraseña', 'Éxito');
+          this._router.navigate(['login']);
+        },
+        error: (e) => {
+          this.loading = false;
+          this._toastr.error(e.error, 'Hubo un error');
+        },
+      });
   }
 }

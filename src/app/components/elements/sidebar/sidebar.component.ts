@@ -107,7 +107,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   salir() {
     this._usuarios.cerrarSesion();
-    this._router.navigate(['/acceso/login']);
+    this._router.navigate(['acceso/login']);
   }
 
   openDialog(): void {

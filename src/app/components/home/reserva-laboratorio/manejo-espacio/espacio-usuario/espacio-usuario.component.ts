@@ -8,6 +8,8 @@ import {
 import { Router } from '@angular/router';
 import { SolicitudReservaEspacioCacheService } from '../../../../../core/SolicitudReservaEspacioCache/solicitud-reserva-espacio-cache.service';
 import { environment } from '../../../../../../environments/environment';
+import { UsuariosService } from '../../../../../services/Api/Usuarios/usuarios.service';
+import { Usuarios } from '../../../../../interfaces/usuarios.interface';
 
 export interface SolicitudApiUsuario {
   id: number;
@@ -53,11 +55,14 @@ export interface SolicitudUsuario {
   styleUrls: ['./espacio-usuario.component.css'],
 })
 export class EspacioUsuarioComponent implements OnInit {
-  readonly IMAGENES_URL = environment.imagenesUrl + '/laboratorios/lab-no-disponible.png';
+  readonly IMAGENES_URL =
+    environment.imagenesUrl + '/laboratorios/lab-no-disponible.png';
   private modalSvc = inject(ModalStateService);
+  usuarioLogueado!: Usuarios;
 
   constructor(
     private router: Router,
+    private _usuarios: UsuariosService,
     private solicitudSvc: SolicitudReservaEspacioCacheService,
   ) {}
 
@@ -74,18 +79,27 @@ export class EspacioUsuarioComponent implements OnInit {
 
   solicitudesFiltradas = computed(() =>
     this.solicitudes().filter(
-      (s) => this.filtroActivo() === 'todos' || s.estado === this.filtroActivo(),
+      (s) =>
+        this.filtroActivo() === 'todos' || s.estado === this.filtroActivo(),
     ),
   );
 
   conteo = computed(() => ({
-    todos:     this.solicitudes().length,
-    pendiente: this.solicitudes().filter((s) => s.estado === 'pendiente').length,
-    aprobada:  this.solicitudes().filter((s) => s.estado === 'aprobada').length,
-    rechazada: this.solicitudes().filter((s) => s.estado === 'rechazada').length,
+    todos: this.solicitudes().length,
+    pendiente: this.solicitudes().filter((s) => s.estado === 'pendiente')
+      .length,
+    aprobada: this.solicitudes().filter((s) => s.estado === 'aprobada').length,
+    rechazada: this.solicitudes().filter((s) => s.estado === 'rechazada')
+      .length,
   }));
 
   ngOnInit(): void {
+    this._usuarios.user$.subscribe((usuario) => {
+      if (usuario) {
+        this.usuarioLogueado = usuario;
+      }
+    });
+
     this.cargarSolicitudes();
   }
 
@@ -130,7 +144,9 @@ export class EspacioUsuarioComponent implements OnInit {
     this.router.navigate(['/home/reserva-laboratorio']);
   }
 
-  private mapearEstado(idEstado: number): 'pendiente' | 'aprobada' | 'rechazada' {
+  private mapearEstado(
+    idEstado: number,
+  ): 'pendiente' | 'aprobada' | 'rechazada' {
     const map: Record<number, 'pendiente' | 'aprobada' | 'rechazada'> = {
       1: 'aprobada',
       2: 'pendiente',
@@ -160,29 +176,38 @@ export class EspacioUsuarioComponent implements OnInit {
   private mapearSolicitud(item: SolicitudApiUsuario): SolicitudUsuario {
     const estado = this.mapearEstado(item.idEstado);
     const fechaInicio = new Date(item.fechaInicio).toLocaleDateString('es-DO', {
-      weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
     const horaI = this.formatearHora(item.horaInicio);
     const horaF = this.formatearHora(item.horaFinal);
 
     return {
-      id:        item.id.toString(),
-      titulo:    item.nombreEspacio,
-      imagen:    item.imagenLaboratorio ?? this.IMAGENES_URL,
-      fecha:     `${fechaInicio} · ${horaI} – ${horaF}`,
-      personas:  item.personasCantidad,
+      id: item.id.toString(),
+      titulo: item.nombreEspacio,
+      imagen: item.imagenLaboratorio ?? this.IMAGENES_URL,
+      fecha: `${fechaInicio} · ${horaI} – ${horaF}`,
+      personas: item.personasCantidad,
       ubicacion: item.tipoRegistro,
       estado,
       enviadaEl: new Date(item.fechaSolicitud).toLocaleDateString('es-DO', {
-        day: '2-digit', month: 'short', year: 'numeric',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
       }),
       motivo: item.motivo,
-      motivoRechazo: estado === 'rechazada' ? item.comentarioAprobacion : undefined,
-      aprobadaEl:    estado === 'aprobada'
-        ? new Date(item.fechaAprobacion).toLocaleDateString('es-DO', {
-            day: '2-digit', month: 'short', year: 'numeric',
-          })
-        : undefined,
+      motivoRechazo:
+        estado === 'rechazada' ? item.comentarioAprobacion : undefined,
+      aprobadaEl:
+        estado === 'aprobada'
+          ? new Date(item.fechaAprobacion).toLocaleDateString('es-DO', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })
+          : undefined,
       mensajeEstado: this.buildMensajeEstado(item),
     };
   }
@@ -191,11 +216,11 @@ export class EspacioUsuarioComponent implements OnInit {
     this.cargando.set(true);
 
     this.solicitudSvc
-      .obtenerTotalReservasEspacioUsuario({ idUsuario: 5 })
+      .obtenerTotalReservasEspacioUsuario({ idUsuario: Number(this.usuarioLogueado.sub) })
       .subscribe({
         next: (total) => {
-          const mapeadas = (total.reservas as SolicitudApiUsuario[]).map((item) =>
-            this.mapearSolicitud(item),
+          const mapeadas = (total.reservas as SolicitudApiUsuario[]).map(
+            (item) => this.mapearSolicitud(item),
           );
           this.solicitudes.set(mapeadas);
           this.cargando.set(false);

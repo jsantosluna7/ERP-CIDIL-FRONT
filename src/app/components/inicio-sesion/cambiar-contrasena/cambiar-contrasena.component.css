@@ -1,129 +1,277 @@
-/* Fondo general */
-.fondo {
-    min-height: 100vh;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
+/*
+  Nota: esta hoja de estilos asume que la fuente "Inter" ya fue
+  importada globalmente (por ejemplo en index.html o styles.css):
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+*/
+
+:host {
+  --blue: #1825aa;
+  --blue-2: #10186e;
+  --red: #cc3333;
+  --yellow: #ffff33;
+  --ink: #333333;
+  --ink-soft: #85888f;
+  --border: #e4e3df;
+  --paper: #ffffff;
+  --radius-outer: 28px;
+
+  display: block;
+  font-family: "Inter", sans-serif;
+  color: var(--ink);
 }
 
-/* Contenedor del formulario */
-/* Botón retroceso (posición general) */
-.back-btn {
-    position: absolute;
-    top: 1.5rem;
-    /* valor normal en pantallas grandes */
-    left: 1.5rem;
-    z-index: 10;
+:host * {
+  box-sizing: border-box;
 }
 
-/* Formulario con espacio suficiente arriba */
-.formulario {
-    position: relative;
-    background-color: white;
-    padding: 5rem 2rem 2rem 2rem;
-    /* Aumentamos padding-top para dar espacio a la flecha */
-    border-radius: 2rem;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 380px;
-    color: black;
+@media (prefers-reduced-motion: reduce) {
+  :host * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
-
-label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 0.3rem;
-    color: #333;
+.scene {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f6f5f2;
+  background-image:
+    radial-gradient(
+      circle at 12% 15%,
+      rgba(24, 37, 170, 0.3) 0%,
+      rgba(24, 37, 170, 0) 42%
+    ),
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(255, 255, 51, 0.28) 0%,
+      rgba(255, 255, 51, 0) 38%
+    ),
+    radial-gradient(
+      circle at 85% 90%,
+      rgba(204, 51, 51, 0.22) 0%,
+      rgba(204, 51, 51, 0) 40%
+    ),
+    radial-gradient(
+      circle at 10% 88%,
+      rgba(24, 37, 170, 0.22) 0%,
+      rgba(24, 37, 170, 0) 42%
+    );
+  background-attachment: fixed;
 }
 
-/* Botón azul */
-.btn-custom-blue {
-    background-color: #1825AA;
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    width: 100%;
+.card {
+  position: relative;
+  background: var(--paper);
+  border-radius: var(--radius-outer);
+  padding: 44px 48px 40px 48px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 30px 70px -30px rgba(24, 25, 40, 0.25);
 }
 
-.btn-custom-blue:hover {
-    background-color: #12208c;
+.head {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-/* Input con icono */
-.lock {
-    position: relative;
-}
-
-.lock fa-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #333;
-}
-
-.lock input {
-    padding-left: 2.2rem;
-}
-
-/* Título y texto */
 h1 {
-    font-size: 1.5rem;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+h1 b {
+  color: var(--blue);
 }
 
-p {
-    font-size: 1rem;
+.sub {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-    .formulario {
-        padding: 2rem 1.5rem;
-        max-width: 90%;
-    }
-
-    h1 {
-        font-size: 1.3rem;
-    }
-
-    p {
-        font-size: 0.95rem;
-    }
+/* ---- fields ---- */
+.field {
+  margin-bottom: 18px;
 }
 
-@media (max-width: 375px) {
-
-    label {
-        font-size: 13px;
-    }
-
-    .formulario {
-        padding: 1.5rem 1rem;
-    }
-
-    h1 {
-        font-size: 1.2rem;
-    }
-
-    p {
-        font-size: 0.85rem;
-    }
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
 }
 
-@media (max-width: 576px) {
-    .back-btn {
-        top: 1rem;
-        /* sigue estando arriba, pero más separado del texto */
-    }
+.label-row label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0;
+}
 
-    .formulario {
-        padding-top: 4.5rem;
-        /* MÁS espacio en la parte superior del formulario en móviles */
-    }
+/* ---- circular "i" error icon + animated tooltip ---- */
+.error-icon {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: Georgia, "Times New Roman", serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  outline: none;
+}
+
+.error-icon .tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px) scale(0.92);
+  transform-origin: bottom center;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  font-style: normal;
+  font-family: "Inter", sans-serif;
+  line-height: 1.4;
+  white-space: nowrap;
+  padding: 7px 10px;
+  border-radius: 8px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease;
+  z-index: 5;
+}
+
+.error-icon .tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+}
+
+.error-icon:hover .tooltip,
+.error-icon:focus-visible .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.input-shell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.4px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: border-color 0.2s ease;
+}
+
+.input-shell:focus-within {
+  border-color: var(--blue);
+}
+
+.input-shell.has-error {
+  border-color: var(--red);
+}
+
+.input-shell svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--ink-soft);
+}
+
+.input-shell input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 14px;
+  font-family: "Inter", sans-serif;
+  color: var(--ink);
+  outline: none;
+}
+
+.input-shell input::placeholder {
+  color: #b7b9be;
+}
+.input-shell input:focus-visible {
+  outline: none;
+}
+
+button.cta {
+  width: 100%;
+  padding: 14px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  margin-top: 8px;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+button.cta:hover {
+  background: var(--blue-2);
+}
+button.cta:active {
+  transform: scale(0.99);
+}
+button.cta:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+button.cta:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 460px) {
+  .card {
+    padding: 36px 28px 32px 28px;
+  }
 }

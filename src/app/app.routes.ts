@@ -8,6 +8,7 @@ import { AuthGuard } from './guards/AuthGuard/auth-guard.service';
 import { NoAuthGuard } from './guards/NoAuthGuard/no-auth-guard.service';
 import { RoleGuard } from './guards/RoleGuard/role-guard.service';
 import { AuthGuardOtp } from './guards/AuthGuardOtp/auth-guard-otp.service';
+import { googleOauthGuard } from './guards/GoogleOauth/google-oauth.guard';
 
 export const routes: Routes = [
   /**
@@ -23,9 +24,9 @@ export const routes: Routes = [
   {
     path: 'acceso',
     loadComponent: () =>
-      import(
-        './components/inicio-sesion/login-layout/login-layout.component'
-      ).then((m) => m.LoginLayoutComponent),
+      import('./components/inicio-sesion/login-layout/login-layout.component').then(
+        (m) => m.LoginLayoutComponent,
+      ),
     canActivate: [NoAuthGuard],
     children: [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -33,51 +34,52 @@ export const routes: Routes = [
         path: 'login',
         loadComponent: () =>
           import('./components/inicio-sesion/login/login.component').then(
-            (m) => m.LoginComponent
+            (m) => m.LoginComponent,
           ),
       },
       {
         path: 'registrar',
         loadComponent: () =>
           import('./components/inicio-sesion/registro/registro.component').then(
-            (m) => m.RegistroComponent
+            (m) => m.RegistroComponent,
           ),
       },
       {
         path: 'registrar-google',
         loadComponent: () =>
           import('./components/inicio-sesion/registro-google/registro-google.component').then(
-            (m) => m.RegistroGoogleComponent
+            (m) => m.RegistroGoogleComponent,
           ),
+        canActivate: [googleOauthGuard],
       },
       {
         path: 'recuperar-contrasena',
         loadComponent: () =>
-          import(
-            './components/inicio-sesion/recuperar-contrasena/recuperar-contrasena.component'
-          ).then((m) => m.RecuperarContrasenaComponent),
+          import('./components/inicio-sesion/recuperar-contrasena/recuperar-contrasena.component').then(
+            (m) => m.RecuperarContrasenaComponent,
+          ),
       },
       {
         path: 'cambiar-contrasena',
         loadComponent: () =>
-          import(
-            './components/inicio-sesion/cambiar-contrasena/cambiar-contrasena.component'
-          ).then((m) => m.CambiarContrasenaComponent),
+          import('./components/inicio-sesion/cambiar-contrasena/cambiar-contrasena.component').then(
+            (m) => m.CambiarContrasenaComponent,
+          ),
       },
       {
         path: 'verificacion-otp',
         loadComponent: () =>
-          import(
-            './components/inicio-sesion/verificacion-otp/verificacion-otp.component'
-          ).then((m) => m.VerificacionOtpComponent),
+          import('./components/inicio-sesion/verificacion-otp/verificacion-otp.component').then(
+            (m) => m.VerificacionOtpComponent,
+          ),
         canActivate: [AuthGuardOtp],
       },
       {
         path: 'tv',
         loadComponent: () =>
-          import(
-            './components/home/calendario-tv/calendario-tv.component'
-          ).then((m) => m.CalendarioTvComponent),
+          import('./components/home/calendario-tv/calendario-tv.component').then(
+            (m) => m.CalendarioTvComponent,
+          ),
       },
     ],
   },
@@ -90,7 +92,7 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () =>
       import('./components/home/layout/layout.component').then(
-        (m) => m.LayoutComponent
+        (m) => m.LayoutComponent,
       ),
     canActivate: [AuthGuard],
     children: [
@@ -98,7 +100,7 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./components/home/redireccion/redireccion.component').then(
-            (m) => m.RedireccionComponent
+            (m) => m.RedireccionComponent,
           ),
       },
 
@@ -107,7 +109,7 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./components/home/dashboard/dashboard.component').then(
-            (m) => m.DashboardComponent
+            (m) => m.DashboardComponent,
           ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
@@ -117,9 +119,9 @@ export const routes: Routes = [
       {
         path: 'calendario',
         loadComponent: () =>
-          import(
-            './components/home/calendario-home/calendario-home.component'
-          ).then((m) => m.CalendarioHomeComponent),
+          import('./components/home/calendario-home/calendario-home.component').then(
+            (m) => m.CalendarioHomeComponent,
+          ),
         canActivate: [RoleGuard],
         data: { roles: [1, 3, 4] },
       },
@@ -127,9 +129,9 @@ export const routes: Routes = [
         // Reserva de laboratorios sin restricciones de roles
         path: 'reserva-laboratorio',
         loadComponent: () =>
-          import(
-            './components/home/reserva-laboratorio/reserva-laboratorio.component'
-          ).then((m) => m.ReservaLaboratorioComponent),
+          import('./components/home/reserva-laboratorio/reserva-laboratorio.component').then(
+            (m) => m.ReservaLaboratorioComponent,
+          ),
       },
 
       {
@@ -137,7 +139,7 @@ export const routes: Routes = [
         path: 'inventario',
         loadComponent: () =>
           import('./components/home/inventario/inventario.component').then(
-            (m) => m.InventarioComponent
+            (m) => m.InventarioComponent,
           ),
       },
 
@@ -154,15 +156,15 @@ export const routes: Routes = [
             path: '',
             loadComponent: () =>
               import('./components/home/horario/horario.component').then(
-                (m) => m.HorarioComponent
+                (m) => m.HorarioComponent,
               ),
           },
           {
             path: 'errores',
             loadComponent: () =>
-              import(
-                './components/elements/error-list/error-list.component'
-              ).then((m) => m.ErrorListComponent),
+              import('./components/elements/error-list/error-list.component').then(
+                (m) => m.ErrorListComponent,
+              ),
           },
         ],
       },
@@ -172,7 +174,7 @@ export const routes: Routes = [
         path: 'carrito',
         loadComponent: () =>
           import('./components/home/carrito/carrito.component').then(
-            (m) => m.CarritoComponent
+            (m) => m.CarritoComponent,
           ),
         children: [{ path: '', redirectTo: 'carrito', pathMatch: 'full' }],
       },
@@ -181,9 +183,9 @@ export const routes: Routes = [
       {
         path: 'reserva-equipo',
         loadComponent: () =>
-          import(
-            './components/home/reserva-equipo/reserva-equipo.component'
-          ).then((m) => m.ReservaEquipoComponent),
+          import('./components/home/reserva-equipo/reserva-equipo.component').then(
+            (m) => m.ReservaEquipoComponent,
+          ),
       },
 
       /**
@@ -193,9 +195,9 @@ export const routes: Routes = [
       {
         path: 'usuarios',
         loadComponent: () =>
-          import(
-            './components/home/usuario/layout-usuarios/layout-usuarios.component'
-          ).then((m) => m.LayoutUsuariosComponent),
+          import('./components/home/usuario/layout-usuarios/layout-usuarios.component').then(
+            (m) => m.LayoutUsuariosComponent,
+          ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
         children: [
@@ -203,16 +205,16 @@ export const routes: Routes = [
           {
             path: 'listado-usuarios',
             loadComponent: () =>
-              import(
-                './components/home/usuario/usuarios/usuarios.component'
-              ).then((m) => m.UsuariosComponent),
+              import('./components/home/usuario/usuarios/usuarios.component').then(
+                (m) => m.UsuariosComponent,
+              ),
           },
           {
             path: 'modificar-usuario',
             loadComponent: () =>
-              import(
-                './components/home/usuario/modificar-usuario/modificar-usuario.component'
-              ).then((m) => m.ModificarUsuarioComponent),
+              import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(
+                (m) => m.ModificarUsuarioComponent,
+              ),
           },
         ],
       },
@@ -221,34 +223,34 @@ export const routes: Routes = [
       {
         path: 'solicitud-laboratorio',
         loadComponent: () =>
-          import(
-            './components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component'
-          ).then((m) => m.SolicitudReservaLaboratorioComponent),
+          import('./components/home/solicitud-reserva-laboratorio/solicitud-reserva-laboratorio.component').then(
+            (m) => m.SolicitudReservaLaboratorioComponent,
+          ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
       },
       {
         path: 'mis-solicitudes-espacio',
         loadComponent: () =>
-          import(
-            './components/home/reserva-laboratorio/manejo-espacio/espacio-usuario/espacio-usuario.component'
-          ).then((m) => m.EspacioUsuarioComponent)
+          import('./components/home/reserva-laboratorio/manejo-espacio/espacio-usuario/espacio-usuario.component').then(
+            (m) => m.EspacioUsuarioComponent,
+          ),
       },
       {
         path: 'solicitud-equipo',
         loadComponent: () =>
-          import(
-            './components/home/solicitud-reserva-equipo/solicitud-reserva-equipo.component'
-          ).then((m) => m.SolicitudReservaEquipoComponent),
+          import('./components/home/solicitud-reserva-equipo/solicitud-reserva-equipo.component').then(
+            (m) => m.SolicitudReservaEquipoComponent,
+          ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
       },
       {
         path: 'mis-prestamos',
         loadComponent: () =>
-          import(
-            './components/home/reserva-equipo/manejo-equipos/equipos-usuario/equipos-usuario.component'
-          ).then((m) => m.EquiposUsuarioComponent)
+          import('./components/home/reserva-equipo/manejo-equipos/equipos-usuario/equipos-usuario.component').then(
+            (m) => m.EquiposUsuarioComponent,
+          ),
       },
 
       /** Módulo IoT (roles 1 y 2) */
@@ -256,7 +258,7 @@ export const routes: Routes = [
         path: 'iot',
         loadComponent: () =>
           import('./components/home/IoT/iot.component').then(
-            (m) => m.IotComponent
+            (m) => m.IotComponent,
           ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
@@ -266,9 +268,9 @@ export const routes: Routes = [
       {
         path: 'crear-laboratorio',
         loadComponent: () =>
-          import(
-            './components/home/crear-laboratorio/crear-laboratorio.component'
-          ).then((m) => m.CrearLaboratorioComponent),
+          import('./components/home/crear-laboratorio/crear-laboratorio.component').then(
+            (m) => m.CrearLaboratorioComponent,
+          ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
       },
@@ -276,7 +278,7 @@ export const routes: Routes = [
         path: 'crear-equipo',
         loadComponent: () =>
           import('./components/home/crear-equipo/crear-equipo.component').then(
-            (m) => m.CrearEquipoComponent
+            (m) => m.CrearEquipoComponent,
           ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2] },
@@ -287,7 +289,7 @@ export const routes: Routes = [
         path: 'reportes',
         loadComponent: () =>
           import('./components/home/reportes/reportes.component').then(
-            (m) => m.ReportesComponent
+            (m) => m.ReportesComponent,
           ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2, 3] },
@@ -295,21 +297,21 @@ export const routes: Routes = [
       {
         path: 'vista-reportes',
         loadComponent: () =>
-          import(
-            './components/home/vista-reportes/vista-reportes.component'
-          ).then((m) => m.VistaReportesComponent),
+          import('./components/home/vista-reportes/vista-reportes.component').then(
+            (m) => m.VistaReportesComponent,
+          ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2, 3] },
       },
-      {
-        path: 'compras',
-        loadComponent: () =>
-          import(
-            './components/home/compras/compras.component'
-          ).then((m) => m.ComprasComponent),
-        canActivate: [RoleGuard],
-        data: { roles: [1, 2] },
-      },
+      // {
+      //   path: 'compras',
+      //   loadComponent: () =>
+      //     import('./components/home/compras/compras.component').then(
+      //       (m) => m.ComprasComponent,
+      //     ),
+      //   canActivate: [RoleGuard],
+      //   data: { roles: [1, 2] },
+      // },
     ],
   },
 
@@ -323,7 +325,7 @@ export const routes: Routes = [
     path: 'anuncios',
     loadComponent: () =>
       import('./components/home/publicacion/publicacion.component').then(
-        (m) => m.PublicacionComponent
+        (m) => m.PublicacionComponent,
       ),
   },
 
@@ -331,7 +333,7 @@ export const routes: Routes = [
   {
     path: '',
     redirectTo: 'anuncios',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 
   // /** Ruta comodín: cualquier otra URL redirige a anuncios */

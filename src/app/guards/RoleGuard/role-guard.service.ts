@@ -17,7 +17,7 @@ export class RoleGuard implements CanActivate {
     }
 
     // Opcional: redirigir o mostrar mensaje
-    this._router.navigate(['/acceso/horario']); // Crea una vista para esto si quieres
+    this._router.navigate(['/home']); // Crea una vista para esto si quieres
     return false;
   }
 }

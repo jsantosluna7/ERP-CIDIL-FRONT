@@ -1,57 +1,82 @@
-<div class="fondo d-flex justify-content-center align-items-center">
-  <form [formGroup]="recuperarContrasenaForm" class="formulario">
-    <!-- Botón retroceso como parte del flujo -->
-    <div class="back-btn">
-      <app-back-button [link]="'/login'"></app-back-button>
+<div class="scene">
+  <div class="card">
+    <div class="head">
+      <h1>Restablecer <b>contraseña</b></h1>
+      <p class="sub">Establece una nueva contraseña.</p>
     </div>
 
-    <!-- Título -->
-    <div class="text-center mt-3">
-      <h1>Restablecer <strong>contraseña!</strong></h1>
-      <p>Establece una nueva contraseña.</p>
-    </div>
-
-    <!-- Inputs -->
-    <div class="row mt-4">
-      <div class="col-12">
-        <label for="contrasena" class="form-label">Contraseña</label>
-        <div class="lock">
-          <fa-icon [icon]="faLock"></fa-icon>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <div class="label-row">
+          <label for="pass">Contraseña</label>
+          @if (hasError("password")) {
+            <span class="error-icon" tabindex="0">
+              i
+              <span class="tooltip">{{ errorMessage("password") }}</span>
+            </span>
+          }
+        </div>
+        <div class="input-shell" [class.has-error]="hasError('password')">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <rect x="4" y="10" width="16" height="10" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
           <input
+            id="pass"
             type="password"
-            formControlName="contrasena"
-            class="form-control"
-            id="contrasena"
-            placeholder="******"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            formControlName="password"
           />
         </div>
       </div>
 
-      <div class="col-12 mt-3">
-        <label for="confirmarContrasena" class="form-label"
-          >Confirmar Contraseña</label
+      <div class="field">
+        <div class="label-row">
+          <label for="pass2">Confirmar contraseña</label>
+          @if (hasError("confirmPassword")) {
+            <span class="error-icon" tabindex="0">
+              i
+              <span class="tooltip">{{ errorMessage("confirmPassword") }}</span>
+            </span>
+          }
+        </div>
+        <div
+          class="input-shell"
+          [class.has-error]="hasError('confirmPassword')"
         >
-        <div class="lock">
-          <fa-icon [icon]="faLock"></fa-icon>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <rect x="4" y="10" width="16" height="10" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
           <input
+            id="pass2"
             type="password"
-            formControlName="confirmarContrasena"
-            class="form-control"
-            id="confirmarContrasena"
-            placeholder="******"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            formControlName="confirmPassword"
           />
         </div>
       </div>
 
-      <div class="col-12 mt-4">
-        <button
-          [disabled]="recuperarContrasenaForm.invalid"
-          (click)="recuperar()"
-          class="btn btn-custom-blue w-100"
-        >
+      <button type="submit" class="cta" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner" aria-hidden="true"></span>
+          Guardando...
+        } @else {
           Recuperar contraseña
-        </button>
-      </div>
-    </div>
-  </form>
+        }
+      </button>
+    </form>
+  </div>
 </div>
