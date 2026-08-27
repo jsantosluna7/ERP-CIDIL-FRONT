@@ -16,13 +16,13 @@
 } */
 
 body {
-  background-color: #ecf1f2;
+  background-color: #f1f5f9;
 }
 
 .body .home {
   transition: margin-left 0.4s ease;
   padding: 20px;
-  background-color: #ecf1f2;
+  background-color: #f1f5f9;
   /* Esto agrega espacio interno al contenido */
 }
 
@@ -108,7 +108,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: #f1f5f9;
   z-index: 9999;
 }
 

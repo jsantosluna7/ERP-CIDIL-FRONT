@@ -1,178 +1,880 @@
-<div class="body">
-  @if (loading) {
-  <mat-spinner
-    diameter="40"
-    strokeWidth="5"
-    class="mx-auto d-block my-4"
-  ></mat-spinner>
-  }
-  <div class="tables">
-    <div class="table-container">
-      <div class="filtrado">
-        <!-- Campo de Filtro -->
-        <mat-form-field appearance="outline" class="field">
-          <mat-label
-            >Buscar por {{ filtroSeleccionado.value | titlecase }}</mat-label
-          >
-          <input matInput [formControl]="termino" placeholder="Buscar..." />
-        </mat-form-field>
-
-        <mat-chip-listbox
-          [formControl]="filtroSeleccionado"
-          aria-label="Filtros de Búsqueda"
-          [ariaOrientation]="'horizontal'"
-          (selectionChange)="
-            cambiarFiltro(filtroSeleccionado.value ?? 'nombre')
-          "
+<div class="page-wrapper" [formGroup]="filtrosForm">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          @for (filtro of filtros; track filtro) {
-          <mat-chip-option [value]="filtro.value">{{
-            filtro.label
-          }}</mat-chip-option>
-          }
-        </mat-chip-listbox>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
       </div>
 
-      @if (!loading) { @if(noData){
-      <p>No hay datos!</p>
-      }@else {
-      <div class="table-scroll">
-        <!-- Tabla de Usuarios -->
-        <table
-          mat-table
-          [dataSource]="dataSource"
-          matSort
-          class="mat-elevation-z8"
-        >
-          <!-- ID -->
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-            <td mat-cell *matCellDef="let usuario">{{ usuario.id }}</td>
-          </ng-container>
-
-          <!-- Nombre -->
-          <ng-container matColumnDef="nombre">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-            <td mat-cell *matCellDef="let usuario">
-              {{ usuario.nombreUsuario }}
-            </td>
-          </ng-container>
-
-          <!-- Apellido -->
-          <ng-container matColumnDef="apellido">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
-            <td mat-cell *matCellDef="let usuario">
-              {{ usuario.apellidoUsuario }}
-            </td>
-          </ng-container>
-
-          <!-- Matrícula -->
-          <ng-container matColumnDef="matricula">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Matrícula</th>
-            <td mat-cell *matCellDef="let usuario">
-              {{ usuario.idMatricula }}
-            </td>
-          </ng-container>
-
-          <!-- Teléfono -->
-          <ng-container matColumnDef="telefono">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
-            <td mat-cell *matCellDef="let usuario">{{ usuario.telefono }}</td>
-          </ng-container>
-
-          <!-- Email -->
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-            <td mat-cell *matCellDef="let usuario">
-              {{ usuario.correoInstitucional }}
-            </td>
-          </ng-container>
-
-          <!-- Dirección -->
-          <ng-container matColumnDef="direccion">
-            <th mat-header-cell *matHeaderCellDef>Dirección</th>
-            <td mat-cell *matCellDef="let usuario">{{ usuario.direccion }}</td>
-          </ng-container>
-
-          <!-- Rol -->
-          <ng-container matColumnDef="rol">
-            <th mat-header-cell *matHeaderCellDef>Rol</th>
-            <td mat-cell *matCellDef="let usuario">
-              <span class="badge bg-info text-dark text-capitalize">
-                {{ usuario.idRol }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Acciones -->
-          <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef>Acciones</th>
-            <td mat-cell *matCellDef="let element">
-              <div
-                class="btn-group"
-                role="group"
-                aria-label="Acciones del usuario"
-              >
-                <!-- Eliminar -->
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="eliminar(element.id)"
-                  matTooltip="Eliminar"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-
-                <!-- Actualizar -->
-                <button
-                  mat-icon-button
-                  color="accent"
-                  (click)="openDialog(element)"
-                  matTooltip="Actualizar"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-
-                <!-- Activar / Desactivar -->
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="desactivarUsuario(element)"
-                  matTooltip="{{ element.activado ? 'Desactivar' : 'Activar' }}"
-                >
-                  <mat-icon>toggle_on</mat-icon>
-                </button>
-              </div>
-            </td>
-          </ng-container>
-
-          <!-- Encabezado y filas -->
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
+      <div>
+        <h1>Gestión de Usuarios</h1>
+        <p class="header-subtitle">
+          Administra las cuentas y roles de la plataforma
+        </p>
       </div>
-
-      <mat-paginator
-        class="paginator"
-        [length]="totalUsuarios"
-        [pageSize]="pageSize"
-        (page)="onPageChange($event)"
-        [pageSizeOptions]="[]"
-        [hidePageSize]="true"
-        showFirstLastButtons
-      >
-      </mat-paginator>
-
-      <div class="entrada-pagina">
-        <p>Elementos por página:</p>
-        <input
-          matInput
-          type="text"
-          [value]="pageSize"
-          (change)="updatePageSize($event)"
-        />
-      </div>
-      }}
     </div>
   </div>
+
+  <!-- Buscador y filtros -->
+  <div class="card">
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <span class="field-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
+
+        <input
+          type="text"
+          formControlName="search"
+          [attr.placeholder]="searchPlaceholder"
+        />
+      </div>
+
+      <div class="filter-chips">
+        @for (chip of filtros; track chip.field) {
+          <button
+            type="button"
+            class="chip"
+            [class.active]="filterField === chip.field"
+            (click)="setFilterField(chip.field)"
+          >
+            @if (filterField === chip.field) {
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            }
+
+            {{ chip.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card table-card">
+    <div class="table-card-header">
+      <div class="card-title-group">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+          <line x1="9" y1="10" x2="9" y2="22" />
+        </svg>
+
+        <span class="card-title">Lista de usuarios</span>
+      </div>
+
+      <span class="result-count">
+        {{ usuariosFiltrados.length }}
+        usuario{{ usuariosFiltrados.length === 1 ? "" : "s" }}
+      </span>
+    </div>
+
+    <div class="table-scroll" (scroll)="onTableScroll()">
+      <table>
+        <thead>
+          <tr>
+            <th class="th-icon"></th>
+            <th>Usuario</th>
+            <th>Matrícula</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @if (usuariosPagina.length === 0) {
+            <tr class="empty-row">
+              <td colspan="6">
+                No se encontraron usuarios con ese criterio de búsqueda.
+              </td>
+            </tr>
+          }
+
+          @for (u of usuariosPagina; track u.id) {
+            <tr>
+              <td>
+                <button
+                  type="button"
+                  class="icon-btn"
+                  data-info-trigger
+                  title="Ver detalles"
+                  (click)="mostrarInfoPopover(u.id, $event)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="11" x2="12" y2="16" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                </button>
+              </td>
+
+              <td>
+                <div class="usuario-nombre">
+                  {{ u.nombre }}
+                </div>
+
+                <div class="usuario-apellido">
+                  {{ u.apellido }}
+                </div>
+              </td>
+
+              <td class="cell-muted" data-label="Matrícula">
+                {{ u.matricula }}
+              </td>
+
+              <td data-label="Rol">
+                <span
+                  class="rol-badge"
+                  [attr.title]="u.rolNombre"
+                >
+                  {{ u.rol }}
+                </span>
+              </td>
+
+              <td data-label="Estado">
+                <span
+                  class="estado-badge"
+                  [class.activo]="u.activo"
+                  [class.inactivo]="!u.activo"
+                >
+                  <svg viewBox="0 0 8 8" fill="currentColor">
+                    <circle cx="4" cy="4" r="4" />
+                  </svg>
+
+                  {{ u.activo ? "Activo" : "Inactivo" }}
+                </span>
+              </td>
+
+              <td>
+                <div class="acciones">
+                  <!-- Eliminar -->
+                  <button
+                    type="button"
+                    class="icon-btn danger"
+                    title="Eliminar"
+                    (click)="eliminarUsuario(u.id)"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="3 6 5 6 21 6" />
+                      <path
+                        d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
+                      />
+                      <path d="M10 11v6" />
+                      <path d="M14 11v6" />
+                      <path
+                        d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"
+                      />
+                    </svg>
+                  </button>
+
+                  <!-- Editar -->
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    title="Editar"
+                    (click)="editarUsuario(u.id)"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 20h9" />
+                      <path
+                        d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                      />
+                    </svg>
+                  </button>
+
+                  <!-- Activar / Desactivar -->
+                  <button
+                    type="button"
+                    class="toggle-switch"
+                    [class.on]="u.activo"
+                    [title]="u.activo ? 'Desactivar' : 'Activar'"
+                    (click)="toggleEstado(u.id)"
+                  >
+                    <span class="toggle-knob">
+                      @if (u.activo) {
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      } @else {
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                        >
+                          <line
+                            x1="18"
+                            y1="6"
+                            x2="6"
+                            y2="18"
+                          />
+                          <line
+                            x1="6"
+                            y1="6"
+                            x2="18"
+                            y2="18"
+                          />
+                        </svg>
+                      }
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer de tabla -->
+    <div class="table-footer">
+      <div class="per-page">
+        <label for="per-page-select">
+          Elementos por página:
+        </label>
+
+        <select
+          id="per-page-select"
+          formControlName="perPage"
+        >
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+
+      <div class="pagination">
+        <span class="pagination-range">
+          {{ rangeStart }} – {{ rangeEnd }} de
+          {{ usuariosFiltrados.length }}
+        </span>
+
+        <div class="pagination-btns">
+          <!-- Primera página -->
+          <button
+            type="button"
+            class="page-btn"
+            (click)="goToPage(1)"
+            [disabled]="currentPage === 1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="11 17 6 12 11 7" />
+              <polyline points="18 17 13 12 18 7" />
+            </svg>
+          </button>
+
+          <!-- Página anterior -->
+          <button
+            type="button"
+            class="page-btn"
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage === 1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <!-- Página siguiente -->
+          <button
+            type="button"
+            class="page-btn"
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage === totalPages"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+
+          <!-- Última página -->
+          <button
+            type="button"
+            class="page-btn"
+            (click)="goToPage(totalPages)"
+            [disabled]="currentPage === totalPages"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="13 17 18 12 13 7" />
+              <polyline points="6 17 11 12 6 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de edición -->
+<div
+  class="modal-overlay"
+  [class.visible]="isModalOpen"
+  (click)="onOverlayClick($event)"
+>
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 20h9" />
+            <path
+              d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <div class="modal-title">
+            Editar Usuario
+          </div>
+
+          <div class="modal-subtitle">
+            {{ modalSubtitle }}
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        (click)="cerrarModal()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <form
+      [formGroup]="editForm"
+      (ngSubmit)="guardarEdicion()"
+    >
+      <div class="modal-body">
+        <input
+          type="hidden"
+          formControlName="id"
+        />
+
+        <!-- Nombre / Apellido -->
+        <div class="modal-fields-row">
+          <div class="modal-field">
+            <label for="edit-nombre">
+              Nombre <span class="req">*</span>
+            </label>
+
+            <div class="modal-input-wrap">
+              <span class="field-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <path
+                    d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                  />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </span>
+
+              <input
+                type="text"
+                id="edit-nombre"
+                formControlName="nombre"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label for="edit-apellido">
+              Apellido <span class="req">*</span>
+            </label>
+
+            <div class="modal-input-wrap">
+              <span class="field-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <path
+                    d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                  />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </span>
+
+              <input
+                type="text"
+                id="edit-apellido"
+                formControlName="apellido"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Matrícula / Teléfono -->
+        <div class="modal-fields-row">
+          <div class="modal-field">
+            <label for="edit-matricula">
+              Matrícula <span class="req">*</span>
+            </label>
+
+            <div class="modal-input-wrap">
+              <span class="field-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="16"
+                    rx="2"
+                  />
+                  <path d="M7 8h10" />
+                  <path d="M7 12h6" />
+                </svg>
+              </span>
+
+              <input
+                type="text"
+                id="edit-matricula"
+                formControlName="matricula"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label for="edit-telefono">
+              Teléfono <span class="req">*</span>
+            </label>
+
+            <div class="modal-input-wrap">
+              <span class="field-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"
+                  />
+                </svg>
+              </span>
+
+              <input
+                type="tel"
+                id="edit-telefono"
+                formControlName="telefono"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="modal-field-full">
+          <label for="edit-email">
+            Email <span class="req">*</span>
+          </label>
+
+          <div class="modal-input-wrap">
+            <span class="field-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <rect
+                  x="2"
+                  y="4"
+                  width="20"
+                  height="16"
+                  rx="2"
+                />
+                <path d="m22 6-10 7L2 6" />
+              </svg>
+            </span>
+
+            <input
+              type="email"
+              id="edit-email"
+              formControlName="email"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="modal-field-full">
+          <label for="edit-direccion">
+            Dirección <span class="req">*</span>
+          </label>
+
+          <div class="modal-input-wrap">
+            <span class="field-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <path
+                  d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </span>
+
+            <input
+              type="text"
+              id="edit-direccion"
+              formControlName="direccion"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Rol / Estado -->
+        <div class="modal-fields-row">
+          <div class="modal-field">
+            <label for="edit-rol">
+              Rol <span class="req">*</span>
+            </label>
+
+            <div class="modal-input-wrap">
+              <span class="field-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <path d="M12 2 2 7l10 5 10-5-10-5z" />
+                  <path d="m2 17 10 5 10-5" />
+                  <path d="m2 12 10 5 10-5" />
+                </svg>
+              </span>
+
+              <select
+                id="edit-rol"
+                formControlName="rol"
+              >
+                @for (r of rolesOptions; track r.id) {
+                  <option [value]="r.id">
+                    {{ r.nombre }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label>Estado de la cuenta</label>
+
+            <div class="modal-estado-row">
+              <div>
+                <div class="modal-estado-label">
+                  {{ estadoActivo ? "Activo" : "Inactivo" }}
+                </div>
+
+                <div class="modal-estado-sub">
+                  Puede iniciar sesión
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="toggle-switch"
+                [class.on]="estadoActivo"
+                (click)="toggleEstadoModal()"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary-modal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+
+          Guardar Cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Popover de info secundaria -->
+<div
+  #infoPopover
+  class="info-popover"
+  [class.visible]="popoverVisible"
+  [style.top.px]="popoverTop"
+  [style.left.px]="popoverLeft"
+>
+  @if (popoverUsuario; as u) {
+    <div class="info-popover-title">
+      Detalles del usuario
+    </div>
+
+    <!-- ID -->
+    <div class="info-popover-row">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <rect
+          x="3"
+          y="4"
+          width="18"
+          height="16"
+          rx="2"
+        />
+        <path d="M7 8h10" />
+        <path d="M7 12h6" />
+      </svg>
+
+      <div>
+        <div class="info-popover-label">
+          ID
+        </div>
+
+        <div class="info-popover-value">
+          {{ u.id }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Teléfono -->
+    <div class="info-popover-row">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <path
+          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"
+        />
+      </svg>
+
+      <div>
+        <div class="info-popover-label">
+          Teléfono
+        </div>
+
+        <div class="info-popover-value">
+          {{ u.telefono }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="info-popover-row">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <rect
+          x="2"
+          y="4"
+          width="20"
+          height="16"
+          rx="2"
+        />
+        <path d="m22 6-10 7L2 6" />
+      </svg>
+
+      <div>
+        <div class="info-popover-label">
+          Email
+        </div>
+
+        <div class="info-popover-value">
+          {{ u.email }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Dirección -->
+    <div class="info-popover-row">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <path
+          d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+        />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+
+      <div>
+        <div class="info-popover-label">
+          Dirección
+        </div>
+
+        <div class="info-popover-value">
+          {{ u.direccion }}
+        </div>
+      </div>
+    </div>
+  }
 </div>

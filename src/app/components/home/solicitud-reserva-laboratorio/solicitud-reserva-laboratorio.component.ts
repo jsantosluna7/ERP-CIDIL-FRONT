@@ -88,7 +88,8 @@ export class SolicitudReservaLaboratorioComponent implements OnInit {
   rechazandoId = signal<number | null>(null);
   // ────────────────────────────────────────────────────────────
 
-  usuarioLogueado: any;
+  usuarioId: any;
+  usuarioNombre: any;
 
   totalPaginas = computed(() =>
     Math.ceil(this.totalItems() / this.itemsPorPagina()),
@@ -130,7 +131,8 @@ export class SolicitudReservaLaboratorioComponent implements OnInit {
     this.conteo();
 
     this._usuarios.user$.subscribe((user) => {
-      this.usuarioLogueado = user.sub;
+      this.usuarioId = user.sub;
+      this.usuarioNombre = user.nombreUsuario;
     });
   }
 
@@ -185,9 +187,9 @@ export class SolicitudReservaLaboratorioComponent implements OnInit {
       motivo: solicitud.motivo,
       fechaSolicitud: solicitud.fechaSolicitud,
       idEstado: 1,
-      idUsuarioAprobador: Number(this.usuarioLogueado) || 0,
+      idUsuarioAprobador: Number(this.usuarioId) || 0,
       fechaAprobacion: new Date().toISOString(),
-      comentarioAprobacion: 'Solicitud aprobada',
+      comentarioAprobacion: this.usuarioNombre,
       personasCantidad: solicitud.personasCantidad,
     };
 
@@ -233,7 +235,7 @@ export class SolicitudReservaLaboratorioComponent implements OnInit {
         motivo: solicitud.motivo,
         fechaSolicitud: solicitud.fechaSolicitud,
         idEstado: 3,
-        idUsuarioAprobador: Number(this.usuarioLogueado) || 0,
+        idUsuarioAprobador: Number(this.usuarioId) || 0,
         fechaAprobacion: new Date().toISOString(),
         comentarioAprobacion: motivo,
         personasCantidad: solicitud.personasCantidad,

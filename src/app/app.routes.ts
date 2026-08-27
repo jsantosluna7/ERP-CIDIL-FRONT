@@ -297,8 +297,8 @@ export const routes: Routes = [
       {
         path: 'vista-reportes',
         loadComponent: () =>
-          import('./components/home/vista-reportes/vista-reportes.component').then(
-            (m) => m.VistaReportesComponent,
+          import('./components/home/reportes/solicitud-reportes/solicitud-reportes.component').then(
+            (m) => m.SolicitudReportesComponent,
           ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2, 3] },

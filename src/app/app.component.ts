@@ -9,13 +9,13 @@ import { createChat } from '@n8n/chat';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent implements AfterViewInit  {
+export class AppComponent implements AfterViewInit {
   title = 'ERP-CIDIL-FRONT';
 
   // urlLia: string = `${process.env['CHATBOT_LIA_URL']}`;
 
   urlLia: string =
-    'https://lia.cidilipl.online/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat';
+    'http://172.6.0.70:5678/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat';
 
   ngAfterViewInit(): void {
     createChat({
