@@ -208,14 +208,7 @@ export const routes: Routes = [
               import('./components/home/usuario/usuarios/usuarios.component').then(
                 (m) => m.UsuariosComponent,
               ),
-          },
-          {
-            path: 'modificar-usuario',
-            loadComponent: () =>
-              import('./components/home/usuario/modificar-usuario/modificar-usuario.component').then(
-                (m) => m.ModificarUsuarioComponent,
-              ),
-          },
+          }
         ],
       },
 
@@ -295,10 +288,19 @@ export const routes: Routes = [
         data: { roles: [1, 2, 3] },
       },
       {
-        path: 'vista-reportes',
+        path: 'solicitud-reportes',
         loadComponent: () =>
           import('./components/home/reportes/solicitud-reportes/solicitud-reportes.component').then(
             (m) => m.SolicitudReportesComponent,
+          ),
+        canActivate: [RoleGuard],
+        data: { roles: [1, 2] },
+      },
+      {
+        path: 'mis-reportes',
+        loadComponent: () =>
+          import('./components/home/reportes/reportes-usuario/reportes-usuario.component').then(
+            (m) => m.ReportesUsuarioComponent,
           ),
         canActivate: [RoleGuard],
         data: { roles: [1, 2, 3] },

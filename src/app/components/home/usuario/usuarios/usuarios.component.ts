@@ -19,9 +19,9 @@ interface Usuario {
   activo: boolean;
 }
 
-type UsuarioConRol = Usuario & { rolNombre: string };
+type UsuarioConRol = Omit<Usuario, 'rol'> & { rol: string };
 
-type CampoFiltro = 'nombre' | 'apellido' | 'matricula' | 'email' | 'rolNombre';
+type CampoFiltro = 'nombre' | 'apellido' | 'matricula' | 'email' | 'rol';
 
 interface FiltroChip {
   field: CampoFiltro;
@@ -38,10 +38,10 @@ interface FiltroChip {
 export class UsuariosComponent {
   // ─── Catálogos ─────────────────────────────────────────────
   readonly roles: Record<number, string> = {
-    1: 'Estudiante',
-    2: 'Docente',
-    3: 'Coordinador',
-    4: 'Administrador',
+    4: 'Estudiante',
+    3: 'Profesor',
+    2: 'Administrador',
+    1: 'Superusuario',
   };
 
   readonly rolesOptions = Object.entries(this.roles).map(([id, nombre]) => ({
@@ -54,34 +54,11 @@ export class UsuariosComponent {
     { field: 'apellido', label: 'Apellido' },
     { field: 'matricula', label: 'Matrícula' },
     { field: 'email', label: 'Email' },
-    { field: 'rolNombre', label: 'Rol' },
+    { field: 'rol', label: 'Rol' },
   ];
 
   // ─── Datos ─────────────────────────────────────────────────
-  usuarios: Usuario[] = [
-    {
-      id: 1,
-      nombre: 'Joan',
-      apellido: 'Santos',
-      matricula: '1513',
-      telefono: '8097770610',
-      email: 'jesussantos@ipl.edu.do',
-      direccion: 'Calle Guarocuya',
-      rol: 1,
-      activo: true,
-    },
-    {
-      id: 5,
-      nombre: 'JESUS JOAN',
-      apellido: 'SANTOS LUNA',
-      matricula: '10089635',
-      telefono: '(809) 777-0610',
-      email: '10089635@ipl.edu.do',
-      direccion: 'Calle Guarocuya #06',
-      rol: 4,
-      activo: true,
-    },
-  ];
+  usuarios: Usuario[] = [];
 
   // ─── Formulario reactivo: búsqueda / filtros / paginación ───
   filtrosForm: FormGroup;
@@ -164,7 +141,7 @@ export class UsuariosComponent {
 
     let data: UsuarioConRol[] = this.usuarios.map((u) => ({
       ...u,
-      rolNombre: this.roles[u.rol] ?? '—',
+      rol: this.roles[u.rol] ?? '—',
     }));
 
     const term = this.searchTerm;
