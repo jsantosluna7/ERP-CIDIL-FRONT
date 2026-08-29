@@ -1,17 +1,9 @@
-import {
-  Component,
-  HostListener,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 type Estado = 'recibido' | 'proceso' | 'completado';
-type EstadoFiltro = 'todos' | Estado;
 type FilterField = 'lugar' | 'categoria';
 
 interface Reporte {
@@ -24,32 +16,32 @@ interface Reporte {
   fecha: string; // ISO
 }
 
+interface EstadoInfo {
+  label: string;
+}
+
 @Component({
-  selector: 'app-reportes-usuario',
+  selector: 'app-mis-reportes',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './reportes-usuario.component.html',
   styleUrl: './reportes-usuario.component.css',
 })
-export class ReportesUsuarioComponent {
-  private readonly fb = inject(FormBuilder);
+export class ReportesUsuarioComponent implements OnInit {
+  // Placeholder: reemplazar con el usuario autenticado real (p. ej. desde sesión/token/servicio de auth).
+  currentUsuario = 'Jesus Joan Santos Luna';
 
-  readonly estadoLabels: Record<Estado, string> = {
-    recibido: 'Recibido',
-    proceso: 'En proceso',
-    completado: 'Completado',
+  estadoInfo: Record<Estado, EstadoInfo> = {
+    recibido: { label: 'Recibido' },
+    proceso: { label: 'En proceso' },
+    completado: { label: 'Completado' },
   };
 
-  readonly filterFieldLabels: Record<FilterField, string> = {
-    lugar: 'Lugar',
-    categoria: 'Categoría',
-  };
+  estados: Estado[] = ['recibido', 'proceso', 'completado'];
 
-  /** Placeholder: sustituir por el usuario autenticado real (p. ej. desde sesión/token) */
-  readonly currentUsuario = signal('Jesus Joan Santos Luna');
-
-  /** Datos de ejemplo — sustituir por la llamada al servicio correspondiente */
-  readonly reportes = signal<Reporte[]>([
+  // Mismo dataset simulado que ver-reportes (fuente única de reportes de la plataforma).
+  // En producción esto vendría de un servicio (HttpClient) inyectado.
+  reportes: Reporte[] = [
     {
       id: 1,
       usuario: 'Jesus Joan Santos Luna',
@@ -118,153 +110,191 @@ export class ReportesUsuarioComponent {
       estado: 'recibido',
       fecha: '2026-08-26T12:10:00',
     },
-  ]);
+  ];
 
-  /** Solo los reportes del usuario actual — esta vista es de solo lectura */
-  readonly misReportes = computed(() =>
-    this.reportes().filter((r) => r.usuario === this.currentUsuario()),
-  );
+  // ── Reactive Form: búsqueda + filtros ──
+  filtersForm: FormGroup;
 
-  readonly filtroForm = this.fb.nonNullable.group({
-    search: [''],
-    filterField: ['lugar' as FilterField],
-    estadoFiltro: ['todos' as EstadoFiltro],
-    perPage: [20],
-  });
+  currentPage = 1;
+  perPage = 20;
+  totalPages = 1;
 
-  /** Snapshot reactivo del formulario de búsqueda/filtros, usado por los computed de abajo */
-  readonly filtro = toSignal(this.filtroForm.valueChanges, {
-    initialValue: this.filtroForm.getRawValue(),
-  });
+  // ── Modal ──
+  modalVisible = false;
+  modalReportId: number | null = null;
+  modalEstadoActual: Estado = 'recibido';
+  modalReporte: Reporte | null = null;
 
-  readonly currentPage = signal(1);
+  constructor(private fb: FormBuilder) {
+    this.filtersForm = this.fb.group({
+      search: [''],
+      filterField: ['lugar' as FilterField],
+      estadoFilter: ['todos' as Estado | 'todos'],
+      perPage: [20],
+    });
+  }
 
-  readonly modalReportId = signal<number | null>(null);
+  ngOnInit(): void {
+    // Cada cambio en el form re-renderiza (currentPage se resetea salvo perPage manual controlado abajo).
+    this.filtersForm.get('search')?.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+    });
+    this.filtersForm.get('filterField')?.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+    });
+    this.filtersForm.get('estadoFilter')?.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+    });
+    this.filtersForm.get('perPage')?.valueChanges.subscribe((val: number) => {
+      this.perPage = Number(val);
+      this.currentPage = 1;
+    });
+  }
 
-  readonly stats = computed(() => {
-    const data = this.misReportes();
-    return {
-      total: data.length,
-      recibido: data.filter((r) => r.estado === 'recibido').length,
-      proceso: data.filter((r) => r.estado === 'proceso').length,
-      completado: data.filter((r) => r.estado === 'completado').length,
-    };
-  });
+  // ── Helpers de datos ──
+  get misReportes(): Reporte[] {
+    return this.reportes.filter((r) => r.usuario === this.currentUsuario);
+  }
 
-  readonly datosFiltrados = computed(() => {
-    const { search, filterField, estadoFiltro } = this.filtro();
-    const term = (search ?? '').trim().toLowerCase();
+  get filteredReportes(): Reporte[] {
+    const { search, filterField, estadoFilter } = this.filtersForm.value;
+    let data = this.misReportes;
 
-    let data = this.misReportes();
-    if (estadoFiltro !== 'todos') {
-      data = data.filter((r) => r.estado === estadoFiltro);
+    if (estadoFilter !== 'todos') {
+      data = data.filter((r) => r.estado === estadoFilter);
     }
+
+    const term = (search ?? '').trim().toLowerCase();
     if (term) {
-      const field: FilterField = filterField ?? 'lugar';
       data = data.filter((r) =>
-        String(r[field] ?? '')
+        String((r as any)[filterField as FilterField] ?? '')
           .toLowerCase()
           .includes(term),
       );
     }
+
     return data;
-  });
-
-  readonly totalPages = computed(() => {
-    const perPage = this.filtro().perPage;
-    return Math.max(1, Math.ceil(this.datosFiltrados().length / (perPage ?? 1)));
-  });
-
-  /** currentPage recortado al rango válido cuando un filtro reduce los resultados */
-  readonly paginaActual = computed(() =>
-    Math.min(this.currentPage(), this.totalPages()),
-  );
-
-  readonly datosPagina = computed(() => {
-    const perPage = this.filtro().perPage ?? 1;
-    const start = (this.paginaActual() - 1) * perPage;
-    return this.datosFiltrados().slice(start, start + perPage);
-  });
-
-  readonly rangoInicio = computed(() => {
-    if (this.datosFiltrados().length === 0) return 0;
-    const perPage = this.filtro().perPage ?? 1;
-    return (this.paginaActual() - 1) * perPage + 1;
-  });
-
-  readonly rangoFin = computed(() => {
-    const perPage = this.filtro().perPage ?? 1;
-    const start = (this.paginaActual() - 1) * perPage;
-    return Math.min(start + perPage, this.datosFiltrados().length);
-  });
-
-  /** Reporte mostrado en el modal — siempre acotado a misReportes(), nunca a la lista completa */
-  readonly reporteSeleccionado = computed(() => {
-    const id = this.modalReportId();
-    return id === null
-      ? null
-      : (this.misReportes().find((r) => r.id === id) ?? null);
-  });
-
-  constructor() {
-    // Bloquea el scroll del body mientras el modal está abierto, igual que el original
-    effect(() => {
-      document.body.style.overflow =
-        this.modalReportId() === null ? '' : 'hidden';
-    });
   }
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    this.cerrarModal();
+  get pagedReportes(): Reporte[] {
+    const data = this.filteredReportes;
+    this.totalPages = Math.max(1, Math.ceil(data.length / this.perPage));
+    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+    const start = (this.currentPage - 1) * this.perPage;
+    return data.slice(start, start + this.perPage);
   }
 
+  get rangeStart(): number {
+    const total = this.filteredReportes.length;
+    return total === 0 ? 0 : (this.currentPage - 1) * this.perPage + 1;
+  }
+
+  get rangeEnd(): number {
+    const total = this.filteredReportes.length;
+    return Math.min(this.currentPage * this.perPage, total);
+  }
+
+  // ── Estadísticas ──
+  get statTotal(): number {
+    return this.misReportes.length;
+  }
+  get statRecibido(): number {
+    return this.misReportes.filter((r) => r.estado === 'recibido').length;
+  }
+  get statProceso(): number {
+    return this.misReportes.filter((r) => r.estado === 'proceso').length;
+  }
+  get statCompletado(): number {
+    return this.misReportes.filter((r) => r.estado === 'completado').length;
+  }
+
+  // ── Filtros de campo / estado ──
   setFilterField(field: FilterField): void {
-    this.filtroForm.controls.filterField.setValue(field);
-    this.currentPage.set(1);
+    this.filtersForm.get('filterField')?.setValue(field);
   }
 
-  setEstadoFiltro(estado: EstadoFiltro): void {
-    this.filtroForm.controls.estadoFiltro.setValue(estado);
-    this.currentPage.set(1);
+  setEstadoFilter(estado: Estado | 'todos'): void {
+    this.filtersForm.get('estadoFilter')?.setValue(estado);
   }
 
-  onPerPageChange(): void {
-    this.currentPage.set(1);
+  get searchPlaceholder(): string {
+    const field = this.filtersForm.get('filterField')?.value as FilterField;
+    const labels: Record<FilterField, string> = {
+      lugar: 'Lugar',
+      categoria: 'Categoría',
+    };
+    return 'Buscar por ' + labels[field];
   }
 
-  irAPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPages()) return;
-    this.currentPage.set(pagina);
+  // ── Paginación ──
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
   }
 
+  // ── Formato de fecha ──
   formatFecha(iso: string): string {
-    const fecha = new Date(iso);
-    const dia = fecha.toLocaleDateString('es-DO', {
+    const d = new Date(iso);
+    const fecha = d.toLocaleDateString('es-DO', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
     });
-    const hora = fecha.toLocaleTimeString('es-DO', {
+    const hora = d.toLocaleTimeString('es-DO', {
       hour: '2-digit',
       minute: '2-digit',
     });
-    return `${dia} · ${hora}`;
+    return `${fecha} · ${hora}`;
   }
 
+  // ── Modal de detalle / estado ──
   abrirModal(id: number): void {
-    const reporte = this.misReportes().find((r) => r.id === id);
-    if (!reporte) return;
-    this.modalReportId.set(id);
+    const r = this.reportes.find(
+      (x) => x.id === id && x.usuario === this.currentUsuario,
+    );
+    if (!r) return;
+    this.modalReportId = id;
+    this.modalReporte = r;
+    this.modalEstadoActual = r.estado;
+    this.modalVisible = true;
+    document.body.style.overflow = 'hidden';
   }
 
-  onOverlayClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
+  setModalEstado(estado: Estado): void {
+    this.modalEstadoActual = estado;
+  }
+
+  cerrarModal(): void {
+    this.modalVisible = false;
+    this.modalReportId = null;
+    this.modalReporte = null;
+    document.body.style.overflow = '';
+  }
+
+  guardarEstado(): void {
+    const r = this.reportes.find(
+      (x) => x.id === this.modalReportId && x.usuario === this.currentUsuario,
+    );
+    if (r) r.estado = this.modalEstadoActual;
+    this.cerrarModal();
+  }
+
+  eliminarDesdeModal(): void {
+    const r = this.reportes.find(
+      (x) => x.id === this.modalReportId && x.usuario === this.currentUsuario,
+    );
+    if (!r) return;
+    if (confirm(`¿Eliminar tu reporte en "${r.lugar}"?`)) {
+      this.reportes = this.reportes.filter((x) => x.id !== r.id);
       this.cerrarModal();
     }
   }
 
-  cerrarModal(): void {
-    this.modalReportId.set(null);
+  onEscape(event: KeyboardEvent): void {
+    if (event.key === 'Escape') this.cerrarModal();
+  }
+
+  trackByReporteId(_index: number, r: Reporte): number {
+    return r.id;
   }
 }

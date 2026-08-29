@@ -1,10 +1,21 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   Usuarios,
   RespuestaUsuarios,
 } from '../../../../interfaces/usuarios.interface';
 import { HttpClient } from '@angular/common/http';
+
+/**
+ * Shape asumido para la respuesta de `obtenerRol()`: array plano de roles
+ * con id numérico (1 Superusuario, 2 Administrador, 3 Profesor, 4 Estudiante)
+ * y su nombre. AJUSTA los nombres de campo si tu endpoint real usa otros
+ * (p.ej. `idRol`/`nombreRol`).
+ */
+export interface Rol {
+  id: number;
+  nombre: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
@@ -14,9 +25,7 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) {}
 
-  //private usuarios$ = new BehaviorSubject<Usuarios[]>(this.apiUrl);
-
-    getUsuarios(
+  getUsuarios(
     endpoint: string,
     pagina: number = 1,
     tamanoPagina: number = 20
@@ -26,12 +35,16 @@ export class UsuarioService {
     );
   }
 
-  buscarUsuarios(endpoint: string, termino: string, filtro:string): Observable<any> {
+  buscarUsuarios(
+    endpoint: string,
+    termino: string,
+    filtro: string
+  ): Observable<any> {
     return this.http.get(`${endpoint}?termino=${termino}&filtro=${filtro}`);
   }
 
-  obtenerUsuarios(): Observable<RespuestaUsuarios> {
-    return this.http.get<RespuestaUsuarios>(this.apiUrl);
+  obtenerUsuarios(): Observable<Usuarios[]> {
+    return this.http.get<Usuarios[]>(this.apiUrl);
   }
 
   obtenerUsuarioId(id: number): Observable<any> {
@@ -42,51 +55,37 @@ export class UsuarioService {
     return this.http.get<RespuestaUsuarios>(this.apiUrlUsuario);
   }
 
-  obtenerRol(): Observable<RespuestaUsuarios> {
-    return this.http.get<RespuestaUsuarios>(this.apiUrlRol);
+  obtenerRol(): Observable<Rol[]> {
+    return this.http.get<Rol[]>(this.apiUrlRol);
   }
 
   obtenerRolId(id: string): Observable<any> {
     return this.http.get(`${this.apiUrlRol}/${id}`);
   }
 
-  cambiarRol(id: number, nuevoRol: Usuarios['idrol']): Observable<any> {
+  cambiarRol(id: number, nuevoRol: number): Observable<any> {
     return this.http.put(`${this.apiUrlUsuario}/${id}`, { nuevoRol });
   }
 
+  /**
+   * FIX: antes mandaba `null` como body e ignoraba por completo el parámetro
+   * `activo`, así que el backend nunca recibía el nuevo estado. Ahora sí se
+   * envía `{ activo }`.
+   */
   desactivarUsuario(id: number, activo: boolean): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrlUsuario}/${id}`, null);
+    return this.http.patch<void>(`${this.apiUrlUsuario}/${id}`, { activo });
   }
 
   actualizarUsuario(id: number, usuario: any): Observable<any> {
     return this.http.put(`${this.apiUrlUsuario}/${id}`, usuario);
   }
 
-  eliminarUsuario(id: string): Observable<any> {
+  /**
+   * FIX: se amplía el tipo a `number | string` para poder llamarlo
+   * indistintamente con el `id` numérico del modelo o con un string,
+   * sin tener que castear en cada componente que lo use.
+   */
+  eliminarUsuario(id: number | string): Observable<any> {
     return this.http.delete(`${this.apiUrlUsuario}/${id}`);
   }
-
-  /*eliminarUsuario(id: number): Observable<boolean> {
-  const index = this.apiUrl.findIndex(u => u.id === id);
-  if (index !== 1) {
-    this.usuarios.splice(index, 1);
-    this.usuarios$.next(this.usuarios);
-    return of(true);
-  }
-  return of(false);
-}*/
-
-  /* actualizarUsuario(usuarioActualizado: Usuarios) {
-    this.usuarios = this.usuarios.map(u =>
-      u.id === usuarioActualizado.id ? usuarioActualizado : u
-    );
-    this.usuarios$.next(this.usuarios);
-  }*/
-
-  /*cambiarRol(id: number, nuevoRol: Usuarios['rol']) {
-    this.usuarios = this.usuarios.map(u =>
-      u.id === id ? { ...u, rol: nuevoRol } : u
-    );
-    this.usuarios$.next(this.usuarios);
-  }*/
 }

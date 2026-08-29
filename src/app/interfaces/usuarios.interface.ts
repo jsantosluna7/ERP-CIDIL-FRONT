@@ -8,7 +8,12 @@ export interface Usuarios {
   telefono: string;
   direccion: string;
   activado?: boolean;
-  idrol: 'Estudiante' | 'Administrador' | 'Super Usuario' | 'Profesor';
+  /**
+   * FIX: el campo real que envía el backend es `idRol` (numérico: 1
+   * Superusuario, 2 Administrador, 3 Profesor, 4 Estudiante), no el string
+   * enum `idrol` que se había asumido antes.
+   */
+  idRol: number;
   fechaCreacion: string;
   fechaUltimaModificacion: string;
 }

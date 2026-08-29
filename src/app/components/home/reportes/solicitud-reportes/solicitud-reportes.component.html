@@ -172,7 +172,7 @@
         <thead>
           <tr>
             <th class="th-icon"></th>
-            <th>Usuario / Lugar</th>
+            <th>Usuario</th>
             <th>Categoría</th>
             <th>Estado</th>
             <th>Fecha</th>
@@ -191,7 +191,7 @@
                 class="icon-btn"
                 [class.active]="popoverVisible && popoverReporte?.id === r.id"
                 data-info-trigger
-                title="Ver Lugar y Descripción"
+                title="Ver descripción completa"
                 (click)="toggleInfoPopover(r, $event)"
               >
                 <svg
@@ -367,7 +367,7 @@
   </div>
 </div>
 
-<!-- Popover de detalle rápido (Lugar / Descripción / Fecha) -->
+<!-- Popover de detalle rápido (Descripción / Fecha completa) -->
 <div
   class="info-popover"
   [class.visible]="popoverVisible"
@@ -377,22 +377,6 @@
 >
   <ng-container *ngIf="popoverReporte as p">
     <div class="info-popover-title">Detalle rápido</div>
-    <div class="info-popover-row">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.2"
-      >
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
-      <div>
-        <div class="info-popover-label">Lugar</div>
-        <div class="info-popover-value">{{ p.lugar }}</div>
-      </div>
-    </div>
     <div class="info-popover-row">
       <svg
         xmlns="http://www.w3.org/2000/svg"

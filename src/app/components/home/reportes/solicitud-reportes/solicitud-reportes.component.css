@@ -350,7 +350,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 540px;
+  min-width: 560px;
 }
 .th-icon {
   width: 44px;
@@ -952,6 +952,7 @@ td.cell-muted {
     white-space: normal;
   }
 
+  /* 1: icono info — esquina superior derecha */
   td:nth-child(1) {
     position: absolute;
     top: var(--sp-sm);
@@ -959,11 +960,13 @@ td.cell-muted {
     padding: 0;
     width: auto;
   }
+  /* 2: Usuario (nombre + lugar) — título de la tarjeta */
   td:nth-child(2) {
     padding-right: 44px;
-    font-weight: 700;
+    padding-bottom: var(--sp-xs);
   }
 
+  /* 3,4,5: Categoría / Estado / Fecha — filas con etiqueta */
   td:nth-child(3),
   td:nth-child(4),
   td:nth-child(5) {
@@ -986,6 +989,7 @@ td.cell-muted {
     flex-shrink: 0;
   }
 
+  /* 6: Acciones */
   td:nth-child(6) {
     border-top: 1px solid var(--border);
     padding-top: var(--sp-sm);
