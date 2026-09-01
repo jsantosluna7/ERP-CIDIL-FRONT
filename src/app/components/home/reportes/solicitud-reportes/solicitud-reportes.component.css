@@ -143,6 +143,7 @@ h1 {
   font-size: var(--fs-xl);
   font-weight: 800;
   line-height: 1;
+  min-height: 1em;
 }
 .stat-label {
   font-size: var(--fs-xs);
@@ -493,6 +494,53 @@ td.cell-muted {
   border-color: var(--blue-border);
 }
 
+/* ─── Skeleton de carga ─── */
+.skeleton {
+  position: relative;
+  display: inline-block;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s infinite;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.skeleton-text {
+  display: block;
+  border-radius: 4px;
+}
+.skeleton-pill {
+  display: inline-block;
+  height: 22px;
+  border-radius: 99px;
+}
+.skeleton-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+}
+.skeleton-row td {
+  vertical-align: middle;
+}
+.skeleton-row:hover {
+  background: transparent;
+}
+
 /* ─── Footer / pagination ─── */
 .table-footer {
   display: flex;
@@ -800,6 +848,10 @@ td.cell-muted {
     background 0.15s,
     border-color 0.15s;
 }
+.step-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .step-btn .step-icon {
   width: 26px;
   height: 26px;
@@ -879,6 +931,10 @@ td.cell-muted {
   background: var(--bg);
   color: var(--text);
 }
+.btn-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .btn-primary-modal {
   display: flex;
   align-items: center;
@@ -895,12 +951,35 @@ td.cell-muted {
   cursor: pointer;
   box-shadow: var(--shadow-blue);
 }
-.btn-primary-modal:hover {
+.btn-primary-modal:hover:not(:disabled) {
   background: var(--blue-light);
+}
+.btn-primary-modal:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
 }
 .btn-primary-modal svg {
   width: 14px;
   height: 14px;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── Responsive ─── */

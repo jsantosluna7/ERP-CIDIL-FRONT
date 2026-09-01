@@ -1,24 +1,46 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { ReporteFallaService } from '../../../../services/Api/ReporteFalla/reporteFalla.service';
+import { ToastrService } from 'ngx-toastr';
+import { UsuariosService } from '../../../../services/Api/Usuarios/usuarios.service';
+import { UsuarioService } from '../../usuario/usuarios/usuarios.service';
 
 type Estado = 'recibido' | 'proceso' | 'completado';
 type CampoFiltro = 'usuario' | 'lugar' | 'categoria';
 
 interface Reporte {
   id: number;
-  usuario: string;
+  idUsuario: number; // se necesita para resolver el nombre vía UsuarioService
+  usuario: string; // "Usuario #<id>" hasta resolver, luego "nombre apellido"
   categoria: string;
   lugar: string;
   descripcion: string;
   estado: Estado;
-  fecha: string; // ISO
+  fecha: string | null; // ISO, puede venir null desde la API
 }
 
 interface EstadoInfo {
   label: string;
   icon: string;
 }
+
+// ── Mapeo entre el estado numérico que maneja la API y el estado
+//    en texto que usa este componente. AJUSTA ESTOS NÚMEROS si tu
+//    backend usa otra numeración (por ejemplo 0/1/2 en vez de 1/2/3).
+const ESTADO_API_A_LOCAL: Record<number, Estado> = {
+  1: 'recibido',
+  2: 'proceso',
+  3: 'completado',
+};
+
+const ESTADO_LOCAL_A_API: Record<Estado, number> = {
+  recibido: 1,
+  proceso: 2,
+  completado: 3,
+};
 
 @Component({
   selector: 'app-ver-reportes',
@@ -28,77 +50,17 @@ interface EstadoInfo {
   styleUrl: './solicitud-reportes.component.css',
 })
 export class SolicitudReportesComponent implements OnInit {
-  // ── Datos ──
-  reportes: Reporte[] = [
-    {
-      id: 1,
-      usuario: 'Jesus Joan Santos Luna',
-      categoria: 'Equipo',
-      lugar: 'Aula 203',
-      descripcion:
-        'El proyector no enciende, probamos con otro cable HDMI y sigue sin dar imagen.',
-      estado: 'proceso',
-      fecha: '2026-08-25T09:15:00',
-    },
-    {
-      id: 2,
-      usuario: 'Maria Fernanda Cruz',
-      categoria: 'Red',
-      lugar: 'Laboratorio 2',
-      descripcion:
-        'No hay conexión a internet en ninguna de las computadoras del laboratorio.',
-      estado: 'recibido',
-      fecha: '2026-08-26T14:02:00',
-    },
-    {
-      id: 3,
-      usuario: 'Pedro Alexander Diaz',
-      categoria: 'Infraestructura',
-      lugar: 'Pasillo edificio B',
-      descripcion:
-        'Dos lámparas fundidas dejan el pasillo casi a oscuras después de las 6pm.',
-      estado: 'completado',
-      fecha: '2026-08-18T11:40:00',
-    },
-    {
-      id: 4,
-      usuario: 'Carla Beatriz Nuñez',
-      categoria: 'Equipo',
-      lugar: 'Sala de profesores',
-      descripcion: 'El aire acondicionado gotea sobre uno de los escritorios.',
-      estado: 'proceso',
-      fecha: '2026-08-24T08:30:00',
-    },
-    {
-      id: 5,
-      usuario: 'Jesus Joan Santos Luna',
-      categoria: 'Red',
-      lugar: 'Rack principal',
-      descripcion:
-        'El switch del segundo piso reinicia solo cada cierto tiempo.',
-      estado: 'recibido',
-      fecha: '2026-08-27T07:55:00',
-    },
-    {
-      id: 6,
-      usuario: 'Luis Manuel Fabian',
-      categoria: 'Infraestructura',
-      lugar: 'Aula 105',
-      descripcion:
-        'Una silla tiene una pata rota y es peligrosa para los estudiantes.',
-      estado: 'completado',
-      fecha: '2026-08-15T16:20:00',
-    },
-    {
-      id: 7,
-      usuario: 'Ana Sofia Reyes',
-      categoria: 'Otro',
-      lugar: 'Cafetería',
-      descripcion: 'El dispensador de agua no está enfriando correctamente.',
-      estado: 'recibido',
-      fecha: '2026-08-26T12:10:00',
-    },
-  ];
+  // ── Datos (se llenan desde la API en ngOnInit) ──
+  reportes: Reporte[] = [];
+  cargando = false;
+
+  // Filas placeholder para el skeleton de la tabla mientras `cargando` es true.
+  // El contenido no importa, solo la cantidad de filas a dibujar.
+  skeletonRows = new Array(6);
+
+  // Estado de guardado del modal de actualización (controla el spinner
+  // del botón "Guardar Cambios").
+  guardando = false;
 
   estadoInfo: Record<Estado, EstadoInfo> = {
     recibido: {
@@ -146,6 +108,13 @@ export class SolicitudReportesComponent implements OnInit {
   popoverTop = 0;
   popoverLeft = 0;
 
+  constructor(
+    private _reportes: ReporteFallaService,
+    private _usuario: UsuariosService,
+    private _usuarioService: UsuarioService,
+    private _toastr: ToastrService,
+  ) {}
+
   get search(): string {
     return this.filtrosForm.get('search')?.value ?? '';
   }
@@ -166,6 +135,97 @@ export class SolicitudReportesComponent implements OnInit {
     this.filtrosForm.valueChanges.subscribe(() => {
       this.currentPage = 1;
     });
+
+    this.cargarReportes();
+  }
+
+  // ── Carga de reportes desde la API ──
+  cargarReportes(): void {
+    this.cargando = true;
+    this._reportes
+      .getReportes()
+      .pipe(
+        switchMap((data) => {
+          const reportesMapeados = (data as any[]).map((r) =>
+            this.mapReporteApiALocal(r),
+          );
+          return this.resolverNombresUsuarios(reportesMapeados);
+        }),
+      )
+      .subscribe({
+        next: (reportesConNombres) => {
+          this.reportes = reportesConNombres;
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error('Error al cargar reportes:', err);
+          this._toastr.error('No se pudieron cargar los reportes.');
+          this.cargando = false;
+        },
+      });
+  }
+
+  // Convierte el objeto que devuelve la API (idReporte, idUsuario, estado
+  // numérico, etc.) al shape que usa este componente. El nombre del
+  // usuario todavía no está resuelto en este punto; se rellena luego en
+  // resolverNombresUsuarios().
+  private mapReporteApiALocal(r: any): Reporte {
+    return {
+      id: r.idReporte,
+      idUsuario: r.idUsuario,
+      usuario: `Usuario #${r.idUsuario}`, // placeholder hasta resolver el nombre
+      categoria: r.categoria,
+      lugar: r.lugar,
+      descripcion: r.descripcion,
+      estado: ESTADO_API_A_LOCAL[r.estado] ?? 'recibido',
+      fecha: r.fechaCreacion ?? r.fechaUltimaActualizacion ?? null,
+    };
+  }
+
+  // Dado un array de reportes ya mapeados (con idUsuario), pide a
+  // UsuarioService los datos de cada usuario único vía obtenerUsuarioId()
+  // y devuelve el mismo array de reportes con `usuario` reemplazado por
+  // "nombreUsuario apellidoUsuario".
+  //
+  // Si la llamada para un id específico falla, ese reporte conserva el
+  // placeholder "Usuario #<id>" en vez de tumbar toda la carga de reportes.
+  private resolverNombresUsuarios(reportes: Reporte[]) {
+    const idsUnicos = Array.from(new Set(reportes.map((r) => r.idUsuario)));
+
+    if (idsUnicos.length === 0) {
+      return of(reportes);
+    }
+
+    const llamadas = idsUnicos.map((id) =>
+      this._usuarioService.obtenerUsuarioId(id).pipe(
+        catchError((err) => {
+          console.error(`Error al obtener usuario #${id}:`, err);
+          return of(null); // no tumba el forkJoin completo
+        }),
+      ),
+    );
+
+    return forkJoin(llamadas).pipe(
+      switchMap((usuariosResueltos) => {
+        const mapaNombres = new Map<number, string>();
+        idsUnicos.forEach((id, i) => {
+          const u = usuariosResueltos[i];
+          if (u) {
+            const nombreCompleto = `${u.nombreUsuario ?? ''} ${
+              u.apellidoUsuario ?? ''
+            }`.trim();
+            if (nombreCompleto) mapaNombres.set(id, nombreCompleto);
+          }
+        });
+
+        const reportesActualizados = reportes.map((r) => ({
+          ...r,
+          usuario: mapaNombres.get(r.idUsuario) ?? r.usuario,
+        }));
+
+        return of(reportesActualizados);
+      }),
+    );
   }
 
   // ── Datos filtrados / paginados ──
@@ -245,8 +305,10 @@ export class SolicitudReportesComponent implements OnInit {
   }
 
   // ── Formateo de fechas ──
-  formatFecha(iso: string): string {
+  formatFecha(iso: string | null): string {
+    if (!iso) return 'Sin fecha';
     const d = new Date(iso);
+    if (isNaN(d.getTime())) return 'Sin fecha';
     const fecha = d.toLocaleDateString('es-DO', {
       day: '2-digit',
       month: 'short',
@@ -259,8 +321,10 @@ export class SolicitudReportesComponent implements OnInit {
     return `${fecha} · ${hora}`;
   }
 
-  formatFechaCorta(iso: string): string {
+  formatFechaCorta(iso: string | null): string {
+    if (!iso) return 'Sin fecha';
     const d = new Date(iso);
+    if (isNaN(d.getTime())) return 'Sin fecha';
     return d.toLocaleDateString('es-DO', {
       day: '2-digit',
       month: 'short',
@@ -326,17 +390,37 @@ export class SolicitudReportesComponent implements OnInit {
   }
 
   cerrarModal(): void {
+    if (this.guardando) return; // evita cerrar mientras se está guardando
     this.modalVisible = false;
     this.modalReporte = null;
     document.body.style.overflow = '';
   }
 
   guardarEstado(): void {
-    if (!this.modalReporte) return;
+    if (!this.modalReporte || this.guardando) return;
+
+    const idReporte = this.modalReporte.id;
     const nuevoEstado = this.estadoForm.get('estado')?.value as Estado;
-    const reporte = this.reportes.find((r) => r.id === this.modalReporte!.id);
-    if (reporte) reporte.estado = nuevoEstado;
-    this.cerrarModal();
+    const estadoApi = ESTADO_LOCAL_A_API[nuevoEstado];
+
+    this.guardando = true;
+
+    this._reportes
+      .actualizarReporte(idReporte, { IdReporte: idReporte, estado: estadoApi })
+      .subscribe({
+        next: () => {
+          const reporte = this.reportes.find((r) => r.id === idReporte);
+          if (reporte) reporte.estado = nuevoEstado;
+          this._toastr.success('Estado actualizado correctamente.');
+          this.guardando = false;
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error('Error al actualizar estado:', err);
+          this._toastr.error('No se pudo actualizar el estado.');
+          this.guardando = false;
+        },
+      });
   }
 
   eliminarReporte(reporte: Reporte): void {
@@ -344,9 +428,16 @@ export class SolicitudReportesComponent implements OnInit {
     const confirmado = confirm(
       `¿Eliminar el reporte de ${reporte.usuario} en "${reporte.lugar}"?`,
     );
-    if (confirmado) {
-      this.reportes = this.reportes.filter((r) => r.id !== reporte.id);
-    }
+    if (!confirmado) return;
+
+    // ⚠️ ReporteFallaService no expone todavía un endpoint de eliminación
+    // (no hay método delete/eliminar). Por ahora esto solo quita el
+    // reporte de la vista local; no se elimina en el servidor. Cuando el
+    // backend agregue un DELETE, se llamaría aquí antes de filtrar el array.
+    this.reportes = this.reportes.filter((r) => r.id !== reporte.id);
+    this._toastr.info(
+      'Reporte quitado de la vista (aún no hay endpoint para eliminarlo en el servidor).',
+    );
   }
 
   trackByReporteId(_index: number, reporte: Reporte): number {

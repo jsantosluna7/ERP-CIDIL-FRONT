@@ -5,4 +5,6 @@ export interface ReporteFalla {
   idUsuario: number;
   estado: number;
   fechaCreacion?: Date;
+  categoria: string;
+  fechaUltimaActualizacion?: Date;
 }

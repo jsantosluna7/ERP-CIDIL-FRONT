@@ -21,7 +21,7 @@
   <!-- Nav -->
   <nav class="tab-nav">
     <a class="tab active">Nueva Solicitud</a>
-    <a class="tab" (click)="irSolicitudes()">Ver Solicitudes</a>
+    <a class="tab" (click)="irSolicitudes()" *appCualRol="[1, 2]">Ver Solicitudes</a>
     <a class="tab" (click)="irMisPrestamos()">Mis Préstamos</a>
   </nav>
 

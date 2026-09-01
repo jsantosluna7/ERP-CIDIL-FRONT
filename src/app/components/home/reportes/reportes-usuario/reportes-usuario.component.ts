@@ -2,23 +2,38 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { ReporteFallaService } from '../../../../services/Api/ReporteFalla/reporteFalla.service';
+import { UsuariosService } from '../../../../services/Api/Usuarios/usuarios.service';
+import { ToastrService } from 'ngx-toastr';
+import { ReporteFalla } from '../../../../interfaces/reporteFalla.interface';
 
 type Estado = 'recibido' | 'proceso' | 'completado';
 type FilterField = 'lugar' | 'categoria';
 
 interface Reporte {
   id: number;
-  usuario: string;
   categoria: string;
   lugar: string;
   descripcion: string;
   estado: Estado;
-  fecha: string; // ISO
+  fecha: string; // ISO o '' si no viene fecha
 }
 
 interface EstadoInfo {
   label: string;
 }
+
+// Mapeo entre el número que maneja el backend y el estado que usa la UI
+const ESTADO_NUM_TO_KEY: Record<number, Estado> = {
+  1: 'recibido',
+  2: 'proceso',
+  3: 'completado',
+};
+const ESTADO_KEY_TO_NUM: Record<Estado, number> = {
+  recibido: 1,
+  proceso: 2,
+  completado: 3,
+};
 
 @Component({
   selector: 'app-mis-reportes',
@@ -28,9 +43,6 @@ interface EstadoInfo {
   styleUrl: './reportes-usuario.component.css',
 })
 export class ReportesUsuarioComponent implements OnInit {
-  // Placeholder: reemplazar con el usuario autenticado real (p. ej. desde sesión/token/servicio de auth).
-  currentUsuario = 'Jesus Joan Santos Luna';
-
   estadoInfo: Record<Estado, EstadoInfo> = {
     recibido: { label: 'Recibido' },
     proceso: { label: 'En proceso' },
@@ -39,78 +51,10 @@ export class ReportesUsuarioComponent implements OnInit {
 
   estados: Estado[] = ['recibido', 'proceso', 'completado'];
 
-  // Mismo dataset simulado que ver-reportes (fuente única de reportes de la plataforma).
-  // En producción esto vendría de un servicio (HttpClient) inyectado.
-  reportes: Reporte[] = [
-    {
-      id: 1,
-      usuario: 'Jesus Joan Santos Luna',
-      categoria: 'Equipo',
-      lugar: 'Aula 203',
-      descripcion:
-        'El proyector no enciende, probamos con otro cable HDMI y sigue sin dar imagen.',
-      estado: 'proceso',
-      fecha: '2026-08-25T09:15:00',
-    },
-    {
-      id: 2,
-      usuario: 'Maria Fernanda Cruz',
-      categoria: 'Red',
-      lugar: 'Laboratorio 2',
-      descripcion:
-        'No hay conexión a internet en ninguna de las computadoras del laboratorio.',
-      estado: 'recibido',
-      fecha: '2026-08-26T14:02:00',
-    },
-    {
-      id: 3,
-      usuario: 'Pedro Alexander Diaz',
-      categoria: 'Infraestructura',
-      lugar: 'Pasillo edificio B',
-      descripcion:
-        'Dos lámparas fundidas dejan el pasillo casi a oscuras después de las 6pm.',
-      estado: 'completado',
-      fecha: '2026-08-18T11:40:00',
-    },
-    {
-      id: 4,
-      usuario: 'Carla Beatriz Nuñez',
-      categoria: 'Equipo',
-      lugar: 'Sala de profesores',
-      descripcion: 'El aire acondicionado gotea sobre uno de los escritorios.',
-      estado: 'proceso',
-      fecha: '2026-08-24T08:30:00',
-    },
-    {
-      id: 5,
-      usuario: 'Jesus Joan Santos Luna',
-      categoria: 'Red',
-      lugar: 'Rack principal',
-      descripcion:
-        'El switch del segundo piso reinicia solo cada cierto tiempo.',
-      estado: 'recibido',
-      fecha: '2026-08-27T07:55:00',
-    },
-    {
-      id: 6,
-      usuario: 'Luis Manuel Fabian',
-      categoria: 'Infraestructura',
-      lugar: 'Aula 105',
-      descripcion:
-        'Una silla tiene una pata rota y es peligrosa para los estudiantes.',
-      estado: 'completado',
-      fecha: '2026-08-15T16:20:00',
-    },
-    {
-      id: 7,
-      usuario: 'Ana Sofia Reyes',
-      categoria: 'Otro',
-      lugar: 'Cafetería',
-      descripcion: 'El dispensador de agua no está enfriando correctamente.',
-      estado: 'recibido',
-      fecha: '2026-08-26T12:10:00',
-    },
-  ];
+  reportes: Reporte[] = [];
+  loading = true;
+  errorMsg: string | null = null;
+  skeletonRows = Array.from({ length: 6 }); // filas fantasma mientras carga
 
   // ── Reactive Form: búsqueda + filtros ──
   filtersForm: FormGroup;
@@ -125,7 +69,14 @@ export class ReportesUsuarioComponent implements OnInit {
   modalEstadoActual: Estado = 'recibido';
   modalReporte: Reporte | null = null;
 
-  constructor(private fb: FormBuilder) {
+  usuarioLogueado: any;
+
+  constructor(
+    private fb: FormBuilder,
+    private _reportes: ReporteFallaService,
+    private _usuario: UsuariosService,
+    private _toastr: ToastrService,
+  ) {
     this.filtersForm = this.fb.group({
       search: [''],
       filterField: ['lugar' as FilterField],
@@ -135,7 +86,6 @@ export class ReportesUsuarioComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Cada cambio en el form re-renderiza (currentPage se resetea salvo perPage manual controlado abajo).
     this.filtersForm.get('search')?.valueChanges.subscribe(() => {
       this.currentPage = 1;
     });
@@ -149,16 +99,60 @@ export class ReportesUsuarioComponent implements OnInit {
       this.perPage = Number(val);
       this.currentPage = 1;
     });
+
+    this._usuario.user$.subscribe((usuario) => {
+      if (usuario) {
+        this.usuarioLogueado = usuario;
+        this.cargarReportes();
+      }
+    });
+  }
+
+  get usuarioNombreCompleto(): string {
+    if (!this.usuarioLogueado) return '';
+    return `${this.usuarioLogueado.nombreUsuario ?? ''} ${this.usuarioLogueado.apellidoUsuario ?? ''}`.trim();
+  }
+
+  // ── Carga desde API ──
+  cargarReportes(): void {
+    const id = Number(this.usuarioLogueado?.sub);
+    if (!id) {
+      this.errorMsg = 'No se pudo identificar al usuario.';
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+    this.errorMsg = null;
+
+    this._reportes.getMiReportes(id).subscribe({
+      next: (data: ReporteFalla[]) => {
+        this.reportes = data.map((r) => this.mapReporte(r));
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMsg = 'No se pudieron cargar tus reportes. Intenta de nuevo.';
+        this.loading = false;
+        this._toastr.error(this.errorMsg);
+      },
+    });
+  }
+
+  private mapReporte(r: ReporteFalla): Reporte {
+    return {
+      id: r.idReporte as number,
+      categoria: r.categoria,
+      lugar: r.lugar,
+      descripcion: r.descripcion,
+      estado: ESTADO_NUM_TO_KEY[r.estado] ?? 'recibido',
+      fecha: r.fechaCreacion ? new Date(r.fechaCreacion).toISOString() : '',
+    };
   }
 
   // ── Helpers de datos ──
-  get misReportes(): Reporte[] {
-    return this.reportes.filter((r) => r.usuario === this.currentUsuario);
-  }
-
   get filteredReportes(): Reporte[] {
     const { search, filterField, estadoFilter } = this.filtersForm.value;
-    let data = this.misReportes;
+    let data = this.reportes;
 
     if (estadoFilter !== 'todos') {
       data = data.filter((r) => r.estado === estadoFilter);
@@ -196,16 +190,16 @@ export class ReportesUsuarioComponent implements OnInit {
 
   // ── Estadísticas ──
   get statTotal(): number {
-    return this.misReportes.length;
+    return this.reportes.length;
   }
   get statRecibido(): number {
-    return this.misReportes.filter((r) => r.estado === 'recibido').length;
+    return this.reportes.filter((r) => r.estado === 'recibido').length;
   }
   get statProceso(): number {
-    return this.misReportes.filter((r) => r.estado === 'proceso').length;
+    return this.reportes.filter((r) => r.estado === 'proceso').length;
   }
   get statCompletado(): number {
-    return this.misReportes.filter((r) => r.estado === 'completado').length;
+    return this.reportes.filter((r) => r.estado === 'completado').length;
   }
 
   // ── Filtros de campo / estado ──
@@ -234,6 +228,7 @@ export class ReportesUsuarioComponent implements OnInit {
 
   // ── Formato de fecha ──
   formatFecha(iso: string): string {
+    if (!iso) return '—';
     const d = new Date(iso);
     const fecha = d.toLocaleDateString('es-DO', {
       day: '2-digit',
@@ -249,9 +244,7 @@ export class ReportesUsuarioComponent implements OnInit {
 
   // ── Modal de detalle / estado ──
   abrirModal(id: number): void {
-    const r = this.reportes.find(
-      (x) => x.id === id && x.usuario === this.currentUsuario,
-    );
+    const r = this.reportes.find((x) => x.id === id);
     if (!r) return;
     this.modalReportId = id;
     this.modalReporte = r;
@@ -272,17 +265,31 @@ export class ReportesUsuarioComponent implements OnInit {
   }
 
   guardarEstado(): void {
-    const r = this.reportes.find(
-      (x) => x.id === this.modalReportId && x.usuario === this.currentUsuario,
-    );
-    if (r) r.estado = this.modalEstadoActual;
-    this.cerrarModal();
+    if (this.modalReportId == null) return;
+    const idReporte = this.modalReportId;
+    const nuevoEstadoNum = ESTADO_KEY_TO_NUM[this.modalEstadoActual];
+
+    this._reportes
+      .actualizarReporte(idReporte, {
+        IdReporte: idReporte,
+        estado: nuevoEstadoNum,
+      })
+      .subscribe({
+        next: () => {
+          const r = this.reportes.find((x) => x.id === idReporte);
+          if (r) r.estado = this.modalEstadoActual;
+          this._toastr.success('Estado actualizado.');
+          this.cerrarModal();
+        },
+        error: () => {
+          this._toastr.error('No se pudo actualizar el estado.');
+        },
+      });
   }
 
   eliminarDesdeModal(): void {
-    const r = this.reportes.find(
-      (x) => x.id === this.modalReportId && x.usuario === this.currentUsuario,
-    );
+    // No hay endpoint de eliminación en el servicio todavía; se deja pendiente de backend.
+    const r = this.reportes.find((x) => x.id === this.modalReportId);
     if (!r) return;
     if (confirm(`¿Eliminar tu reporte en "${r.lugar}"?`)) {
       this.reportes = this.reportes.filter((x) => x.id !== r.id);

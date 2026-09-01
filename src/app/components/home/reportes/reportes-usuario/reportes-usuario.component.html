@@ -1,4 +1,5 @@
 <div class="page-wrapper" (keydown)="onEscape($event)" tabindex="0">
+  <!-- Header -->
   <div class="page-header">
     <div class="header-icon">
       <svg
@@ -16,6 +17,7 @@
         <circle cx="12" cy="7" r="4" />
       </svg>
     </div>
+
     <div>
       <h1>Mis Reportes</h1>
       <p class="header-subtitle">
@@ -24,80 +26,60 @@
     </div>
   </div>
 
-  <nav class="nav-tabs">
-    <a class="nav-tab" routerLink="/reporte-falla">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="8" x2="12" y2="16" />
-        <line x1="8" y1="12" x2="16" y2="12" />
-      </svg>
-      Nuevo Reporte
-    </a>
-    <a class="nav-tab active" routerLink="/mis-reportes">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.2"
-      >
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-      Mis Reportes
-    </a>
-    <a class="nav-tab" routerLink="/ver-reportes">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.2"
-      >
-        <line x1="8" y1="6" x2="21" y2="6" />
-        <line x1="8" y1="12" x2="21" y2="12" />
-        <line x1="8" y1="18" x2="21" y2="18" />
-        <line x1="3" y1="6" x2="3.01" y2="6" />
-        <line x1="3" y1="12" x2="3.01" y2="12" />
-        <line x1="3" y1="18" x2="3.01" y2="18" />
-      </svg>
-      Ver Reportes
-    </a>
-  </nav>
-
   <!-- Resumen -->
   <div class="stat-row">
     <div class="stat-pill">
       <span class="dot total"></span>
       <div>
-        <div class="stat-num">{{ statTotal }}</div>
+        <div class="stat-num">
+          @if (loading) {
+            <span class="skeleton skeleton-stat"></span>
+          } @else {
+            {{ statTotal }}
+          }
+        </div>
         <div class="stat-label">Mis reportes</div>
       </div>
     </div>
+
     <div class="stat-pill">
       <span class="dot recibido"></span>
       <div>
-        <div class="stat-num">{{ statRecibido }}</div>
+        <div class="stat-num">
+          @if (loading) {
+            <span class="skeleton skeleton-stat"></span>
+          } @else {
+            {{ statRecibido }}
+          }
+        </div>
         <div class="stat-label">Recibidos</div>
       </div>
     </div>
+
     <div class="stat-pill">
       <span class="dot proceso"></span>
       <div>
-        <div class="stat-num">{{ statProceso }}</div>
+        <div class="stat-num">
+          @if (loading) {
+            <span class="skeleton skeleton-stat"></span>
+          } @else {
+            {{ statProceso }}
+          }
+        </div>
         <div class="stat-label">En proceso</div>
       </div>
     </div>
+
     <div class="stat-pill">
       <span class="dot completado"></span>
       <div>
-        <div class="stat-num">{{ statCompletado }}</div>
+        <div class="stat-num">
+          @if (loading) {
+            <span class="skeleton skeleton-stat"></span>
+          } @else {
+            {{ statCompletado }}
+          }
+        </div>
         <div class="stat-label">Completados</div>
       </div>
     </div>
@@ -121,12 +103,14 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
         </span>
+
         <input
           type="text"
           formControlName="search"
           [placeholder]="searchPlaceholder"
         />
       </div>
+
       <div class="filter-chips">
         <button
           type="button"
@@ -134,34 +118,39 @@
           [class.active]="filtersForm.value.filterField === 'lugar'"
           (click)="setFilterField('lugar')"
         >
-          <svg
-            *ngIf="filtersForm.value.filterField === 'lugar'"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          @if (filtersForm.value.filterField === "lugar") {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          }
+
           Lugar
         </button>
+
         <button
           type="button"
           class="chip"
           [class.active]="filtersForm.value.filterField === 'categoria'"
           (click)="setFilterField('categoria')"
         >
-          <svg
-            *ngIf="filtersForm.value.filterField === 'categoria'"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          @if (filtersForm.value.filterField === "categoria") {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          }
+
           Categoría
         </button>
       </div>
@@ -175,8 +164,10 @@
         [class.active]="filtersForm.value.estadoFilter === 'todos'"
         (click)="setEstadoFilter('todos')"
       >
-        <span class="dot"></span>Todos
+        <span class="dot"></span>
+        Todos
       </button>
+
       <button
         type="button"
         class="status-chip"
@@ -184,8 +175,10 @@
         [class.active]="filtersForm.value.estadoFilter === 'recibido'"
         (click)="setEstadoFilter('recibido')"
       >
-        <span class="dot"></span>Recibido
+        <span class="dot"></span>
+        Recibido
       </button>
+
       <button
         type="button"
         class="status-chip"
@@ -193,8 +186,10 @@
         [class.active]="filtersForm.value.estadoFilter === 'proceso'"
         (click)="setEstadoFilter('proceso')"
       >
-        <span class="dot"></span>En proceso
+        <span class="dot"></span>
+        En proceso
       </button>
+
       <button
         type="button"
         class="status-chip"
@@ -202,7 +197,8 @@
         [class.active]="filtersForm.value.estadoFilter === 'completado'"
         (click)="setEstadoFilter('completado')"
       >
-        <span class="dot"></span>Completado
+        <span class="dot"></span>
+        Completado
       </button>
     </div>
   </div>
@@ -222,13 +218,15 @@
           <line x1="3" y1="10" x2="21" y2="10" />
           <line x1="9" y1="10" x2="9" y2="22" />
         </svg>
+
         <span class="card-title">Mis reportes</span>
       </div>
-      <span class="result-count"
-        >{{ filteredReportes.length }} reporte{{
+
+      <span class="result-count">
+        {{ filteredReportes.length }} reporte{{
           filteredReportes.length === 1 ? "" : "s"
-        }}</span
-      >
+        }}
+      </span>
     </div>
 
     <div class="table-scroll">
@@ -243,105 +241,154 @@
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="empty-row" *ngIf="pagedReportes.length === 0">
-            <td colspan="7">No tienes reportes con ese criterio.</td>
-          </tr>
 
-          <tr *ngFor="let r of pagedReportes; trackBy: trackByReporteId">
-            <td data-label="Categoría">
-              <span class="categoria-tag">{{ r.categoria }}</span>
-            </td>
-            <td class="desc-cell" data-label="Descripción">
-              <div class="desc-text">{{ r.descripcion }}</div>
-            </td>
-            <td class="cell-muted" data-label="Lugar">{{ r.lugar }}</td>
-            <td data-label="Estado">
-              <span class="estado-badge" [ngClass]="r.estado">
-                <svg
-                  *ngIf="r.estado === 'recibido'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-                  <path
-                    d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
-                  />
-                </svg>
-                <svg
-                  *ngIf="r.estado === 'proceso'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path d="M21 2v6h-6" />
-                  <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
-                  <path d="M3 22v-6h6" />
-                  <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-                </svg>
-                <svg
-                  *ngIf="r.estado === 'completado'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 17" />
-                </svg>
-                {{ estadoInfo[r.estado].label }}
-              </span>
-            </td>
-            <td class="fecha-cell">{{ formatFecha(r.fecha) }}</td>
-            <td>
-              <div class="acciones">
-                <button
-                  type="button"
-                  class="icon-btn"
-                  title="Ver detalle / actualizar estado"
-                  (click)="abrirModal(r.id)"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+        <tbody>
+          @if (loading) {
+            @for (i of skeletonRows; track $index) {
+              <tr class="skeleton-row">
+                <td><span class="skeleton skeleton-tag"></span></td>
+                <td><span class="skeleton skeleton-text"></span></td>
+                <td><span class="skeleton skeleton-text-sm"></span></td>
+                <td><span class="skeleton skeleton-badge"></span></td>
+                <td><span class="skeleton skeleton-text-sm"></span></td>
+                <td><span class="skeleton skeleton-icon"></span></td>
+              </tr>
+            }
+          } @else if (errorMsg) {
+            <tr class="empty-row">
+              <td colspan="7">{{ errorMsg }}</td>
+            </tr>
+          } @else if (pagedReportes.length === 0) {
+            <tr class="empty-row">
+              <td colspan="7">No tienes reportes con ese criterio.</td>
+            </tr>
+          } @else {
+            @for (r of pagedReportes; track r.id) {
+              <tr>
+                <td data-label="Categoría">
+                  <span class="categoria-tag">
+                    {{ r.categoria }}
+                  </span>
+                </td>
+
+                <td class="desc-cell" data-label="Descripción">
+                  <div class="desc-text">
+                    {{ r.descripcion }}
+                  </div>
+                </td>
+
+                <td class="cell-muted" data-label="Lugar">
+                  {{ r.lugar }}
+                </td>
+
+                <td data-label="Estado">
+                  <span
+                    class="estado-badge"
+                    [class.recibido]="r.estado === 'recibido'"
+                    [class.proceso]="r.estado === 'proceso'"
+                    [class.completado]="r.estado === 'completado'"
                   >
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
+                    @if (r.estado === "recibido") {
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                        <path
+                          d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+                        />
+                      </svg>
+                    }
+
+                    @if (r.estado === "proceso") {
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <path d="M21 2v6h-6" />
+                        <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                        <path d="M3 22v-6h6" />
+                        <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+                      </svg>
+                    }
+
+                    @if (r.estado === "completado") {
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 17" />
+                      </svg>
+                    }
+
+                    {{ estadoInfo[r.estado].label }}
+                  </span>
+                </td>
+
+                <td class="fecha-cell">
+                  {{ formatFecha(r.fecha) }}
+                </td>
+
+                <td>
+                  <div class="acciones">
+                    <button
+                      type="button"
+                      class="icon-btn"
+                      title="Ver detalle / actualizar estado"
+                      (click)="abrirModal(r.id)"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
         </tbody>
       </table>
     </div>
 
+    <!-- Paginación -->
     <div class="table-footer" [formGroup]="filtersForm">
       <div class="per-page">
-        <label for="per-page-select">Elementos por página:</label>
+        <label for="per-page-select"> Elementos por página: </label>
+
         <select id="per-page-select" formControlName="perPage">
           <option [value]="10">10</option>
           <option [value]="20">20</option>
           <option [value]="50">50</option>
         </select>
       </div>
+
       <div class="pagination">
-        <span class="pagination-range"
-          >{{ rangeStart }} – {{ rangeEnd }} de
-          {{ filteredReportes.length }}</span
-        >
+        <span class="pagination-range">
+          {{ rangeStart }} – {{ rangeEnd }} de
+          {{ filteredReportes.length }}
+        </span>
+
         <div class="pagination-btns">
+          <!-- Primera página -->
           <button
             type="button"
             class="page-btn"
@@ -359,6 +406,8 @@
               <polyline points="18 17 13 12 18 7" />
             </svg>
           </button>
+
+          <!-- Página anterior -->
           <button
             type="button"
             class="page-btn"
@@ -375,6 +424,8 @@
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
+
+          <!-- Página siguiente -->
           <button
             type="button"
             class="page-btn"
@@ -391,6 +442,8 @@
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
+
+          <!-- Última página -->
           <button
             type="button"
             class="page-btn"
@@ -420,104 +473,90 @@
   [class.visible]="modalVisible"
   (click)="$event.target === $event.currentTarget && cerrarModal()"
 >
-  <div class="modal-card" *ngIf="modalReporte as r">
-    <div class="modal-header">
-      <div class="modal-title-group">
-        <div class="modal-icon">
+  @if (modalReporte; as r) {
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="11" x2="12" y2="16" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+          </div>
+
+          <div>
+            <div class="modal-title">Detalle del reporte</div>
+
+            <div class="modal-subtitle">
+              Reporte #{{ r.id }} · {{ r.lugar }}
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="modal-close" (click)="cerrarModal()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="2.2"
+            stroke-width="2.5"
           >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="11" x2="12" y2="16" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
-        </div>
-        <div>
-          <div class="modal-title">Detalle del reporte</div>
-          <div class="modal-subtitle">Reporte #{{ r.id }} · {{ r.lugar }}</div>
-        </div>
-      </div>
-      <button type="button" class="modal-close" (click)="cerrarModal()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-        >
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="detail-grid">
-        <div class="detail-item">
-          <div class="detail-label">Categoría</div>
-          <div class="detail-value">{{ r.categoria }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Lugar</div>
-          <div class="detail-value">{{ r.lugar }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Reportado por</div>
-          <div class="detail-value">{{ r.usuario }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Fecha</div>
-          <div class="detail-value">{{ formatFecha(r.fecha) }}</div>
-        </div>
-        <div class="detail-item detail-full">
-          <div class="detail-label">Descripción</div>
-          <div class="detail-value">{{ r.descripcion }}</div>
-        </div>
+        </button>
       </div>
 
-    <div class="modal-footer">
-      <button
-        type="button"
-        class="icon-btn danger"
-        title="Eliminar reporte"
-        style="margin-right: auto"
-        (click)="eliminarDesdeModal()"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-          <path d="M10 11v6" />
-          <path d="M14 11v6" />
-          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-        </svg>
-      </button>
-      <button type="button" class="btn-secondary" (click)="cerrarModal()">
-        Cancelar
-      </button>
-      <button type="button" class="btn-primary-modal" (click)="guardarEstado()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-        >
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-        Guardar Cambios
-      </button>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Categoría</div>
+
+            <div class="detail-value">
+              {{ r.categoria }}
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Lugar</div>
+
+            <div class="detail-value">
+              {{ r.lugar }}
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Reportado por</div>
+
+            <div class="detail-value">
+              {{ usuarioNombreCompleto }}
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Fecha</div>
+
+            <div class="detail-value">
+              {{ formatFecha(r.fecha) }}
+            </div>
+          </div>
+
+          <div class="detail-item detail-full">
+            <div class="detail-label">Descripción</div>
+
+            <div class="detail-value">
+              {{ r.descripcion }}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  }
 </div>

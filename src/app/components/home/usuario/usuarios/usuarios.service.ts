@@ -21,7 +21,7 @@ export interface Rol {
 export class UsuarioService {
   private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_TODOS_USUARIOS']}`;
   private apiUrlRol = `${process.env['API_URL']}${process.env['ENDPOINT_ROL']}`;
-  private apiUrlUsuario = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIO']}`;
+  private apiUrlUsuario = `${process.env['API_URL']}${process.env['ENDPOINT_USUARIOS']}`;
 
   constructor(private http: HttpClient) {}
 

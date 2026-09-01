@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 export interface Equipo {
   id: string | number;
@@ -65,7 +66,7 @@ function finPosteriorAlInicio(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-reserva-equipos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AppCualRolDirective],
   templateUrl: './reserva-equipo.component.html',
   styleUrl: './reserva-equipo.component.css'
 })

@@ -14,6 +14,7 @@ import { UsuariosService } from '../../../services/Api/Usuarios/usuarios.service
 import { ToastrService } from 'ngx-toastr';
 import { Console } from 'console';
 import { environment } from '../../../../environments/environment';
+import { AppCualRolDirective } from '../../../directives/app-cual-rol.directive';
 
 export interface Laboratorio {
   id: number;
@@ -40,7 +41,7 @@ const HORARIOS: Record<number, { open: number; close: number } | null> = {
 @Component({
   selector: 'app-reserva-laboratorio',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DecimalPipe],
+  imports: [CommonModule, ReactiveFormsModule, DecimalPipe, AppCualRolDirective],
   templateUrl: './reserva-laboratorio.component.html',
   styleUrl: './reserva-laboratorio.component.css',
 })

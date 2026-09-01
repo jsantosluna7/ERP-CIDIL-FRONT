@@ -1,47 +1,105 @@
 <div class="page-wrapper">
-
   <div class="page-header">
     <div class="header-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"
+        />
       </svg>
     </div>
     <div>
       <h1>Reportar una Falla</h1>
-      <p class="header-subtitle">Notifica cualquier problema técnico o de infraestructura</p>
+      <p class="header-subtitle">
+        Notifica cualquier problema técnico o de infraestructura
+      </p>
     </div>
   </div>
 
   <nav class="reportes-tabs">
-    <a class="reportes-tab" routerLink="/reporte-falla" routerLinkActive="active">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <a
+      class="reportes-tab"
+      routerLink="/reporte-falla"
+      routerLinkActive="active"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="8" y1="12" x2="16" y2="12" />
+      </svg>
       Nuevo Reporte
     </a>
-    <a class="reportes-tab" routerLink="/home/mis-reportes" routerLinkActive="active">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <a
+      class="reportes-tab"
+      routerLink="/home/mis-reportes"
+      routerLinkActive="active"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
       Mis Reportes
     </a>
-    <a class="reportes-tab" routerLink="/home/solicitud-reportes" routerLinkActive="active">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    <a
+      class="reportes-tab"
+      routerLink="/home/solicitud-reportes"
+      routerLinkActive="active"
+      *appCualRol="[1, 2]"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <line x1="8" y1="6" x2="21" y2="6" />
+        <line x1="8" y1="12" x2="21" y2="12" />
+        <line x1="8" y1="18" x2="21" y2="18" />
+        <line x1="3" y1="6" x2="3.01" y2="6" />
+        <line x1="3" y1="12" x2="3.01" y2="12" />
+        <line x1="3" y1="18" x2="3.01" y2="18" />
+      </svg>
       Ver Reportes
     </a>
   </nav>
 
-  @if (mostrarToast()) {
-    <div class="toast visible">
-      <div class="toast-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <div>
-        <div class="toast-title">Reporte enviado correctamente</div>
-        <div class="toast-sub">Le avisaremos cuando cambie de estado. Puedes seguirlo en <a routerLink="/mis-reportes">Mis Reportes</a>.</div>
-      </div>
-    </div>
-  }
-
   <div class="card">
     <div class="card-eyebrow">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
+        />
+        <path d="M12 9v4" />
+        <path d="M12 17h.01" />
+      </svg>
       <span>Detalles de la falla</span>
     </div>
 
@@ -51,7 +109,18 @@
           <label for="categoria">Categoría <span class="req">*</span></label>
           <div class="input-wrap">
             <span class="field-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <path
+                  d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"
+                />
+                <circle cx="7.5" cy="7.5" r="1.5" />
+              </svg>
             </span>
             <select id="categoria" formControlName="categoria">
               <option value="Infraestructura">Infraestructura</option>
@@ -66,49 +135,100 @@
           <label for="lugar">Lugar <span class="req">*</span></label>
           <div class="input-wrap">
             <span class="field-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
             </span>
             <input
               type="text"
               id="lugar"
               formControlName="lugar"
               placeholder="Ej. Aula 203, Rack principal…"
-              [class.input-error]="reporteForm.controls.lugar.invalid && reporteForm.controls.lugar.touched"
+              [class.input-error]="
+                reporteForm.controls.lugar.invalid &&
+                reporteForm.controls.lugar.touched
+              "
             />
           </div>
-          @if (reporteForm.controls.lugar.invalid && reporteForm.controls.lugar.touched) {
-            <div class="field-hint field-hint-error">Este campo es obligatorio.</div>
+          @if (
+            reporteForm.controls.lugar.invalid &&
+            reporteForm.controls.lugar.touched
+          ) {
+            <div class="field-hint field-hint-error">
+              Este campo es obligatorio.
+            </div>
           }
         </div>
       </div>
 
       <div class="field">
-        <label for="descripcion">Descripción de la falla <span class="req">*</span></label>
+        <label for="descripcion"
+          >Descripción de la falla <span class="req">*</span></label
+        >
         <div class="input-wrap textarea">
           <span class="field-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              />
+            </svg>
           </span>
           <textarea
             id="descripcion"
             formControlName="descripcion"
             [maxlength]="descripcionMaxLength"
             placeholder="Describe la falla, qué ocurre y desde cuándo…"
-            [class.input-error]="reporteForm.controls.descripcion.invalid && reporteForm.controls.descripcion.touched"
+            [class.input-error]="
+              reporteForm.controls.descripcion.invalid &&
+              reporteForm.controls.descripcion.touched
+            "
           ></textarea>
         </div>
         <div class="char-counter">
-          <span>{{ reporteForm.controls.descripcion.value.length }}</span>/{{ descripcionMaxLength }}
+          <span>{{ reporteForm.controls.descripcion.value.length }}</span
+          >/{{ descripcionMaxLength }}
         </div>
-        @if (reporteForm.controls.descripcion.invalid && reporteForm.controls.descripcion.touched) {
-          <div class="field-hint field-hint-error">Este campo es obligatorio.</div>
+        @if (
+          reporteForm.controls.descripcion.invalid &&
+          reporteForm.controls.descripcion.touched
+        ) {
+          <div class="field-hint field-hint-error">
+            Este campo es obligatorio.
+          </div>
         }
       </div>
 
-      <button type="submit" class="btn-submit">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        Enviar Reporte
+      <button type="submit" class="btn-submit" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner" aria-hidden="true"></span>
+          Enviar Reporte...
+        } @else {
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.3"
+          >
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          Enviar Reporte
+        }
       </button>
     </form>
   </div>
-
 </div>

@@ -875,6 +875,66 @@ td.cell-muted {
   height: 14px;
 }
 
+/* ─── Skeleton loading ─── */
+.skeleton {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  background: #e9edf3;
+  border-radius: 6px;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s infinite;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-stat {
+  width: 34px;
+  height: 20px;
+  border-radius: 6px;
+  vertical-align: middle;
+}
+.skeleton-tag {
+  width: 90px;
+  height: 20px;
+  border-radius: 99px;
+}
+.skeleton-text {
+  width: 85%;
+  height: 14px;
+}
+.skeleton-text-sm {
+  width: 64px;
+  height: 14px;
+}
+.skeleton-badge {
+  width: 92px;
+  height: 22px;
+  border-radius: 99px;
+}
+.skeleton-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+}
+.skeleton-row td {
+  padding: var(--sp-sm) var(--sp-lg);
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 900px) {
   .stat-row {
