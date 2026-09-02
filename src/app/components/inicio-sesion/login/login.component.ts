@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private _usuario: UsuariosService,
     private _toastr: ToastrService,
     private _router: Router,
-    private _google: GoogleOauthService
+    private _google: GoogleOauthService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -122,8 +122,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     return 'Campo inválido.';
   }
 
-  onLoginGoogle(){
-    this._google.loginConGoogle();
+  onLoginGoogle() {
+    this.loading = true;
+    try {
+      this.loading = false;
+      this._google.loginConGoogle();
+    } catch (error) {
+      this.loading = false;
+    }
   }
 
   onSubmit(): void {

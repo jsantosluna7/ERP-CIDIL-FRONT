@@ -124,7 +124,14 @@
         </div>
       </div>
 
-      <button type="submit" class="cta">Completar registro</button>
+      <button type="submit" class="cta" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner" aria-hidden="true"></span>
+          Completar registro...
+        } @else {
+          Completar registro
+        }
+      </button>
     </form>
   </div>
 </div>

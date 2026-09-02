@@ -31,6 +31,30 @@ function correoInstitucionalValidator(
   return regex.test(value) ? null : { correoInstitucional: true };
 }
 
+/** Exige el formato (809) 555-1234, ya que el input se autoformatea al escribir. */
+function phoneFormatValidator(
+  control: AbstractControl,
+): ValidationErrors | null {
+  const value = control.value as string;
+  if (!value) return null;
+  return /^\(\d{3}\) \d{3}-\d{4}$/.test(value) ? null : { phoneFormat: true };
+}
+
+/** Reformatea los dígitos del teléfono como (809) 555-1234 mientras el usuario escribe. */
+function formatPhoneInput(raw: string): string {
+  const digits = raw.replace(/\D/g, '').slice(0, 10);
+  if (digits.length > 6) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length > 3) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  }
+  if (digits.length > 0) {
+    return `(${digits}`;
+  }
+  return digits;
+}
+
 @Component({
   selector: 'app-registro',
   standalone: true,
@@ -87,13 +111,7 @@ export class RegistroComponent implements OnInit, OnDestroy {
         pass: ['', [Validators.required, Validators.minLength(8)]],
         pass2: ['', [Validators.required]],
         matricula: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-        telefono: [
-          '',
-          [
-            Validators.required,
-            Validators.pattern(/^(809|829|849)-\d{3}-\d{4}$/),
-          ],
-        ],
+        telefono: ['', [Validators.required, phoneFormatValidator]],
         direccion: ['', [Validators.required, Validators.minLength(5)]],
       },
       { validators: passwordsMatchValidator },
@@ -167,7 +185,11 @@ export class RegistroComponent implements OnInit, OnDestroy {
       case 'matricula':
         return 'Ingresa tu matrícula o ID.';
       case 'telefono':
-        return 'Debe iniciar con 809, 829 u 849, formato 809-777-7777.';
+        if (control.hasError('required'))
+          return 'Ingresa tu número de teléfono.';
+        if (control.hasError('phoneFormat'))
+          return 'Formato esperado: (809) 555-1234.';
+        return 'Teléfono inválido.';
       case 'direccion':
         return 'Ingresa tu dirección.';
       default:
@@ -208,19 +230,13 @@ export class RegistroComponent implements OnInit, OnDestroy {
     this.registerForm.get(controlName)?.setValue(limpio);
   }
 
-  /** Formatea el teléfono como 809-777-7777 mientras el usuario escribe. */
+  /** Autoformatea el teléfono como (809) 555-1234 mientras el usuario escribe. */
   onTelefonoInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const digits = input.value.replace(/\D/g, '').slice(0, 10);
-
-    let formatted = digits;
-    if (digits.length > 6) {
-      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
-    } else if (digits.length > 3) {
-      formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
-    }
-
-    this.registerForm.get('telefono')?.setValue(formatted);
+    const formatted = formatPhoneInput(input.value);
+    this.registerForm
+      .get('telefono')
+      ?.setValue(formatted, { emitEvent: false });
   }
 
   /** Enter en el paso 1 avanza al paso 2 en vez de enviar el formulario. */
@@ -245,7 +261,7 @@ export class RegistroComponent implements OnInit, OnDestroy {
         apellidoUsuario: formValue.apellidos,
         correoInstitucional: formValue.email,
         contrasenaHash: formValue.pass2,
-        telefono: formValue.telefono.replace(/-/g, ''), // 8097777777
+        telefono: formValue.telefono.replace(/\D/g, ''), // 8097777777
         direccion: formValue.direccion,
       };
 

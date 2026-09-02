@@ -23,13 +23,21 @@
       </div>
     </div>
 
-    <form class="steps" [formGroup]="registerForm" (ngSubmit)="onSubmit()" (keydown.enter)="onEnterKey($event)">
+    <form
+      class="steps"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      (keydown.enter)="onEnterKey($event)"
+    >
       <!-- STEP 1 -->
       <div class="step" [class.active]="currentStep === 1">
         <div class="grid-2">
           <div class="field">
             <label for="nombres">Nombres</label>
-            <div class="input-shell" [class.has-error]="fieldHasError('nombres')">
+            <div
+              class="input-shell"
+              [class.has-error]="fieldHasError('nombres')"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -45,24 +53,32 @@
                 placeholder="Nombre"
                 formControlName="nombres"
                 (input)="onSoloTextoInput($event, 'nombres')"
-                [attr.aria-describedby]="fieldHasError('nombres') ? 'nombres-error' : null"
+                [attr.aria-describedby]="
+                  fieldHasError('nombres') ? 'nombres-error' : null
+                "
               />
-              @if (fieldHasError('nombres')) {
+              @if (fieldHasError("nombres")) {
                 <div class="error-tooltip-wrap">
                   <span
                     class="error-icon"
                     tabindex="0"
                     role="img"
                     [attr.aria-label]="'Error: ' + errorMessage('nombres')"
-                  >i</span>
-                  <span class="error-bubble" id="nombres-error">{{ errorMessage('nombres') }}</span>
+                    >i</span
+                  >
+                  <span class="error-bubble" id="nombres-error">{{
+                    errorMessage("nombres")
+                  }}</span>
                 </div>
               }
             </div>
           </div>
           <div class="field">
             <label for="apellidos">Apellidos</label>
-            <div class="input-shell" [class.has-error]="fieldHasError('apellidos')">
+            <div
+              class="input-shell"
+              [class.has-error]="fieldHasError('apellidos')"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -78,17 +94,22 @@
                 placeholder="Apellidos"
                 formControlName="apellidos"
                 (input)="onSoloTextoInput($event, 'apellidos')"
-                [attr.aria-describedby]="fieldHasError('apellidos') ? 'apellidos-error' : null"
+                [attr.aria-describedby]="
+                  fieldHasError('apellidos') ? 'apellidos-error' : null
+                "
               />
-              @if (fieldHasError('apellidos')) {
+              @if (fieldHasError("apellidos")) {
                 <div class="error-tooltip-wrap">
                   <span
                     class="error-icon"
                     tabindex="0"
                     role="img"
                     [attr.aria-label]="'Error: ' + errorMessage('apellidos')"
-                  >i</span>
-                  <span class="error-bubble" id="apellidos-error">{{ errorMessage('apellidos') }}</span>
+                    >i</span
+                  >
+                  <span class="error-bubble" id="apellidos-error">{{
+                    errorMessage("apellidos")
+                  }}</span>
                 </div>
               }
             </div>
@@ -112,17 +133,22 @@
               type="email"
               placeholder="ejemplo@ipl.edu.do"
               formControlName="email"
-              [attr.aria-describedby]="fieldHasError('email') ? 'email-error' : null"
+              [attr.aria-describedby]="
+                fieldHasError('email') ? 'email-error' : null
+              "
             />
-            @if (fieldHasError('email')) {
+            @if (fieldHasError("email")) {
               <div class="error-tooltip-wrap">
                 <span
                   class="error-icon"
                   tabindex="0"
                   role="img"
                   [attr.aria-label]="'Error: ' + errorMessage('email')"
-                >i</span>
-                <span class="error-bubble" id="email-error">{{ errorMessage('email') }}</span>
+                  >i</span
+                >
+                <span class="error-bubble" id="email-error">{{
+                  errorMessage("email")
+                }}</span>
               </div>
             }
           </div>
@@ -146,27 +172,29 @@
                 type="password"
                 placeholder="••••••••"
                 formControlName="pass"
-                [attr.aria-describedby]="fieldHasError('pass') ? 'pass-error' : null"
+                [attr.aria-describedby]="
+                  fieldHasError('pass') ? 'pass-error' : null
+                "
               />
-              @if (fieldHasError('pass')) {
+              @if (fieldHasError("pass")) {
                 <div class="error-tooltip-wrap">
                   <span
                     class="error-icon"
                     tabindex="0"
                     role="img"
                     [attr.aria-label]="'Error: ' + errorMessage('pass')"
-                  >i</span>
-                  <span class="error-bubble" id="pass-error">{{ errorMessage('pass') }}</span>
+                    >i</span
+                  >
+                  <span class="error-bubble" id="pass-error">{{
+                    errorMessage("pass")
+                  }}</span>
                 </div>
               }
             </div>
           </div>
           <div class="field">
             <label for="pass2">Confirmar contraseña</label>
-            <div
-              class="input-shell"
-              [class.has-error]="fieldHasError('pass2')"
-            >
+            <div class="input-shell" [class.has-error]="fieldHasError('pass2')">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -181,17 +209,22 @@
                 type="password"
                 placeholder="••••••••"
                 formControlName="pass2"
-                [attr.aria-describedby]="fieldHasError('pass2') ? 'pass2-error' : null"
+                [attr.aria-describedby]="
+                  fieldHasError('pass2') ? 'pass2-error' : null
+                "
               />
-              @if (fieldHasError('pass2')) {
+              @if (fieldHasError("pass2")) {
                 <div class="error-tooltip-wrap">
                   <span
                     class="error-icon"
                     tabindex="0"
                     role="img"
                     [attr.aria-label]="'Error: ' + errorMessage('pass2')"
-                  >i</span>
-                  <span class="error-bubble" id="pass2-error">{{ errorMessage('pass2') }}</span>
+                    >i</span
+                  >
+                  <span class="error-bubble" id="pass2-error">{{
+                    errorMessage("pass2")
+                  }}</span>
                 </div>
               }
             </div>
@@ -210,7 +243,10 @@
         <div class="grid-2">
           <div class="field">
             <label for="matricula">Matrícula o ID de Empleado</label>
-            <div class="input-shell" [class.has-error]="fieldHasError('matricula')">
+            <div
+              class="input-shell"
+              [class.has-error]="fieldHasError('matricula')"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -226,24 +262,32 @@
                 placeholder="Ej: 10089635 o 1513"
                 formControlName="matricula"
                 (input)="onSoloNumeroInput($event, 'matricula')"
-                [attr.aria-describedby]="fieldHasError('matricula') ? 'matricula-error' : null"
+                [attr.aria-describedby]="
+                  fieldHasError('matricula') ? 'matricula-error' : null
+                "
               />
-              @if (fieldHasError('matricula')) {
+              @if (fieldHasError("matricula")) {
                 <div class="error-tooltip-wrap">
                   <span
                     class="error-icon"
                     tabindex="0"
                     role="img"
                     [attr.aria-label]="'Error: ' + errorMessage('matricula')"
-                  >i</span>
-                  <span class="error-bubble" id="matricula-error">{{ errorMessage('matricula') }}</span>
+                    >i</span
+                  >
+                  <span class="error-bubble" id="matricula-error">{{
+                    errorMessage("matricula")
+                  }}</span>
                 </div>
               }
             </div>
           </div>
           <div class="field">
             <label for="telefono">Teléfono</label>
-            <div class="input-shell" [class.has-error]="fieldHasError('telefono')">
+            <div
+              class="input-shell"
+              [class.has-error]="fieldHasError('telefono')"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -257,21 +301,25 @@
               <input
                 id="telefono"
                 type="tel"
-                placeholder="809-777-7777"
-                maxlength="12"
+                placeholder="(809) 555-1234"
                 formControlName="telefono"
                 (input)="onTelefonoInput($event)"
-                [attr.aria-describedby]="fieldHasError('telefono') ? 'telefono-error' : null"
+                [attr.aria-describedby]="
+                  fieldHasError('telefono') ? 'telefono-error' : null
+                "
               />
-              @if (fieldHasError('telefono')) {
+              @if (fieldHasError("telefono")) {
                 <div class="error-tooltip-wrap">
                   <span
                     class="error-icon"
                     tabindex="0"
                     role="img"
                     [attr.aria-label]="'Error: ' + errorMessage('telefono')"
-                  >i</span>
-                  <span class="error-bubble" id="telefono-error">{{ errorMessage('telefono') }}</span>
+                    >i</span
+                  >
+                  <span class="error-bubble" id="telefono-error">{{
+                    errorMessage("telefono")
+                  }}</span>
                 </div>
               }
             </div>
@@ -280,7 +328,10 @@
 
         <div class="field">
           <label for="direccion">Dirección de domicilio</label>
-          <div class="input-shell" [class.has-error]="fieldHasError('direccion')">
+          <div
+            class="input-shell"
+            [class.has-error]="fieldHasError('direccion')"
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -295,17 +346,22 @@
               type="text"
               placeholder="Dirección"
               formControlName="direccion"
-              [attr.aria-describedby]="fieldHasError('direccion') ? 'direccion-error' : null"
+              [attr.aria-describedby]="
+                fieldHasError('direccion') ? 'direccion-error' : null
+              "
             />
-            @if (fieldHasError('direccion')) {
+            @if (fieldHasError("direccion")) {
               <div class="error-tooltip-wrap">
                 <span
                   class="error-icon"
                   tabindex="0"
                   role="img"
                   [attr.aria-label]="'Error: ' + errorMessage('direccion')"
-                >i</span>
-                <span class="error-bubble" id="direccion-error">{{ errorMessage('direccion') }}</span>
+                  >i</span
+                >
+                <span class="error-bubble" id="direccion-error">{{
+                  errorMessage("direccion")
+                }}</span>
               </div>
             }
           </div>

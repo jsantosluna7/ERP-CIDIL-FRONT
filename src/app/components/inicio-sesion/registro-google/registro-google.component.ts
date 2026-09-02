@@ -57,6 +57,7 @@ export class RegistroGoogleComponent implements OnInit {
   form!: FormGroup;
   nombre: string | null = '';
   fotoPerfil: string | null = '';
+  loading: boolean = false;
 
   private readonly errorMessages: Record<string, Record<string, string>> = {
     matricula: { required: 'Ingresa tu matrícula o ID de empleado.' },
@@ -76,7 +77,7 @@ export class RegistroGoogleComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private _usuario: UsuariosService,
-    private _toastr: ToastrService
+    private _toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -120,6 +121,8 @@ export class RegistroGoogleComponent implements OnInit {
   }
 
   completarRegistro() {
+    this.loading = true;
+
     const accessToken = this._authState.getAccessToken();
     if (!accessToken) {
       this.router.navigate(['acceso/login']);
@@ -135,12 +138,14 @@ export class RegistroGoogleComponent implements OnInit {
 
     this.http.post<any>(this.endpoint, payload).subscribe({
       next: (res) => {
-        this._usuario.establecerSesionDesdeToken(res.tokenId)
+        this.loading = false;
+        this._usuario.establecerSesionDesdeToken(res.tokenId);
         this._authState.limpiar(); // ya no necesitamos el accessToken de Google
         this.router.navigate(['home']);
       },
       error: (err) => {
-        this._toastr.error('Error al completar registro', 'Error')
+        this.loading = false;
+        this._toastr.error('Error al completar registro', 'Error');
         console.error('Error al completar registro:', err);
         // mostrar el mensaje de error al usuario
       },
