@@ -19,6 +19,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { tokenInterceptor } from './interceptors/token.interceptor';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ngrokSkipWarningInterceptor } from './interceptors/ngrok-skip-warning.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,6 +38,7 @@ export const appConfig: ApplicationConfig = {
     }),
     importProvidersFrom(MqttModule.forRoot(MQTT_SERVICE_OPTIONS)),
     provideHttpClient(withInterceptors([tokenInterceptor])),
+    provideHttpClient(withInterceptors([ngrokSkipWarningInterceptor])),
     importProvidersFrom(
       UiSwitchModule.forRoot({
         size: 'large',
