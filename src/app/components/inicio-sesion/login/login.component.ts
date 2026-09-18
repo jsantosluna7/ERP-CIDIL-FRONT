@@ -36,11 +36,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       caption: 'Nuestro edificio',
     },
     {
-      url: 'assets/cidil/laboratorios/redes-convergentes.jpg',
+      url: 'assets/cidil/laboratorios/3C.jpeg',
       caption: 'Laboratorios modernos',
     },
     {
-      url: 'assets/cidil/laboratorios/manufactura-automatizada.jpg',
+      url: 'assets/cidil/laboratorios/2B.jpeg',
       caption: 'Equipos de ultima generación',
     },
     {

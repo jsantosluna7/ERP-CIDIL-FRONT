@@ -6,7 +6,7 @@ import { Observable, shareReplay, of, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class SolicitudReservaEspacioCacheService {
-  private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_RESERVA_ESPACIO']}`;
+  private apiUrl = `${process.env['API_URL']}${process.env['ENDPOINT_SOLICITUD_RESERVA_ESPACIO']}`;
   private apiUrlConteo = `${process.env['API_URL']}${process.env['ENDPOINT_TOTAL_RESERVA_ESPACIO_CONTEO']}`;
   private apiUrlTotalReserva = `${process.env['API_URL']}${process.env['ENDPOINT_TOTAL_RESERVA_ESPACIO']}`;
   private apiUrlCrearReserva = `${process.env['API_URL']}${process.env['ENDPOINT_CREAR_RESERVA_ESPACIO']}`;

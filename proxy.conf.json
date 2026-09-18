@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://ipl-intranet-backend-production-876157471705.us-east1.run.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

@@ -1742,6 +1742,9 @@ time {
   box-shadow: 0 32px 80px rgba(7, 20, 43, 0.28);
   position: relative;
   animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -1785,6 +1788,7 @@ time {
   height: 240px;
   overflow: hidden;
   background: var(--azul-100);
+  flex-shrink: 0;
 }
 
 .modal-lab-img img {
@@ -1796,6 +1800,7 @@ time {
 
 .modal-lab-body {
   padding: 28px 32px 36px;
+  overflow-y: auto;
 }
 
 .modal-lab-body h3 {
@@ -1810,6 +1815,40 @@ time {
   line-height: 1.75;
   color: var(--tinta-600);
   text-align: left;
+}
+
+/* Reset: news-tile-link ahora es <button>, no <a> */
+.news-tile-link {
+  border: none;
+  background: none;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.news-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--tinta-400);
+  padding: 40px 0;
+}
+
+/* Modal de noticia — reutiliza .modal-lab, solo ajusta el time */
+.modal-noticia .modal-lab-body time {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--tinta-400);
+  font-weight: 600;
+  margin: 4px 0 16px;
+  text-transform: capitalize;
+}
+
+/* Respeta los \n del texto como saltos de línea reales */
+.descripcion-formateada {
+  white-space: pre-line;
 }
 
 @media (max-width: 560px) {
