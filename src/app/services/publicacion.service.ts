@@ -46,9 +46,9 @@ export type CategoriaFiltro = 'todas' | 'ieesl' | 'tecnologia';
 })
 export class PublicacionService {
   private apiUrl: string = `${process.env['API_URL']}${process.env['ENDPOINT_ANUNCIOS']}`;
-  // private readonly noticiasApi = 'https://ipl-intranet-backend-production-876157471705.us-east1.run.app/api/seccion-noticias?populate=imagen&populate=portada&pagination%5Bpage%5D=1&pagination%5BpageSize%5D=100';
-  private readonly noticiasApi =
-    '/api/seccion-noticias?populate=imagen&populate=portada&pagination[page]=1&pagination[pageSize]=100';
+  private readonly noticiasApi = 'https://ipl-intranet-backend-production-876157471705.us-east1.run.app/api/seccion-noticias?populate=imagen&populate=portada&pagination%5Bpage%5D=1&pagination%5BpageSize%5D=100';
+  // private readonly noticiasApi =
+  //   '/api/seccion-noticias?populate=imagen&populate=portada&pagination[page]=1&pagination[pageSize]=100';
 
   private readonly KW_IEESL = [
     'ieesl',
