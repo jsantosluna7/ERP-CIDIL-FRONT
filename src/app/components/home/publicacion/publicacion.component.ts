@@ -258,7 +258,7 @@ export class PublicacionComponent implements OnInit {
     this.iniciarCarrusel();
     this.iniciarObservadorSecciones();
 
-    this.publicacionService.getNoticiasIeeslOTecnologia().subscribe({
+    this.publicacionService.getAnuncios().subscribe({
       next: (n) => {
         console.log(n);
         this.noticias.set(n);
